@@ -1,0 +1,19 @@
+<configuration>
+    <appender name="COMPACT" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>%-5level %msg%nopex%n</pattern>
+        </encoder>
+    </appender>
+
+    <appender name="VERBOSE" class="ch.qos.logback.core.ConsoleAppender">
+        <target>System.err</target>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <root level="${LOG_LEVEL:-INFO}">
+        <appender-ref ref="${LOG_MODE:-COMPACT}"/>
+    </root>
+</configuration>

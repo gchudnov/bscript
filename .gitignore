@@ -1,5 +1,8 @@
 *.class
 *.log
 .bsp
+.bloop
+.metals
 .idea
 target/
+metals.sbt

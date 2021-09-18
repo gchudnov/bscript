@@ -13,20 +13,36 @@ lazy val testSettings = Seq(
 
 lazy val allSettings = Settings.shared ++ testSettings
 
-lazy val lib = (project in file("lib"))
+lazy val lang = (project in file("lang"))
   .settings(allSettings: _*)
   .settings(
-    name := "lib",
-    libraryDependencies ++= Dependencies.Lib
+    name := "lang",
+    libraryDependencies ++= Dependencies.Lang
+  )
+
+lazy val serde = (project in file("serde"))
+  .dependsOn(lang)
+  .settings(allSettings: _*)
+  .settings(
+    name := "serde",
+    libraryDependencies ++= Dependencies.Serde
+  )
+
+lazy val b1 = (project in file("b1"))
+  .dependsOn(lang)
+  .settings(allSettings: _*)
+  .settings(
+    name := "b1",
+    libraryDependencies ++= Dependencies.B1
   )
 
 lazy val cli = (project in file("cli"))
   .enablePlugins(BuildInfoPlugin)
-  .dependsOn(lib)
+  .dependsOn(lang, b1)
   .settings(allSettings: _*)
   .settings(Settings.assemblySettings)
   .settings(
-    name := "bscript",
+    name := "cli",
     libraryDependencies ++= Dependencies.Cli,
     buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
     buildInfoPackage              := "com.github.gchudnov.bscript",
@@ -37,10 +53,10 @@ lazy val cli = (project in file("cli"))
   )
 
 lazy val root = (project in file("."))
-  .aggregate(lib, cli)
+  .aggregate(lang, serde, b1, cli)
   .settings(allSettings: _*)
   .settings(
-    name := "bscript-root"
+    name := "bscript"
   )
 
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")

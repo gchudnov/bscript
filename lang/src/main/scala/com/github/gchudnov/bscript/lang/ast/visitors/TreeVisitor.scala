@@ -1,0 +1,48 @@
+package com.github.gchudnov.bscript.lang.ast.visitors
+
+import com.github.gchudnov.bscript.lang.ast.*
+
+/**
+ * Visits Tree and performs actions on the node p.189
+ */
+trait TreeVisitor[S, R]:
+  def visit(s: S, n: Init): Either[Throwable, R]
+  def visit(s: S, n: UnaryMinus): Either[Throwable, R]
+  def visit(s: S, n: Add): Either[Throwable, R]
+  def visit(s: S, n: Sub): Either[Throwable, R]
+  def visit(s: S, n: Mul): Either[Throwable, R]
+  def visit(s: S, n: Div): Either[Throwable, R]
+  def visit(s: S, n: Mod): Either[Throwable, R]
+  def visit(s: S, n: Less): Either[Throwable, R]
+  def visit(s: S, n: LessEqual): Either[Throwable, R]
+  def visit(s: S, n: Greater): Either[Throwable, R]
+  def visit(s: S, n: GreaterEqual): Either[Throwable, R]
+  def visit(s: S, n: Equal): Either[Throwable, R]
+  def visit(s: S, n: NotEqual): Either[Throwable, R]
+  def visit(s: S, n: Not): Either[Throwable, R]
+  def visit(s: S, n: And): Either[Throwable, R]
+  def visit(s: S, n: Or): Either[Throwable, R]
+  def visit(s: S, n: Assign): Either[Throwable, R]
+  def visit(s: S, n: NothingVal): Either[Throwable, R]
+  def visit(s: S, n: VoidVal): Either[Throwable, R]
+  def visit(s: S, n: BoolVal): Either[Throwable, R]
+  def visit(s: S, n: IntVal): Either[Throwable, R]
+  def visit(s: S, n: LongVal): Either[Throwable, R]
+  def visit(s: S, n: FloatVal): Either[Throwable, R]
+  def visit(s: S, n: DoubleVal): Either[Throwable, R]
+  def visit(s: S, n: DecimalVal): Either[Throwable, R]
+  def visit(s: S, n: StrVal): Either[Throwable, R]
+  def visit(s: S, n: DateVal): Either[Throwable, R]
+  def visit(s: S, n: DateTimeVal): Either[Throwable, R]
+  def visit(s: S, n: Vec): Either[Throwable, R]
+  def visit(s: S, n: Var): Either[Throwable, R]
+  def visit(s: S, n: ArgDecl): Either[Throwable, R]
+  def visit(s: S, n: VarDecl): Either[Throwable, R]
+  def visit(s: S, n: FieldDecl): Either[Throwable, R]
+  def visit(s: S, n: MethodDecl): Either[Throwable, R]
+  def visit(s: S, n: StructDecl): Either[Throwable, R]
+  def visit(s: S, n: Block): Either[Throwable, R]
+  def visit(s: S, n: Call): Either[Throwable, R]
+  def visit(s: S, n: If): Either[Throwable, R]
+  def visit(s: S, n: Access): Either[Throwable, R]
+  def visit(s: S, n: CompiledExpr): Either[Throwable, R]

@@ -1,0 +1,47 @@
+{
+  "scopeTree": {
+    "vertices": ["#a","#b","#c","#global","fieldOfDateTime","offsetDateTime"],
+    "edges": [["#a","#global"],["#b","offsetDateTime"],["#c","fieldOfDateTime"],["fieldOfDateTime","#a"],["offsetDateTime","#a"]]
+  },
+  "scopeSymbols": {
+    "#a": ["fieldOfDateTime","offsetDateTime"],
+    "#global": ["auto","boolean","date","datetime","decimal","double","float","int","long","nothing","string","void"],
+    "fieldOfDateTime": ["unit","value"],
+    "offsetDateTime": ["offset","unit","value"]
+  },
+  "symbolScopes": {
+    "auto": "#global",
+    "boolean": "#global",
+    "date": "#global",
+    "datetime": "#global",
+    "decimal": "#global",
+    "double": "#global",
+    "fieldOfDateTime": "#a",
+    "float": "#global",
+    "int": "#global",
+    "long": "#global",
+    "nothing": "#global",
+    "offset": "offsetDateTime",
+    "offsetDateTime": "#a",
+    "string": "#global",
+    "unit": "offsetDateTime",
+    "unit": "fieldOfDateTime",
+    "value": "offsetDateTime",
+    "value": "fieldOfDateTime",
+    "void": "#global"
+  },
+  "methodArgs": {
+    "fieldOfDateTime": ["unit","value"],
+    "offsetDateTime": ["offset","unit","value"]
+  },
+  "methodRetTypes": {
+  },
+  "methodAsts": {
+  },
+  "varTypes": {
+  },
+  "methods": [
+    "fn fieldOfDateTime(value: ?, unit: ?) -> ?",
+    "fn offsetDateTime(value: ?, offset: ?, unit: ?) -> ?"
+  ]
+}
