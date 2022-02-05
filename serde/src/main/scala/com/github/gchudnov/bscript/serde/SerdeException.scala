@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast.serde
+package com.github.gchudnov.bscript.serde
 
 import com.github.gchudnov.bscript.lang.LangException
 

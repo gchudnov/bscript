@@ -1,7 +1,7 @@
-package com.github.gchudnov.bscript.lang.ast.serde
+package com.github.gchudnov.bscript.serde
 
 import scala.annotation.nowarn
-import scala.util.{ Failure, Success, Try }
+import scala.util.{Failure, Success, Try}
 
 trait Deserializer[R <: Throwable, +T]:
   def deserialize(data: String): Either[R, T]

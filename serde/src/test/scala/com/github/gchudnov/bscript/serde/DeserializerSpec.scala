@@ -1,6 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast.serde
-
-import com.github.gchudnov.bscript.lang.TestSpec
+package com.github.gchudnov.bscript.serde
 
 final class DeserializerSpec extends TestSpec:
   "Deserialize" when {

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast.serde
+package com.github.gchudnov.bscript.serde
 
 trait Serializer[R <: Throwable, -T]:
   def serialize(value: T): Either[R, String]

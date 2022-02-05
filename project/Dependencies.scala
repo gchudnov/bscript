@@ -10,7 +10,7 @@ object Dependencies {
 
   private val scalatest = "org.scalatest" %% "scalatest" % versions.scalatest
 
-  private val json4sNative = "org.json4s"         %% "json4s-native" % versions.json4sNative
+  private val json4sNative = "org.json4s" %% "json4s-native" % versions.json4sNative
 
   private val scopt = "com.github.scopt" %% "scopt" % versions.scopt
 

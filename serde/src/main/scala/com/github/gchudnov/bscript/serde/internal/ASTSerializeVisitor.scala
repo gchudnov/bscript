@@ -1,13 +1,12 @@
-package com.github.gchudnov.bscript.lang.ast.serde.internal
+package com.github.gchudnov.bscript.serde.internal
 
-import com.github.gchudnov.bscript.lang.ast.serde.internal.ASTSerializeVisitor.ASTSerializeState
+import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor.ASTSerializeState
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
-import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Symbol, Type, VectorType }
-import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
+import com.github.gchudnov.bscript.lang.symbols.{DeclType, Symbol, Type, VectorType}
+import com.github.gchudnov.bscript.lang.util.{EqWrap, ShowOps, Transform}
 
-final class ASTSerializeVisitor(meta: Meta) extends TreeVisitor[ASTSerializeState, ASTSerializeState]:
+final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSerializeState]:
 
   override def visit(s: ASTSerializeState, n: Init): Either[Throwable, ASTSerializeState] =
     for
@@ -468,7 +467,7 @@ final class ASTSerializeVisitor(meta: Meta) extends TreeVisitor[ASTSerializeStat
 
   private def visitSymbol(sym: Symbol): Either[Throwable, String] =
     for
-      id   <- meta.id(sym)
+      id   <- Right(System.identityHashCode(sym).toString)
       name <- Right(sym.name)
       s1 <- Right(
               s"""{
@@ -512,8 +511,8 @@ final class ASTSerializeVisitor(meta: Meta) extends TreeVisitor[ASTSerializeStat
 
 object ASTSerializeVisitor:
 
-  def make(meta: Meta): ASTSerializeVisitor =
-    new ASTSerializeVisitor(meta)
+  def make(): ASTSerializeVisitor =
+    new ASTSerializeVisitor()
 
   final case class ASTSerializeState(data: String)
 
