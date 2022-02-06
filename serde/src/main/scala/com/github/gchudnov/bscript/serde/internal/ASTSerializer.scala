@@ -15,4 +15,7 @@ final class ASTSerializer extends Serializer[SerdeException, AST]:
       for jValue <- value.visit(s1, v1)
       yield compact(render(jValue))
 
-    errOrRes.left.map(t => new SerdeException("Failed to serialize AST", t))
+    errOrRes.left.map {
+      case e: SerdeException => e
+      case t                 => new SerdeException("Failed to serialize AST", t)
+    }

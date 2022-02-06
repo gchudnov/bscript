@@ -166,8 +166,7 @@ final class ASTSerializeVisitor extends TreeVisitor[Unit, JValue]:
     for
       aType         <- visitType(n.aType)
       name          <- Right(n.name)
-      symbol        <- visitSymbol(n.symbol)
-      jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> aType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol))
+      jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> aType) ~ (Keys.name -> name))
     yield jValue
 
   override def visit(s: Unit, n: VarDecl): Either[Throwable, JValue] =
@@ -175,17 +174,14 @@ final class ASTSerializeVisitor extends TreeVisitor[Unit, JValue]:
       vType         <- visitType(n.vType)
       name          <- Right(n.name)
       expr          <- n.expr.visit((), this)
-      symbol        <- visitSymbol(n.symbol)
-      jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> vType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.expr -> expr))
+      jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> vType) ~ (Keys.name -> name) ~ (Keys.expr -> expr))
     yield jValue
 
   override def visit(s: Unit, n: FieldDecl): Either[Throwable, JValue] =
     for
       fType         <- visitType(n.fType)
       name          <- Right(n.name)
-      symbol        <- visitSymbol(n.symbol)
-      jValue =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> fType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol))
+      jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> fType) ~ (Keys.name -> name))
     yield jValue
 
   override def visit(s: Unit, n: MethodDecl): Either[Throwable, JValue] =
@@ -194,9 +190,7 @@ final class ASTSerializeVisitor extends TreeVisitor[Unit, JValue]:
       name          <- Right(n.name)
       params        <- Transform.sequence(n.params.map(n1 => n1.visit((), this)))
       body          <- n.body.visit((), this)
-      symbol        <- visitSymbol(n.symbol)
-      jValue =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.symbol -> symbol) ~ (Keys.body -> body))
+      jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.body -> body))
     yield jValue
 
   override def visit(s: Unit, n: StructDecl): Either[Throwable, JValue] =

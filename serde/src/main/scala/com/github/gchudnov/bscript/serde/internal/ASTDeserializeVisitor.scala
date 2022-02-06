@@ -205,44 +205,30 @@ final class ASTDeserializeVisitor {
     } yield Var(symbol)
 
   private def visitArgDecl(s: JObject): Either[Throwable, ArgDecl] =
-    ???
-//    for
-//      aType         <- visitType(n.aType)
-//      name          <- Right(n.name)
-//      symbol        <- visitSymbol(n.symbol)
-//      evalType      <- visitType(n.evalType)
-//      promoteToType <- visitOptType(n.promoteToType)
-//      s1 =
-//        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> aType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-//    yield ASTSerializeState(data = s1)
+    for {
+      jType <- Right(s \ Keys.xType)
+      aType <- visitType(jType)
+      name <- (s \ Keys.name).asJString.map(_.s)
+    } yield ArgDecl(aType, name)
 
   private def visitVarDecl(s: JObject): Either[Throwable, VarDecl] =
-    ???
-//    for
-//      vType         <- visitType(n.vType)
-//      name          <- Right(n.name)
-//      expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
-//      symbol        <- visitSymbol(n.symbol)
-//      evalType      <- visitType(n.evalType)
-//      promoteToType <- visitOptType(n.promoteToType)
-//      s1 =
-//        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> vType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-//    yield ASTSerializeState(data = s1)
+    for {
+      jType <- Right(s \ Keys.xType)
+      vType <- visitType(jType)
+      name <- (s \ Keys.name).asJString.map(_.s)
+      jExpr <- Right(s \ Keys.expr)
+      expr <- visitAST(jExpr).flatMap(_.asExpr)
+    } yield VarDecl(vType, name, expr)
 
   private def visitFieldDecl(s: JObject): Either[Throwable, FieldDecl] =
-    ???
-//    for
-//      fType         <- visitType(n.fType)
-//      name          <- Right(n.name)
-//      symbol        <- visitSymbol(n.symbol)
-//      evalType      <- visitType(n.evalType)
-//      promoteToType <- visitOptType(n.promoteToType)
-//      s1 =
-//        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> fType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-//    yield ASTSerializeState(data = s1)
+    for {
+      jType <- Right(s \ Keys.xType)
+      fType <- visitType(jType)
+      name <- (s \ Keys.name).asJString.map(_.s)
+    } yield FieldDecl(fType, name)
 
   private def visitMethodDecl(s: JObject): Either[Throwable, MethodDecl] =
-    ???
+    ??? // TODO: impl, NOTE: there is no symbol
 //    for
 //      retType       <- visitType(n.retType)
 //      name          <- Right(n.name)
@@ -353,6 +339,9 @@ final class ASTDeserializeVisitor {
     vecName -> visitVec,
     varName -> visitVar,
     argDeclName -> visitArgDecl,
+    varDeclName -> visitVarDecl,
+    fieldDeclName -> visitFieldDecl,
+    methodDeclName -> visitMethodDecl,
     )
 
   private def visitAST(value: JValue): Either[Throwable, AST] = {
@@ -427,6 +416,9 @@ object ASTDeserializeVisitor {
   val vecName = Vec.getClass.getSimpleName
   val varName = Var.getClass.getSimpleName
   val argDeclName = ArgDecl.getClass.getSimpleName
+  val varDeclName = VarDecl.getClass.getSimpleName
+  val fieldDeclName = FieldDecl.getClass.getSimpleName
+  val methodDeclName = MethodDecl.getClass.getSimpleName
   val vectorTypeName = VectorType.getClass.getSimpleName
   val declTypeName = DeclType.getClass.getSimpleName
 
