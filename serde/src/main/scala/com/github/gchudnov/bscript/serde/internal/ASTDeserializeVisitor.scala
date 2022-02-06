@@ -14,6 +14,8 @@ import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
 
 import scala.util.control.Exception.allCatch
+import java.time.LocalDate
+import java.time.OffsetDateTime
 
 
 final class ASTDeserializeVisitor {
@@ -130,36 +132,52 @@ final class ASTDeserializeVisitor {
     } yield BoolVal(value)
 
   private def visitIntVal(s: JObject): Either[Throwable, IntVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseInt(jStr.s)
+    } yield IntVal(value)
 
   private def visitLongVal(s: JObject): Either[Throwable, LongVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseLong(jStr.s)
+    } yield LongVal(value)
 
   private def visitFloatVal(s: JObject): Either[Throwable, FloatVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseFloat(jStr.s)
+    } yield FloatVal(value)
 
   private def visitDoubleVal(s: JObject): Either[Throwable, DoubleVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseDouble(jStr.s)
+    } yield DoubleVal(value)
 
   private def visitDecimalVal(s: JObject): Either[Throwable, DecimalVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseDecimal(jStr.s)
+    } yield DecimalVal(value)
 
   private def visitStrVal(s: JObject): Either[Throwable, StrVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value = jStr.s
+    } yield StrVal(value)
 
   private def visitDateVal(s: JObject): Either[Throwable, DateVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseDate(jStr.s)
+    } yield DateVal(value)
 
   private def visitDateTimeVal(s: JObject): Either[Throwable, DateTimeVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseDateTime(jStr.s)
+    } yield DateTimeVal(value)
 
   private def visitVec(s: JObject): Either[Throwable, Vec] =
     ???
@@ -342,6 +360,22 @@ final class ASTDeserializeVisitor {
           visitVoidVal(o)
         case `boolVal` =>
           visitBoolVal(o)
+        case `intVal` =>
+          visitIntVal(o)
+        case `longVal` =>
+          visitLongVal(o)
+        case `floatVal` =>
+          visitFloatVal(o)
+        case `doubleVal` =>
+          visitDoubleVal(o)
+        case `decimalVal` =>
+          visitDecimalVal(o)
+        case `stringVal` =>
+          visitStrVal(o)
+        case `dateVal` =>
+          visitDateVal(o)
+        case `dateTimeVal` =>
+          visitDateTimeVal(o)
         case _ =>
           Left(new SerdeException("Cannot convert JValue to AST"))
       }
@@ -402,7 +436,13 @@ object ASTDeserializeVisitor {
   val voidVal = VoidVal.getClass.getSimpleName
   val boolVal = BoolVal.getClass.getSimpleName
   val intVal = IntVal.getClass.getSimpleName
-  
+  val longVal = LongVal.getClass.getSimpleName
+  val floatVal = FloatVal.getClass.getSimpleName
+  val doubleVal = DoubleVal.getClass.getSimpleName
+  val decimalVal = DecimalVal.getClass.getSimpleName
+  val stringVal = StrVal.getClass.getSimpleName
+  val dateVal = DateVal.getClass.getSimpleName
+  val dateTimeVal = DateTimeVal.getClass.getSimpleName
   val vectorType = VectorType.getClass.getSimpleName
   val declType = DeclType.getClass.getSimpleName
 
@@ -436,4 +476,39 @@ object ASTDeserializeVisitor {
       case _ =>
         Left(new SerdeException("Cannot parse Boolean"))
     }
+
+  def parseInt(s: String): Either[Throwable, Int] =
+    allCatch
+    .either(s.toInt)
+    .left.map(_ => new SerdeException("Cannot parse Int"))
+
+  def parseLong(s: String): Either[Throwable, Long] =
+    allCatch
+    .either(s.toLong)
+    .left.map(_ => new SerdeException("Cannot parse Long"))
+
+  def parseFloat(s: String): Either[Throwable, Float] =
+    allCatch
+    .either(s.toFloat)
+    .left.map(_ => new SerdeException("Cannot parse Float"))
+
+  def parseDouble(s: String): Either[Throwable, Double] =
+    allCatch
+    .either(s.toDouble)
+    .left.map(_ => new SerdeException("Cannot parse Double"))
+
+  def parseDecimal(s: String): Either[Throwable, BigDecimal] =
+    allCatch
+    .either(BigDecimal(s))
+    .left.map(_ => new SerdeException("Cannot parse BigDecimal"))
+
+  def parseDate(s: String): Either[Throwable, LocalDate] =
+    allCatch
+    .either(LocalDate.parse(s))
+    .left.map(_ => new SerdeException("Cannot parse LocalDate"))
+
+  def parseDateTime(s: String): Either[Throwable, OffsetDateTime] =
+    allCatch
+    .either(OffsetDateTime.parse(s))
+    .left.map(_ => new SerdeException("Cannot parse OffsetDateTime"))
 }

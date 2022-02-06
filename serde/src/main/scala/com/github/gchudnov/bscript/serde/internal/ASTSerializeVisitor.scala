@@ -4,312 +4,307 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Symbol, Type, VectorType }
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor.ASTSerializeState
 import com.github.gchudnov.bscript.serde.internal.Keys.*
 import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
 
 // TODO: remove ASTSerializeState, make Unit -> JValue
-// TODO: remove evalType, promoteToType ?
+// TODO: remove evalType, promoteToType
 
-final class ASTSerializeVisitor extends TreeVisitor[ASTSerializeState, ASTSerializeState]:
+final class ASTSerializeVisitor extends TreeVisitor[Unit, JValue]:
 
-  override def visit(s: ASTSerializeState, n: Init): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Init): Either[Throwable, JValue] =
     for
       iType         <- visitType(n.iType)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> iType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue         = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> iType))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: UnaryMinus): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: UnaryMinus): Either[Throwable, JValue] =
     visitUnOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Add): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Add): Either[Throwable, JValue] =
     visitBinOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Sub): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Sub): Either[Throwable, JValue] =
     visitBinOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Mul): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Mul): Either[Throwable, JValue] =
     visitBinOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Div): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Div): Either[Throwable, JValue] =
     visitBinOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Mod): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Mod): Either[Throwable, JValue] =
     visitBinOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Less): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Less): Either[Throwable, JValue] =
     visitRelOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: LessEqual): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: LessEqual): Either[Throwable, JValue] =
     visitRelOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Greater): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Greater): Either[Throwable, JValue] =
     visitRelOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: GreaterEqual): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: GreaterEqual): Either[Throwable, JValue] =
     visitRelOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Equal): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Equal): Either[Throwable, JValue] =
     visitRelOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: NotEqual): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: NotEqual): Either[Throwable, JValue] =
     visitRelOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Not): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Not): Either[Throwable, JValue] =
     visitUnLogicOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: And): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: And): Either[Throwable, JValue] =
     visitLogicOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Or): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Or): Either[Throwable, JValue] =
     visitLogicOp(n.getClass.getSimpleName, n)
 
-  override def visit(s: ASTSerializeState, n: Assign): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Assign): Either[Throwable, JValue] =
     for
-      id            <- n.id.visit(ASTSerializeState.empty, this).map(_.data)
-      expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      id            <- n.id.visit((), this)
+      expr          <- n.expr.visit((), this)
+      jValue             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.expr -> expr))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: NothingVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: NothingVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      jValue = ((Keys.kind -> s"${kind}"))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: VoidVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: VoidVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      jValue = ((Keys.kind -> s"${kind}"))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: BoolVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: BoolVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: IntVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: IntVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: LongVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: LongVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: FloatVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: FloatVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: DoubleVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: DoubleVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: DecimalVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: DecimalVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: StrVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: StrVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: DateVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: DateVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: DateTimeVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal(n.getClass.getSimpleName, n)
+  override def visit(s: Unit, n: DateTimeVal): Either[Throwable, JValue] =
+    for {
+      kind          <- Right(n.getClass.getSimpleName)
+      value <- Right(n.value.toString)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+    } yield jValue
 
-  override def visit(s: ASTSerializeState, n: Vec): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Vec): Either[Throwable, JValue] =
     for
-      elements      <- Transform.sequence(n.elements.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
+      elements      <- Transform.sequence(n.elements.map(n1 => n1.visit((), this)))
       elementType   <- visitType(n.elementType)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.elements -> elements) ~ (Keys.elementType -> elementType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.elements -> elements) ~ (Keys.elementType -> elementType))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: Var): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Var): Either[Throwable, JValue] =
     for
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.symbol -> symbol))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: ArgDecl): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: ArgDecl): Either[Throwable, JValue] =
     for
       aType         <- visitType(n.aType)
       name          <- Right(n.name)
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> aType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> aType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: VarDecl): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: VarDecl): Either[Throwable, JValue] =
     for
       vType         <- visitType(n.vType)
       name          <- Right(n.name)
-      expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
+      expr          <- n.expr.visit((), this)
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> vType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> vType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.expr -> expr))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: FieldDecl): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: FieldDecl): Either[Throwable, JValue] =
     for
       fType         <- visitType(n.fType)
       name          <- Right(n.name)
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> fType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> fType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: MethodDecl): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: MethodDecl): Either[Throwable, JValue] =
     for
       retType       <- visitType(n.retType)
       name          <- Right(n.name)
-      params        <- Transform.sequence(n.params.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
-      body          <- n.body.visit(ASTSerializeState.empty, this).map(_.data)
+      params        <- Transform.sequence(n.params.map(n1 => n1.visit((), this)))
+      body          <- n.body.visit((), this)
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.symbol -> symbol) ~ (Keys.body -> body) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.symbol -> symbol) ~ (Keys.body -> body))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: StructDecl): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: StructDecl): Either[Throwable, JValue] =
     for
       name          <- Right(n.name)
-      fields        <- Transform.sequence(n.fields.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
+      fields        <- Transform.sequence(n.fields.map(n1 => n1.visit((), this)))
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.name -> name) ~ (Keys.fields -> fields) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.name -> name) ~ (Keys.fields -> fields) ~ (Keys.symbol -> symbol))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: Block): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Block): Either[Throwable, JValue] =
     for
-      statements    <- Transform.sequence(n.statements.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
+      statements    <- Transform.sequence(n.statements.map(n1 => n1.visit((), this)))
       symbol        <- visitSymbol(n.symbol)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.name -> name) ~ (Keys.statements -> statements) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.name -> name) ~ (Keys.statements -> statements) ~ (Keys.symbol -> symbol))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: Call): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Call): Either[Throwable, JValue] =
     for
       id            <- visitSymbol(n.id)
-      args          <- Transform.sequence(n.args.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.args -> args) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      args          <- Transform.sequence(n.args.map(n1 => n1.visit((), this)))
+      jValue             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.args -> args))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: If): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: If): Either[Throwable, JValue] =
     for
-      cond          <- n.cond.visit(ASTSerializeState.empty, this).map(_.data)
-      then1         <- n.then1.visit(ASTSerializeState.empty, this).map(_.data)
-      else1         <- Transform.sequence(n.else1.map(_.visit(ASTSerializeState.empty, this).map(_.data))).map(_.getOrElse(JNull))
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1 =
-        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.cond -> cond) ~ (Keys.then1 -> then1) ~ (Keys.else1 -> else1) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      cond          <- n.cond.visit((), this)
+      then1         <- n.then1.visit((), this)
+      else1         <- Transform.sequence(n.else1.map(_.visit((), this))).map(_.getOrElse(JNull))
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.cond -> cond) ~ (Keys.then1 -> then1) ~ (Keys.else1 -> else1))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: Access): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: Access): Either[Throwable, JValue] =
     for
-      a             <- n.a.visit(ASTSerializeState.empty, this).map(_.data)
-      b             <- n.b.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.a -> a) ~ (Keys.b -> b) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      a             <- n.a.visit((), this)
+      b             <- n.b.visit((), this)
+      jValue             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.a -> a) ~ (Keys.b -> b))
+    yield jValue
 
-  override def visit(s: ASTSerializeState, n: CompiledExpr): Either[Throwable, ASTSerializeState] =
+  override def visit(s: Unit, n: CompiledExpr): Either[Throwable, JValue] =
     for
       retType       <- visitType(n.retType)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      jValue             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType))
+    yield jValue
 
-  private def visitBinOp(name: String, n: BinOp): Either[Throwable, ASTSerializeState] =
+  private def visitBinOp(name: String, n: BinOp): Either[Throwable, JValue] =
     for
-      lhs           <- n.lhs.visit(ASTSerializeState.empty, this).map(_.data)
-      rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      lhs           <- n.lhs.visit((), this)
+      rhs           <- n.rhs.visit((), this)
+      jValue             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs))
+    yield jValue
 
-  private def visitRelOp(name: String, n: RelOp): Either[Throwable, ASTSerializeState] =
+  private def visitRelOp(name: String, n: RelOp): Either[Throwable, JValue] =
     for
-      lhs           <- n.lhs.visit(ASTSerializeState.empty, this).map(_.data)
-      rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      lhs           <- n.lhs.visit((), this)
+      rhs           <- n.rhs.visit((), this)
+      jValue             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs))
+    yield jValue
 
-  private def visitRelOp(name: String, n: EqOp): Either[Throwable, ASTSerializeState] =
+  private def visitRelOp(name: String, n: EqOp): Either[Throwable, JValue] =
     for
-      lhs           <- n.lhs.visit(ASTSerializeState.empty, this).map(_.data)
-      rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      lhs           <- n.lhs.visit((), this)
+      rhs           <- n.rhs.visit((), this)
+      jValue             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs))
+    yield jValue
 
-  private def visitUnOp(name: String, n: UnOp): Either[Throwable, ASTSerializeState] =
+  private def visitUnOp(name: String, n: UnOp): Either[Throwable, JValue] =
     for
-      expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      expr          <- n.expr.visit((), this)
+      jValue             = ((Keys.kind -> s"${name}") ~ (Keys.expr -> expr))
+    yield jValue
 
-  private def visitUnLogicOp(name: String, n: UnLogicOp): Either[Throwable, ASTSerializeState] =
+  private def visitUnLogicOp(name: String, n: UnLogicOp): Either[Throwable, JValue] =
     for
-      expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      expr          <- n.expr.visit((), this)
+      jValue             = ((Keys.kind -> s"${name}") ~ (Keys.expr -> expr))
+    yield jValue
 
-  private def visitLogicOp(name: String, n: LogicOp): Either[Throwable, ASTSerializeState] =
+  private def visitLogicOp(name: String, n: LogicOp): Either[Throwable, JValue] =
     for
-      lhs           <- n.lhs.visit(ASTSerializeState.empty, this).map(_.data)
-      rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
-
-  private def visitConstVal(name: String, n: ConstVal): Either[Throwable, ASTSerializeState] =
-    for
-      evalType      <- visitType(n.evalType)
-      promoteToType <- visitOptType(n.promoteToType)
-      s1             = ((Keys.kind -> s"${name}") ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-    yield ASTSerializeState(data = s1)
+      lhs           <- n.lhs.visit((), this)
+      rhs           <- n.rhs.visit((), this)
+      jValue             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs))
+    yield jValue
 
   private def visitSymbol(sym: Symbol): Either[Throwable, JValue] =
     for
       name <- Right(sym.name)
-      s1    = ((Keys.kind -> "Symbol") ~ (Keys.name -> name))
-    yield s1
+    yield JString(name)
 
   private def visitType(t: Type): Either[Throwable, JValue] =
     t match
       case x @ VectorType(elementType) =>
         for
-          resolvedElementType <- visitType(elementType)
-          s1                   = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.elementType -> resolvedElementType))
-        yield s1
+          jElementType <- visitType(elementType)
+          jValue                   = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.elementType -> jElementType))
+        yield jValue
       case x @ DeclType(expr) =>
         for
-          resolvedExpr <- expr.visit(ASTSerializeState.empty, this).map(_.data)
-          s1            = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.expr -> resolvedExpr))
-        yield s1
+          jExpr <- expr.visit((), this)
+          jValue            = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.expr -> jExpr))
+        yield jValue
       case _ =>
         Right(JString(t.name))
 
@@ -320,11 +315,3 @@ object ASTSerializeVisitor:
 
   def make(): ASTSerializeVisitor =
     new ASTSerializeVisitor()
-
-  final case class ASTSerializeState(data: JValue)
-
-  object ASTSerializeState:
-    val empty: ASTSerializeState = ASTSerializeState(JNothing)
-
-    def make(): ASTSerializeState =
-      ASTSerializeState.empty
