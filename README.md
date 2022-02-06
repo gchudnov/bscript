@@ -10,5 +10,5 @@ import com.github.gchudnov.bscript.serde.ASTSerde
 
 val t = VarDecl(TypeRef("i32"), "x", IntVal(0))
 
-val errOrSerialized = ASTSerde.ast.serialize(t)
+val errOrSer: Either[SerdeException, String] = ASTSerde.ast.serialize(t)
 ```
