@@ -181,25 +181,28 @@ final class ASTDeserializeVisitor {
     } yield DateTimeVal(value)
 
   private def visitVec(s: JObject): Either[Throwable, Vec] =
-    ???
-    
-//    for
-//      elements      <- Transform.sequence(n.elements.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
-//      elementType   <- visitType(n.elementType)
-//      evalType      <- visitType(n.evalType)
-//      promoteToType <- visitOptType(n.promoteToType)
-//      s1 =
-//        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.elements -> elements) ~ (Keys.elementType -> elementType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-//    yield ASTSerializeState(data = s1)
+    for {
+      jElements <- (s \ Keys.elements).asJArray
+      elements <- Transform.sequence(jElements.arr.map(jEl => visitAST(jEl).flatMap(_.asExpr)))
+      optElementType <- (s \ Keys.elementType) match {
+        case JNothing =>
+          Right(None)
+        case jType => 
+          visitType(jType).map(Some(_))
+      }
+      ast = optElementType match {
+        case None =>
+          Vec(elements)
+        case Some(elementType) =>
+          Vec(elements, elementType)
+      }
+    } yield ast
 
   private def visitVar(s: JObject): Either[Throwable, Var] =
-    ???
-//    for
-//      symbol        <- visitSymbol(n.symbol)
-//      evalType      <- visitType(n.evalType)
-//      promoteToType <- visitOptType(n.promoteToType)
-//      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-//    yield ASTSerializeState(data = s1)
+    for {
+      jSymbol <- Right(s \ Keys.symbol)
+      symbol <- visitSymbol(jSymbol)
+    } yield Var(symbol)
 
   private def visitArgDecl(s: JObject): Either[Throwable, ArgDecl] =
     ???
@@ -319,35 +322,37 @@ final class ASTDeserializeVisitor {
 
   private val m: Map[String, (JObject) => Either[Throwable, AST]] = 
     Map(
-    init -> visitInit,
-    unaryMinus -> visitUnaryMinus,
-    add -> visitAdd,
-    sub -> visitSub,
-    mul -> visitMul,
-    div -> visitDiv,
-    mod -> visitMod,
-    less -> visitLess,
-    lessEq -> visitLessEqual,
-    greater -> visitGreater,
-    greaterEq -> visitGreaterEqual,
-    equal -> visitEqual,
-    notEqual -> visitNotEqual,
-    not -> visitNot,
-    and -> visitAnd,
-    or -> visitOr,
-    assign -> visitAssign,
-    nothingVal -> visitNothingVal,
-    voidVal -> visitVoidVal,
-    boolVal -> visitBoolVal,
-    intVal -> visitIntVal,
-    longVal -> visitLongVal,
-    floatVal -> visitFloatVal,
-    doubleVal -> visitDoubleVal,
-    decimalVal -> visitDecimalVal,
-    stringVal -> visitStrVal,
-    dateVal -> visitDateVal,
-    dateTimeVal -> visitDateTimeVal,
-    vec -> visitVec,
+    initName -> visitInit,
+    unaryMinusName -> visitUnaryMinus,
+    addName -> visitAdd,
+    subName -> visitSub,
+    mulName -> visitMul,
+    divName -> visitDiv,
+    modName -> visitMod,
+    lessName -> visitLess,
+    lessEqName -> visitLessEqual,
+    greaterName -> visitGreater,
+    greaterEqName -> visitGreaterEqual,
+    equalName -> visitEqual,
+    notEqualName -> visitNotEqual,
+    notName -> visitNot,
+    andName -> visitAnd,
+    orName -> visitOr,
+    assignName -> visitAssign,
+    nothingValName -> visitNothingVal,
+    voidValName -> visitVoidVal,
+    boolValName -> visitBoolVal,
+    intValName -> visitIntVal,
+    longValName -> visitLongVal,
+    floatValName -> visitFloatVal,
+    doubleValName -> visitDoubleVal,
+    decimalValName -> visitDecimalVal,
+    stringValName -> visitStrVal,
+    dateValName -> visitDateVal,
+    dateTimeValName -> visitDateTimeVal,
+    vecName -> visitVec,
+    varName -> visitVar,
+    argDeclName -> visitArgDecl,
     )
 
   private def visitAST(value: JValue): Either[Throwable, AST] = {
@@ -372,10 +377,10 @@ final class ASTDeserializeVisitor {
         for {
           kind <- (o \ Keys.kind).asJString.map(_.s)
           t <- kind match {
-              case `vectorType` =>
+              case `vectorTypeName` =>
                 val jElementType = o \ Keys.elementType
                 visitType(jElementType).map(t => VectorType(t))
-              case `declType` =>
+              case `declTypeName` =>
                 val jExpr = o \ Keys.expr
                 visitAST(jExpr).flatMap(_.asExpr).map(expr => DeclType(expr))
           }
@@ -391,37 +396,39 @@ final class ASTDeserializeVisitor {
 
 object ASTDeserializeVisitor {
 
-  val init = Init.getClass.getSimpleName
-  val unaryMinus = UnaryMinus.getClass.getSimpleName
-  val add = Add.getClass.getSimpleName
-  val sub = Sub.getClass.getSimpleName
-  val mul = Mul.getClass.getSimpleName
-  val div = Div.getClass.getSimpleName
-  val mod = Mod.getClass.getSimpleName
-  val less = Less.getClass.getSimpleName
-  val lessEq = LessEqual.getClass.getSimpleName
-  val greater = Greater.getClass.getSimpleName
-  val greaterEq = GreaterEqual.getClass.getSimpleName
-  val equal = Equal.getClass.getSimpleName
-  val notEqual = NotEqual.getClass.getSimpleName
-  val not = Not.getClass.getSimpleName
-  val and = And.getClass.getSimpleName
-  val or = Or.getClass.getSimpleName
-  val assign = Assign.getClass.getSimpleName
-  val nothingVal = NothingVal.getClass.getSimpleName
-  val voidVal = VoidVal.getClass.getSimpleName
-  val boolVal = BoolVal.getClass.getSimpleName
-  val intVal = IntVal.getClass.getSimpleName
-  val longVal = LongVal.getClass.getSimpleName
-  val floatVal = FloatVal.getClass.getSimpleName
-  val doubleVal = DoubleVal.getClass.getSimpleName
-  val decimalVal = DecimalVal.getClass.getSimpleName
-  val stringVal = StrVal.getClass.getSimpleName
-  val dateVal = DateVal.getClass.getSimpleName
-  val dateTimeVal = DateTimeVal.getClass.getSimpleName
-  val vec = Vec.getClass.getSimpleName
-  val vectorType = VectorType.getClass.getSimpleName
-  val declType = DeclType.getClass.getSimpleName
+  val initName = Init.getClass.getSimpleName
+  val unaryMinusName = UnaryMinus.getClass.getSimpleName
+  val addName = Add.getClass.getSimpleName
+  val subName = Sub.getClass.getSimpleName
+  val mulName = Mul.getClass.getSimpleName
+  val divName = Div.getClass.getSimpleName
+  val modName = Mod.getClass.getSimpleName
+  val lessName = Less.getClass.getSimpleName
+  val lessEqName = LessEqual.getClass.getSimpleName
+  val greaterName = Greater.getClass.getSimpleName
+  val greaterEqName = GreaterEqual.getClass.getSimpleName
+  val equalName = Equal.getClass.getSimpleName
+  val notEqualName = NotEqual.getClass.getSimpleName
+  val notName = Not.getClass.getSimpleName
+  val andName = And.getClass.getSimpleName
+  val orName = Or.getClass.getSimpleName
+  val assignName = Assign.getClass.getSimpleName
+  val nothingValName = NothingVal.getClass.getSimpleName
+  val voidValName = VoidVal.getClass.getSimpleName
+  val boolValName = BoolVal.getClass.getSimpleName
+  val intValName = IntVal.getClass.getSimpleName
+  val longValName = LongVal.getClass.getSimpleName
+  val floatValName = FloatVal.getClass.getSimpleName
+  val doubleValName = DoubleVal.getClass.getSimpleName
+  val decimalValName = DecimalVal.getClass.getSimpleName
+  val stringValName = StrVal.getClass.getSimpleName
+  val dateValName = DateVal.getClass.getSimpleName
+  val dateTimeValName = DateTimeVal.getClass.getSimpleName
+  val vecName = Vec.getClass.getSimpleName
+  val varName = Var.getClass.getSimpleName
+  val argDeclName = ArgDecl.getClass.getSimpleName
+  val vectorTypeName = VectorType.getClass.getSimpleName
+  val declTypeName = DeclType.getClass.getSimpleName
 
   implicit class JValueOps(value: JValue) {
 
@@ -442,6 +449,15 @@ object ASTDeserializeVisitor {
           Left(new SerdeException("Cannot convert JValue to JObject"))
       }
     }
+
+    def asJArray: Either[Throwable, JArray] = {
+      value match {
+        case a: JArray =>
+          Right(a)
+        case _ =>
+          Left(new SerdeException("Cannot convert JValue to JArray"))
+      }
+    }    
   }
 
   def parseBool(s: String): Either[Throwable, Boolean] =
