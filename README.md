@@ -1,6 +1,6 @@
 # BScript Toolkit
 
-AST Evaluation and Debugging 
+AST Evaluation & Debugging
 
 * [/serde](serde) - Serializer and Deserializer for AST.
 
@@ -12,3 +12,5 @@ val t = VarDecl(TypeRef("i32"), "x", IntVal(0))
 
 val errOrSer: Either[SerdeException, String] = ASTSerde.ast.serialize(t)
 ```
+
+NOTE: Serialization is performed without symbols, in this way if deserialized back, AST should be built again before evaluation.

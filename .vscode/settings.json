@@ -3,8 +3,11 @@
     "**/target": true
   },
   "cSpell.words": [
+    "bscript",
     "datetime",
+    "deserialization",
     "eval",
+    "Serde",
     "struct"
   ]
 }

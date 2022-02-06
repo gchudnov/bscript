@@ -10,6 +10,9 @@ import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
 
+// TODO: remove ASTSerializeState, make Unit -> JValue
+// TODO: remove evalType, promoteToType ?
+
 final class ASTSerializeVisitor extends TreeVisitor[ASTSerializeState, ASTSerializeState]:
 
   override def visit(s: ASTSerializeState, n: Init): Either[Throwable, ASTSerializeState] =
@@ -297,15 +300,15 @@ final class ASTSerializeVisitor extends TreeVisitor[ASTSerializeState, ASTSerial
 
   private def visitType(t: Type): Either[Throwable, JValue] =
     t match
-      case VectorType(elementType) =>
+      case x @ VectorType(elementType) =>
         for
           resolvedElementType <- visitType(elementType)
-          s1                   = ((Keys.kind -> "VectorType") ~ (Keys.elementType -> resolvedElementType))
+          s1                   = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.elementType -> resolvedElementType))
         yield s1
-      case DeclType(expr) =>
+      case x @ DeclType(expr) =>
         for
           resolvedExpr <- expr.visit(ASTSerializeState.empty, this).map(_.data)
-          s1            = ((Keys.kind -> "DeclType") ~ (Keys.expr -> resolvedExpr))
+          s1            = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.expr -> resolvedExpr))
         yield s1
       case _ =>
         Right(JString(t.name))
