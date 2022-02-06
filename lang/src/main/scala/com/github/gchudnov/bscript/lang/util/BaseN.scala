@@ -13,11 +13,10 @@ trait BaseN:
     def iterate(n: Long, ds: List[Char]): List[Char] =
       assert(n >= 0, s"'n' cannot be negative, got ${n}")
       if n == 0 then ds
-      else {
+      else
         // n > 0
         val d = lookup(n % base)
         iterate(n / base, d :: ds)
-      }
 
     val cs =
       if x == 0 then List(lookup(x))
@@ -30,10 +29,9 @@ trait BaseN:
     @tailrec
     def iterate(acc: Long, ds: List[Char]): Long =
       if ds.isEmpty then acc
-      else {
+      else
         val d :: tail = ds
         val n         = acc * base + reverseLookup(d)
         iterate(n, tail)
-      }
 
     iterate(0L, s.toList)

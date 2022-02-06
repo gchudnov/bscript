@@ -219,10 +219,12 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${arg0}.length
-                          |""".stripMargin
-        ))
+        for lines <- Right(
+                       split(
+                         s"""${arg0}.length
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -267,21 +269,23 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${argUnit}.trim.toLowerCase match {
-                          |  case `unitDays` =>
-                          |    ${argValue}.plusDays(${argOffset}.toLong)
-                          |  case `unitHours` =>
-                          |    ${argValue}.plusHours(${argOffset}.toLong)
-                          |  case `unitMinutes` =>
-                          |    ${argValue}.plusMinutes(${argOffset}.toLong)
-                          |  case `unitSeconds` =>
-                          |    ${argValue}.plusSeconds(${argOffset}.toLong)
-                          |  case other =>
-                          |    throw new RuntimeException(s"Unexpected unit of time was passed to offsetDateTime: $${${argUnit}}")
-                          |}
-                          |""".stripMargin
-        ))
+        for lines <- Right(
+                       split(
+                         s"""${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.plusDays(${argOffset}.toLong)
+                            |  case `unitHours` =>
+                            |    ${argValue}.plusHours(${argOffset}.toLong)
+                            |  case `unitMinutes` =>
+                            |    ${argValue}.plusMinutes(${argOffset}.toLong)
+                            |  case `unitSeconds` =>
+                            |    ${argValue}.plusSeconds(${argOffset}.toLong)
+                            |  case other =>
+                            |    throw new RuntimeException(s"Unexpected unit of time was passed to offsetDateTime: $${${argUnit}}")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -326,21 +330,23 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${argUnit}.trim.toLowerCase match {
-                          |  case `unitDays` =>
-                          |    ${argValue}.withDayOfMonth(${argOffset})
-                          |  case `unitHours` =>
-                          |    ${argValue}.withHour(${argOffset})
-                          |  case `unitMinutes` =>
-                          |    ${argValue}.withMinute(${argOffset})
-                          |  case `unitSeconds` =>
-                          |    ${argValue}.withSecond(${argOffset})
-                          |  case other =>
-                          |    throw new RuntimeException(s"Unexpected unit of time was passed to setDateTime: $${${argUnit}}")
-                          |}
-                          |""".stripMargin
-        ))
+        for lines <- Right(
+                       split(
+                         s"""${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.withDayOfMonth(${argOffset})
+                            |  case `unitHours` =>
+                            |    ${argValue}.withHour(${argOffset})
+                            |  case `unitMinutes` =>
+                            |    ${argValue}.withMinute(${argOffset})
+                            |  case `unitSeconds` =>
+                            |    ${argValue}.withSecond(${argOffset})
+                            |  case other =>
+                            |    throw new RuntimeException(s"Unexpected unit of time was passed to setDateTime: $${${argUnit}}")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -383,21 +389,23 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${argUnit}.trim.toLowerCase match {
-                          |  case `unitDays` =>
-                          |    ${argValue}.getDayOfMonth
-                          |  case `unitHours` =>
-                          |    ${argValue}.getHour
-                          |  case `unitMinutes` =>
-                          |    ${argValue}.getMinute
-                          |  case `unitSeconds` =>
-                          |    ${argValue}.getSecond
-                          |  case other =>
-                          |    throw new RuntimeException(s"Unexpected unit of time was passed to fieldOfDateTime: $${${argUnit}}")
-                          |}
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.getDayOfMonth
+                            |  case `unitHours` =>
+                            |    ${argValue}.getHour
+                            |  case `unitMinutes` =>
+                            |    ${argValue}.getMinute
+                            |  case `unitSeconds` =>
+                            |    ${argValue}.getSecond
+                            |  case other =>
+                            |    throw new RuntimeException(s"Unexpected unit of time was passed to fieldOfDateTime: $${${argUnit}}")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -430,14 +438,16 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${argX} match {
-                          |  case null => false
-                          |  case None => false
-                          |  case _ => true
-                          |}
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""${argX} match {
+                            |  case null => false
+                            |  case None => false
+                            |  case _ => true
+                            |}
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -470,14 +480,16 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""(${argX}, ${argY}) match {
-                          |  case (null, _) => ${argY}
-                          |  case (None, _) => ${argY}
-                          |  case _ => ${argX}
-                          |}
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""(${argX}, ${argY}) match {
+                            |  case (null, _) => ${argY}
+                            |  case (None, _) => ${argY}
+                            |  case _ => ${argX}
+                            |}
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -493,10 +505,12 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""LocalDate.now(ZoneId.of("Z"))
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""LocalDate.now(ZoneId.of("Z"))
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -512,10 +526,12 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""OffsetDateTime.now(ZoneId.of("Z"))
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""OffsetDateTime.now(ZoneId.of("Z"))
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -555,10 +571,12 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.HALF_UP)
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.HALF_UP)
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>
@@ -599,10 +617,12 @@ object Globals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case _: Scala2State =>
-        for lines <- Right(split(
-                       s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.DOWN)
-                          |""".stripMargin
-                     ))
+        for lines <- Right(
+                       split(
+                         s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.DOWN)
+                            |""".stripMargin
+                       )
+                     )
         yield Scala2State(lines = lines)
 
       case other =>

@@ -1,73 +1,69 @@
 package com.github.gchudnov.bscript.serde.internal
 
-import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor.ASTSerializeState
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.symbols.{DeclType, Symbol, Type, VectorType}
-import com.github.gchudnov.bscript.lang.util.{EqWrap, ShowOps, Transform}
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
+import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Symbol, Type, VectorType }
+import com.github.gchudnov.bscript.lang.util.Transform
+import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor.ASTSerializeState
+import com.github.gchudnov.bscript.serde.internal.Keys.*
+import org.json4s.*
+import org.json4s.JsonDSL.*
+import org.json4s.native.JsonMethods.*
 
-final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSerializeState]:
+final class ASTSerializeVisitor extends TreeVisitor[ASTSerializeState, ASTSerializeState]:
 
   override def visit(s: ASTSerializeState, n: Init): Either[Throwable, ASTSerializeState] =
     for
       iType         <- visitType(n.iType)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(s"""{
-                     |  "kind": "Init",
-                     |  "iType": ${iType}
-                     |  "evalType": ${evalType},
-                     |  "promoteToType": ${promoteToType}
-                     |}
-                     |""".stripMargin)
+      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> iType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
-  // TODO: use JSON library that can work with scala 3; TODO: add serde library, do not have this code in 'lang'
-
   override def visit(s: ASTSerializeState, n: UnaryMinus): Either[Throwable, ASTSerializeState] =
-    visitUnOp("UnaryMinus", n)
+    visitUnOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Add): Either[Throwable, ASTSerializeState] =
-    visitBinOp("Add", n)
+    visitBinOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Sub): Either[Throwable, ASTSerializeState] =
-    visitBinOp("Sub", n)
+    visitBinOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Mul): Either[Throwable, ASTSerializeState] =
-    visitBinOp("Mul", n)
+    visitBinOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Div): Either[Throwable, ASTSerializeState] =
-    visitBinOp("Div", n)
+    visitBinOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Mod): Either[Throwable, ASTSerializeState] =
-    visitBinOp("Mod", n)
+    visitBinOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Less): Either[Throwable, ASTSerializeState] =
-    visitRelOp("Less", n)
+    visitRelOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: LessEqual): Either[Throwable, ASTSerializeState] =
-    visitRelOp("LessEqual", n)
+    visitRelOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Greater): Either[Throwable, ASTSerializeState] =
-    visitRelOp("Greater", n)
+    visitRelOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: GreaterEqual): Either[Throwable, ASTSerializeState] =
-    visitRelOp("GreaterEqual", n)
+    visitRelOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Equal): Either[Throwable, ASTSerializeState] =
-    visitRelOp("Equal", n)
+    visitRelOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: NotEqual): Either[Throwable, ASTSerializeState] =
-    visitRelOp("NotEqual", n)
+    visitRelOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Not): Either[Throwable, ASTSerializeState] =
-    visitUnLogicOp("Not", n)
+    visitUnLogicOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: And): Either[Throwable, ASTSerializeState] =
-    visitLogicOp("And", n)
+    visitLogicOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Or): Either[Throwable, ASTSerializeState] =
-    visitLogicOp("Or", n)
+    visitLogicOp(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Assign): Either[Throwable, ASTSerializeState] =
     for
@@ -75,50 +71,41 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Assign",
-                 |  "id": ${id},
-                 |  "expr": ${expr},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: NothingVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("NothingVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: VoidVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("VoidVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: BoolVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("BoolVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: IntVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("IntVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: LongVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("LongVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: FloatVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("FloatVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: DoubleVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("DoubleVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: DecimalVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("DecimalVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: StrVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("StrVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: DateVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("DateVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: DateTimeVal): Either[Throwable, ASTSerializeState] =
-    visitConstVal("DateTimeVal", n)
+    visitConstVal(n.getClass.getSimpleName, n)
 
   override def visit(s: ASTSerializeState, n: Vec): Either[Throwable, ASTSerializeState] =
     for
@@ -126,16 +113,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       elementType   <- visitType(n.elementType)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Vec",
-                 |  "elements": [${ShowOps.joinVAll(",", elements.map(it => ShowOps.split(it)))}],
-                 |  "elementType": ${elementType},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.elements -> elements) ~ (Keys.elementType -> elementType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: Var): Either[Throwable, ASTSerializeState] =
@@ -143,15 +122,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Var",
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: ArgDecl): Either[Throwable, ASTSerializeState] =
@@ -161,17 +132,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "ArgDecl",
-                 |  "aType": ${aType},
-                 |  "name": ${name},
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> aType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: VarDecl): Either[Throwable, ASTSerializeState] =
@@ -182,18 +144,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "VarDecl",
-                 |  "vType": ${vType},
-                 |  "name": ${name},
-                 |  "expr": ${expr},
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> vType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: FieldDecl): Either[Throwable, ASTSerializeState] =
@@ -203,17 +155,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "ArgDecl",
-                 |  "fType": ${fType},
-                 |  "name": ${name},
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.xType -> fType) ~ (Keys.name -> name) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: MethodDecl): Either[Throwable, ASTSerializeState] =
@@ -225,19 +168,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "MethodDecl",
-                 |  "retType": ${retType},
-                 |  "name": "${name}",
-                 |  "params": [${ShowOps.joinVAll(",", params.map(it => ShowOps.split(it)))}],
-                 |  "body": ${body},
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.symbol -> symbol) ~ (Keys.body -> body) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: StructDecl): Either[Throwable, ASTSerializeState] =
@@ -247,17 +179,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "StructDecl",
-                 |  "name": "${name}",
-                 |  "fields": [${ShowOps.joinVAll(",", fields.map(it => ShowOps.split(it)))}],
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.name -> name) ~ (Keys.fields -> fields) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: Block): Either[Throwable, ASTSerializeState] =
@@ -266,16 +189,8 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       symbol        <- visitSymbol(n.symbol)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Block",
-                 |  "statements": [${ShowOps.joinVAll(",", statements.map(it => ShowOps.split(it)))}],
-                 |  "symbol": ${symbol},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.name -> name) ~ (Keys.statements -> statements) ~ (Keys.symbol -> symbol) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: Call): Either[Throwable, ASTSerializeState] =
@@ -284,36 +199,18 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       args          <- Transform.sequence(n.args.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Call",
-                 |  "id": ${id},
-                 |  "args": [${ShowOps.joinVAll(",", args.map(it => ShowOps.split(it)))}],
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.args -> args) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: If): Either[Throwable, ASTSerializeState] =
     for
       cond          <- n.cond.visit(ASTSerializeState.empty, this).map(_.data)
       then1         <- n.then1.visit(ASTSerializeState.empty, this).map(_.data)
-      else1         <- Transform.sequence(n.else1.map(_.visit(ASTSerializeState.empty, this).map(_.data))).map(_.getOrElse(ShowOps.CNull))
+      else1         <- Transform.sequence(n.else1.map(_.visit(ASTSerializeState.empty, this).map(_.data))).map(_.getOrElse(JNull))
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "If",
-                 |  "cond": ${cond},
-                 |  "then1": ${then1},
-                 |  "else1": ${else1},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1 =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.cond -> cond) ~ (Keys.then1 -> then1) ~ (Keys.else1 -> else1) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: Access): Either[Throwable, ASTSerializeState] =
@@ -322,16 +219,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       b             <- n.b.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Access",
-                 |  "a": ${a},
-                 |  "b": ${b},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.a -> a) ~ (Keys.b -> b) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   override def visit(s: ASTSerializeState, n: CompiledExpr): Either[Throwable, ASTSerializeState] =
@@ -339,16 +227,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       retType       <- visitType(n.retType)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "CompiledExpr",
-                 |  "callback": "N/A",
-                 |  "retType": ${retType},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitBinOp(name: String, n: BinOp): Either[Throwable, ASTSerializeState] =
@@ -357,16 +236,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "${name}",
-                 |  "lhs": ${lhs},
-                 |  "rhs": ${rhs},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitRelOp(name: String, n: RelOp): Either[Throwable, ASTSerializeState] =
@@ -375,16 +245,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "${name}",
-                 |  "lhs": ${lhs},
-                 |  "rhs": ${rhs},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitRelOp(name: String, n: EqOp): Either[Throwable, ASTSerializeState] =
@@ -393,16 +254,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "${name}",
-                 |  "lhs": ${lhs},
-                 |  "rhs": ${rhs},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitUnOp(name: String, n: UnOp): Either[Throwable, ASTSerializeState] =
@@ -410,13 +262,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(s"""{
-                     |  "kind": "${name}",
-                     |  "expr": ${expr},
-                     |  "evalType": ${evalType},
-                     |  "promoteToType": ${promoteToType}
-                     |}
-                     |""".stripMargin)
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitUnLogicOp(name: String, n: UnLogicOp): Either[Throwable, ASTSerializeState] =
@@ -424,13 +270,7 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(s"""{
-                     |  "kind": "${name}",
-                     |  "expr": ${expr},
-                     |  "evalType": ${evalType},
-                     |  "promoteToType": ${promoteToType}
-                     |}
-                     |""".stripMargin)
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitLogicOp(name: String, n: LogicOp): Either[Throwable, ASTSerializeState] =
@@ -439,85 +279,49 @@ final class ASTSerializeVisitor() extends TreeVisitor[ASTSerializeState, ASTSeri
       rhs           <- n.rhs.visit(ASTSerializeState.empty, this).map(_.data)
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "${name}",
-                 |  "lhs": ${lhs},
-                 |  "rhs": ${rhs},
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.lhs -> lhs) ~ (Keys.rhs -> rhs) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
   private def visitConstVal(name: String, n: ConstVal): Either[Throwable, ASTSerializeState] =
     for
       evalType      <- visitType(n.evalType)
       promoteToType <- visitOptType(n.promoteToType)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "${name}",
-                 |  "evalType": ${evalType},
-                 |  "promoteToType": ${promoteToType}
-                 |}
-                 |""".stripMargin
-            )
+      s1             = ((Keys.kind -> s"${name}") ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
     yield ASTSerializeState(data = s1)
 
-  private def visitSymbol(sym: Symbol): Either[Throwable, String] =
+  private def visitSymbol(sym: Symbol): Either[Throwable, JValue] =
     for
-      id   <- Right(System.identityHashCode(sym).toString)
       name <- Right(sym.name)
-      s1 <- Right(
-              s"""{
-                 |  "kind": "Symbol",
-                 |  "id": "${id}",
-                 |  "name": "${name}"
-                 |}
-                 |""".stripMargin
-            )
+      s1    = ((Keys.kind -> "Symbol") ~ (Keys.name -> name))
     yield s1
 
-  private def visitType(t: Type): Either[Throwable, String] =
+  private def visitType(t: Type): Either[Throwable, JValue] =
     t match
       case VectorType(elementType) =>
         for
           resolvedElementType <- visitType(elementType)
-          s1 <- Right(
-                  s"""{
-                     |  "kind": "VectorType",
-                     |  "elementType": ${resolvedElementType}
-                     |}
-                     |""".stripMargin
-                )
+          s1                   = ((Keys.kind -> "VectorType") ~ (Keys.elementType -> resolvedElementType))
         yield s1
       case DeclType(expr) =>
         for
           resolvedExpr <- expr.visit(ASTSerializeState.empty, this).map(_.data)
-          s1 <- Right(
-                  s"""{
-                     |  "kind": "DeclType",
-                     |  "expr": ${resolvedExpr}
-                     |}
-                     |""".stripMargin
-                )
+          s1            = ((Keys.kind -> "DeclType") ~ (Keys.expr -> resolvedExpr))
         yield s1
       case _ =>
-        Right(s""""${t.name}"""")
+        Right(JString(t.name))
 
-  private def visitOptType(ot: Option[Type]): Either[Throwable, String] =
-    Transform.sequence(ot.map(t => visitType(t))).map(_.getOrElse(ShowOps.CNull))
+  private def visitOptType(ot: Option[Type]): Either[Throwable, JValue] =
+    Transform.sequence(ot.map(t => visitType(t))).map(_.getOrElse(JNull))
 
 object ASTSerializeVisitor:
 
   def make(): ASTSerializeVisitor =
     new ASTSerializeVisitor()
 
-  final case class ASTSerializeState(data: String)
+  final case class ASTSerializeState(data: JValue)
 
   object ASTSerializeState:
-    val empty: ASTSerializeState = ASTSerializeState("")
+    val empty: ASTSerializeState = ASTSerializeState(JNothing)
 
     def make(): ASTSerializeState =
       ASTSerializeState.empty

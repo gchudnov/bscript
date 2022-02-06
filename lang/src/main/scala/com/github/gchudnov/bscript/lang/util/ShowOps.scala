@@ -2,8 +2,6 @@ package com.github.gchudnov.bscript.lang.util
 
 object ShowOps:
 
-  val CNull = "null"
-
   private val NL: String    = System.lineSeparator
   private val SPACE: String = " "
 
@@ -75,11 +73,10 @@ object ShowOps:
    */
   def padTail(n: Int, lines: Seq[String]): Seq[String] =
     if lines.isEmpty then Seq.empty[String]
-    else {
+    else
       val (head, tail) = (lines.head, lines.tail)
       val paddedTail   = padLines(n, tail)
       head +: paddedTail
-    }
 
   /**
    * Tabulate one line
@@ -248,13 +245,12 @@ object ShowOps:
   def join(sep: String, lhs: Seq[String], rhs: Seq[String]): Seq[String] =
     if lhs.isEmpty then rhs
     else if rhs.isEmpty then lhs
-    else {
+    else
       val lhsInit = lhs.init
       val joined  = lhs.last + sep + rhs.head
       val rhsTail = padLines((lhs.last + sep).length, rhs.tail)
 
       (lhsInit :+ joined) ++ rhsTail
-    }
 
   /**
    * Joins several arrays using the given separator
@@ -303,11 +299,10 @@ object ShowOps:
   def joinCR(sep: String, lhs: Seq[String], rhs: Seq[String]): Seq[String] =
     if lhs.isEmpty then rhs
     else if rhs.isEmpty then lhs
-    else {
+    else
       val lhsInit = lhs.init
       val joined  = lhs.last + sep + rhs.head
       (lhsInit :+ joined) ++ rhs.tail
-    }
 
   /**
    * Vertical Join

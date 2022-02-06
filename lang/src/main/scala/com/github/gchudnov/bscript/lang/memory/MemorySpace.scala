@@ -31,12 +31,11 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
 
     val parts = path.split
     if parts.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
-    else {
+    else
       val (h, tail) = (parts.head, parts.tail)
       get(h)
         .toRight(new MemoryException(s"Cannot find MemorySpace with variable '${h}'"))
         .flatMap(c => iterate(tail, c))
-    }
 
   def put(id: String, value: Cell): MemorySpace =
     MemorySpace(name, members + (id -> value), parent)
@@ -67,12 +66,11 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
 
     val parts = path.split
     if parts.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
-    else {
+    else
       val (h, tail) = (parts.head, parts.tail)
       get(h)
         .toRight(new MemoryException(s"Cannot find MemorySpace with variable '${h}'"))
         .flatMap(c => iterate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update MemorySpace with the updated cell ${uc} at '${h}'"))))
-    }
 
   def pop(): Either[Throwable, MemorySpace] =
     parent.toRight(new MemoryException(s"Cannot pop a memory space, getting a parent one."))
@@ -101,7 +99,7 @@ object MemorySpace:
 
     def iterate(ns: List[String], a: MemorySpace, b: MemorySpace): Either[Throwable, List[Diff.Change[String, Cell]]] =
       if a.name != b.name then Left(new MemoryException(s"Cannot calculate the diff between unrelated memory spaces '${a.name}' and '${b.name}'"))
-      else {
+      else
         val ns1 = ns :+ a.name
         val errOrParentDiff = (a.parent, b.parent) match
           case (Some(x), None) =>
@@ -114,7 +112,6 @@ object MemorySpace:
             Right(List.empty[Diff.Change[String, Cell]])
 
         errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(appendNamePrefix((ns :+ a.name).mkString(sep), _)))
-      }
 
     iterate(List.empty[String], before, after)
 

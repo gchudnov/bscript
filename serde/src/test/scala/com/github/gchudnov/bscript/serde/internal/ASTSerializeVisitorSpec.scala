@@ -1,16 +1,21 @@
-package com.github.gchudnov.bscript.serde
+package com.github.gchudnov.bscript.serde.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor
 import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor.ASTSerializeState
+import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
+import com.github.gchudnov.bscript.serde.{ Globals, TestSpec }
+import org.json4s.*
+import org.json4s.JsonDSL.*
+import org.json4s.native.JsonMethods.*
 
-final class SerializerSpec extends TestSpec:
+final class ASTSerializeVisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = Globals.typeNames
 
-  "Serialize" when {
+  "ASTSerializeVisitor" when {
     "AST is serialized" should {
       "represent struct program as a string" in {
         val t = Block(
@@ -28,11 +33,13 @@ final class SerializerSpec extends TestSpec:
           Access(Var(SymbolRef("a")), Var(SymbolRef("z")))
         )
 
+        val expected = resourceToString("data/struct-program-ast.json").toTry.get
+
         val errOrRes = eval(t)
         errOrRes match
           case Right(ASTSerializeState(data)) =>
-            print(data)
-//            data mustBe "123"
+            val actual = compact(render(data))
+            actual.mustBe(expected)
           case Left(t) =>
             fail("Should be 'right", t)
       }
