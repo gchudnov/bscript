@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.serde.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.{DeclType, Symbol, Type, TypeRef, VectorType}
 import com.github.gchudnov.bscript.lang.util.Transform
@@ -293,8 +294,13 @@ final class ASTDeserializeVisitor {
     } yield ast
   }
 
-  private def visitSymbol(value: JValue): Either[Throwable, Symbol] =
-    ???  
+  private def visitSymbol(s: JValue): Either[Throwable, Symbol] =
+    s match {
+      case JString(s) =>
+        Right(SymbolRef(s))
+      case _ =>
+        Left(new SerdeException("Cannot convert JValue to a Symbol"))
+    }  
 
   private def visitType(s: JValue): Either[Throwable, Type] = {
     s match {
@@ -316,21 +322,6 @@ final class ASTDeserializeVisitor {
         Left(new SerdeException("Cannot extract Type from JValue"))
     }
   }
-
-//  private def visitType(t: Type): Either[Throwable, JValue] =
-//    t match
-//      case x @ VectorType(elementType) =>
-//        for
-//          resolvedElementType <- visitType(elementType)
-//          s1                   = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.elementType -> resolvedElementType))
-//        yield s1
-//      case x @ DeclType(expr) =>
-//        for
-//          resolvedExpr <- expr.visit(ASTSerializeState.empty, this).map(_.data)
-//          s1            = ((Keys.kind -> x.getClass.getSimpleName) ~ (Keys.expr -> resolvedExpr))
-//        yield s1
-//      case _ =>
-//        Right(JString(t.name))
 
 }
 
