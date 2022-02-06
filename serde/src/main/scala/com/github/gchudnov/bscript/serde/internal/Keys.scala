@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.serde.internal
 
 object Keys:
   val kind: String          = "kind"
+  val value: String         = "value"
   val id: String            = "id"
   val name: String          = "name"
   val symbol: String        = "symbol"

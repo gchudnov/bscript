@@ -24,86 +24,110 @@ final class ASTDeserializeVisitor {
     yield Init(iType)
 
   private def visitUnaryMinus(s: JObject): Either[Throwable, UnaryMinus] =
-    ???
-//    visitUnOp(n.getClass.getSimpleName, n)
+    for {
+      expr <- visitAST(s \ Keys.expr).flatMap(_.asExpr)
+    } yield UnaryMinus(expr)
 
   private def visitAdd(s: JObject): Either[Throwable, Add] =
-    ???
-//    visitBinOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Add(lhs, rhs)
 
   private def visitSub(s: JObject): Either[Throwable, Sub] =
-    ???
-//    visitBinOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Sub(lhs, rhs)
 
   private def visitMul(s: JObject): Either[Throwable, Mul] =
-    ???
-//    visitBinOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Mul(lhs, rhs)
 
   private def visitDiv(s: JObject): Either[Throwable, Div] =
-    ???
-//    visitBinOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Div(lhs, rhs)
 
   private def visitMod(s: JObject): Either[Throwable, Mod] =
-    ???
-//    visitBinOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Mod(lhs, rhs)
 
   private def visitLess(s: JObject): Either[Throwable, Less] =
-    ???
-//    visitRelOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Less(lhs, rhs)
 
   private def visitLessEqual(s: JObject): Either[Throwable, LessEqual] =
-    ???
-//    visitRelOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield LessEqual(lhs, rhs)
 
   private def visitGreater(s: JObject): Either[Throwable, Greater] =
-    ???
-//    visitRelOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Greater(lhs, rhs)
 
   private def visitGreaterEqual(s: JObject): Either[Throwable, GreaterEqual] =
-    ???
-//    visitRelOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield GreaterEqual(lhs, rhs)
 
   private def visitEqual(s: JObject): Either[Throwable, Equal] =
-    ???
-//    visitRelOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Equal(lhs, rhs)
 
   private def visitNotEqual(s: JObject): Either[Throwable, NotEqual] =
-    ???
-    // visitRelOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield NotEqual(lhs, rhs)
 
   private def visitNot(s: JObject): Either[Throwable, Not] =
-    ???
-//    visitUnLogicOp(n.getClass.getSimpleName, n)
+    for {
+      expr <- visitAST(s \ Keys.expr).flatMap(_.asExpr)
+    } yield Not(expr)
 
   private def visitAnd(s: JObject): Either[Throwable, And] =
-    ???
-//    visitLogicOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield And(lhs, rhs)
 
   private def visitOr(s: JObject): Either[Throwable, Or] =
-    ???
-//    visitLogicOp(n.getClass.getSimpleName, n)
+    for {
+      lhs <- visitAST(s \ Keys.lhs).flatMap(_.asExpr)
+      rhs <- visitAST(s \ Keys.rhs).flatMap(_.asExpr)
+    } yield Or(lhs, rhs)
 
   private def visitAssign(s: JObject): Either[Throwable, Assign] =
-    ???
-//    for
-//      id            <- n.id.visit(ASTSerializeState.empty, this).map(_.data)
-//      expr          <- n.expr.visit(ASTSerializeState.empty, this).map(_.data)
-//      evalType      <- visitType(n.evalType)
-//      promoteToType <- visitOptType(n.promoteToType)
-//      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.id -> id) ~ (Keys.expr -> expr) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
-//    yield ASTSerializeState(data = s1)
+    for {
+      id <- visitAST(s \ Keys.id).flatMap(_.asLValue)
+      expr <- visitAST(s \ Keys.expr).flatMap(_.asExpr)
+    } yield Assign(id, expr)
 
   private def visitNothingVal(s: JObject): Either[Throwable, NothingVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    Right(NothingVal())
 
   private def visitVoidVal(s: JObject): Either[Throwable, VoidVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    Right(VoidVal())
 
   private def visitBoolVal(s: JObject): Either[Throwable, BoolVal] =
-    ???
-//    visitConstVal(n.getClass.getSimpleName, n)
+    for {
+      jStr <- (s \ Keys.value).asJString
+      value <- parseBool(jStr.s)
+    } yield BoolVal(value)
 
   private def visitIntVal(s: JObject): Either[Throwable, IntVal] =
     ???
@@ -288,6 +312,36 @@ final class ASTDeserializeVisitor {
           visitSub(o)
         case `mul` =>
           visitMul(o)
+        case `div` =>
+          visitDiv(o)
+        case `mod` =>
+          visitMod(o)
+        case `less` =>
+          visitLess(o)
+        case `lessEq` =>
+          visitLessEqual(o)
+        case `greater` =>
+          visitGreater(o)
+        case `greaterEq` =>
+          visitGreaterEqual(o)
+        case `equal` =>
+          visitEqual(o)
+        case `notEqual` =>
+          visitNotEqual(o)
+        case `not` =>
+          visitNot(o)
+        case `and` =>
+          visitAnd(o)
+        case `or` =>
+          visitOr(o)
+        case `assign` =>
+          visitAssign(o)
+        case `nothingVal` =>
+          visitNothingVal(o)
+        case `voidVal` =>
+          visitVoidVal(o)
+        case `boolVal` =>
+          visitBoolVal(o)
         case _ =>
           Left(new SerdeException("Cannot convert JValue to AST"))
       }
@@ -332,6 +386,23 @@ object ASTDeserializeVisitor {
   val add = Add.getClass.getSimpleName
   val sub = Sub.getClass.getSimpleName
   val mul = Mul.getClass.getSimpleName
+  val div = Div.getClass.getSimpleName
+  val mod = Mod.getClass.getSimpleName
+  val less = Less.getClass.getSimpleName
+  val lessEq = LessEqual.getClass.getSimpleName
+  val greater = Greater.getClass.getSimpleName
+  val greaterEq = GreaterEqual.getClass.getSimpleName
+  val equal = Equal.getClass.getSimpleName
+  val notEqual = NotEqual.getClass.getSimpleName
+  val not = Not.getClass.getSimpleName
+  val and = And.getClass.getSimpleName
+  val or = Or.getClass.getSimpleName
+  val assign = Assign.getClass.getSimpleName
+  val nothingVal = NothingVal.getClass.getSimpleName
+  val voidVal = VoidVal.getClass.getSimpleName
+  val boolVal = BoolVal.getClass.getSimpleName
+  val intVal = IntVal.getClass.getSimpleName
+  
   val vectorType = VectorType.getClass.getSimpleName
   val declType = DeclType.getClass.getSimpleName
 
@@ -356,4 +427,13 @@ object ASTDeserializeVisitor {
     }
   }
 
+  def parseBool(s: String): Either[Throwable, Boolean] =
+    s match {
+      case "true" =>
+        Right(true)
+      case "false" =>
+        Right(false)
+      case _ =>
+        Left(new SerdeException("Cannot parse Boolean"))
+    }
 }
