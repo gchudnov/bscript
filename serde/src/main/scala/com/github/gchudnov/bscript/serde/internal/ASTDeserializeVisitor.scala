@@ -16,6 +16,7 @@ import org.json4s.native.JsonMethods.*
 import scala.util.control.Exception.allCatch
 import java.time.LocalDate
 import java.time.OffsetDateTime
+import scala.collection.immutable.MapOps
 
 
 final class ASTDeserializeVisitor {
@@ -181,6 +182,7 @@ final class ASTDeserializeVisitor {
 
   private def visitVec(s: JObject): Either[Throwable, Vec] =
     ???
+    
 //    for
 //      elements      <- Transform.sequence(n.elements.map(n1 => n1.visit(ASTSerializeState.empty, this).map(_.data)))
 //      elementType   <- visitType(n.elementType)
@@ -315,70 +317,44 @@ final class ASTDeserializeVisitor {
 //      s1             = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.evalType -> evalType) ~ (Keys.promoteToType -> promoteToType))
 //    yield ASTSerializeState(data = s1)
 
+  private val m: Map[String, (JObject) => Either[Throwable, AST]] = 
+    Map(
+    init -> visitInit,
+    unaryMinus -> visitUnaryMinus,
+    add -> visitAdd,
+    sub -> visitSub,
+    mul -> visitMul,
+    div -> visitDiv,
+    mod -> visitMod,
+    less -> visitLess,
+    lessEq -> visitLessEqual,
+    greater -> visitGreater,
+    greaterEq -> visitGreaterEqual,
+    equal -> visitEqual,
+    notEqual -> visitNotEqual,
+    not -> visitNot,
+    and -> visitAnd,
+    or -> visitOr,
+    assign -> visitAssign,
+    nothingVal -> visitNothingVal,
+    voidVal -> visitVoidVal,
+    boolVal -> visitBoolVal,
+    intVal -> visitIntVal,
+    longVal -> visitLongVal,
+    floatVal -> visitFloatVal,
+    doubleVal -> visitDoubleVal,
+    decimalVal -> visitDecimalVal,
+    stringVal -> visitStrVal,
+    dateVal -> visitDateVal,
+    dateTimeVal -> visitDateTimeVal,
+    vec -> visitVec,
+    )
+
   private def visitAST(value: JValue): Either[Throwable, AST] = {
     for {
       o <- value.asJObject
       kind <- (o \ Keys.kind).asJString.map(_.s)
-      ast <- kind match {
-        case `init` =>
-          visitInit(o)
-        case `unaryMinus` =>
-          visitUnaryMinus(o)
-        case `add` =>
-          visitAdd(o)
-        case `sub` =>
-          visitSub(o)
-        case `mul` =>
-          visitMul(o)
-        case `div` =>
-          visitDiv(o)
-        case `mod` =>
-          visitMod(o)
-        case `less` =>
-          visitLess(o)
-        case `lessEq` =>
-          visitLessEqual(o)
-        case `greater` =>
-          visitGreater(o)
-        case `greaterEq` =>
-          visitGreaterEqual(o)
-        case `equal` =>
-          visitEqual(o)
-        case `notEqual` =>
-          visitNotEqual(o)
-        case `not` =>
-          visitNot(o)
-        case `and` =>
-          visitAnd(o)
-        case `or` =>
-          visitOr(o)
-        case `assign` =>
-          visitAssign(o)
-        case `nothingVal` =>
-          visitNothingVal(o)
-        case `voidVal` =>
-          visitVoidVal(o)
-        case `boolVal` =>
-          visitBoolVal(o)
-        case `intVal` =>
-          visitIntVal(o)
-        case `longVal` =>
-          visitLongVal(o)
-        case `floatVal` =>
-          visitFloatVal(o)
-        case `doubleVal` =>
-          visitDoubleVal(o)
-        case `decimalVal` =>
-          visitDecimalVal(o)
-        case `stringVal` =>
-          visitStrVal(o)
-        case `dateVal` =>
-          visitDateVal(o)
-        case `dateTimeVal` =>
-          visitDateTimeVal(o)
-        case _ =>
-          Left(new SerdeException("Cannot convert JValue to AST"))
-      }
+      ast <- m.get(kind).map(_(o)).getOrElse(Left(new Exception(s"Unknown AST kind: $kind")))
     } yield ast
   }
 
@@ -443,6 +419,7 @@ object ASTDeserializeVisitor {
   val stringVal = StrVal.getClass.getSimpleName
   val dateVal = DateVal.getClass.getSimpleName
   val dateTimeVal = DateTimeVal.getClass.getSimpleName
+  val vec = Vec.getClass.getSimpleName
   val vectorType = VectorType.getClass.getSimpleName
   val declType = DeclType.getClass.getSimpleName
 
