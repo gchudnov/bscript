@@ -1,15 +1,19 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.ScopeBuildVisitor.ScopeBuildState
+import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
+import com.github.gchudnov.bscript.builder.internal.MetaOps
+import com.github.gchudnov.bscript.builder.Globals
+import com.github.gchudnov.bscript.lang.ast.CompiledExpr
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.ResourceOps.resourceToString
+import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps
-import com.github.gchudnov.bscript.lang.util.TestOps.dehydrate
+import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitorSpec.dehydrate
 import com.github.gchudnov.bscript.lang.util.{ EqWrap, Gen, Transform }
-import com.github.gchudnov.bscript.lang.{ TestSpec, Topology }
+import com.github.gchudnov.bscript.builder.TestSpec
 
 /**
  * ScopeBuildVisitor tests
@@ -17,7 +21,7 @@ import com.github.gchudnov.bscript.lang.{ TestSpec, Topology }
 final class ScopeBuildVisitorSpec extends TestSpec:
   import ScopeBuildVisitorSpec.*
   import Meta.*
-  import SpecUtil.*
+  import MetaOps.*
 
   private val typeNames: TypeNames = Globals.typeNames
 
@@ -36,7 +40,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
             meta.show().contains("x") mustBe (true)
 
@@ -68,7 +72,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
             findSymbolScope(meta, "main").map(_.name) mustBe (Some("#global"))
 
@@ -100,7 +104,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.strType), "unit")
             ),
             Block(
-              CompiledExpr(callback = Globals.offsetDateTime, retType = TypeRef(typeNames.datetimeType))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
             )
           ),
           MethodDecl(
@@ -111,7 +115,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.strType), "unit")
             ),
             Block(
-              CompiledExpr(callback = Globals.fieldOfDateTime, retType = TypeRef(typeNames.i32Type))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
             )
           )
         )
@@ -119,7 +123,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val res      = resourceToString("data/scope-build-decl-2.json").toTry.get
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             // check that scope has the proper shape
             val actual   = dehydrate(meta.show())
             val expected = dehydrate(res)
@@ -153,7 +157,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             meta.astScopes.size mustBe (7)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -178,7 +182,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             meta.astScopes.size mustBe (7)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -208,7 +212,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.i32Type), "precision")
             ),
             Block(
-              CompiledExpr(callback = Globals.round, retType = DeclType(Var(SymbolRef("value"))))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
             )
           ),
           VarDecl(TypeRef(typeNames.f32Type), "x", FloatVal(12.3456f)),
@@ -219,7 +223,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             meta.astScopes.size mustBe (17)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -247,7 +251,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             meta.astScopes.size mustBe (9)
             findSymbolScope(meta, "i").map(_.name) mustBe (Some("#a"))
             findSymbolScope(meta, "j").map(_.name) mustBe (Some("#a"))
@@ -271,7 +275,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
           case Left(t) => fail("Should be 'right", t)
       }
@@ -291,7 +295,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
           case Left(t) => fail("Should be 'right", t)
       }
@@ -327,7 +331,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             val blockStatements = ast.asInstanceOf[Block].statements
             val callExpr        = blockStatements.last.asInstanceOf[Call]
             val zArg            = callExpr.args.last
@@ -382,7 +386,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
             findSymbolScope(meta, "y").map(_.name) mustBe (Some("#b"))
             findSymbolScope(meta, "j").map(_.name) mustBe (Some("#d"))
@@ -443,7 +447,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "b").map(_.name) mustBe (Some("A"))
             findSymbolScope(meta, "c").map(_.name) mustBe (Some("A"))
             findSymbolScope(meta, "x").map(_.name) mustBe (Some("A"))
@@ -509,7 +513,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "f").map(_.name) mustBe (Some("#a"))
             findSymbolScope(meta, "g").map(_.name) mustBe (Some("#a"))
             findSymbolScope(meta, "main").map(_.name) mustBe (Some("#a"))
@@ -524,7 +528,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
-  private def eval(ast0: AST): Either[Throwable, Topology] =
+  private def eval(ast0: AST): Either[Throwable, ScopeBuildVisitorState] =
     val (initMeta, rootScope) = Globals.make()
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
@@ -532,7 +536,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     ast0
       .visit(s1, v1)
       .flatMap { s11 =>
-        val t    = Topology(meta = s11.meta, ast = s11.ast)
+        val t    = ScopeBuildVisitorState(meta = s11.meta, ast = s11.ast)
         val ast1 = s11.ast
 
         // println(t.meta.show())
@@ -544,7 +548,13 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
 object ScopeBuildVisitorSpec:
 
-  def verifyDefined(t: Topology): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
+  final case class ScopeBuildVisitorState(ast: AST, meta: Meta)
+
+  def dehydrate(s: String): String =
+    s.replaceAll("\\s", "")
+
+
+  def verifyDefined(t: ScopeBuildVisitorState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 
     override def visit(s: String, n: Init): Either[Throwable, Unit] = for _ <- checkDefined(n, s"${s} -> Init")
     yield ()

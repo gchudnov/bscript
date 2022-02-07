@@ -1,51 +1,24 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.builder.internal
 
-import com.github.gchudnov.bscript.lang.ast.visitors.TypeCheckTables.*
+import com.github.gchudnov.bscript.builder.internal.TypeCheckTables.*
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 import com.github.gchudnov.bscript.lang.types.Types
 
-trait TypeCheckTables:
-  def commonTable: CommonResult
-  def additionTable: AdditionResult
-  def arithmeticTable: ArithmeticResult
-  def relationalTable: RelationalResult
-  def equalityTable: EqualityResult
-  def logicTable: LogicResult
-  def unaryArithmeticSet: UnaryArithmeticAllow
-  def unaryLogicSet: UnaryLogicAllow
-  def promoteFromToTable: PromoteFromTo
 
-object TypeCheckTables:
+final case class DefaultTypeCheckTables(
+  commonTable: CommonResult,
+  additionTable: AdditionResult,
+  arithmeticTable: ArithmeticResult,
+  relationalTable: RelationalResult,
+  equalityTable: EqualityResult,
+  logicTable: LogicResult,
+  unaryArithmeticSet: UnaryArithmeticAllow,
+  unaryLogicSet: UnaryLogicAllow,
+  promoteFromToTable: PromoteFromTo
+) extends TypeCheckTables
 
-  type TypeTable = Map[(Type, Type), Type] // (type -> type) -> type
-  type TypeSet   = Set[Type]
 
-  final case class CommonResult(tt: TypeTable)       extends AnyVal
-  final case class AdditionResult(tt: TypeTable)     extends AnyVal
-  final case class ArithmeticResult(tt: TypeTable)   extends AnyVal
-  final case class RelationalResult(tt: TypeTable)   extends AnyVal
-  final case class EqualityResult(tt: TypeTable)     extends AnyVal
-  final case class LogicResult(tt: TypeTable)        extends AnyVal
-  final case class UnaryArithmeticAllow(ts: TypeSet) extends AnyVal
-  final case class UnaryLogicAllow(ts: TypeSet)      extends AnyVal
-  final case class PromoteFromTo(tt: TypeTable)      extends AnyVal
-
-  object OpName:
-    val plus: String         = "+"
-    val minus: String        = "-"
-    val multiply: String     = "*"
-    val division: String     = "/"
-    val modulo: String       = "%"
-    val less: String         = "<"
-    val lessEqual: String    = "<="
-    val greater: String      = ">"
-    val greaterEqual: String = ">="
-    val equal: String        = "=="
-    val notEqual: String     = "!="
-    val not: String          = "!"
-    val and: String          = "&&"
-    val or: String           = "||"
-    val assign: String       = "="
+object DefaultTypeCheckTables:
 
   def make(types: Types): TypeCheckTables =
     val autoType: Symbol with Type     = types.autoType
@@ -273,15 +246,3 @@ object TypeCheckTables:
       unaryLogicSet = UnaryLogicAllow(unaryLogicTable),
       promoteFromToTable = PromoteFromTo(promoteFromToTable)
     )
-
-final case class DefaultTypeCheckTables(
-  commonTable: CommonResult,
-  additionTable: AdditionResult,
-  arithmeticTable: ArithmeticResult,
-  relationalTable: RelationalResult,
-  equalityTable: EqualityResult,
-  logicTable: LogicResult,
-  unaryArithmeticSet: UnaryArithmeticAllow,
-  unaryLogicSet: UnaryLogicAllow,
-  promoteFromToTable: PromoteFromTo
-) extends TypeCheckTables

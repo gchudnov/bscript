@@ -1,19 +1,25 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.ScopeBuildVisitor.ScopeBuildState
-import com.github.gchudnov.bscript.lang.ast.visitors.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.lang.ast.visitors.SpecUtil.{ findSMethodAST, typeNameForVarInScope }
-import com.github.gchudnov.bscript.lang.ast.visitors.TypeCheckVisitor.TypeCheckState
+import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
+import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
+import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
+import com.github.gchudnov.bscript.builder.Globals
+import com.github.gchudnov.bscript.lang.ast.CompiledExpr
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps
 import com.github.gchudnov.bscript.lang.util.{ Gen, Transform }
-import com.github.gchudnov.bscript.lang.{ TestSpec, Topology }
+import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.internal.MetaOps
+import com.github.gchudnov.bscript.builder.TestSpec
 
 final class TypeCheckVisitorSpec extends TestSpec:
   import TypeCheckVisitorSpec.*
+  import Meta.*
+  import MetaOps.*
 
   private val typeNames: TypeNames = Globals.typeNames
 
@@ -40,7 +46,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block    = ast.asInstanceOf[Block]
             val autoDecl = block.statements(0).asInstanceOf[VarDecl]
             val varDecl  = block.statements(1).asInstanceOf[VarDecl]
@@ -74,7 +80,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block    = ast.asInstanceOf[Block]
             val xVarDecl = block.statements(0).asInstanceOf[VarDecl]
             val yVarDecl = block.statements(1).asInstanceOf[VarDecl]
@@ -112,7 +118,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.i32Type), "precision")
             ),
             Block(
-              CompiledExpr(callback = Globals.round, retType = DeclType(Var(SymbolRef("value"))))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
             )
           ),
           VarDecl(TypeRef(typeNames.f32Type), "x", FloatVal(12.3456f)),
@@ -123,7 +129,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.f32Type))
             typeNameForVarInScope(meta)("p", "#a") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("z", "#a") mustBe (Right(typeNames.f32Type))
@@ -185,7 +191,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("a", "#b") mustBe (Right("A"))
             typeNameForVarInScope(meta)("b", "A") mustBe (Right("B"))
             typeNameForVarInScope(meta)("b", "#b") mustBe (Right(typeNames.boolType))
@@ -207,7 +213,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             ast.asInstanceOf[Add].evalType.name mustBe (typeNames.f64Type)
             ast.asInstanceOf[Add].promoteToType mustBe (None)
 
@@ -260,7 +266,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
 
             // promote to double
@@ -320,7 +326,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val unaryMinus = ast.asInstanceOf[UnaryMinus]
             unaryMinus.evalType.name mustBe (typeNames.i32Type)
             unaryMinus.promoteToType.map(_.name) mustBe (None)
@@ -357,7 +363,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val notExpr = ast.asInstanceOf[Not]
             notExpr.evalType.name mustBe (typeNames.boolType)
             notExpr.promoteToType.map(_.name) mustBe (None)
@@ -379,7 +385,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val andExpr = ast.asInstanceOf[And]
             andExpr.evalType.name mustBe (typeNames.boolType)
             andExpr.promoteToType.map(_.name) mustBe (None)
@@ -465,7 +471,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
             block.statements(1).asInstanceOf[Call].args(0).evalType.name mustBe (typeNames.i32Type)
             block.statements(1).asInstanceOf[Call].args(1).evalType.name mustBe (typeNames.f32Type)
@@ -530,7 +536,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
             block.statements(0).asInstanceOf[MethodDecl].body.statements(0).evalType.name mustBe (typeNames.f32Type)
 
@@ -555,7 +561,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block   = ast.asInstanceOf[Block]
             val varDecl = block.statements(0).asInstanceOf[VarDecl]
             varDecl.evalType.name mustBe (typeNames.voidType)
@@ -580,7 +586,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block      = ast.asInstanceOf[Block]
             val assignment = block.statements(1).asInstanceOf[Assign]
             assignment.evalType.name mustBe (typeNames.voidType)
@@ -622,7 +628,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block  = ast.asInstanceOf[Block]
             val intVal = block.statements(0).asInstanceOf[VarDecl].expr.asInstanceOf[IntVal]
             intVal.evalType.name mustBe (typeNames.i32Type)
@@ -707,7 +713,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             ast.asInstanceOf[If].evalType.name mustBe (typeNames.f64Type)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -755,7 +761,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             ast.asInstanceOf[Block].evalType.name mustBe (typeNames.i32Type)
           case Left(t) =>
             fail("Should be 'left", t)
@@ -776,7 +782,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             ast.asInstanceOf[Block].evalType.name mustBe (typeNames.voidType)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -801,7 +807,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             ast.asInstanceOf[Block].evalType.name mustBe (typeNames.f64Type)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -820,7 +826,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val t        = VarDecl(TypeRef(typeNames.autoType), "x", Add(IntVal(2), DoubleVal(3.0)))
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val varDecl = ast.asInstanceOf[VarDecl]
             varDecl.vType.name mustBe (typeNames.f64Type)
             varDecl.evalType.name mustBe (typeNames.voidType)
@@ -847,7 +853,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block    = ast.asInstanceOf[Block]
             val xVarDecl = block.statements(0).asInstanceOf[VarDecl]
             val yVarDecl = block.statements(1).asInstanceOf[VarDecl]
@@ -905,7 +911,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
             block.evalType.name mustBe (typeNames.voidType)
           case Left(t) =>
@@ -968,7 +974,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
             block.statements(0).asInstanceOf[VarDecl].expr.evalType.name mustBe (s"[]${typeNames.i32Type}")
           case Left(t) =>
@@ -990,7 +996,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
             block.statements(0).asInstanceOf[VarDecl].expr.evalType.name mustBe (s"[]${typeNames.f64Type}")
           case Left(t) =>
@@ -1045,7 +1051,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(TypeCheckVisitorState(ast, meta)) =>
             // f
             val (fMethod, _) = findSMethodAST(meta, "f").value
             meta.retTypeFor(fMethod).map(_.name).value mustBe (typeNames.voidType)
@@ -1071,7 +1077,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    *   - In Phase 3 we resolve types; after this phase all types (evalType, promoteToType) were resolved and we can evaluate the AST.
    */
-  private def eval(ast0: AST): Either[Throwable, Topology] =
+  private def eval(ast0: AST): Either[Throwable, TypeCheckVisitorState] =
     val (initMeta, rootScope) = Globals.make()
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
@@ -1102,7 +1108,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
                 ast2.visit(s3, v3)
               }
               .flatMap({ s31 =>
-                val t    = Topology(meta = s31.meta, ast = s31.ast)
+                val t    = TypeCheckVisitorState(meta = s31.meta, ast = s31.ast)
                 val ast3 = s31.ast
 
                 // println(t.meta.show())
@@ -1119,6 +1125,8 @@ final class TypeCheckVisitorSpec extends TestSpec:
       }
 
 object TypeCheckVisitorSpec:
+
+  final case class TypeCheckVisitorState(ast: AST, meta: Meta)
 
   def verifyTyped(): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 

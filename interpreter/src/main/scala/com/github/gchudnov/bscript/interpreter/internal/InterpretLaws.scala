@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.interpreter.internal
 
 import com.github.gchudnov.bscript.lang.calc.{ Arithmetic, BoolArithmetic, Initializer }
 import com.github.gchudnov.bscript.lang.memory.Comparator

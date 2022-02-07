@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.interpreter.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.InterpretVisitor.InterpretState

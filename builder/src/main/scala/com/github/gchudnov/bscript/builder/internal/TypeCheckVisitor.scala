@@ -1,8 +1,9 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.TypeCheckTables.*
-import com.github.gchudnov.bscript.lang.ast.visitors.TypeCheckVisitor.*
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
+import com.github.gchudnov.bscript.builder.internal.TypeCheckTables.*
+import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.types.Types
@@ -21,7 +22,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
  *
  * 1) In the first pass, the parser builds an AST.
  *
- * 2) In the second pass, a tree walker builds a scope tree and populates a symbol table.
+ * 2) In the second pass, a tree walSpecUtilker builds a scope tree and populates a symbol table.
  *
  * 3) is the third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
  */

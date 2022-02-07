@@ -1,20 +1,26 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.ScopeBuildVisitor.ScopeBuildState
-import com.github.gchudnov.bscript.lang.ast.visitors.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.lang.ast.visitors.SpecUtil.{ findMember, findMethodAst, findRetType, findSymbolScope, findType, typeNameForVarInScope }
+import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
+import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
+import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.internal.MetaOps
+import com.github.gchudnov.bscript.builder.Globals
+import com.github.gchudnov.bscript.lang.ast.CompiledExpr
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps
 import com.github.gchudnov.bscript.lang.util.{ EqWrap, Gen, Transform }
-import com.github.gchudnov.bscript.lang.{ TestSpec, Topology }
+import com.github.gchudnov.bscript.builder.TestSpec
 
 /**
  * ScopeBuildVisitor tests
  */
 final class ScopeResolveVisitorSpec extends TestSpec:
   import ScopeResolveVisitorSpec.*
+  import Meta.*
+  import MetaOps.*
 
   private val typeNames: TypeNames = Globals.typeNames
 
@@ -33,7 +39,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#global") mustBe (Right(typeNames.i32Type))
 
           case Left(t) => fail("Should be 'right", t)
@@ -57,7 +63,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
 
           case Left(t) => fail("Should be 'right", t)
@@ -88,7 +94,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
 
           case Left(t) => fail("Should be 'right", t)
@@ -116,7 +122,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
             typeNameForVarInScope(meta)("y", "#a") mustBe (Right("type:UNDEFINED")) // NOTE: it will be resolved later, in #3
 
@@ -142,7 +148,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("y", "#a") mustBe (Right("type:UNDEFINED")) // NOTE: it will be resolved later, in #3
 
@@ -173,7 +179,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.i32Type), "precision")
             ),
             Block(
-              CompiledExpr(callback = Globals.round, retType = DeclType(Var(SymbolRef("value"))))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
             )
           ),
           VarDecl(TypeRef(typeNames.f32Type), "x", FloatVal(12.3456f)),
@@ -184,7 +190,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.f32Type))
             typeNameForVarInScope(meta)("z", "#a") mustBe (Right(typeNames.autoType))
             typeNameForVarInScope(meta)("p", "#a") mustBe (Right(typeNames.i32Type))
@@ -211,7 +217,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
           case Left(t) => fail("Should be 'right", t)
       }
@@ -233,7 +239,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
           case Left(t) => fail("Should be 'right", t)
       }
@@ -257,7 +263,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("i", "#a") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("j", "#a") mustBe (Right(typeNames.f32Type))
             typeNameForVarInScope(meta)("k", "#a") mustBe (Right(typeNames.i32Type))
@@ -279,7 +285,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("a", "#a") mustBe (Right("[]int"))
           case Left(t) => fail("Should be 'right", t)
       }
@@ -309,7 +315,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("as", "#a") mustBe (Right("[][]int"))
           case Left(t) => fail("Should be 'right", t)
       }
@@ -342,7 +348,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("s", "#a") mustBe (Right(typeNames.autoType))
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
             typeNameForVarInScope(meta)("y", "#a") mustBe (Right(typeNames.autoType))
@@ -408,7 +414,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("i", "#e") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("j", "#d") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
@@ -580,7 +586,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("x", "f") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("y", "f") mustBe (Right(typeNames.f32Type))
           case Left(t) => fail("Should be 'right", t)
@@ -637,7 +643,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("a", "#a") mustBe (Right("A"))
             typeNameForVarInScope(meta)("b", "A") mustBe (Right("B"))
             typeNameForVarInScope(meta)("c", "A") mustBe (Right("C"))
@@ -682,7 +688,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("a", "#b") mustBe (Right("A"))
             typeNameForVarInScope(meta)("x", "A") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("y", "A") mustBe (Right(typeNames.f32Type))
@@ -755,7 +761,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("s", "#a") mustBe (Right(typeNames.autoType))
             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
             typeNameForVarInScope(meta)("y", "#a") mustBe (Right(typeNames.autoType))
@@ -787,7 +793,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("format", "printf") mustBe (Right(typeNames.strType))
             typeNameForVarInScope(meta)("value", "printf") mustBe (Right(typeNames.autoType))
 
@@ -811,14 +817,14 @@ final class ScopeResolveVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.strType), "unit")
             ),
             Block(
-              CompiledExpr(callback = Globals.offsetDateTime, retType = TypeRef(typeNames.datetimeType))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
             )
           )
         )
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("offset", "offsetDateTime") mustBe (Right(typeNames.i32Type))
             typeNameForVarInScope(meta)("unit", "offsetDateTime") mustBe (Right(typeNames.strType))
             typeNameForVarInScope(meta)("value", "offsetDateTime") mustBe (Right(typeNames.datetimeType))
@@ -846,7 +852,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.strType), "unit")
             ),
             Block(
-              CompiledExpr(callback = Globals.offsetDateTime, retType = TypeRef(typeNames.datetimeType))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
             )
           ),
           MethodDecl(
@@ -857,14 +863,14 @@ final class ScopeResolveVisitorSpec extends TestSpec:
               ArgDecl(TypeRef(typeNames.strType), "unit")
             ),
             Block(
-              CompiledExpr(callback = Globals.fieldOfDateTime, retType = TypeRef(typeNames.i32Type))
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
             )
           )
         )
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             val units          = meta.varTypes.filter(_._1.value.name == "unit").keys.toList
             val (unit1, unit2) = (units.head, units.last)
             units.size mustBe (2)
@@ -909,7 +915,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) => succeed
+          case Right(ScopeResolveVisitorState(ast, meta)) => succeed
           case Left(t)                    => fail("Should be 'right", t)
       }
     }
@@ -961,7 +967,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(Topology(ast, meta)) =>
+          case Right(ScopeResolveVisitorState(ast, meta)) =>
             findMethodAst(meta, "f").isDefined mustBe (true)
             findMethodAst(meta, "g").isDefined mustBe (true)
             findMethodAst(meta, "main").isDefined mustBe (true)
@@ -977,7 +983,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
-  private def eval(ast0: AST): Either[Throwable, Topology] =
+  private def eval(ast0: AST): Either[Throwable, ScopeResolveVisitorState] =
     val (initMeta, rootScope) = Globals.make()
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
@@ -992,7 +998,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
         ast1
           .visit(s2, v2)
           .flatMap { s21 =>
-            val t    = Topology(meta = s21.meta, ast = s21.ast)
+            val t    = ScopeResolveVisitorState(meta = s21.meta, ast = s21.ast)
             val ast2 = s21.ast
 
             // println(t.meta.show())
@@ -1007,8 +1013,11 @@ final class ScopeResolveVisitorSpec extends TestSpec:
       }
 
 object ScopeResolveVisitorSpec:
+  import MetaOps.*
 
-  def verifyResolved(t: Topology): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
+  final case class ScopeResolveVisitorState(ast: AST, meta: Meta)
+
+  def verifyResolved(t: ScopeResolveVisitorState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 
     override def visit(s: String, n: Init): Either[Throwable, Unit] = for _ <- checkType(n.iType, s"${s} -> Init(iType=${n.iType.name}")
     yield ()

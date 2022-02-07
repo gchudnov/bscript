@@ -1,7 +1,8 @@
-package com.github.gchudnov.bscript.lang.ast.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.ScopeBuildVisitor.{ ScopeBuildState, StateType }
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
+import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.{ ScopeBuildState, StateType }
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.util.{ Gen, Transform }
