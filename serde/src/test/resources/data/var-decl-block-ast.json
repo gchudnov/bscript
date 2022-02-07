@@ -1,0 +1,1 @@
+{"kind":"Block","statements":[{"kind":"VarDecl","type":"int","name":"x","expr":{"kind":"IntVal","value":"0"}}]}

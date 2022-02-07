@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.serde.internal
 
-object Keys:
+private[internal] object Keys:
   val kind: String        = "kind"
   val value: String       = "value"
   val id: String          = "id"

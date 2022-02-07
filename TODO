@@ -1,6 +1,3 @@
-= TODO: Load and Save AST
-- TODO: when AST is serialized, std methods should be skipped
-
 - TODO: visitor dir -> build, translate, etc.. (analyze)
 - TODO: add toolkit - builder, translator, serializer, deserializer
 - TODO: add b1

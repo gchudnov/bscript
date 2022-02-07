@@ -18,12 +18,29 @@ final class ASTSerdeSpec extends TestSpec:
 
         val expected = resourceToString("data/var-decl-ast.json").toTry.get
 
-        val errOrRes = ASTSerde.ast.serialize(t)
+        val serde    = ASTSerde.make()
+        val errOrRes = serde.serialize(t)
         errOrRes match
           case Right(actual) =>
             actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
-          case Left(t) => fail("Should be 'right", t)
+    "AST is deserialized" should {
+      "convert it back to AST" in {
+        val input = resourceToString("data/var-decl-ast.json").toTry.get
+
+        val expected = VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0))
+
+        val serde    = ASTSerde.make()
+        val errOrRes = serde.deserialize(input)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
     }
   }

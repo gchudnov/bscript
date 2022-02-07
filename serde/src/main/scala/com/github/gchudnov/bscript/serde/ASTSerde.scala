@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.serde.internal.{ ASTDeserializer, ASTSerializ
 
 sealed trait ASTSerde:
 
-  def ast: Serde[SerdeException, AST] =
+  def make(): Serde[SerdeException, AST] =
     Serde(new ASTDeserializer())(new ASTSerializer())
 
 object ASTSerde extends ASTSerde

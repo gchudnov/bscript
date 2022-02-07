@@ -20,3 +20,5 @@ object CompiledExpr:
 
   def apply(callback: Any => Either[Throwable, Any], retType: Type, evalType: Type): CompiledExpr =
     new CompiledExpr(callback = callback, retType = retType, evalType = evalType, promoteToType = None)
+
+  val idCallback: Any => Either[Throwable, Any] = (s: Any) => Right(s)

@@ -18,7 +18,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import scala.collection.immutable.MapOps
 
-final class ASTDeserializeVisitor:
+private[internal] final class ASTDeserializeVisitor:
 
   private def visitInit(s: JObject): Either[Throwable, Init] =
     for iType <- visitType(s \ Keys.xType)
@@ -358,7 +358,7 @@ final class ASTDeserializeVisitor:
       case _ =>
         Left(new SerdeException("Cannot extract Type from JValue"))
 
-object ASTDeserializeVisitor:
+private[internal] object ASTDeserializeVisitor:
 
   val initName        = classOf[Init].getSimpleName
   val unaryMinusName  = classOf[UnaryMinus].getSimpleName
