@@ -8,6 +8,7 @@
     "datetime",
     "deserialization",
     "eval",
+    "inmap",
     "Serde",
     "struct"
   ]

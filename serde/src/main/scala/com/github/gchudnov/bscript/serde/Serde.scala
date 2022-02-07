@@ -10,7 +10,7 @@ trait Serde[R <: Throwable, T] extends Deserializer[R, T] with Serializer[R, T]:
   def inmapM[R1 >: R <: Throwable, U](f: T => Either[R1, U])(g: U => Either[R1, T]): Serde[R1, U] =
     Serde(flatMap(f))(contramapM(g))
 
-object Serde extends Serdes:
+object Serde:
 
   def apply[R <: Throwable, T](des: (String) => Either[R, T])(ser: (T) => Either[R, String]): Serde[R, T] =
     new Serde[R, T]:

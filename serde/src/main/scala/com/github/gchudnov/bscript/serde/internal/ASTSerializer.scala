@@ -8,11 +8,11 @@ import org.json4s.native.JsonMethods.*
 
 final class ASTSerializer extends Serializer[SerdeException, AST]:
   override def serialize(value: AST): Either[SerdeException, String] =
-    val v1 = ASTSerializeVisitor.make()
-    val s1 = ()
+    val ser = ASTSerializeVisitor.make()
+    val s   = ()
 
     val errOrRes =
-      for jValue <- value.visit(s1, v1)
+      for jValue <- value.visit(s, ser)
       yield compact(render(jValue))
 
     errOrRes.left.map {

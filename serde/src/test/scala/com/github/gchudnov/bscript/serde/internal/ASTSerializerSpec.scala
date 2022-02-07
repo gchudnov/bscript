@@ -22,8 +22,8 @@ final class ASTSerializerSpec extends TestSpec:
         errOrRes match
           case Right(actual) =>
             actual mustBe (expected)
-
-          case Left(t) => fail("Should be 'right", t)
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
     }
   }

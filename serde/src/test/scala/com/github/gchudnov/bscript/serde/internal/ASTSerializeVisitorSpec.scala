@@ -4,7 +4,6 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor
-import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor.ASTSerializeState
 import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.serde.{ Globals, TestSpec }
 import org.json4s.*
@@ -37,8 +36,8 @@ final class ASTSerializeVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(ASTSerializeState(data)) =>
-            val actual = compact(render(data))
+          case Right(jValue) =>
+            val actual = compact(render(jValue))
             actual.mustBe(expected)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -46,7 +45,7 @@ final class ASTSerializeVisitorSpec extends TestSpec:
     }
   }
 
-  private def eval(ast0: AST): Either[Throwable, ASTSerializeState] =
+  private def eval(ast0: AST): Either[Throwable, JValue] =
     val v1 = ASTSerializeVisitor.make()
-    val s1 = ASTSerializeState.make()
+    val s1 = ()
     ast0.visit(s1, v1)

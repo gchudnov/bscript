@@ -1,1 +1,1 @@
-{"kind":"VarDecl","type":"int","name":"x","symbol":{"kind":"Symbol","name":"symbol:UNDEFINED"},"expr":{"kind":"IntVal","evalType":"type:UNDEFINED","promoteToType":null},"evalType":"type:UNDEFINED","promoteToType":null}
+{"kind":"VarDecl","type":"int","name":"x","expr":{"kind":"IntVal","value":"0"}}
