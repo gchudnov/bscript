@@ -33,6 +33,15 @@ object Dependencies {
     compile ++ test
   }
 
+  val Builder: Seq[ModuleID] = {
+    val compile = Seq(
+    )
+    val test = Seq(
+      scalatest
+    ) map (_ % "test")
+    compile ++ test
+  }
+
   val B1: Seq[ModuleID] = {
     val compile = Seq(
     )

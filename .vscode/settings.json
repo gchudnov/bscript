@@ -9,6 +9,7 @@
     "deserialization",
     "eval",
     "inmap",
+    "scalatest",
     "Serde",
     "struct"
   ]
