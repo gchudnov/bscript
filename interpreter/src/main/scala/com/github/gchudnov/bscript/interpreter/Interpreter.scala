@@ -1,5 +1,27 @@
 package com.github.gchudnov.bscript.interpreter
 
-sealed trait Interpreter {}
+import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.interpreter.memory.*
+import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor
+import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.lang.symbols.state.Meta
+
+sealed trait Interpreter:
+
+  /**
+   * Interprets AST.
+   *
+   * NOTE: AST must be built before the interpretation.
+   */
+  def interpret(ast1: AST, laws: InterpretLaws, meta: Meta): Either[Throwable, Cell] =
+    val globalMemoryName = "globals"
+    val ms               = MemorySpace(globalMemoryName)
+
+    val interpretVisitor = InterpretVisitor.make(laws)
+    val interpretState   = InterpretState.make(meta = meta, memSpace = ms, retValue = VoidCell)
+
+    ast1
+      .visit(interpretState, interpretVisitor)
+      .map(_.retValue)
 
 object Interpreter extends Interpreter

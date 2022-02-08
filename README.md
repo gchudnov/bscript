@@ -32,16 +32,33 @@ NOTE: nodes that contain `StdAnn` annotation are omitted from serialization.
 * [/builder](builder) - Processes AST to define symbols, resolve scopes and assign types. After building, AST can be interpreted.
 
 ```scala
-// TODO: impl it
+val typeNames: TypeNames         = ???
+val types: Types                 = Types.make(typeNames)
+val typeCheckLaws: TypeCheckLaws = ???
+
+val ast0 = Block(
+  VarDecl(TypeRef(typeNames.autoType), "x", IntVal(10)),
+  VarDecl(DeclType(Var(SymbolRef("x"))), "y", IntVal(20)),
+  Var(SymbolRef("y"))
+)
+
+val errOrRes: Either[Throwable, AstMeta] = Builder.build(ast0, types, typeCheckLaws)
 ```
 
 ### Interpreter
 
-* [/interpreter](interpreter) - TBD
+* [/interpreter](interpreter) - Interprets built AST.
+
+```scala
+val astMeta: AstMeta    = ???
+val laws: InterpretLaws = ???
+
+val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, laws, astMeta.meta)
+```
 
 ### Translator
 
-* [/translator](translator) - TBD
+* [/translator](translator) - Translates AST to the given programming language. At the moment only Scala is supported.
 
 ## Implementations
 

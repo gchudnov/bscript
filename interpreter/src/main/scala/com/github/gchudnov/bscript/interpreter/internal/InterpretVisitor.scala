@@ -335,7 +335,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpretLaws) extends T
   private def promote(cell: Cell, promoteToType: Option[Type]): Either[Throwable, Cell] =
     promoteToType.fold[Either[Throwable, Cell]](Right(cell))(t => typeCaster.cast(cell, t))
 
-object InterpretVisitor:
+private[interpreter] object InterpretVisitor:
 
   def make(laws: InterpretLaws): InterpretVisitor =
     new InterpretVisitor(laws)
