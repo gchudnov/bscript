@@ -427,4 +427,4 @@ final class MemorySpaceSpec extends TestSpec:
 
 object MemorySpaceSpec:
   def dehydrate(s: String): String =
-    s.replaceAll("\\s", "")  
+    s.replaceAll("\\s", "")

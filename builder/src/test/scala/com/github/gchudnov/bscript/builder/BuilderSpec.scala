@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.builder.internal.BTypeCheckLaws
+import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 
 final class BuilderSpec extends TestSpec:
   "Builder" when {

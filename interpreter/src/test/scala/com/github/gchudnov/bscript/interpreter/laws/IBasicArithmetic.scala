@@ -3,7 +3,6 @@ package com.github.gchudnov.bscript.interpreter.laws
 import com.github.gchudnov.bscript.interpreter.laws.Arithmetic
 import com.github.gchudnov.bscript.interpreter.memory.*
 
-
 final class IBasicArithmetic() extends Arithmetic:
 
   override def add(lhs: Cell, rhs: Cell): Either[Throwable, Cell] = (lhs, rhs) match

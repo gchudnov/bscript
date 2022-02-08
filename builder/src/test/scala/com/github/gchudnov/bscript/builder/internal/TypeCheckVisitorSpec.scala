@@ -5,6 +5,7 @@ import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuild
 import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
 import com.github.gchudnov.bscript.builder.BGlobals
+import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*

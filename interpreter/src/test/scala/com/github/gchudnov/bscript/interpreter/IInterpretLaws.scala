@@ -18,5 +18,5 @@ object IInterpretLaws:
     boolLaws = new IBasicBoolArithmetic(),
     cmpLaws = new IBasicComparator(),
     initLaws = new IBasicInitializer(types, meta),
-    typeCaster = new IBasicTypeCaster(types),
+    typeCaster = new IBasicTypeCaster(types)
   )

@@ -1,12 +1,12 @@
-package com.github.gchudnov.bscript.builder
+package com.github.gchudnov.bscript.interpreter
 
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
-import com.github.gchudnov.bscript.builder.BTypeCheckLaws.*
+import com.github.gchudnov.bscript.interpreter.ITypeCheckLaws.*
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 import com.github.gchudnov.bscript.lang.types.Types
 
-final case class BTypeCheckLaws(
+final case class ITypeCheckLaws(
   commonTable: CommonResult,
   additionTable: AdditionResult,
   arithmeticTable: ArithmeticResult,
@@ -18,7 +18,7 @@ final case class BTypeCheckLaws(
   promoteFromToTable: PromoteFromTo
 ) extends TypeCheckLaws
 
-object BTypeCheckLaws:
+object ITypeCheckLaws:
 
   def make(types: Types): TypeCheckLaws =
     val autoType: Symbol with Type     = types.autoType
@@ -235,7 +235,7 @@ object BTypeCheckLaws:
         (nothingType, datetimeType) -> datetimeType
       )
 
-    new BTypeCheckLaws(
+    new ITypeCheckLaws(
       commonTable = CommonResult(commonTable),
       additionTable = AdditionResult(additionTable),
       arithmeticTable = ArithmeticResult(arithmeticTable),
