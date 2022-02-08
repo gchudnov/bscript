@@ -1,5 +1,5 @@
-- TODO: visitor dir -> build, translate, etc.. (analyze)
-- TODO: add toolkit - builder, translator, serializer, deserializer
+- TODO: translater
+
 - TODO: add b1
 - TODO: add cli to eval AST
 - TODO: make public, release lib

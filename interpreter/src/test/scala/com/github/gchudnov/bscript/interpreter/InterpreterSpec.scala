@@ -27,7 +27,7 @@ final class InterpreterSpec extends TestSpec:
         val errOrRes = for
           astMeta <- Builder.build(ast0, types, typeCheckLaws)
           laws     = IInterpretLaws.make(types, astMeta.meta)
-          cell    <- Interpreter.interpret(astMeta.ast, laws, astMeta.meta)
+          cell    <- Interpreter.interpret(astMeta.ast, astMeta.meta, laws)
         yield cell
 
         errOrRes match

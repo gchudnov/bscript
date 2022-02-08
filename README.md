@@ -50,15 +50,18 @@ val errOrRes: Either[Throwable, AstMeta] = Builder.build(ast0, types, typeCheckL
 * [/interpreter](interpreter) - Interprets built AST.
 
 ```scala
-val astMeta: AstMeta    = ???
-val laws: InterpretLaws = ???
+val astMeta: AstMeta             = ???
+val interpretLaws: InterpretLaws = ???
 
-val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, laws, astMeta.meta)
+val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, astMeta.meta, interpretLaws)
 ```
 
 ### Translator
 
 * [/translator](translator) - Translates AST to the given programming language. At the moment only Scala is supported.
+
+```scala
+```
 
 ## Implementations
 
