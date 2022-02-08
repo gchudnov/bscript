@@ -1,16 +1,7 @@
-package com.github.gchudnov.bscript.lang.calc
+package com.github.gchudnov.bscript.interpreter.laws
 
-import com.github.gchudnov.bscript.lang.memory.*
-import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.lang.types.Types
 
-/**
- * Interface for Type Casting
- */
-trait TypeCaster:
-  def cast(value: Cell, toType: Type): Either[MemoryException, Cell]
-
-final class BuiltInTypeCaster(types: Types) extends TypeCaster:
+final class IBuiltInTypeCaster(types: Types) extends TypeCaster:
 
   private val autoTypeName: String     = types.autoType.name
   private val voidTypeName: String     = types.voidType.name

@@ -11,15 +11,9 @@ package com.github.gchudnov.bscript.interpreter.internal
 // import com.github.gchudnov.bscript.lang.util.Gen
 import com.github.gchudnov.bscript.interpreter.TestSpec
 
-// TODO: incorporate it:
-// laws = InterpretLaws(
-//         mathLaws = new BuiltInArithmetic(),
-//         boolLaws = new BuiltInBoolArithmetic(),
-//         cmpLaws = new BuiltInComparator(),
-//         initLaws = new BasicInitializer(types, meta)
-//       )
-
 // import java.time.{ LocalDate, OffsetDateTime }
+
+//       typeCaster = new BuiltInTypeCaster(types),
 
 final class InterpretVisitorSpec extends TestSpec:
 

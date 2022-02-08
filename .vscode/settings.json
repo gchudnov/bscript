@@ -9,8 +9,10 @@
     "deserialization",
     "eval",
     "inmap",
+    "Minuser",
     "scalatest",
     "Serde",
-    "struct"
+    "struct",
+    "Subtractor"
   ]
 }

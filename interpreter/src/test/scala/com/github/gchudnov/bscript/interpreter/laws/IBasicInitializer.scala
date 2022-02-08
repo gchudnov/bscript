@@ -1,15 +1,13 @@
-package com.github.gchudnov.bscript.lang.calc
+package com.github.gchudnov.bscript.interpreter.laws
 
-import com.github.gchudnov.bscript.lang.memory.*
+import com.github.gchudnov.bscript.interpreter.laws.Initializer
+import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Transform
 
-trait Initializer:
-  def init(toType: Type): Either[MemoryException, Cell]
-
-final class BasicInitializer(types: Types, meta: Meta) extends Initializer:
+final class IBasicInitializer(types: Types, meta: Meta) extends Initializer:
 
   private val voidTypeName: String = types.voidType.name
   private val boolTypeName: String = types.boolType.name

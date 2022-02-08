@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.memory
+package com.github.gchudnov.bscript.interpreter.memory
 
 object Diff:
 
