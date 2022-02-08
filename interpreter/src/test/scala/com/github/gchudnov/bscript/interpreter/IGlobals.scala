@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.interpreter
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
-import com.github.gchudnov.bscript.lang.memory.*
+import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames

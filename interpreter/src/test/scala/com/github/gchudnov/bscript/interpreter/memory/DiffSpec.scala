@@ -1,6 +1,6 @@
-package com.github.gchudnov.bscript.lang.memory
+package com.github.gchudnov.bscript.interpreter.memory
 
-import com.github.gchudnov.bscript.lang.TestSpec
+import com.github.gchudnov.bscript.interpreter.TestSpec
 
 final class DiffSpec extends TestSpec:
   import Diff.*

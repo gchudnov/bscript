@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.interpreter.laws.BoolArithmetic
 import com.github.gchudnov.bscript.interpreter.memory.*
 
 
-final class IBuiltInBoolArithmetic() extends BoolArithmetic:
+final class IBasicBoolArithmetic() extends BoolArithmetic:
   
   override def not(value: Cell): Either[Throwable, Cell] = value match
     case BoolCell(x) => Right(BoolCell(!x))

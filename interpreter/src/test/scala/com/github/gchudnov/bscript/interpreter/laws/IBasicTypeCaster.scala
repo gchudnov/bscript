@@ -1,7 +1,10 @@
 package com.github.gchudnov.bscript.interpreter.laws
 
+import com.github.gchudnov.bscript.interpreter.memory.*
+import com.github.gchudnov.bscript.lang.types.Types
+import com.github.gchudnov.bscript.lang.symbols.Type
 
-final class IBuiltInTypeCaster(types: Types) extends TypeCaster:
+final class IBasicTypeCaster(types: Types) extends TypeCaster:
 
   private val autoTypeName: String     = types.autoType.name
   private val voidTypeName: String     = types.voidType.name

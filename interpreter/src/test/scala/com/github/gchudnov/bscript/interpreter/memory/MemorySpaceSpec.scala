@@ -1,11 +1,12 @@
-package com.github.gchudnov.bscript.lang.memory
+package com.github.gchudnov.bscript.interpreter.memory
 
-import com.github.gchudnov.bscript.lang.TestSpec
-import com.github.gchudnov.bscript.lang.util.ResourceOps.resourceToString
+import com.github.gchudnov.bscript.interpreter.TestSpec
+import com.github.gchudnov.bscript.interpreter.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps
-import com.github.gchudnov.bscript.lang.util.TestOps.dehydrate
+import com.github.gchudnov.bscript.interpreter.memory.*
 
 final class MemorySpaceSpec extends TestSpec:
+  import MemorySpaceSpec.*
 
   "MemorySpace" when {
 
@@ -423,3 +424,7 @@ final class MemorySpaceSpec extends TestSpec:
       }
     }
   }
+
+object MemorySpaceSpec:
+  def dehydrate(s: String): String =
+    s.replaceAll("\\s", "")  

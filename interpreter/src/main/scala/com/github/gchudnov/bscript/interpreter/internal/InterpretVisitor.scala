@@ -26,7 +26,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
  *
  * During execution, though, we still need scope information to resolve symbols.
  */
-final class InterpretVisitor(laws: InterpretLaws) extends TreeVisitor[InterpretState, InterpretState]:
+private[interpreter] final class InterpretVisitor(laws: InterpretLaws) extends TreeVisitor[InterpretState, InterpretState]:
   import InterpretVisitor.*
   import com.github.gchudnov.bscript.lang.types.VisitorOps.*
 
