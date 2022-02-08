@@ -48,6 +48,13 @@ final case class ScopeTree(vertices: Set[EqWrap[Scope]], edges: Map[EqWrap[Scope
   def get(name: String): Option[Scope] =
     vertices.find(_.value.name == name).map(_.value)
 
+  /**
+   * Get the root only if one node is present
+   */
+  def root: Option[Scope] =
+    if vertices.size == 1 then vertices.headOption.map(_.value)
+    else None
+
 object ScopeTree:
   val empty: ScopeTree =
     ScopeTree(

@@ -64,7 +64,7 @@ import com.github.gchudnov.bscript.lang.util.{ Gen, Transform }
  *
  * NOTE: in the {{{ScopeBuildState]}}} it is *very* important that *different* instances of the same case class with the same value are different. It affects symbol resolution.
  */
-final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuildState, ScopeBuildState]:
+private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuildState, ScopeBuildState]:
   import com.github.gchudnov.bscript.lang.types.VisitorOps.*
 
   override def visit(s: ScopeBuildState, n: Init): Either[Throwable, ScopeBuildState] =
@@ -453,7 +453,7 @@ final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuildState, ScopeBuildS
       case _ =>
         Right(StateType(s, t))
 
-object ScopeBuildVisitor:
+private[builder] object ScopeBuildVisitor:
 
   def make(): ScopeBuildVisitor =
     new ScopeBuildVisitor()

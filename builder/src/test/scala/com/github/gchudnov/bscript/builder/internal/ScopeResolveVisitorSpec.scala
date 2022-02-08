@@ -916,7 +916,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(ScopeResolveVisitorState(ast, meta)) => succeed
-          case Left(t)                    => fail("Should be 'right", t)
+          case Left(t)                                    => fail("Should be 'right", t)
       }
     }
 
@@ -991,7 +991,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
     ast0
       .visit(s1, v1)
       .flatMap { s11 =>
-        val v2   = ScopeResolveVisitor.make(typeNames)
+        val v2   = ScopeResolveVisitor.make()
         val s2   = ScopeResolveState.make(s11.ast, s11.meta)
         val ast1 = s11.ast
 

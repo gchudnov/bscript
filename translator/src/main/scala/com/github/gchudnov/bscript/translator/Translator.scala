@@ -1,7 +1,5 @@
 package com.github.gchudnov.bscript.translator
 
-trait Translator {
-
-}
+trait Translator {}
 
 object Translator extends Translator

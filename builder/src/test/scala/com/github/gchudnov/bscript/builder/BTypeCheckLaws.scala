@@ -6,7 +6,6 @@ import com.github.gchudnov.bscript.builder.internal.BTypeCheckLaws.*
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 import com.github.gchudnov.bscript.lang.types.Types
 
-
 final case class BTypeCheckLaws(
   commonTable: CommonResult,
   additionTable: AdditionResult,
@@ -18,7 +17,6 @@ final case class BTypeCheckLaws(
   unaryLogicSet: UnaryLogicAllow,
   promoteFromToTable: PromoteFromTo
 ) extends TypeCheckLaws
-
 
 object BTypeCheckLaws:
 

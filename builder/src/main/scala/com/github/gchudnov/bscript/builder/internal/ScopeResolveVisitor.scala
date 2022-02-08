@@ -5,7 +5,6 @@ import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
-import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Transform
 
 /**
@@ -63,7 +62,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
  * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or postorder position. We push as we descend and pop as we
  * ascend. When we see a symbol, we define or resolve it in the current scope.
  */
-final class ScopeResolveVisitor(typeNames: TypeNames) extends TreeVisitor[ScopeResolveState, ScopeResolveState]:
+private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeResolveState, ScopeResolveState]:
   import ScopeResolveVisitor.*
   import com.github.gchudnov.bscript.lang.types.VisitorOps.*
 
@@ -481,10 +480,10 @@ final class ScopeResolveVisitor(typeNames: TypeNames) extends TreeVisitor[ScopeR
       case _ =>
         s.meta.resolve(t.name, scope).flatMap(_.asType).map(t => StateType(s, t))
 
-object ScopeResolveVisitor:
+private[builder] object ScopeResolveVisitor:
 
-  def make(typeNames: TypeNames): ScopeResolveVisitor =
-    new ScopeResolveVisitor(typeNames)
+  def make(): ScopeResolveVisitor =
+    new ScopeResolveVisitor()
 
   final case class ScopeResolveState(
     ast: AST,

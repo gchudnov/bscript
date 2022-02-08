@@ -1,67 +1,48 @@
 package com.github.gchudnov.bscript.lang.types
 
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
-import com.github.gchudnov.bscript.lang.symbols.{ ScopeStateException, Symbol, Type }
-import com.github.gchudnov.bscript.lang.util.Transform
+import com.github.gchudnov.bscript.lang.symbols.SBuiltInType
 
 sealed trait Types:
-  def autoType: Symbol with Type
-  def nothingType: Symbol with Type
-  def voidType: Symbol with Type
-  def boolType: Symbol with Type
-  def i32Type: Symbol with Type
-  def i64Type: Symbol with Type
-  def f32Type: Symbol with Type
-  def f64Type: Symbol with Type
-  def decType: Symbol with Type // decimal
-  def strType: Symbol with Type
-  def dateType: Symbol with Type
-  def datetimeType: Symbol with Type
+  def autoType: SBuiltInType
+  def nothingType: SBuiltInType
+  def voidType: SBuiltInType
+  def boolType: SBuiltInType
+  def i32Type: SBuiltInType
+  def i64Type: SBuiltInType
+  def f32Type: SBuiltInType
+  def f64Type: SBuiltInType
+  def decType: SBuiltInType
+  def strType: SBuiltInType
+  def dateType: SBuiltInType
+  def datetimeType: SBuiltInType
 
 object Types:
   import VisitorOps.*
 
-  def make(meta: Meta, typeNames: TypeNames): Either[Throwable, Types] =
-    for
-      types <- Transform.sequence(
-                 TypeNames
-                   .listAll(typeNames)
-                   .map { typeName =>
-                     // NOTE: symbolScopes should not contain duplicate names listed in in `typeNames`.
-                     meta.symbolScopes
-                       .find(_._1.value.name == typeName)
-                       .toRight(new ScopeStateException(s"Cannot find Symbol ${typeName} in ScopeState"))
-                       .map(_._1.value)
-                       .flatMap(_.asType)
-                       .map(t => (typeName, t))
-                   }
-               )
-      typeMap               = types.toMap
-      resolvedAutoType     <- nameToType(typeMap, typeNames.autoType)
-      resolvedNothingType  <- nameToType(typeMap, typeNames.nothingType)
-      resolvedVoidType     <- nameToType(typeMap, typeNames.voidType)
-      resolvedBoolType     <- nameToType(typeMap, typeNames.boolType)
-      resolvedI32Type      <- nameToType(typeMap, typeNames.i32Type)
-      resolvedI64Type      <- nameToType(typeMap, typeNames.i64Type)
-      resolvedF32Type      <- nameToType(typeMap, typeNames.f32Type)
-      resolvedF64Type      <- nameToType(typeMap, typeNames.f64Type)
-      resolvedDecType      <- nameToType(typeMap, typeNames.decType)
-      resolvedStrType      <- nameToType(typeMap, typeNames.strType)
-      resolvedDateType     <- nameToType(typeMap, typeNames.dateType)
-      resolvedDatetimeType <- nameToType(typeMap, typeNames.datetimeType)
-    yield new Types:
-      override def autoType: Symbol with Type     = resolvedAutoType
-      override def nothingType: Symbol with Type  = resolvedNothingType
-      override def voidType: Symbol with Type     = resolvedVoidType
-      override def boolType: Symbol with Type     = resolvedBoolType
-      override def i32Type: Symbol with Type      = resolvedI32Type
-      override def i64Type: Symbol with Type      = resolvedI64Type
-      override def f32Type: Symbol with Type      = resolvedF32Type
-      override def f64Type: Symbol with Type      = resolvedF64Type
-      override def decType: Symbol with Type      = resolvedDecType
-      override def strType: Symbol with Type      = resolvedStrType
-      override def dateType: Symbol with Type     = resolvedDateType
-      override def datetimeType: Symbol with Type = resolvedDatetimeType
+  def make(typeNames: TypeNames): Types =
+    val sAutoType     = SBuiltInType(typeNames.autoType)
+    val sNothingType  = SBuiltInType(typeNames.nothingType)
+    val sVoidType     = SBuiltInType(typeNames.voidType)
+    val sBoolType     = SBuiltInType(typeNames.boolType)
+    val sI32Type      = SBuiltInType(typeNames.i32Type)
+    val sI64Type      = SBuiltInType(typeNames.i64Type)
+    val sF32Type      = SBuiltInType(typeNames.f32Type)
+    val sF64Type      = SBuiltInType(typeNames.f64Type)
+    val sDecType      = SBuiltInType(typeNames.decType)
+    val sStrType      = SBuiltInType(typeNames.strType)
+    val sDateType     = SBuiltInType(typeNames.dateType)
+    val sDatetimeType = SBuiltInType(typeNames.datetimeType)
 
-  private def nameToType(typeMap: Map[String, Symbol with Type], name: String): Either[Throwable, Symbol with Type] =
-    typeMap.get(name).toRight(new ScopeStateException(s"Type ${name} is not found in TypeMap."))
+    new Types:
+      override def autoType: SBuiltInType     = sAutoType
+      override def nothingType: SBuiltInType  = sNothingType
+      override def voidType: SBuiltInType     = sVoidType
+      override def boolType: SBuiltInType     = sBoolType
+      override def i32Type: SBuiltInType      = sI32Type
+      override def i64Type: SBuiltInType      = sI64Type
+      override def f32Type: SBuiltInType      = sF32Type
+      override def f64Type: SBuiltInType      = sF64Type
+      override def decType: SBuiltInType      = sDecType
+      override def strType: SBuiltInType      = sStrType
+      override def dateType: SBuiltInType     = sDateType
+      override def datetimeType: SBuiltInType = sDatetimeType

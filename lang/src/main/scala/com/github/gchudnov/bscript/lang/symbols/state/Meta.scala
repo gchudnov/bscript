@@ -3,6 +3,8 @@ package com.github.gchudnov.bscript.lang.symbols.state
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SBuiltInType, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef }
 import com.github.gchudnov.bscript.lang.util.{ EqWrap, Show, Transform }
+import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.types.Types
 
 /**
  * Metadata - Scope & Symbol State
@@ -314,6 +316,7 @@ final case class Meta(
     newVarTypes
 
 object Meta:
+
   val empty: Meta =
     Meta(
       scopeTree = ScopeTree.empty,
@@ -325,6 +328,24 @@ object Meta:
       astScopes = Map.empty[EqWrap[AST], Scope],
       varTypes = Map.empty[EqWrap[SVar], Type]
     )
+
+  def init(types: Types): Meta =
+    val g = SBlock("#global")
+    val m = Meta.empty
+      .defineBlock(g)
+      .defineBuiltInType(types.autoType, g)
+      .defineBuiltInType(types.nothingType, g)
+      .defineBuiltInType(types.voidType, g)
+      .defineBuiltInType(types.boolType, g)
+      .defineBuiltInType(types.i32Type, g)
+      .defineBuiltInType(types.i64Type, g)
+      .defineBuiltInType(types.f32Type, g)
+      .defineBuiltInType(types.f64Type, g)
+      .defineBuiltInType(types.decType, g)
+      .defineBuiltInType(types.strType, g)
+      .defineBuiltInType(types.dateType, g)
+      .defineBuiltInType(types.datetimeType, g)
+    m
 
   implicit val metaShow: Show[Meta] = new Show[Meta]:
     import ScopeTree.*

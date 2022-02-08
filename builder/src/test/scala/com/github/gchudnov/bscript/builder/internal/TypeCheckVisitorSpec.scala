@@ -22,6 +22,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
   import MetaOps.*
 
   private val typeNames: TypeNames = BGlobals.typeNames
+  private val types: Types         = Types.make(typeNames)
 
   "TypeCheckVisitor" when {
 
@@ -1085,7 +1086,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
     ast0
       .visit(s1, v1)
       .flatMap { s11 =>
-        val v2   = ScopeResolveVisitor.make(typeNames)
+        val v2   = ScopeResolveVisitor.make()
         val s2   = ScopeResolveState.make(s11.ast, s11.meta)
         val ast1 = s11.ast
 
@@ -1098,15 +1099,12 @@ final class TypeCheckVisitorSpec extends TestSpec:
             // { AST->Scope } size must be the same before and after Phase #2
             s11.meta.astScopes.size mustEqual (s21.meta.astScopes.size)
 
-            Types
-              .make(ss2, typeNames)
-              .flatMap { types =>
-                val typeCheckLaws = BTypeCheckLaws.make(types)
+            val typeCheckLaws = BTypeCheckLaws.make(types)
 
-                val v3 = TypeCheckVisitor.make(types, typeCheckLaws)
-                val s3 = TypeCheckState.make(ast2, s21.meta)
-                ast2.visit(s3, v3)
-              }
+            val v3 = TypeCheckVisitor.make(types, typeCheckLaws)
+            val s3 = TypeCheckState.make(ast2, s21.meta)
+            ast2
+              .visit(s3, v3)
               .flatMap({ s31 =>
                 val t    = TypeCheckVisitorState(meta = s31.meta, ast = s31.ast)
                 val ast3 = s31.ast

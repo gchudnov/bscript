@@ -553,7 +553,6 @@ object ScopeBuildVisitorSpec:
   def dehydrate(s: String): String =
     s.replaceAll("\\s", "")
 
-
   def verifyDefined(t: ScopeBuildVisitorState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 
     override def visit(s: String, n: Init): Either[Throwable, Unit] = for _ <- checkDefined(n, s"${s} -> Init")

@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.interpreter
 
-final class InterpreterSpec extends TestSpec {
+final class InterpreterSpec extends TestSpec:
   "Interpreter" when {
     "a program is interpreted" should {
       "produce the result" in {
@@ -8,4 +8,3 @@ final class InterpreterSpec extends TestSpec {
       }
     }
   }
-}

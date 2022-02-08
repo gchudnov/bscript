@@ -9,8 +9,7 @@ package com.github.gchudnov.bscript.interpreter.internal
 // import com.github.gchudnov.bscript.lang.symbols.*
 // import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 // import com.github.gchudnov.bscript.lang.util.Gen
-import com.github.gchudnov.bscript.interpreter.{ TestSpec }
-
+import com.github.gchudnov.bscript.interpreter.TestSpec
 
 // TODO: incorporate it:
 // laws = InterpretLaws(
@@ -19,7 +18,6 @@ import com.github.gchudnov.bscript.interpreter.{ TestSpec }
 //         cmpLaws = new BuiltInComparator(),
 //         initLaws = new BasicInitializer(types, meta)
 //       )
-
 
 // import java.time.{ LocalDate, OffsetDateTime }
 

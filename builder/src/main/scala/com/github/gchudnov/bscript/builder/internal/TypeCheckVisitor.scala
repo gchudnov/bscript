@@ -27,7 +27,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
  *
  * 3) is the third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
  */
-final class TypeCheckVisitor(
+private[internal] final class TypeCheckVisitor(
   types: Types,
   typeCheckLaws: TypeCheckLaws
 ) extends TreeVisitor[TypeCheckState, TypeCheckState]:
@@ -640,7 +640,7 @@ final class TypeCheckVisitor(
       case _ =>
         Right(StateType(s, t))
 
-object TypeCheckVisitor:
+private[builder] object TypeCheckVisitor:
 
   def make(types: Types, typeCheckLaws: TypeCheckLaws): TypeCheckVisitor =
     new TypeCheckVisitor(types, typeCheckLaws)

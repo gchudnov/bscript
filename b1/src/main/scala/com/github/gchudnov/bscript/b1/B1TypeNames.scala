@@ -1,5 +1,3 @@
 package com.github.gchudnov.bscript.b1
 
-class B1Types {
-  
-}
+class B1Types {}

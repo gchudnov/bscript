@@ -10,7 +10,7 @@ package com.github.gchudnov.bscript.translator.scala2
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.translator.TGlobals
 // import com.github.gchudnov.bscript.lang.util.Gen
-import com.github.gchudnov.bscript.translator.{ TestSpec }
+import com.github.gchudnov.bscript.translator.TestSpec
 
 final class Scala2VisitorSpec extends TestSpec:
 

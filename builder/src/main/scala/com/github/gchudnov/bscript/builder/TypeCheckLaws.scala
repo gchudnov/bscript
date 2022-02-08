@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
-import com.github.gchudnov.bscript.lang.symbols.{ Type }
+import com.github.gchudnov.bscript.lang.symbols.Type
 
 /**
  * A collection of tables that define rules for type checking
@@ -16,7 +16,6 @@ trait TypeCheckLaws:
   def unaryArithmeticSet: UnaryArithmeticAllow
   def unaryLogicSet: UnaryLogicAllow
   def promoteFromToTable: PromoteFromTo
-
 
 object TypeCheckLaws:
 
