@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Symbol, Type, TypeRe
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.serde.SerdeException
 import com.github.gchudnov.bscript.serde.internal.Keys.*
-import com.github.gchudnov.bscript.serde.internal.ASTDeserializeVisitor.*
+import com.github.gchudnov.bscript.serde.internal.JSONDeserializeVisitor.*
 import com.github.gchudnov.bscript.lang.types.VisitorOps.*
 import org.json4s.*
 import org.json4s.JsonDSL.*
@@ -18,7 +18,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import scala.collection.immutable.MapOps
 
-private[internal] final class ASTDeserializeVisitor:
+private[internal] final class JSONDeserializeVisitor:
 
   private def visitInit(s: JObject): Either[Throwable, Init] =
     for iType <- visitType(s \ Keys.xType)
@@ -358,7 +358,7 @@ private[internal] final class ASTDeserializeVisitor:
       case _ =>
         Left(new SerdeException("Cannot extract Type from JValue"))
 
-private[internal] object ASTDeserializeVisitor:
+private[internal] object JSONDeserializeVisitor:
 
   val initName        = classOf[Init].getSimpleName
   val unaryMinusName  = classOf[UnaryMinus].getSimpleName
@@ -403,8 +403,8 @@ private[internal] object ASTDeserializeVisitor:
   val declTypeName    = classOf[DeclType].getSimpleName
   val comExprName     = classOf[CompiledExpr].getSimpleName
 
-  def make(): ASTDeserializeVisitor =
-    new ASTDeserializeVisitor()
+  def make(): JSONDeserializeVisitor =
+    new JSONDeserializeVisitor()
 
   implicit class JValueOps(value: JValue):
 

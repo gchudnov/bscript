@@ -10,9 +10,9 @@ import org.json4s.native.JsonMethods.*
 
 import scala.util.control.Exception.allCatch
 
-private[serde] final class ASTDeserializer extends Deserializer[SerdeException, AST]:
+private[serde] final class JSONDeserializer extends Deserializer[SerdeException, AST]:
   override def deserialize(data: String): Either[SerdeException, AST] =
-    val de = ASTDeserializeVisitor.make()
+    val de = JSONDeserializeVisitor.make()
 
     val errOrAst = for
       jValue <- allCatch.either(parse(data))

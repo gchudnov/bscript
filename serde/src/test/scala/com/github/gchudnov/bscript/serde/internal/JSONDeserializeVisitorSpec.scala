@@ -3,21 +3,24 @@ package com.github.gchudnov.bscript.serde.internal
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
-import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor
 import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.serde.{ SGlobals, TestSpec }
 import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
 
-final class ASTSerializeVisitorSpec extends TestSpec:
+import scala.util.control.Exception.allCatch
+
+final class JSONDeserializeVisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = SGlobals.typeNames
 
-  "ASTSerializeVisitor" when {
-    "AST is serialized" should {
-      "represent struct program as a string" in {
-        val t = Block(
+  "JSONDeserializeVisitor" when {
+    "AST is deserialized" should {
+      "convert struct back to AST if the input is valid" in {
+        val input = resourceToString("data/struct-program-ast.json").toTry.get
+
+        val expected = Block(
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.i64Type), "z"), FieldDecl(TypeRef("B"), "b"))),
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
@@ -32,20 +35,21 @@ final class ASTSerializeVisitorSpec extends TestSpec:
           Access(Var(SymbolRef("a")), Var(SymbolRef("z")))
         )
 
-        val expected = resourceToString("data/struct-program-ast.json").toTry.get
-
-        val errOrRes = eval(t)
+        val errOrRes = eval(input)
         errOrRes match
-          case Right(jValue) =>
-            val actual = compact(render(jValue))
+          case Right(actual) =>
             actual.mustBe(expected)
           case Left(t) =>
+            print(t)
             fail("Should be 'right", t)
       }
     }
   }
 
-  private def eval(ast0: AST): Either[Throwable, JValue] =
-    val v1 = ASTSerializeVisitor.make()
-    val s1 = ()
-    ast0.visit(s1, v1)
+  private def eval(input: String): Either[Throwable, AST] =
+    val v1 = JSONDeserializeVisitor.make()
+
+    for
+      jValue <- allCatch.either(parse(input))
+      ast    <- v1.visitAST(jValue)
+    yield ast

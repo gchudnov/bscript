@@ -10,9 +10,9 @@ AST Evaluation & Debugging
 
 ```scala
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.serde.ASTSerde
+import com.github.gchudnov.bscript.serde.JSONSerde
 
-val serde = ASTSerde.make()
+val serde = JSONSerde.make()
 
 // Serialize
 val t = VarDecl(TypeRef("int"), "x", IntVal(0))

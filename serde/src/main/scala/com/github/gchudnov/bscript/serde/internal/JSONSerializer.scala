@@ -6,10 +6,10 @@ import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
 
-private[serde] final class ASTSerializer extends Serializer[SerdeException, AST]:
+private[serde] final class JSONSerializer extends Serializer[SerdeException, AST]:
   override def serialize(value: AST): Either[SerdeException, String] =
     val keeper = KeepASTVisitor.make(KeepASTVisitor.hasNoStdAnn)
-    val ser    = ASTSerializeVisitor.make()
+    val ser    = JSONSerializeVisitor.make()
     val s      = ()
 
     val errOrRes =

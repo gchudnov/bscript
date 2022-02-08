@@ -9,7 +9,7 @@ import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
 
-private[internal] final class ASTSerializeVisitor extends TreeVisitor[Unit, JValue]:
+private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JValue]:
 
   override def visit(s: Unit, n: Init): Either[Throwable, JValue] =
     for
@@ -293,7 +293,7 @@ private[internal] final class ASTSerializeVisitor extends TreeVisitor[Unit, JVal
   private def visitOptType(ot: Option[Type]): Either[Throwable, JValue] =
     Transform.sequence(ot.map(t => visitType(t))).map(_.getOrElse(JNull))
 
-private[internal] object ASTSerializeVisitor:
+private[internal] object JSONSerializeVisitor:
 
-  def make(): ASTSerializeVisitor =
-    new ASTSerializeVisitor()
+  def make(): JSONSerializeVisitor =
+    new JSONSerializeVisitor()
