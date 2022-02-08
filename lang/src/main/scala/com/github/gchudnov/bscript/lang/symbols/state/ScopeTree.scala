@@ -42,6 +42,12 @@ final case class ScopeTree(vertices: Set[EqWrap[Scope]], edges: Map[EqWrap[Scope
     val newEdges    = edges - EqWrap(from) ++ edges.get(EqWrap(from)).fold(Map.empty[EqWrap[Scope], Scope])(parent => Map(EqWrap(to) -> parent))
     this.copy(vertices = newVertices, edges = newEdges)
 
+  /**
+   * Get the scope by its name
+   */
+  def get(name: String): Option[Scope] =
+    vertices.find(_.value.name == name).map(_.value)
+
 object ScopeTree:
   val empty: ScopeTree =
     ScopeTree(
@@ -84,25 +90,3 @@ object ScopeTree:
 
     private def listStr(xs: List[String]): String =
       xs.mkString("[", ",", "]")
-
-/*
-///////////////////////
-
-// child -> several parents
-
-// set of vertices and map that points from children to parents!
-type Graph[A] = (Set[A], Map[A, Set[A]])
-
-def update[A](graph: Graph[A], before: A, now: A): Graph[A] = {
-  val (vertices, edges) = graph
-  val newV    = vertices - before + now
-  val parents = edges.getOrElse(before, Set.empty)
-  val newE    = if (parents.isEmpty) edges else edges - before + (now -> parents)
-  (newV, newE)
-}
-
-val g1 = Set("Tom", "Susi", "Chuck") -> Map("Tom" -> Set("Susi", "Chuck"))
-val g2 = update(g1, "Tom", "Tommy")
-
-//////////////////////////
- */
