@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
-import com.github.gchudnov.bscript.builder.Globals
+import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -21,7 +21,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
   import Meta.*
   import MetaOps.*
 
-  private val typeNames: TypeNames = Globals.typeNames
+  private val typeNames: TypeNames = BGlobals.typeNames
 
   "TypeCheckVisitor" when {
 
@@ -1078,7 +1078,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
    *   - In Phase 3 we resolve types; after this phase all types (evalType, promoteToType) were resolved and we can evaluate the AST.
    */
   private def eval(ast0: AST): Either[Throwable, TypeCheckVisitorState] =
-    val (initMeta, rootScope) = Globals.make()
+    val (initMeta, rootScope) = BGlobals.make()
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
 
@@ -1101,9 +1101,9 @@ final class TypeCheckVisitorSpec extends TestSpec:
             Types
               .make(ss2, typeNames)
               .flatMap { types =>
-                val typeCheckTables = TypeCheckTables.make(types)
+                val typeCheckLaws = BTypeCheckLaws.make(types)
 
-                val v3 = TypeCheckVisitor.make(types, typeCheckTables)
+                val v3 = TypeCheckVisitor.make(types, typeCheckLaws)
                 val s3 = TypeCheckState.make(ast2, s21.meta)
                 ast2.visit(s3, v3)
               }

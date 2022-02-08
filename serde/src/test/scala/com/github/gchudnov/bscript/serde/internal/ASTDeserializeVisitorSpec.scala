@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.serde.internal.ASTSerializeVisitor
 import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
-import com.github.gchudnov.bscript.serde.{ Globals, TestSpec }
+import com.github.gchudnov.bscript.serde.{ SGlobals, TestSpec }
 import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
@@ -14,7 +14,7 @@ import scala.util.control.Exception.allCatch
 
 final class ASTDeserializeVisitorSpec extends TestSpec:
 
-  private val typeNames: TypeNames = Globals.typeNames
+  private val typeNames: TypeNames = SGlobals.typeNames
 
   "ASTDeserializeVisitor" when {
     "AST is deserialized" should {

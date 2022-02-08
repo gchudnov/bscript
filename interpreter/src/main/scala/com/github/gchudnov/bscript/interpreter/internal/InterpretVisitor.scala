@@ -1,7 +1,9 @@
 package com.github.gchudnov.bscript.interpreter.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.interpreter.InterpretLaws
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.calc.*
 import com.github.gchudnov.bscript.lang.memory.*
 import com.github.gchudnov.bscript.lang.symbols.Type
@@ -337,15 +339,10 @@ final class InterpretVisitor(
 
 object InterpretVisitor:
 
-  def make(types: Types, meta: Meta): InterpretVisitor =
+  def make(types: Types, laws: InterpretLaws, meta: Meta): InterpretVisitor =
     new InterpretVisitor(
       typeCaster = new BuiltInTypeCaster(types),
-      laws = InterpretLaws(
-        mathLaws = new BuiltInArithmetic(),
-        boolLaws = new BuiltInBoolArithmetic(),
-        cmpLaws = new BuiltInComparator(),
-        initLaws = new BasicInitializer(types, meta)
-      )
+      laws = laws
     )
 
   final case class InterpretState(meta: Meta, memSpace: MemorySpace, retValue: Cell)

@@ -44,32 +44,40 @@ lazy val interpreter = (project in file("interpreter"))
     libraryDependencies ++= Dependencies.Interpreter
   )
 
-lazy val b1 = (project in file("b1"))
+lazy val translator = (project in file("translator"))
   .dependsOn(lang)
+  .settings(allSettings: _*)
+  .settings(
+    name := "translator",
+    libraryDependencies ++= Dependencies.Translator
+  )
+
+lazy val b1 = (project in file("b1"))
+  .dependsOn(lang, builder, interpreter, translator)
   .settings(allSettings: _*)
   .settings(
     name := "b1",
     libraryDependencies ++= Dependencies.B1
   )
 
-lazy val cli = (project in file("cli"))
+lazy val b1Cli = (project in file("b1-cli"))
   .enablePlugins(BuildInfoPlugin)
-  .dependsOn(lang, b1)
+  .dependsOn(b1)
   .settings(allSettings: _*)
   .settings(Settings.assemblySettings)
   .settings(
-    name := "cli",
-    libraryDependencies ++= Dependencies.Cli,
+    name := "b1-cli",
+    libraryDependencies ++= Dependencies.B1Cli,
     buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage              := "com.github.gchudnov.bscript",
-    assembly / mainClass          := Some("com.github.gchudnov.bscript.Main"),
+    buildInfoPackage              := "com.github.gchudnov.bscript.b1",
+    assembly / mainClass          := Some("com.github.gchudnov.bscript.b1.Main"),
     assembly / assemblyOption     := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = false))),
     assembly / assemblyOutputPath := new File(s"./target/${name.value}.jar"),
     assembly / assemblyJarName    := s"${name.value}"
   )
 
 lazy val root = (project in file("."))
-  .aggregate(lang, serde, builder, interpreter, b1, cli)
+  .aggregate(lang, serde, builder, interpreter, translator, b1, b1Cli)
   .settings(allSettings: _*)
   .settings(
     name := "bscript"
@@ -78,5 +86,5 @@ lazy val root = (project in file("."))
 addCommandAlias("fmt", "all scalafmtSbt scalafmt test:scalafmt")
 addCommandAlias("chk", "all scalafmtSbtCheck scalafmtCheck test:scalafmtCheck")
 addCommandAlias("plg", "; reload plugins ; libraryDependencies ; reload return")
-// NOTE: to use version check for plugins, add to the meta-project (/project/proect) sbt-updates.sbt with "sbt-updates" plugin as well.
+// NOTE: to use version check for plugins, add to the meta-project (/project/project) sbt-updates.sbt with "sbt-updates" plugin as well.
 addCommandAlias("upd", ";dependencyUpdates; reload plugins; dependencyUpdates; reload return")

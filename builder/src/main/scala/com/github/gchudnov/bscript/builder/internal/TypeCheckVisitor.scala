@@ -2,7 +2,8 @@ package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
-import com.github.gchudnov.bscript.builder.internal.TypeCheckTables.*
+import com.github.gchudnov.bscript.builder.TypeCheckLaws
+import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
@@ -28,20 +29,20 @@ import com.github.gchudnov.bscript.lang.util.Transform
  */
 final class TypeCheckVisitor(
   types: Types,
-  typeCheckTables: TypeCheckTables
+  typeCheckLaws: TypeCheckLaws
 ) extends TreeVisitor[TypeCheckState, TypeCheckState]:
   import TypeCheckVisitor.*
   import com.github.gchudnov.bscript.lang.types.VisitorOps.*
 
-  private val commonTable: CommonResult                = typeCheckTables.commonTable
-  private val additionTable: AdditionResult            = typeCheckTables.additionTable
-  private val arithmeticTable: ArithmeticResult        = typeCheckTables.arithmeticTable
-  private val relationalTable: RelationalResult        = typeCheckTables.relationalTable
-  private val equalityTable: EqualityResult            = typeCheckTables.equalityTable
-  private val logicTable: LogicResult                  = typeCheckTables.logicTable
-  private val unaryArithmeticSet: UnaryArithmeticAllow = typeCheckTables.unaryArithmeticSet
-  private val unaryLogicSet: UnaryLogicAllow           = typeCheckTables.unaryLogicSet
-  private val promoteFromToTable: PromoteFromTo        = typeCheckTables.promoteFromToTable
+  private val commonTable: CommonResult                = typeCheckLaws.commonTable
+  private val additionTable: AdditionResult            = typeCheckLaws.additionTable
+  private val arithmeticTable: ArithmeticResult        = typeCheckLaws.arithmeticTable
+  private val relationalTable: RelationalResult        = typeCheckLaws.relationalTable
+  private val equalityTable: EqualityResult            = typeCheckLaws.equalityTable
+  private val logicTable: LogicResult                  = typeCheckLaws.logicTable
+  private val unaryArithmeticSet: UnaryArithmeticAllow = typeCheckLaws.unaryArithmeticSet
+  private val unaryLogicSet: UnaryLogicAllow           = typeCheckLaws.unaryLogicSet
+  private val promoteFromToTable: PromoteFromTo        = typeCheckLaws.promoteFromToTable
 
   override def visit(s: TypeCheckState, n: Init): Either[Throwable, TypeCheckState] =
     for
@@ -641,8 +642,8 @@ final class TypeCheckVisitor(
 
 object TypeCheckVisitor:
 
-  def make(types: Types, typeCheckTables: TypeCheckTables): TypeCheckVisitor =
-    new TypeCheckVisitor(types, typeCheckTables)
+  def make(types: Types, typeCheckLaws: TypeCheckLaws): TypeCheckVisitor =
+    new TypeCheckVisitor(types, typeCheckLaws)
 
   final case class TypeCheckState(
     ast: AST,

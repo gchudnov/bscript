@@ -2,7 +2,7 @@
 
 AST Evaluation & Debugging
 
-## Components
+## Modules
 
 ### Serde
 
@@ -35,11 +35,20 @@ NOTE: nodes that contain `StdAnn` annotation are omitted from serialization.
 // TODO: impl it
 ```
 
+### Interpreter
+
+* [/interpreter](interpreter) - TBD
+
 ### Translator
 
 * [/translator](translator) - TBD
 
-### Interpreter
+## Implementations
 
-* [/interpreter])(interpreter) - TBD
+### B1
 
+* [/b1](b1) - Library that implements laws for B1 Language. Depends on `serde`, `builder`, `interpreter` and `translator` modules.
+
+### B1-CLI
+
+* [/b1-cli](b1-cli) - Command-Line Utility for B1 Language.

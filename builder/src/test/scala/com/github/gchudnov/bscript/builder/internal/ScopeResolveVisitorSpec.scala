@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuild
 import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.builder.internal.MetaOps
-import com.github.gchudnov.bscript.builder.Globals
+import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -22,7 +22,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
   import Meta.*
   import MetaOps.*
 
-  private val typeNames: TypeNames = Globals.typeNames
+  private val typeNames: TypeNames = BGlobals.typeNames
 
   "ScopeResolveVisitor" when {
 
@@ -508,7 +508,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
        * }}}
        */
       "report an error if Var in Call is not visible with several nested scopes" in {
-        val t = Globals.prelude ++ Block(
+        val t = BGlobals.prelude ++ Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
           VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(0)),
           MethodDecl(
@@ -902,7 +902,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
        * NOTE: we need this test to make sure that everything in prelude resolves.
        */
       "be resolved with compiled statements" in {
-        val t = Globals.prelude ++ Block(
+        val t = BGlobals.prelude ++ Block(
           MethodDecl(
             TypeRef(typeNames.voidType),
             "f",
@@ -984,7 +984,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
   private def eval(ast0: AST): Either[Throwable, ScopeResolveVisitorState] =
-    val (initMeta, rootScope) = Globals.make()
+    val (initMeta, rootScope) = BGlobals.make()
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
 

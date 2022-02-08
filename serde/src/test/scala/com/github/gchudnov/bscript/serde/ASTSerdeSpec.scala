@@ -5,11 +5,11 @@ import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.serde.internal.ASTSerializer
 import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
-import com.github.gchudnov.bscript.serde.{ Globals, TestSpec }
+import com.github.gchudnov.bscript.serde.{ SGlobals, TestSpec }
 
 final class ASTSerdeSpec extends TestSpec:
 
-  private val typeNames: TypeNames = Globals.typeNames
+  private val typeNames: TypeNames = SGlobals.typeNames
 
   "ASTSerde" when {
     "AST is serialized" should {

@@ -51,6 +51,15 @@ object Dependencies {
     compile ++ test
   }
 
+  val Translator: Seq[ModuleID] = {
+    val compile = Seq(
+    )
+    val test = Seq(
+      scalatest
+    ) map (_ % "test")
+    compile ++ test
+  }
+  
   val B1: Seq[ModuleID] = {
     val compile = Seq(
     )
@@ -60,7 +69,7 @@ object Dependencies {
     compile ++ test
   }
 
-  val Cli: Seq[ModuleID] = {
+  val B1Cli: Seq[ModuleID] = {
     val compile = Seq(
       scopt
     )

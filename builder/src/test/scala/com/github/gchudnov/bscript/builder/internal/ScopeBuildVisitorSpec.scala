@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.internal
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 import com.github.gchudnov.bscript.builder.internal.MetaOps
-import com.github.gchudnov.bscript.builder.Globals
+import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -23,7 +23,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
   import Meta.*
   import MetaOps.*
 
-  private val typeNames: TypeNames = Globals.typeNames
+  private val typeNames: TypeNames = BGlobals.typeNames
 
   "ScopeBuildVisitor" when {
 
@@ -529,7 +529,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
   private def eval(ast0: AST): Either[Throwable, ScopeBuildVisitorState] =
-    val (initMeta, rootScope) = Globals.make()
+    val (initMeta, rootScope) = BGlobals.make()
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
 
