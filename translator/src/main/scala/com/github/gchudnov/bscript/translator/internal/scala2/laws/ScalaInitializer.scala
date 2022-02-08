@@ -1,14 +1,17 @@
-package com.github.gchudnov.bscript.translator.scala2
+package com.github.gchudnov.bscript.translator.internal.scala2.laws
 
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
+import com.github.gchudnov.bscript.translator.laws.Initializer
+import com.github.gchudnov.bscript.translator.TranslateException
+
 
 /**
  * Initializes types for Scala
  */
-final class ScalaInitializer(typeNames: TypeNames, meta: Meta):
+final class ScalaInitializer(typeNames: TypeNames, meta: Meta) extends Initializer:
 
   private val voidTypeName: String = typeNames.voidType
   private val boolTypeName: String = typeNames.boolType
@@ -26,7 +29,7 @@ final class ScalaInitializer(typeNames: TypeNames, meta: Meta):
       initCollection(cs)
     case bs: SBuiltInType =>
       initBuiltInType(bs)
-    case other => Left(new Scala2Exception(s"Cannot initialize Type '${other}'"))
+    case other => Left(new TranslateException(s"Cannot initialize Type '${other}'"))
 
   private def initBuiltInType(bs: SBuiltInType): Either[Throwable, Seq[String]] = bs.name match
     case `voidTypeName` => Right(Seq("()"))
@@ -37,7 +40,7 @@ final class ScalaInitializer(typeNames: TypeNames, meta: Meta):
     case `f64TypeName`  => Right(Seq("0.0"))
     case `decTypeName`  => Right(Seq("BigDecimal.valueOf(0)"))
     case `strTypeName`  => Right(Seq("\"\""))
-    case other          => Left(new Scala2Exception(s"Cannot initialize BuiltInType '${other}'"))
+    case other          => Left(new TranslateException(s"Cannot initialize BuiltInType '${other}'"))
 
   private def initCollection(cs: VectorType): Either[Throwable, Seq[String]] =
     Right(Seq("List.empty"))
@@ -51,10 +54,10 @@ final class ScalaInitializer(typeNames: TypeNames, meta: Meta):
                         meta
                           .typeFor(x)
                           .left
-                          .map(ex => new Scala2Exception(s"Cannot initialize struct field", ex))
+                          .map(ex => new TranslateException(s"Cannot initialize struct field", ex))
                           .flatMap(t => init(t).map(ls => ShowOps.joinCR(" = ", Seq(x.name), ShowOps.tabTail(1, ls))))
                       case other =>
-                        Left(new Scala2Exception(s"Cannot initialize struct field that is not a type '${other}'"))
+                        Left(new TranslateException(s"Cannot initialize struct field that is not a type '${other}'"))
                   })
       lines = ShowOps.wrap(s"${ss.name}(", ")", ShowOps.wrapEmpty(ShowOps.tabLines(1, ShowOps.joinVAll(",", fields))))
     yield lines

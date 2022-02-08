@@ -45,7 +45,7 @@ lazy val interpreter = (project in file("interpreter"))
   )
 
 lazy val translator = (project in file("translator"))
-  .dependsOn(lang)
+  .dependsOn(lang, builder)
   .settings(allSettings: _*)
   .settings(
     name := "translator",

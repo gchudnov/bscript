@@ -1,5 +1,7 @@
 - TODO: translater
 
+- TODO: check if we can extract some more code from lang
+
 - TODO: add b1
 - TODO: add cli to eval AST
 - TODO: make public, release lib

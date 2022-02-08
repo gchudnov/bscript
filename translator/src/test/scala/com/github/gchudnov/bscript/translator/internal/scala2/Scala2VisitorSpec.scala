@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.scala2
+package com.github.gchudnov.bscript.translator.internal.scala2
 
 // import com.github.gchudnov.bscript.lang.ast.*
 // import com.github.gchudnov.bscript.translator.Scala2Visitor.*

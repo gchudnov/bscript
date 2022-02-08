@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.translator.scala2
+package com.github.gchudnov.bscript.translator
 
 import com.github.gchudnov.bscript.lang.LangException
 
-final class Scala2Exception(message: String) extends LangException(message):
+final class TranslateException(message: String) extends LangException(message):
 
   def this(message: String, cause: Throwable) =
     this(message)
@@ -14,5 +14,5 @@ final class Scala2Exception(message: String) extends LangException(message):
   def this() =
     this(null: String)
 
-object Scala2Exception:
-  def unapply(e: Scala2Exception): Option[(String, Throwable)] = Some((e.getMessage, e.getCause))
+object TranslateException:
+  def unapply(e: TranslateException): Option[(String, Throwable)] = Some((e.getMessage, e.getCause))

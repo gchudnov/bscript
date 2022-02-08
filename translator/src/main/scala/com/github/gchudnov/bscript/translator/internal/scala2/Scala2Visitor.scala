@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.translator.scala2
+package com.github.gchudnov.bscript.translator.internal.scala2
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.TranslateType
-import com.github.gchudnov.bscript.translator.scala2.Scala2Visitor.Scala2State
+import com.github.gchudnov.bscript.translator.internal.scala2.Scala2Visitor.Scala2State
+import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -15,11 +15,11 @@ import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
  *
  * NOTE: not all ASTs can be convertible to Scala. Some of them can produce ill-formed code.
  */
-final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) extends TreeVisitor[Scala2State, Scala2State]:
+final class Scala2Visitor(laws: TranslateLaws) extends TreeVisitor[Scala2State, Scala2State]:
   import Scala2Visitor.*
 
   override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
-    for lines <- init.init(n.iType)
+    for lines <- laws.initializer.init(n.iType)
     yield Scala2State(lines = lines)
 
   override def visit(s: Scala2State, n: UnaryMinus): Either[Throwable, Scala2State] =
@@ -147,8 +147,8 @@ final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) e
   override def visit(s: Scala2State, n: BoolVal): Either[Throwable, Scala2State] =
     for
       value <- Right(
-                 if n.value then toTargetType.boolTrue
-                 else toTargetType.boolFalse
+                 if n.value then laws.typeConverter.trueValue
+                 else laws.typeConverter.falseValue
                )
       lines = Vector(value)
     yield Scala2State(lines = lines)
@@ -214,7 +214,7 @@ final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) e
   override def visit(s: Scala2State, n: ArgDecl): Either[Throwable, Scala2State] =
     for
       name     <- Right(n.name)
-      typeName <- toTargetType.toLangTypeName(n.aType)
+      typeName <- laws.typeConverter.toTypeName(n.aType)
       value     = s"${name}: ${typeName}"
       lines     = Vector(value)
     yield Scala2State(lines = lines)
@@ -222,7 +222,7 @@ final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) e
   override def visit(s: Scala2State, n: VarDecl): Either[Throwable, Scala2State] =
     for
       name     <- Right(n.name)
-      typeName <- toTargetType.toLangTypeName(n.vType)
+      typeName <- laws.typeConverter.toTypeName(n.vType)
       expr     <- n.expr.visit(s, this).map(_.lines)
       nameValue = if typeName.nonEmpty then s"var ${name}: ${typeName}" else s"var ${name}"
       lines     = joinCR(" = ", Vector(nameValue), expr)
@@ -231,7 +231,7 @@ final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) e
   override def visit(s: Scala2State, n: FieldDecl): Either[Throwable, Scala2State] =
     for
       name     <- Right(n.name)
-      typeName <- toTargetType.toLangTypeName(n.fType)
+      typeName <- laws.typeConverter.toTypeName(n.fType)
       value     = s"var ${name}: ${typeName}"
       lines     = Vector(value)
     yield Scala2State(lines = lines)
@@ -240,7 +240,7 @@ final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) e
     for
       args    <- Transform.sequence(n.params.map(_.visit(s, this).map(_.lines).map(rwrapMl)))
       args0    = if args.isEmpty then Seq(Seq("")) else args
-      retType <- toTargetType.toLangTypeName(n.retType)
+      retType <- laws.typeConverter.toTypeName(n.retType)
       body    <- n.body.visit(s, this).map(_.lines)
       anns     = n.annotations.map(_.value)
       wAnns    = if anns.nonEmpty then wrap("/**", " */", wrapEmpty(padLines(" * ", anns))) else Seq.empty[String]
@@ -291,10 +291,8 @@ final class Scala2Visitor(toTargetType: TranslateType, init: ScalaInitializer) e
 
 object Scala2Visitor:
 
-  def make(typeNames: TypeNames, meta: Meta): Scala2Visitor =
-    val scalaTypeNames = new ScalaTypeNames(typeNames)
-    val init           = new ScalaInitializer(typeNames, meta)
-    new Scala2Visitor(scalaTypeNames, init)
+  def make(laws: TranslateLaws): Scala2Visitor =
+    new Scala2Visitor(laws)
 
   final case class Scala2State(lines: Seq[String]):
     def show(): String =

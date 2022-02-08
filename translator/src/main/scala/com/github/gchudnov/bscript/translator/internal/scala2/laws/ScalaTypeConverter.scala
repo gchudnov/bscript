@@ -1,18 +1,18 @@
-package com.github.gchudnov.bscript.translator.scala2j
+package com.github.gchudnov.bscript.translator.internal.scala2.laws
 
-import com.github.gchudnov.bscript.translator.TranslateType
+import com.github.gchudnov.bscript.translator.laws.TypeConverter
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }
 import com.github.gchudnov.bscript.lang.types.TypeNames
 
 /**
- * Java Type Names NOTE: it is possible that not all types might be expressed in Java
+ * Scala Type Names NOTE: It is possible that not all types be expressed in Scala
  */
-class JavaTypeNames(typeNames: TypeNames) extends TypeNames with TranslateType:
+final class ScalaTypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
   override val autoType: String     = "T"
-  override val nothingType: String  = "???"
-  override val voidType: String     = "Void"
+  override val nothingType: String  = "Nothing"
+  override val voidType: String     = "Unit"
   override val boolType: String     = "Boolean"
-  override val i32Type: String      = "Integer"
+  override val i32Type: String      = "Int"
   override val i64Type: String      = "Long"
   override val f32Type: String      = "Float"
   override val f64Type: String      = "Double"
@@ -21,8 +21,8 @@ class JavaTypeNames(typeNames: TypeNames) extends TypeNames with TranslateType:
   override val dateType: String     = "LocalDate"
   override val datetimeType: String = "OffsetDateTime"
 
-  override val boolTrue: String  = "true"
-  override val boolFalse: String = "false"
+  override val trueValue: String  = "true"
+  override val falseValue: String = "false"
 
   private val typeMap = Map(
     typeNames.autoType     -> autoType,
@@ -39,12 +39,12 @@ class JavaTypeNames(typeNames: TypeNames) extends TypeNames with TranslateType:
     typeNames.datetimeType -> datetimeType
   )
 
-  override def toLangTypeName(t: Type): Either[Throwable, String] =
+  override def toTypeName(t: Type): Either[Throwable, String] =
     t match
       case VectorType(elementType) =>
-        toLangTypeName(elementType).map(typeName => s"List[${typeName}]")
+        toTypeName(elementType).map(typeName => s"List[${typeName}]")
       case DeclType(expr) =>
-        toLangTypeName(expr.evalType)
+        toTypeName(expr.evalType)
       case _ =>
         mapTypeName(t.name)
 
