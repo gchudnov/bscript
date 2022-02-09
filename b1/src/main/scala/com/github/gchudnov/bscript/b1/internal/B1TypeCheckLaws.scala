@@ -1,23 +1,11 @@
-package com.github.gchudnov.bscript.b1
+package com.github.gchudnov.bscript.b1.internal
 
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 import com.github.gchudnov.bscript.lang.types.Types
 
-final case class B1TypeCheckLaws(
-  commonTable: CommonResult,
-  additionTable: AdditionResult,
-  arithmeticTable: ArithmeticResult,
-  relationalTable: RelationalResult,
-  equalityTable: EqualityResult,
-  logicTable: LogicResult,
-  unaryArithmeticSet: UnaryArithmeticAllow,
-  unaryLogicSet: UnaryLogicAllow,
-  promoteFromToTable: PromoteFromTo
-) extends TypeCheckLaws
-
-object B1TypeCheckLaws:
+private[b1] object B1TypeCheckLaws:
 
   def make(types: Types): TypeCheckLaws =
     val autoType: Symbol with Type     = types.autoType
@@ -36,7 +24,7 @@ object B1TypeCheckLaws:
     /**
      * Concatenation rules for strings. If there is no entry, the combination is illegal.
      */
-    val concatTable: TypeTable =
+    val concatTable1: TypeTable =
       Map(
         // string
         (strType, strType) -> strType
@@ -45,7 +33,7 @@ object B1TypeCheckLaws:
     /**
      * Maps (t1 op t2) to result type; If there is no entry, the combination is illegal.
      */
-    val arithmeticTable: TypeTable =
+    val arithmeticTable1: TypeTable =
       Map(
         // int32
         (i32Type, i32Type) -> i32Type,
@@ -79,14 +67,14 @@ object B1TypeCheckLaws:
         (decType, decType) -> decType
       )
 
-    val additionTable: TypeTable =
-      arithmeticTable ++ concatTable
+    val additionTable1: TypeTable =
+      arithmeticTable1 ++ concatTable1
 
     /**
      * Maps if (..) (t1) else (t2) to result type; If there is no entry, the combination is illegal.
      */
-    val commonTable: TypeTable =
-      arithmeticTable ++
+    val commonTable1: TypeTable =
+      arithmeticTable1 ++
         Map(
           // void
           (voidType, voidType)     -> voidType,
@@ -122,7 +110,7 @@ object B1TypeCheckLaws:
     /**
      * Maps t1 relOp t2 to the result type, e.g. 1 < 2. If there is no entry, the operation is illegal.
      */
-    val relationalTable: TypeTable =
+    val relationalTable1: TypeTable =
       Map(
         // int32
         (i32Type, i32Type) -> boolType,
@@ -167,15 +155,15 @@ object B1TypeCheckLaws:
     /**
      * Maps t1 == t2 to the result type. If there is no entry, the operation is illegal.
      */
-    val equalityTable: TypeTable =
-      relationalTable ++ Map(
+    val equalityTable1: TypeTable =
+      relationalTable1 ++ Map(
         (boolType, boolType) -> boolType
       )
 
     /**
      * Maps t1 && t2 to the result type. IF there is no entry, the operation is illegal.
      */
-    val logicTable: TypeTable =
+    val logicTable1: TypeTable =
       Map(
         (boolType, boolType) -> boolType
       )
@@ -183,7 +171,7 @@ object B1TypeCheckLaws:
     /**
      * Maps -(t) { minus t } to the types that support unary operations. If there is no entry, the operation is illegal.
      */
-    val unaryArithmeticTable: TypeSet =
+    val unaryArithmeticTable1: TypeSet =
       Set(
         i32Type,
         i64Type,
@@ -195,7 +183,7 @@ object B1TypeCheckLaws:
     /**
      * Maps !t to the result type. If there is no entry, the operation is illegal.
      */
-    val unaryLogicTable: TypeSet =
+    val unaryLogicTable1: TypeSet =
       Set(
         boolType
       )
@@ -203,7 +191,7 @@ object B1TypeCheckLaws:
     /**
      * Type promotion table. Whether a type needs a promotion to a wider type. If there is no value - no promotion is needed.
      */
-    val promoteFromToTable: TypeTable =
+    val promoteFromToTable1: TypeTable =
       Map(
         // int32
         (i32Type, i64Type) -> i64Type,
@@ -232,14 +220,13 @@ object B1TypeCheckLaws:
         (nothingType, datetimeType) -> datetimeType
       )
 
-    B1TypeCheckLaws(
-      commonTable = CommonResult(commonTable),
-      additionTable = AdditionResult(additionTable),
-      arithmeticTable = ArithmeticResult(arithmeticTable),
-      relationalTable = RelationalResult(relationalTable),
-      equalityTable = EqualityResult(equalityTable),
-      logicTable = LogicResult(logicTable),
-      unaryArithmeticSet = UnaryArithmeticAllow(unaryArithmeticTable),
-      unaryLogicSet = UnaryLogicAllow(unaryLogicTable),
-      promoteFromToTable = PromoteFromTo(promoteFromToTable)
-    )
+    new TypeCheckLaws:
+      override val commonTable        = CommonResult(commonTable1)
+      override val additionTable      = AdditionResult(additionTable1)
+      override val arithmeticTable    = ArithmeticResult(arithmeticTable1)
+      override val relationalTable    = RelationalResult(relationalTable1)
+      override val equalityTable      = EqualityResult(equalityTable1)
+      override val logicTable         = LogicResult(logicTable1)
+      override val unaryArithmeticSet = UnaryArithmeticAllow(unaryArithmeticTable1)
+      override val unaryLogicSet      = UnaryLogicAllow(unaryLogicTable1)
+      override val promoteFromToTable = PromoteFromTo(promoteFromToTable1)

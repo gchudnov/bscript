@@ -1,7 +1,3 @@
-- TODO: translater
-
-- TODO: check if we can extract some more code from lang
-
 - TODO: add b1
 - TODO: add cli to eval AST
 - TODO: make public, release lib
@@ -12,8 +8,3 @@
 * TODO: add unreachable code check
 * TODO: do not allow to redefine the var in the same block
 - TODO: add stdout so we cal print something
-- TODO: serde/internal/ASTSerializeVisitor.scala, '"symbol": "${symbol}",' -- need to update to disambiguate different symbols with the same name
-
-
-- TODO: https://dzone.com/articles/infinite-sets-in-java-9
-- TODO: https://www.google.com/search?q=represent+infinite+set+in+java+intersect&ei=EU8AYqa0H96Rxc8Pt9StwAU&ved=0ahUKEwjmgPSzk-z1AhXeSPEDHTdqC1gQ4dUDCA4&uact=5&oq=represent+infinite+set+in+java+intersect&gs_lcp=Cgdnd3Mtd2l6EAMyBQghEKABMgUIIRCgATIFCCEQoAE6BwgAEEcQsAM6CAghEBYQHRAeOgQIIRAVOgcIIRAKEKABSgQIQRgASgQIRhgAUKoEWLcVYPsWaAFwAngAgAGJAYgB_QuSAQQzLjExmAEAoAEByAEIwAEB&sclient=gws-wiz
