@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.interpreter.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.interpreter.InterpretLaws
+import com.github.gchudnov.bscript.interpreter.InterpreterLaws
 import com.github.gchudnov.bscript.interpreter.laws.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.interpreter.memory.*
@@ -27,7 +27,7 @@ import com.github.gchudnov.bscript.lang.util.Casting
  *
  * During execution, though, we still need scope information to resolve symbols.
  */
-private[interpreter] final class InterpretVisitor(laws: InterpretLaws) extends TreeVisitor[InterpretState, InterpretState]:
+private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends TreeVisitor[InterpretState, InterpretState]:
   import InterpretVisitor.*
   import Casting.*
 
@@ -338,7 +338,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpretLaws) extends T
 
 private[interpreter] object InterpretVisitor:
 
-  def make(laws: InterpretLaws): InterpretVisitor =
+  def make(laws: InterpreterLaws): InterpretVisitor =
     new InterpretVisitor(laws)
 
   implicit class AnyOps(a: Any):

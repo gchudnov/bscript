@@ -1,4 +1,6 @@
-- TODO: add b1
+- TODO: add read to read variable from a string (JSON)
+- TODO: improve b1 debugging capabilities (trace state change in function calls)
+
 - TODO: add cli to eval AST
 - TODO: make public, release lib
 - TODO: add scala 3 translator

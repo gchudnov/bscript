@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.interpreter
 
 import com.github.gchudnov.bscript.interpreter.laws.{ Arithmetic, BoolArithmetic, Comparator, Initializer, TypeCaster }
 
-trait InterpretLaws:
+trait InterpreterLaws:
   def mathLaws: Arithmetic
   def boolLaws: BoolArithmetic
   def cmpLaws: Comparator

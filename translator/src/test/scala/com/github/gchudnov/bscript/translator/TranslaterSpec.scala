@@ -20,7 +20,7 @@ final class TranslatorSpec extends TestSpec:
       "produce code" in {
         val errOrRes = Builder
           .build(ast0, types, typeCheckLaws)
-          .flatMap(astMeta => Translator.translateScala(astMeta.ast, typeNames, astMeta.meta))
+          .flatMap(astMeta => Translator.translateScala(astMeta.ast, astMeta.meta, typeNames))
 
         val expected =
           """final case class X(
@@ -40,7 +40,7 @@ final class TranslatorSpec extends TestSpec:
       "produce code" in {
         val errOrRes = Builder
           .build(ast0, types, typeCheckLaws)
-          .flatMap(astMeta => Translator.translateScalaJ(astMeta.ast, typeNames, astMeta.meta))
+          .flatMap(astMeta => Translator.translateScalaJ(astMeta.ast, astMeta.meta, typeNames))
 
         val expected =
           """final case class X(

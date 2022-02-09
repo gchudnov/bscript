@@ -9,7 +9,6 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 
-
 private[b1] object B1Prelude:
 
   private val methods = List(
@@ -26,7 +25,6 @@ private[b1] object B1Prelude:
     Truncate.decl
   )
 
-  def make(typeNames: TypeNames): Block = {
-    val methodDecls = methods.map(_(typeNames))  
-    Block(methodDecls: _*)
-  }
+  def make(typeNames: TypeNames): Block =
+    val methodDecls = methods.map(_(typeNames))
+    Block(methodDecls*)

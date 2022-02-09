@@ -10,10 +10,10 @@ final case class IInterpretLaws(
   cmpLaws: Comparator,
   initLaws: Initializer,
   typeCaster: TypeCaster
-) extends InterpretLaws
+) extends InterpreterLaws
 
 object IInterpretLaws:
-  def make(types: Types, meta: Meta): InterpretLaws = IInterpretLaws(
+  def make(types: Types, meta: Meta): InterpreterLaws = IInterpretLaws(
     mathLaws = new IBasicArithmetic(),
     boolLaws = new IBasicBoolArithmetic(),
     cmpLaws = new IBasicComparator(),

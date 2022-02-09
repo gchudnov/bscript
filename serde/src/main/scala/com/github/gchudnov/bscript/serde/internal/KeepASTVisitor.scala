@@ -11,7 +11,7 @@ import com.github.gchudnov.bscript.lang.util.Casting
  */
 private[internal] final class KeepASTVisitor(pred: KeepPredicate) extends TreeVisitor[Unit, AST]:
   import Casting.*
-  
+
   override def visit(s: Unit, n: Init): Either[Throwable, AST] =
     visitAST(n)
 

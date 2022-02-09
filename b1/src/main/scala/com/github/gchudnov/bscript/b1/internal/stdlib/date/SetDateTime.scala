@@ -26,7 +26,7 @@ private[internal] object SetDateTime:
         CompiledExpr(callback = SetDateTime.setDateTime, retType = TypeRef(typeNames.datetimeType))
       ),
       Seq(ComAnn("sets data and time to the specified value"), StdAnn())
-    )    
+    )
 
   /**
    * Sets the specified part of a datetime

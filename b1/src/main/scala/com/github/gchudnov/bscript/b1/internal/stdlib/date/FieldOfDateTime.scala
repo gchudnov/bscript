@@ -26,7 +26,7 @@ private[internal] object FieldOfDateTime:
       ),
       Seq(ComAnn("return the specified part of date-time as an integer value"), StdAnn())
     )
-    
+
   /**
    * Gets a field from datetime
    *

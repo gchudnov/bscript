@@ -27,7 +27,7 @@ private[internal] object AdjustDateTime:
       ),
       Seq(ComAnn("offsets the provided date-time"), StdAnn())
     )
-    
+
   /**
    * Adds the duration expressed as (offset, unit) to a datetime.
    *

@@ -9,7 +9,6 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 
-
 private[internal] object Round:
 
   def decl(typeNames: TypeNames): MethodDecl =

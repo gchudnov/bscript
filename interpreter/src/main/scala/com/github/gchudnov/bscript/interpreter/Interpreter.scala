@@ -13,7 +13,7 @@ sealed trait Interpreter:
    *
    * NOTE: AST must be built before the interpretation.
    */
-  def interpret(ast1: AST, meta: Meta, laws: InterpretLaws): Either[Throwable, Cell] =
+  def interpret(ast1: AST, meta: Meta, laws: InterpreterLaws): Either[Throwable, Cell] =
     val globalMemoryName = "globals"
     val ms               = MemorySpace(globalMemoryName)
 

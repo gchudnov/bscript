@@ -9,7 +9,6 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 
-
 private[internal] object Truncate:
 
   def decl(typeNames: TypeNames): MethodDecl =
@@ -25,7 +24,7 @@ private[internal] object Truncate:
       ),
       Seq(ComAnn("truncates the provided value with the given precision"), StdAnn())
     )
-    
+
   /**
    * Returns the truncated numerical value (3.1234, 2) -> 3.12 (3.1264, 2) -> 3.12
    */

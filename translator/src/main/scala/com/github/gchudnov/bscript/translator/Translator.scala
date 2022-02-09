@@ -10,15 +10,15 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 trait Translator:
 
-  def translateScala(ast1: AST, typeNames: TypeNames, meta: Meta): Either[Throwable, String] =
-    val laws = ScalaTranslateLaws.make(typeNames, meta)
+  def translateScala(ast1: AST, meta1: Meta, typeNames: TypeNames): Either[Throwable, String] =
+    val laws = ScalaTranslateLaws.make(typeNames, meta1)
     translateScala(ast1, laws)
 
-  def translateScalaJ(ast1: AST, typeNames: TypeNames, meta: Meta): Either[Throwable, String] =
-    val laws = ScalaJTranslateLaws.make(typeNames, meta)
+  def translateScalaJ(ast1: AST, meta1: Meta, typeNames: TypeNames): Either[Throwable, String] =
+    val laws = ScalaJTranslateLaws.make(typeNames, meta1)
     translateScala(ast1, laws)
 
-  def translateScala(ast1: AST, laws: TranslateLaws): Either[Throwable, String] =
+  private def translateScala(ast1: AST, laws: TranslateLaws): Either[Throwable, String] =
     val scalaVisitor = Scala2Visitor.make(laws)
     val scalaState   = Scala2State.make()
 
