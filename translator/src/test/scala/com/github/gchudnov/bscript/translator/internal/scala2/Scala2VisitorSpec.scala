@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef, VectorType
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.translator.TGlobals
 import com.github.gchudnov.bscript.translator.TTypeCheckLaws
-import com.github.gchudnov.bscript.lang.util.Gen
+import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.builder.Builder
 

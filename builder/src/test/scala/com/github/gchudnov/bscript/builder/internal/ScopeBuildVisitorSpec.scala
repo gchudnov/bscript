@@ -12,7 +12,8 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps
 import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitorSpec.dehydrate
-import com.github.gchudnov.bscript.lang.util.{ EqWrap, Gen, Transform }
+import com.github.gchudnov.bscript.lang.util.{ EqWrap, Transform }
+import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
 /**

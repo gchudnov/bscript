@@ -11,7 +11,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.lang.util.Gen
+import com.github.gchudnov.bscript.builder.util.Gen
 
 import java.time.LocalDate
 import java.time.OffsetDateTime

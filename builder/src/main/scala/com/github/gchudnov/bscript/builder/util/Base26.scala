@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.util
+package com.github.gchudnov.bscript.builder.util
 
 object Base26 extends BaseN:
   override def base: Long = 26
