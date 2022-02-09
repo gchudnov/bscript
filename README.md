@@ -58,12 +58,15 @@ val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, astMe
 
 ### Translator
 
-* [/translator](translator) - Translates AST to the given programming language. At the moment only Scala is supported.
+* [/translator](translator) - Translates AST to the given programming language. At the moment only translation to Scala is supported.
 
 ```scala
-```
+val ast1: AST              = ???
+val typeNames: TypeNames   = ???
+val meta: Meta             = ???
 
-## Implementations
+val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNames, meta)
+```
 
 ### B1
 

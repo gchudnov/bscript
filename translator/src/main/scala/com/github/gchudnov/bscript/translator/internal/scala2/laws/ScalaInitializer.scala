@@ -7,7 +7,6 @@ import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
 import com.github.gchudnov.bscript.translator.laws.Initializer
 import com.github.gchudnov.bscript.translator.TranslateException
 
-
 /**
  * Initializes types for Scala
  */

@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.translator.internal.scala2
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.internal.scala2.Scala2Visitor.Scala2State
+import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.state.Meta
@@ -15,7 +15,7 @@ import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
  *
  * NOTE: not all ASTs can be convertible to Scala. Some of them can produce ill-formed code.
  */
-final class Scala2Visitor(laws: TranslateLaws) extends TreeVisitor[Scala2State, Scala2State]:
+private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeVisitor[Scala2State, Scala2State]:
   import Scala2Visitor.*
 
   override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
@@ -289,18 +289,10 @@ final class Scala2Visitor(laws: TranslateLaws) extends TreeVisitor[Scala2State, 
     for lines <- n.callback(s).map(_.asInstanceOf[Scala2State]).map(_.lines)
     yield Scala2State(lines = lines)
 
-object Scala2Visitor:
+private[translator] object Scala2Visitor:
 
   def make(laws: TranslateLaws): Scala2Visitor =
     new Scala2Visitor(laws)
-
-  final case class Scala2State(lines: Seq[String]):
-    def show(): String =
-      ShowOps.join(lines)
-
-  object Scala2State:
-    def make(): Scala2State =
-      new Scala2State(lines = Vector.empty[String])
 
   def wrapProgram(body: String): String =
     s"""

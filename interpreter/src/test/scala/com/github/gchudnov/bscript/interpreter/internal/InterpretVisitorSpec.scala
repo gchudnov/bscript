@@ -1186,10 +1186,10 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val laws = IInterpretLaws.make(types, astMeta.meta)
 
-        val v4 = InterpretVisitor.make(laws)
-        val s4 = InterpretState.make(meta = astMeta.meta, memSpace = ms, retValue = VoidCell)
+        val interpretVisitor = InterpretVisitor.make(laws)
+        val interpretState   = InterpretState.make(meta = astMeta.meta, memSpace = ms, retValue = VoidCell)
 
-        astMeta.ast.visit(s4, v4)
+        astMeta.ast.visit(interpretState, interpretVisitor)
       })
 
 object InterpretVisitorSpec {}

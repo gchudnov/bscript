@@ -53,7 +53,7 @@ lazy val translator = (project in file("translator"))
   )
 
 lazy val b1 = (project in file("b1"))
-  .dependsOn(lang, builder, interpreter, translator)
+  .dependsOn(lang, serde, builder, interpreter, translator)
   .settings(allSettings: _*)
   .settings(
     name := "b1",
