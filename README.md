@@ -15,11 +15,11 @@ import com.github.gchudnov.bscript.serde.JSONSerde
 val serde = JSONSerde.make()
 
 // Serialize
-val t = VarDecl(TypeRef("int"), "x", IntVal(0))
+val t = VarDecl(TypeRef("i32"), "x", IntVal(0))
 val errOrSer: Either[SerdeException, String] = serde.serialize(t)
 
 // Deserialize
-val input = """{"kind":"VarDecl","type":"int","name":"x","expr":{"kind":"IntVal","value":"0"}}"""
+val input = """{"kind":"VarDecl","type":"i32","name":"x","expr":{"kind":"IntVal","value":"0"}}"""
 val errORDes: Either[SerdeException: AST] = serde.deserialize(input)
 ```
 
@@ -47,7 +47,7 @@ val errOrRes: Either[Throwable, AstMeta] = Builder.build(ast0, types, typeCheckL
 
 ### Interpreter
 
-* [/interpreter](interpreter) - Interprets built AST.
+* [/interpreter](interpreter) - Interprets AST that has been built.
 
 ```scala
 val astMeta: AstMeta             = ???
@@ -71,6 +71,30 @@ val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNa
 ### B1
 
 * [/b1](b1) - Library that implements laws for B1 Language. Depends on `serde`, `builder`, `interpreter` and `translator` modules.
+
+```scala
+val str = """{"kind":"VarDecl","type":"i32","name":"x","expr":{"kind":"IntVal","value":"0"}}"""
+
+// Load AST from JSON
+val errOrAst: Either[Throwable, AST] = B1.load(str)
+
+// Save AST to JSON
+val ast0: AST = ???
+val errOrStr: Either[Throwable, String] = B1.save(ast0)
+
+// Build AST
+val errOrAstMeta: Either[Throwable, AstMeta] = B1.build(ast0)
+
+// Interpret AST
+val astMeta: AstMeta = ???    // AST that was built before with Metadata
+val errOrCell: Either[Throwable, Cell] = B1.interpret(ast1, meta1)
+
+// Run - A shortcut for `B1.build` and `B1.interpret`
+val errOrCell: Either[Throwable, Cell] = B1.run(ast0)
+
+// Translate AST to Scala
+val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
+```
 
 ### B1-CLI
 
