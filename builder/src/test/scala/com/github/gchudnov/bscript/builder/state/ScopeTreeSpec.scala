@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.lang.symbols.{ SBlock, SMethod, SStruct }
-import com.github.gchudnov.bscript.lang.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.EqWrap
 
 final class ScopeTreeSpec extends TestSpec:
 

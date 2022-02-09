@@ -1,7 +1,8 @@
 package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.symbols.Scope
-import com.github.gchudnov.bscript.lang.util.{ EqWrap, Show }
+import com.github.gchudnov.bscript.lang.util.Show
+import com.github.gchudnov.bscript.builder.util.EqWrap
 
 /**
  * Scope Tree

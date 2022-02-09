@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.util
+package com.github.gchudnov.bscript.builder.util
 
 /**
  * Wrapper to allow the same case class to be put twice in a Map

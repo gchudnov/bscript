@@ -2,7 +2,8 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SBuiltInType, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef }
-import com.github.gchudnov.bscript.lang.util.{ EqWrap, Show, Transform }
+import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
+import com.github.gchudnov.bscript.builder.util.EqWrap
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
 

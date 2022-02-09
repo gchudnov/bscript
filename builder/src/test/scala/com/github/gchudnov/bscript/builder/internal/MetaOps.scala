@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.internal
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.{ SMethod, SVar, Scope, Symbol, Type }
-import com.github.gchudnov.bscript.lang.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.EqWrap
 
 object MetaOps:
 

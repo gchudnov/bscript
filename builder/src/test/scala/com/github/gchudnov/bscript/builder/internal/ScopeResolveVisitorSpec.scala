@@ -11,7 +11,8 @@ import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps
-import com.github.gchudnov.bscript.lang.util.{ EqWrap, Transform }
+import com.github.gchudnov.bscript.lang.util.{ Transform }
+import com.github.gchudnov.bscript.builder.util.{ EqWrap }
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 

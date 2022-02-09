@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.internal.MetaOps.findMember
 import com.github.gchudnov.bscript.lang.ast.{ ArgDecl, Block as AstBlock, MethodDecl }
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.EqWrap
 
 final class ScopeStateSpec extends TestSpec:
 

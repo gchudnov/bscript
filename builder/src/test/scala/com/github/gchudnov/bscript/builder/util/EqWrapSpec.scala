@@ -1,6 +1,6 @@
-package com.github.gchudnov.bscript.lang.util
+package com.github.gchudnov.bscript.builder.util
 
-import com.github.gchudnov.bscript.lang.TestSpec
+import com.github.gchudnov.bscript.builder.TestSpec
 
 final class EqWrapSpec extends TestSpec:
 
