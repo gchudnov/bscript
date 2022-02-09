@@ -1,8 +1,9 @@
 package com.github.gchudnov.bscript.interpreter
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
+import com.github.gchudnov.bscript.interpreter.InterpreterException
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -214,11 +215,11 @@ object IGlobals:
                       case StrCell(value) =>
                         Right(IntCell(value.length))
                       case other =>
-                        Left(new CompiledException(s"Unexpected type of arguments passed to strLen: ${other}"))
+                        Left(new InterpreterException(s"Unexpected type of arguments passed to strLen: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to strLen: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to strLen: ${other}"))
 
   /**
    * Adds the duration expressed as (offset, unit) to a datetime.
@@ -253,13 +254,13 @@ object IGlobals:
                           case `unitSeconds` =>
                             allCatch.either(value.plusSeconds(offset.toLong)).map(DateTimeCell.apply)
                           case other =>
-                            Left(new CompiledException(s"Unexpected unit of time was passed to offsetDateTime: ${other}"))
+                            Left(new InterpreterException(s"Unexpected unit of time was passed to offsetDateTime: ${other}"))
                       case other =>
-                        Left(new CompiledException(s"Unexpected type of arguments passed to offsetDateTime: ${other}"))
+                        Left(new InterpreterException(s"Unexpected type of arguments passed to offsetDateTime: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to offsetDateTime: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to offsetDateTime: ${other}"))
 
   /**
    * Sets the specified part of a datetime
@@ -294,13 +295,13 @@ object IGlobals:
                           case `unitSeconds` =>
                             allCatch.either(value.withSecond(offset)).map(DateTimeCell.apply)
                           case other =>
-                            Left(new CompiledException(s"Unexpected unit of time was passed to setDateTime: ${other}"))
+                            Left(new InterpreterException(s"Unexpected unit of time was passed to setDateTime: ${other}"))
                       case other =>
-                        Left(new CompiledException(s"Unexpected type of arguments passed to setDateTime: ${other}"))
+                        Left(new InterpreterException(s"Unexpected type of arguments passed to setDateTime: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to setDateTime: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to setDateTime: ${other}"))
 
   /**
    * Gets a field from datetime
@@ -333,13 +334,13 @@ object IGlobals:
                           case `unitSeconds` =>
                             allCatch.either(value.getSecond).map(IntCell.apply)
                           case other =>
-                            Left(new CompiledException(s"Unexpected unit of time was passed to fieldOfDateTime: ${other}"))
+                            Left(new InterpreterException(s"Unexpected unit of time was passed to fieldOfDateTime: ${other}"))
                       case other =>
-                        Left(new CompiledException(s"Unexpected type of arguments passed to fieldOfDateTime: ${other}"))
+                        Left(new InterpreterException(s"Unexpected type of arguments passed to fieldOfDateTime: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to fieldOfDateTime: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to fieldOfDateTime: ${other}"))
 
   /**
    * checks that the provided parameter is not null
@@ -368,7 +369,7 @@ object IGlobals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to isDefined: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to isDefined: ${other}"))
 
   /**
    * returns the first argument if not null, otherwise the second one
@@ -397,7 +398,7 @@ object IGlobals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to coalesce: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to coalesce: ${other}"))
 
   /**
    * Returns current date in UTC format: YYYY-MM-DD
@@ -409,7 +410,7 @@ object IGlobals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to today: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to today: ${other}"))
 
   /**
    * Returns current datetime in UTC format: 2021-12-11T13:20:13.521645485Z
@@ -421,7 +422,7 @@ object IGlobals:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to now: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to now: ${other}"))
 
   /**
    * Returns the rounded numerical value (3.1234, 2) -> 3.12 (3.1264, 2) -> 3.13
@@ -453,11 +454,11 @@ object IGlobals:
                       case (DecimalCell(x), IntCell(p)) =>
                         Right(DecimalCell(roundDec(x, p)))
                       case other =>
-                        Left(new CompiledException(s"Unexpected type of arguments passed to round: ${other}"))
+                        Left(new InterpreterException(s"Unexpected type of arguments passed to round: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to round: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to round: ${other}"))
 
   /**
    * Returns the truncated numerical value (3.1234, 2) -> 3.12 (3.1264, 2) -> 3.12
@@ -490,8 +491,8 @@ object IGlobals:
                       case (DecimalCell(x), IntCell(p)) =>
                         Right(DecimalCell(truncateDec(x, p)))
                       case other =>
-                        Left(new CompiledException(s"Unexpected type of arguments passed to truncate: ${other}"))
+                        Left(new InterpreterException(s"Unexpected type of arguments passed to truncate: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case other =>
-        Left(new CompiledException(s"Unexpected state passed to truncate: ${other}"))
+        Left(new InterpreterException(s"Unexpected state passed to truncate: ${other}"))

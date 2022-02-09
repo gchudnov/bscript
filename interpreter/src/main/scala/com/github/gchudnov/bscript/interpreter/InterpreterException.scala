@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.interpreter
 
 import com.github.gchudnov.bscript.lang.LangException
 
-final class CompiledException(message: String) extends LangException(message):
+final class InterpreterException(message: String) extends LangException(message):
 
   def this(message: String, cause: Throwable) =
     this(message)
@@ -14,5 +14,5 @@ final class CompiledException(message: String) extends LangException(message):
   def this() =
     this(null: String)
 
-object CompiledException:
-  def unapply(e: CompiledException): Option[(String, Throwable)] = Some((e.getMessage, e.getCause))
+object InterpreterException:
+  def unapply(e: InterpreterException): Option[(String, Throwable)] = Some((e.getMessage, e.getCause))

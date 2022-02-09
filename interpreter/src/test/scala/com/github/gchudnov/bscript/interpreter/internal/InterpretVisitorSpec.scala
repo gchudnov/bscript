@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.interpreter.IGlobals
 import com.github.gchudnov.bscript.interpreter.IInterpretLaws
 import com.github.gchudnov.bscript.interpreter.ITypeCheckLaws
 import com.github.gchudnov.bscript.interpreter.TestSpec
-import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*

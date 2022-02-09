@@ -1,0 +1,73 @@
+package com.github.gchudnov.bscript.b1.internal.stdlib.num
+
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
+import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
+import com.github.gchudnov.bscript.b1.B1Exception
+import com.github.gchudnov.bscript.lang.util.ShowOps.split
+import com.github.gchudnov.bscript.interpreter.memory.*
+import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.lang.types.TypeNames
+
+
+private[internal] object Truncate:
+
+  def decl(typeNames: TypeNames): MethodDecl =
+    MethodDecl(
+      DeclType(Var(SymbolRef("value"))),
+      "truncate",
+      List(
+        ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
+        ArgDecl(TypeRef(typeNames.i32Type), "precision")
+      ),
+      Block(
+        CompiledExpr(callback = Truncate.truncate, retType = DeclType(Var(SymbolRef("value"))))
+      ),
+      Seq(ComAnn("truncates the provided value with the given precision"), StdAnn())
+    )
+    
+  /**
+   * Returns the truncated numerical value (3.1234, 2) -> 3.12 (3.1264, 2) -> 3.12
+   */
+  private def truncate(s: Any): Either[Throwable, Any] =
+    val argValue     = "value"     // auto: f32, f64, dec
+    val argPrecision = "precision" // i32
+
+    def truncateF64(n: Double, p: Int): Double =
+      val s: Double = math.pow(10.toDouble, p.toDouble)
+      if n < 0.0 then math.ceil(n * s) / s
+      else math.round(n * s) / s
+
+    def truncateF32(n: Float, p: Int): Float =
+      truncateF64(n.toDouble, p).toFloat
+
+    def truncateDec(n: BigDecimal, p: Int): BigDecimal =
+      n.setScale(p, BigDecimal.RoundingMode.DOWN)
+
+    s match
+      case s @ InterpretState(_, ms, c) =>
+        for
+          valueCell     <- ms.fetch(CellPath(argValue))
+          precisionCell <- ms.fetch(CellPath(argPrecision))
+          retVal <- (valueCell, precisionCell) match
+                      case (FloatCell(x), IntCell(p)) =>
+                        Right(FloatCell(truncateF32(x, p)))
+                      case (DoubleCell(x), IntCell(p)) =>
+                        Right(DoubleCell(truncateF64(x, p)))
+                      case (DecimalCell(x), IntCell(p)) =>
+                        Right(DecimalCell(truncateDec(x, p)))
+                      case other =>
+                        Left(new B1Exception(s"Unexpected type of arguments passed to truncate: ${other}"))
+        yield s.copy(memSpace = ms, retValue = retVal)
+
+      case _: Scala2State =>
+        for lines <- Right(
+                       split(
+                         s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.DOWN)
+                            |""".stripMargin
+                       )
+                     )
+        yield Scala2State(lines = lines)
+
+      case other =>
+        Left(new B1Exception(s"Unexpected state passed to truncate: ${other}"))

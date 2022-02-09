@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.interpreter
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor
-import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.builder.state.Meta
 
 sealed trait Interpreter:

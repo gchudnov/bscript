@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.interpreter.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor.InterpretState
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.InterpretLaws
 import com.github.gchudnov.bscript.interpreter.laws.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
@@ -339,16 +339,6 @@ private[interpreter] object InterpretVisitor:
 
   def make(laws: InterpretLaws): InterpretVisitor =
     new InterpretVisitor(laws)
-
-  final case class InterpretState(meta: Meta, memSpace: MemorySpace, retValue: Cell)
-
-  object InterpretState:
-    def make(meta: Meta, memSpace: MemorySpace, retValue: Cell): InterpretState =
-      InterpretState(
-        meta = meta,
-        memSpace = memSpace,
-        retValue = retValue
-      )
 
   implicit class AnyOps(a: Any):
     def asInterpretState: Either[Throwable, InterpretState] =
