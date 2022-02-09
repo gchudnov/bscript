@@ -72,6 +72,8 @@ val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNa
 
 * [/b1](b1) - Library that implements laws for B1 Language. Depends on `serde`, `builder`, `interpreter` and `translator` modules.
 
+Allows to load & save AST, build and interpret it, translate it to Scala.
+
 ```scala
 val str = """{"kind":"VarDecl","type":"i32","name":"x","expr":{"kind":"IntVal","value":"0"}}"""
 
