@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.serde.SerdeException
 import com.github.gchudnov.bscript.serde.internal.Keys.*
 import com.github.gchudnov.bscript.serde.internal.JSONDeserializeVisitor.*
-import com.github.gchudnov.bscript.lang.types.VisitorOps.*
+import com.github.gchudnov.bscript.lang.util.Casting
 import org.json4s.*
 import org.json4s.JsonDSL.*
 import org.json4s.native.JsonMethods.*
@@ -19,6 +19,7 @@ import java.time.OffsetDateTime
 import scala.collection.immutable.MapOps
 
 private[internal] final class JSONDeserializeVisitor:
+  import Casting.*
 
   private def visitInit(s: JObject): Either[Throwable, Init] =
     for iType <- visitType(s \ Keys.xType)

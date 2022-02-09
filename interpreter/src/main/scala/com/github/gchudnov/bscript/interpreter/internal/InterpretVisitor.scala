@@ -10,6 +10,7 @@ import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Transform
+import com.github.gchudnov.bscript.lang.util.Casting
 
 /**
  * 4-PASS
@@ -28,7 +29,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
  */
 private[interpreter] final class InterpretVisitor(laws: InterpretLaws) extends TreeVisitor[InterpretState, InterpretState]:
   import InterpretVisitor.*
-  import com.github.gchudnov.bscript.lang.types.VisitorOps.*
+  import Casting.*
 
   private val mathLaws: Arithmetic     = laws.mathLaws
   private val boolLaws: BoolArithmetic = laws.boolLaws

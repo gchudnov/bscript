@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Transform
+import com.github.gchudnov.bscript.lang.util.Casting
 
 /**
  * (3-PASS)
@@ -32,7 +33,7 @@ private[internal] final class TypeCheckVisitor(
   typeCheckLaws: TypeCheckLaws
 ) extends TreeVisitor[TypeCheckState, TypeCheckState]:
   import TypeCheckVisitor.*
-  import com.github.gchudnov.bscript.lang.types.VisitorOps.*
+  import Casting.*
 
   private val commonTable: CommonResult                = typeCheckLaws.commonTable
   private val additionTable: AdditionResult            = typeCheckLaws.additionTable

@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.types
 
 import com.github.gchudnov.bscript.lang.symbols.SBuiltInType
+import com.github.gchudnov.bscript.lang.util.Casting
 
 sealed trait Types:
   def autoType: SBuiltInType
@@ -17,7 +18,7 @@ sealed trait Types:
   def datetimeType: SBuiltInType
 
 object Types:
-  import VisitorOps.*
+  import Casting.*
 
   def make(typeNames: TypeNames): Types =
     val sAutoType     = SBuiltInType(typeNames.autoType)

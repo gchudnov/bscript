@@ -6,6 +6,7 @@ import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeRes
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.Transform
+import com.github.gchudnov.bscript.lang.util.Casting
 
 /**
  * (2-PASS)
@@ -64,7 +65,7 @@ import com.github.gchudnov.bscript.lang.util.Transform
  */
 private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeResolveState, ScopeResolveState]:
   import ScopeResolveVisitor.*
-  import com.github.gchudnov.bscript.lang.types.VisitorOps.*
+  import Casting.*
 
   override def visit(s: ScopeResolveState, n: Init): Either[Throwable, ScopeResolveState] =
     for

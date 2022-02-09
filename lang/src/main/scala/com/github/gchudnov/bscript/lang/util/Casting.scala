@@ -1,9 +1,9 @@
-package com.github.gchudnov.bscript.lang.types
+package com.github.gchudnov.bscript.lang.util
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SBlock, SMethod, SStruct, SVar, Scope, Symbol, Type }
 
-object VisitorOps:
+object Casting:
 
   // AST
   implicit class AstOps(ast: AST):

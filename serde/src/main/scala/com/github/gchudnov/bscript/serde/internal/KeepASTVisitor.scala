@@ -4,13 +4,14 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.serde.internal.KeepASTVisitor.KeepPredicate
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.lang.types.VisitorOps.*
+import com.github.gchudnov.bscript.lang.util.Casting
 
 /**
  * Removes AST-nodes that are matching the given predicate. Used to remove [std] methods before serialization.
  */
 private[internal] final class KeepASTVisitor(pred: KeepPredicate) extends TreeVisitor[Unit, AST]:
-
+  import Casting.*
+  
   override def visit(s: Unit, n: Init): Either[Throwable, AST] =
     visitAST(n)
 

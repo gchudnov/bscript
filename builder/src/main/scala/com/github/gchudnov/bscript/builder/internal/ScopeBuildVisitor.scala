@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Gen
+import com.github.gchudnov.bscript.lang.util.Casting
 
 /**
  * (1-PASS)
@@ -66,7 +67,7 @@ import com.github.gchudnov.bscript.builder.util.Gen
  * NOTE: in the {{{ScopeBuildState]}}} it is *very* important that *different* instances of the same case class with the same value are different. It affects symbol resolution.
  */
 private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuildState, ScopeBuildState]:
-  import com.github.gchudnov.bscript.lang.types.VisitorOps.*
+  import Casting.*
 
   override def visit(s: ScopeBuildState, n: Init): Either[Throwable, ScopeBuildState] =
     for
