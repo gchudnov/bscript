@@ -89,7 +89,7 @@ val errOrAstMeta: Either[Throwable, AstMeta] = B1.build(ast0)
 
 // Interpret AST
 val astMeta: AstMeta = ???    // AST that was built before with Metadata
-val errOrCell: Either[Throwable, Cell] = B1.interpret(ast1, meta1)
+val errOrCell: Either[Throwable, Cell] = B1.interpret(astMeta)
 
 // Run - A shortcut for `B1.build` and `B1.interpret`
 val errOrCell: Either[Throwable, Cell] = B1.run(ast0)
@@ -101,3 +101,9 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 ### B1-CLI
 
 * [/b1-cli](b1-cli) - Command-Line Utility for B1 Language.
+
+Allows to run and debug AST.
+
+```bash
+# TBD
+```
