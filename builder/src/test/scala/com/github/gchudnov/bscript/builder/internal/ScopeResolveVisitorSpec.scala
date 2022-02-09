@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.internal
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.builder.internal.MetaOps
 import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.symbols.state
+package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.symbols.Scope
 import com.github.gchudnov.bscript.lang.util.{ EqWrap, Show }

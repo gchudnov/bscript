@@ -9,7 +9,7 @@ import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeRes
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
 import com.github.gchudnov.bscript.lang.util.Gen
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 
 sealed trait Builder:
 

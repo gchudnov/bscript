@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.interpreter.laws.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Transform
 

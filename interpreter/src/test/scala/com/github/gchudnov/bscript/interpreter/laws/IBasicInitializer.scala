@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.interpreter.laws.Initializer
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.Transform
 
 final class IBasicInitializer(types: Types, meta: Meta) extends Initializer:

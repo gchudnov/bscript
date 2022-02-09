@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.translator.internal.scala2j.laws.{ JavaTypeCo
 import com.github.gchudnov.bscript.translator.internal.scala2.laws.{ ScalaInitializer }
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 
 /**
  * Laws used to translate AST to Scala with Java Types.

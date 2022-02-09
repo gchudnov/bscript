@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.symbols.state
+package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SBuiltInType, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef }

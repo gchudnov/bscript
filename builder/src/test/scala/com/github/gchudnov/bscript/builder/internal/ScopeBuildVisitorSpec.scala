@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.lang.util.Show.ShowOps

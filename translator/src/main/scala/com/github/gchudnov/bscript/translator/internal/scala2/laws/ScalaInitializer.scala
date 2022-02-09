@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.translator.internal.scala2.laws
 
-import com.github.gchudnov.bscript.lang.symbols.state.Meta
+import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
