@@ -25,7 +25,7 @@ private[internal] object SetDateTime:
       Block(
         CompiledExpr(callback = SetDateTime.setDateTime, retType = TypeRef(typeNames.datetimeType))
       ),
-      Seq(ComAnn("sets data and time to the specified value"), StdAnn())
+      Seq(ComAnn("Sets a field of datetime to the specified value"), StdAnn())
     )
 
   /**
@@ -69,7 +69,12 @@ private[internal] object SetDateTime:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""${argUnit}.trim.toLowerCase match {
+                         s"""val unitDays: String    = "${unitDays}"
+                            |val unitHours: String   = "${unitHours}"
+                            |val unitMinutes: String = "${unitMinutes}"
+                            |val unitSeconds: String = "${unitSeconds}"
+                            |
+                            |${argUnit}.trim.toLowerCase match {
                             |  case `unitDays` =>
                             |    ${argValue}.withDayOfMonth(${argOffset})
                             |  case `unitHours` =>
@@ -78,13 +83,13 @@ private[internal] object SetDateTime:
                             |    ${argValue}.withMinute(${argOffset})
                             |  case `unitSeconds` =>
                             |    ${argValue}.withSecond(${argOffset})
-                            |  case other =>
+                            |  case _ =>
                             |    throw new RuntimeException(s"Unexpected unit of time was passed to setDateTime: $${${argUnit}}")
                             |}
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to setDateTime: ${other}"))
