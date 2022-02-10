@@ -21,7 +21,7 @@ private[internal] object Today:
       Block(
         CompiledExpr(callback = Today.today, retType = TypeRef(typeNames.dateType))
       ),
-      Seq(ComAnn("returns today as date"), StdAnn())
+      Seq(ComAnn("Returns today as date"), StdAnn())
     )
 
   /**
@@ -40,7 +40,7 @@ private[internal] object Today:
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"))
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to today: ${other}"))

@@ -39,11 +39,22 @@ final class ReadFileSpec extends TestSpec:
             cell mustBe StrCell(data)
           case Left(t) =>
             fail("Should be 'right", t)
-
       }
 
       "return an error if file is not found" in {
-        // TODO: impl it
+        val invalidPath = "/tmp/some/path/that/is/invalid/data.txt"
+
+        val t = Block(
+          VarDecl(TypeRef(typeNames.strType), "x", Call(SymbolRef("readFile"), List(StrVal(invalidPath)))),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = B1.run(t)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage.contains(invalidPath) mustBe true
       }
     }
   }
