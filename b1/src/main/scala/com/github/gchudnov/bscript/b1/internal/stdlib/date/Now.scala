@@ -21,7 +21,7 @@ private[internal] object Now:
       Block(
         CompiledExpr(callback = Now.now, retType = TypeRef(typeNames.datetimeType))
       ),
-      Seq(ComAnn("returns current date and time as date-time"), StdAnn())
+      Seq(ComAnn("Returns the current date and time"), StdAnn())
     )
 
   /**
@@ -40,7 +40,7 @@ private[internal] object Now:
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.OffsetDateTime", "java.time.ZoneId"))
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to now: ${other}"))
