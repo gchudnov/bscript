@@ -12,3 +12,11 @@ object ResourceOps:
     Using(Source.fromResource(resourcePath)) { source =>
       source.getLines().mkString(sys.props("line.separator"))
     }.toEither
+
+  def resourceSave(resourcePath: String, dest: Path): Either[Throwable, Long] =
+    allCatch.either {
+      val classLoader: ClassLoader = getClass.getClassLoader
+      Using.resources(classLoader.getResourceAsStream(resourcePath), new FileOutputStream(dest.toFile)) { (inStream, outStream) =>
+        inStream.transferTo(outStream)
+      }
+    }.left.map(t => new RuntimeException(s"Cannot save the resource '${resourcePath}' to '${dest}'", t))

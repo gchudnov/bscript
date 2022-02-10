@@ -12,17 +12,18 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 private[b1] object B1Prelude:
 
   private val methods = List(
-    Printf.decl,
-    StrLen.decl,
     AdjustDateTime.decl,
     FieldOfDateTime.decl,
-    SetDateTime.decl,
-    IsDefined.decl,
-    Coalesce.decl,
-    Today.decl,
     Now.decl,
+    SetDateTime.decl,
+    Today.decl,
+    Printf.decl,
+    ReadFile.decl,
     Round.decl,
-    Truncate.decl
+    Truncate.decl,
+    StrLen.decl,
+    IsDefined.decl,
+    Coalesce.decl
   )
 
   def make(typeNames: TypeNames): Block =

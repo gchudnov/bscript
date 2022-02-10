@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.b1
 
 import com.github.gchudnov.bscript.b1.internal.*
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.lang.ast.Block
 import com.github.gchudnov.bscript.interpreter.memory.Cell
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.serde.JSONSerde
@@ -21,6 +22,8 @@ sealed trait B1:
 
   private lazy val serde = JSONSerde.make()
 
+  private lazy val prelude = B1Prelude.make(typeNames)
+
   /**
    * Loads AST from a JSON-string.
    *
@@ -39,7 +42,8 @@ sealed trait B1:
    * Build AST
    */
   def build(ast0: AST): Either[Throwable, AstMeta] =
-    Builder.build(ast0, types, typeCheckLaws)
+    import Block.*
+    Builder.build(prelude :+ ast0, types, typeCheckLaws)
 
   /**
    * Interpret AST that was built before

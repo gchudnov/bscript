@@ -58,14 +58,14 @@ private[internal] object Round:
                         Left(new B1Exception(s"Unexpected type of arguments passed to round: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.HALF_UP)
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to round: ${other}"))

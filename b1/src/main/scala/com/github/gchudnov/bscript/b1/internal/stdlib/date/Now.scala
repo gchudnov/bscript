@@ -33,14 +33,14 @@ private[internal] object Now:
         for retVal <- Right(DateTimeCell(OffsetDateTime.now(utcZone)))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""OffsetDateTime.now(ZoneId.of("Z"))
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to now: ${other}"))

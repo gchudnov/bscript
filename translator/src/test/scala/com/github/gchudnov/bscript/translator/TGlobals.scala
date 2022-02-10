@@ -206,14 +206,14 @@ object TGlobals:
     val arg0 = "s"
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${arg0}.length
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to strLen: ${other}"))
@@ -233,7 +233,7 @@ object TGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argUnit}.trim.toLowerCase match {
@@ -251,7 +251,7 @@ object TGlobals:
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to offsetDateTime: ${other}"))
@@ -271,7 +271,7 @@ object TGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argUnit}.trim.toLowerCase match {
@@ -289,7 +289,7 @@ object TGlobals:
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to setDateTime: ${other}"))
@@ -308,7 +308,7 @@ object TGlobals:
     val argUnit  = "unit"  // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argUnit}.trim.toLowerCase match {
@@ -326,7 +326,7 @@ object TGlobals:
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to fieldOfDateTime: ${other}"))
@@ -346,7 +346,7 @@ object TGlobals:
     val argX = "x" // auto
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argX} match {
@@ -357,7 +357,7 @@ object TGlobals:
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to isDefined: ${other}"))
@@ -377,7 +377,7 @@ object TGlobals:
     val argY = "y" // auto
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""(${argX}, ${argY}) match {
@@ -388,7 +388,7 @@ object TGlobals:
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to coalesce: ${other}"))
@@ -398,14 +398,14 @@ object TGlobals:
    */
   private def today(s: Any): Either[Throwable, Any] =
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""LocalDate.now(ZoneId.of("Z"))
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to today: ${other}"))
@@ -415,14 +415,14 @@ object TGlobals:
    */
   private def now(s: Any): Either[Throwable, Any] =
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""OffsetDateTime.now(ZoneId.of("Z"))
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to now: ${other}"))
@@ -445,14 +445,14 @@ object TGlobals:
       n.setScale(p, BigDecimal.RoundingMode.HALF_UP)
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.HALF_UP)
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to round: ${other}"))
@@ -476,14 +476,14 @@ object TGlobals:
       n.setScale(p, BigDecimal.RoundingMode.DOWN)
 
     s match
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.DOWN)
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to truncate: ${other}"))

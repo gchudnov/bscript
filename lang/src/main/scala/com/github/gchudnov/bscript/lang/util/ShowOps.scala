@@ -180,6 +180,21 @@ object ShowOps:
 
   /**
    * Wraps the collection only if it is multiline
+   * {{{
+   * example 1:
+   *   '(', ')'
+   *   123
+   *   456
+   * output 1:
+   *   (123
+   *   456)
+   *
+   * example 2:
+   *   '(', ')'
+   *   123
+   * output 2:
+   *   123
+   * }}}
    */
   def wrapIfMultiline(start: String, end: String, lines: Seq[String]): Seq[String] =
     if lines.size > 1 then wrap(start, end, lines)

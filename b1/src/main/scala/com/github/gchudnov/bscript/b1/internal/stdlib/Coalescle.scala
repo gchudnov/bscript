@@ -51,7 +51,7 @@ private[internal] object Coalesce:
                        x
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case _: Scala2State =>
+      case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""(${argX}, ${argY}) match {
@@ -62,7 +62,7 @@ private[internal] object Coalesce:
                             |""".stripMargin
                        )
                      )
-        yield Scala2State(lines = lines)
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to coalesce: ${other}"))

@@ -1,4 +1,8 @@
-- TODO: add read to read variable from a string (JSON)
+- TODO: add read to read variable from a string (JSON) -- readFile, deserialize(var, string)
+
+- TODO: move KeepASTVisitor to Rewriter
+
+
 - TODO: improve b1 debugging capabilities (trace state change in function calls)
 
 - TODO: add cli to eval AST
