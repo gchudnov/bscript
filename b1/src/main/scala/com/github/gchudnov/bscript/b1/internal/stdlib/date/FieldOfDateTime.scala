@@ -24,7 +24,7 @@ private[internal] object FieldOfDateTime:
       Block(
         CompiledExpr(callback = FieldOfDateTime.fieldOfDateTime, retType = TypeRef(typeNames.i32Type))
       ),
-      Seq(ComAnn("return the specified part of date-time as an integer value"), StdAnn())
+      Seq(ComAnn("Returns the specified field of date-time as an integer value"), StdAnn())
     )
 
   /**
@@ -66,7 +66,12 @@ private[internal] object FieldOfDateTime:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""${argUnit}.trim.toLowerCase match {
+                         s"""val unitDays: String    = "${unitDays}"
+                            |val unitHours: String   = "${unitHours}"
+                            |val unitMinutes: String = "${unitMinutes}"
+                            |val unitSeconds: String = "${unitSeconds}"
+                            |
+                            |${argUnit}.trim.toLowerCase match {
                             |  case `unitDays` =>
                             |    ${argValue}.getDayOfMonth
                             |  case `unitHours` =>
@@ -75,13 +80,13 @@ private[internal] object FieldOfDateTime:
                             |    ${argValue}.getMinute
                             |  case `unitSeconds` =>
                             |    ${argValue}.getSecond
-                            |  case other =>
+                            |  case _ =>
                             |    throw new RuntimeException(s"Unexpected unit of time was passed to fieldOfDateTime: $${${argUnit}}")
                             |}
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to fieldOfDateTime: ${other}"))
