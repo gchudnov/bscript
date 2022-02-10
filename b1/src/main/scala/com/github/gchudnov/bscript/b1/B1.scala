@@ -41,9 +41,12 @@ sealed trait B1:
   /**
    * Build AST
    */
-  def build(ast0: AST): Either[Throwable, AstMeta] =
-    import Block.*
-    Builder.build(prelude :+ ast0, types, typeCheckLaws)
+  def build(ast0: AST, opts: B1Options = B1Options.default): Either[Throwable, AstMeta] =
+    val ast = if opts.hasPrelude then
+      import Block.*
+      prelude :+ ast0
+    else ast0
+    Builder.build(ast, types, typeCheckLaws)
 
   /**
    * Interpret AST that was built before
@@ -58,13 +61,13 @@ sealed trait B1:
   /**
    * Run - Build & Interpret
    */
-  def run(ast0: AST): Either[Throwable, Cell] =
-    build(ast0).flatMap(interpret)
+  def run(ast0: AST, opts: B1Options = B1Options.default): Either[Throwable, Cell] =
+    build(ast0, opts).flatMap(interpret)
 
   /**
    * Translate AST to Scala
    */
-  def translate(ast0: AST): Either[Throwable, String] =
-    build(ast0).flatMap(astMeta => Translator.translateScala(astMeta.ast, astMeta.meta, typeNames))
+  def translate(ast0: AST, opts: B1Options = B1Options.default): Either[Throwable, String] =
+    build(ast0, opts).flatMap(astMeta => Translator.translateScala(astMeta.ast, astMeta.meta, typeNames))
 
 object B1 extends B1

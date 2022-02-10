@@ -53,7 +53,7 @@ final class B1Spec extends TestSpec:
       "produce a new AST" in {
         val ast0 = astB
 
-        val errOrRes = B1.build(ast0)
+        val errOrRes = B1.build(ast0, B1Options.default.withPrelude(false))
         errOrRes match
           case Right(AstMeta(ast1, meta1)) =>
             val block    = ast1.asInstanceOf[Block]
@@ -97,10 +97,10 @@ final class B1Spec extends TestSpec:
     }
 
     "AST is translated" should {
-      "produce Scala code" in {
+      "produce Scala code without prelude" in {
         val ast0 = astB
 
-        val errOrRes = B1.translate(ast0)
+        val errOrRes = B1.translate(ast0, B1Options.default.withPrelude(false))
         errOrRes match
           case Right(code) =>
             code mustBe """{
@@ -108,6 +108,18 @@ final class B1Spec extends TestSpec:
                           |  var y: Int = 20
                           |  y
                           |}""".stripMargin
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "produce Scala code with prelude" in {
+        val ast0 = astB
+
+        val errOrRes = B1.translate(ast0)
+        errOrRes match
+          case Right(code) =>
+            println(code)
+            code.contains("var y: Int = 20") mustBe true
           case Left(t) =>
             fail("Should be 'right", t)
       }

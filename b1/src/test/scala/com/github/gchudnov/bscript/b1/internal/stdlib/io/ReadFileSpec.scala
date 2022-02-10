@@ -17,9 +17,9 @@ import java.nio.file.Paths
 import scala.util.control.Exception.allCatch
 
 final class ReadFileSpec extends TestSpec:
-  "ReadFile" when {
-    val typeNames = B1.typeNames
+  private val typeNames = B1.typeNames
 
+  "ReadFile" when {
     "file is read in AST" should {
       "capture the contents" in {
         val data = "Hello World"

@@ -25,7 +25,7 @@ private[internal] object AdjustDateTime:
       Block(
         CompiledExpr(callback = AdjustDateTime.offsetDateTime, retType = TypeRef(typeNames.datetimeType))
       ),
-      Seq(ComAnn("offsets the provided date-time"), StdAnn())
+      Seq(ComAnn("Offsets the provided date-time"), StdAnn())
     )
 
   /**
@@ -69,7 +69,12 @@ private[internal] object AdjustDateTime:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""${argUnit}.trim.toLowerCase match {
+                         s"""val unitDays: String    = "${unitDays}"
+                            |val unitHours: String   = "${unitHours}"
+                            |val unitMinutes: String = "${unitMinutes}"
+                            |val unitSeconds: String = "${unitSeconds}"
+                            |
+                            |${argUnit}.trim.toLowerCase match {
                             |  case `unitDays` =>
                             |    ${argValue}.plusDays(${argOffset}.toLong)
                             |  case `unitHours` =>
@@ -78,13 +83,13 @@ private[internal] object AdjustDateTime:
                             |    ${argValue}.plusMinutes(${argOffset}.toLong)
                             |  case `unitSeconds` =>
                             |    ${argValue}.plusSeconds(${argOffset}.toLong)
-                            |  case other =>
+                            |  case _ =>
                             |    throw new RuntimeException(s"Unexpected unit of time was passed to offsetDateTime: $${${argUnit}}")
                             |}
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to offsetDateTime: ${other}"))
