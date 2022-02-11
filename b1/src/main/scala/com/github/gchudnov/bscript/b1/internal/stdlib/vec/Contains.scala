@@ -35,9 +35,11 @@ private[internal] object Contains:
         for
           xCell  <- ms.fetch(CellPath(argX))
           xsCell <- ms.fetch(CellPath(argXS))
-          retVal = (xCell, xsCell) match
-                     case (x: Cell, xs: VecCell) =>
-                       BoolCell(xs.value.contains(x))
+          retVal <- (xCell, xsCell) match
+                      case (x: Cell, xs: VecCell) =>
+                        Right(BoolCell(xs.value.contains(x)))
+                      case (x, xs) =>
+                        Left(new B1Exception(s"Unexpected parameter types passed to contains: (${x}, ${xs})"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -51,4 +53,4 @@ private[internal] object Contains:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to coalesce: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to contains: ${other}"))
