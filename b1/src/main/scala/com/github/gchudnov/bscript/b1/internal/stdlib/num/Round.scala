@@ -61,7 +61,29 @@ private[internal] object Round:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.HALF_UP)
+                         s"""// NOTE: Add [T: Fractional] to the method
+                            |
+                            |def roundF64(n: Double, p: Int): Double = {
+                            |  val s: Double = math.pow(10.toDouble, p.toDouble)
+                            |  math.round(n * s) / s
+                            |}
+                            |
+                            |def roundF32(n: Float, p: Int): Float =
+                            |  roundF64(n.toDouble, p).toFloat
+                            |
+                            |def roundDec(n: BigDecimal, p: Int): BigDecimal =
+                            |  n.setScale(p, BigDecimal.RoundingMode.HALF_UP)
+                            |
+                            |${argValue} match {
+                            |  case x: Double =>
+                            |    roundF64(x, ${argPrecision}).asInstanceOf[T]
+                            |  case x: Float =>
+                            |    roundF32(x, ${argPrecision}).asInstanceOf[T]
+                            |  case x: BigDecimal =>
+                            |    roundDec(x, ${argPrecision}).asInstanceOf[T]
+                            |  case _ =>
+                            |    throw new RuntimeException("Cannot round the provided type")
+                            |}
                             |""".stripMargin
                        )
                      )
