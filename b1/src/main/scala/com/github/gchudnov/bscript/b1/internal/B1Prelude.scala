@@ -5,6 +5,7 @@ import com.github.gchudnov.bscript.b1.internal.stdlib.io.*
 import com.github.gchudnov.bscript.b1.internal.stdlib.num.*
 import com.github.gchudnov.bscript.b1.internal.stdlib.str.*
 import com.github.gchudnov.bscript.b1.internal.stdlib.date.*
+import com.github.gchudnov.bscript.b1.internal.stdlib.vec.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -22,6 +23,7 @@ private[b1] object B1Prelude:
     Round.decl,
     Truncate.decl,
     StrLen.decl,
+    Contains.decl,
     IsDefined.decl,
     Coalesce.decl
   )

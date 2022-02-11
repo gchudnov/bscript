@@ -68,3 +68,6 @@ private[internal] object ReadFile:
           imports <-
             Right(Seq("scala.util.control.Exception.allCatch", "java.nio.file.Paths", "java.nio.file.Files", "java.nio.charset.StandardCharsets"))
         yield s.copy(lines = lines, imports = s.imports ++ imports)
+
+      case other =>
+        Left(new B1Exception(s"Unexpected state passed to readFile: ${other}"))
