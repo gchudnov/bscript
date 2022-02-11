@@ -53,7 +53,8 @@ private[internal] object IsDefined:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""${argX} match {
+                         s"""// NOTE: Add [T] to the method
+                            |${argX} match {
                             |  case null => false
                             |  case None => false
                             |  case _ => true

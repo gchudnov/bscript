@@ -54,7 +54,8 @@ private[internal] object Coalesce:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""(${argX}, ${argY}) match {
+                         s"""// NOTE: Add [T] to the method
+                            |(${argX}, ${argY}) match {
                             |  case (null, _) => ${argY}
                             |  case (None, _) => ${argY}
                             |  case _ => ${argX}

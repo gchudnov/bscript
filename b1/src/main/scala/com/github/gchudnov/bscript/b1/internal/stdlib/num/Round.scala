@@ -81,8 +81,8 @@ private[internal] object Round:
                             |    roundF32(x, ${argPrecision}).asInstanceOf[T]
                             |  case x: BigDecimal =>
                             |    roundDec(x, ${argPrecision}).asInstanceOf[T]
-                            |  case _ =>
-                            |    throw new RuntimeException("Cannot round the provided type")
+                            |  case other =>
+                            |    throw new RuntimeException(s"Cannot round the provided value: $${other}, the type is not supported")
                             |}
                             |""".stripMargin
                        )

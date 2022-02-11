@@ -22,7 +22,7 @@ private[internal] object Truncate:
       Block(
         CompiledExpr(callback = Truncate.truncate, retType = DeclType(Var(SymbolRef("value"))))
       ),
-      Seq(ComAnn("truncates the provided value with the given precision"), StdAnn())
+      Seq(ComAnn("Truncates the provided value with the given precision"), StdAnn())
     )
 
   /**
@@ -62,7 +62,32 @@ private[internal] object Truncate:
       case s: Scala2State =>
         for lines <- Right(
                        split(
-                         s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.DOWN)
+                         s"""// NOTE: Add [T: Fractional] to the method
+                            |
+                            |def truncateF64(n: Double, p: Int): Double = {
+                            |  val s: Double = math.pow(10.toDouble, p.toDouble)
+                            |  if (n < 0.0)
+                            |    math.ceil(n * s) / s
+                            |  else 
+                            |    math.round(n * s) / s
+                            |  }
+                            |
+                            |def truncateF32(n: Float, p: Int): Float =
+                            |  truncateF64(n.toDouble, p).toFloat
+                            |
+                            |def truncateDec(n: BigDecimal, p: Int): BigDecimal =
+                            |  n.setScale(p, BigDecimal.RoundingMode.DOWN)
+                            |    
+                            |${argValue} match {
+                            |  case x: Double =>
+                            |    truncateF64(x, ${argPrecision}).asInstanceOf[T]
+                            |  case x: Float =>
+                            |    truncateF32(x, ${argPrecision}).asInstanceOf[T]
+                            |  case x: BigDecimal =>
+                            |    truncateDec(x, ${argPrecision}).asInstanceOf[T]
+                            |  case other =>
+                            |    throw new RuntimeException(s"Cannot truncate the provided value: $${other}, the type is not supported")
+                            |}
                             |""".stripMargin
                        )
                      )

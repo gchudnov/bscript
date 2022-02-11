@@ -21,7 +21,7 @@ private[internal] object StrLen:
       Block(
         CompiledExpr(callback = StrLen.strLen, retType = TypeRef(typeNames.i32Type))
       ),
-      Seq(ComAnn("returns the length of the provided string"), StdAnn())
+      Seq(ComAnn("Returns the length of the provided string"), StdAnn())
     )
 
   /**
