@@ -63,6 +63,24 @@ final class TypeCheckVisitorSpec extends TestSpec:
           case Left(t) => fail("Should be 'right", t)
       }
 
+      "can reference auto-type in vectors" in {
+        val t = Block(
+          VarDecl(TypeRef(typeNames.autoType), "x", IntVal(10)),
+          VarDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs", Vec(List(IntVal(10), IntVal(20)))),
+          Var(SymbolRef("xs"))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(TypeCheckVisitorState(ast, meta)) =>
+            val block    = ast.asInstanceOf[Block]
+            val xsVar     = block.statements(2).asInstanceOf[Var] // NOTE: line 3 (last line in the block)
+
+            xsVar.evalType.name mustBe (s"[]${typeNames.i32Type}")
+
+          case Left(t) => fail("Should be 'right", t)
+      }
+
       /**
        * {{{
        *   // globals
