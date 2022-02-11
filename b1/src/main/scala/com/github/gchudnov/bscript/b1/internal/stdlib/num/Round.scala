@@ -22,11 +22,11 @@ private[internal] object Round:
       Block(
         CompiledExpr(callback = Round.round, retType = DeclType(Var(SymbolRef("value"))))
       ),
-      Seq(ComAnn("rounds the provided value with the given precision"), StdAnn())
+      Seq(ComAnn("Rounds the provided value with the given precision"), StdAnn())
     )
 
   /**
-   * Returns the rounded numerical value (3.1234, 2) -> 3.12 (3.1264, 2) -> 3.13
+   * Returns the rounded numerical value (3.1234, 2) -> 3.12 ; (3.1264, 2) -> 3.13
    */
   private def round(s: Any): Either[Throwable, Any] =
     val argValue     = "value"     // auto: f32, f64, dec

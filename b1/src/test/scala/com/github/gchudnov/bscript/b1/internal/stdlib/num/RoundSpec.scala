@@ -14,7 +14,21 @@ final class RoundSpec extends TestSpec:
   "Round" when {
     "a number is rounded" should {
       "round f32" in {
-        // TODO: impl it
+        val t = Block(
+          VarDecl(
+            TypeRef(typeNames.f32Type),
+            "x",
+            Call(SymbolRef("round"), List(FloatVal(3.1234f), IntVal(2)))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = B1.run(t)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe FloatCell(3.12f)
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
     }
   }

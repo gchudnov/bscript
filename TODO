@@ -1,3 +1,5 @@
+- TODO: add vec directory, methods: Append(T, vec) -> vec, Contains(T, vec) -> Bool
+
 - TODO: add read to read variable from a string (JSON) -- deserialize(var, string)?
         OR we can init struct field-by field (?)
 
