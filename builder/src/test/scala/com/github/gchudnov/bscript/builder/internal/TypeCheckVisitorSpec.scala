@@ -157,6 +157,48 @@ final class TypeCheckVisitorSpec extends TestSpec:
 
           case Left(t) => fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     fn contains(auto x, decltype(x)[] xs) -> bool { ... }
+       *
+       *     bool x = contains(1, []int{ 1, 2, 3 });
+       *     x;
+       *   }
+       * }}}
+       */
+      "be allowed in function arguments" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.boolType),
+            "contains",
+            List(
+              ArgDecl(TypeRef(typeNames.autoType), "x"),
+              ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
+            ),
+            Block(
+              CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.boolType))
+            ),
+            Seq(ComAnn("Tests whether the list contains the given element."), StdAnn())
+          ),
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(IntVal(1), Vec(List(IntVal(1), IntVal(2), IntVal(3)))))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(TypeCheckVisitorState(ast, meta)) =>
+            ()
+//            typeNameForVarInScope(meta)("x", "contains") mustBe (Right(typeNames.autoType))
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
 
     "no type promotion is needed" should {
