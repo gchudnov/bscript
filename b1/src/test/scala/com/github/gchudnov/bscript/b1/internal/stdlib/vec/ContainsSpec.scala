@@ -13,7 +13,45 @@ final class ContainsSpec extends TestSpec:
 
   "Contains" when {
     "look for an element in the collection" should {
-      "return TRUE if the value is in the collection" in {
+
+      "return TRUE if str-value is in the collection" in {
+        val t = Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(StrVal("Carol"), Vec(List(StrVal("Alice"), StrVal("Bob"), StrVal("Carol")))))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = B1.run(t)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe BoolCell(true)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "return FALSE if str-value is not in the collection" in {
+        val t = Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(StrVal("CAROL"), Vec(List(StrVal("Alice"), StrVal("Bob"), StrVal("Carol")))))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = B1.run(t)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe BoolCell(false)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+
+      "return TRUE if int-value is in the collection" in {
         val t = Block(
           VarDecl(
             TypeRef(typeNames.boolType),
@@ -28,11 +66,10 @@ final class ContainsSpec extends TestSpec:
           case Right(cell) =>
             cell mustBe BoolCell(true)
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
-      "return FALSE if the value is in the collection" in {
+      "return FALSE if the value is not in the collection" in {
         val t = Block(
           VarDecl(
             TypeRef(typeNames.boolType),
@@ -47,7 +84,24 @@ final class ContainsSpec extends TestSpec:
           case Right(cell) =>
             cell mustBe BoolCell(false)
           case Left(t) =>
-            println(t)
+            fail("Should be 'right", t)
+      }
+
+      "return FALSE if the collection is empty" in {
+        val t = Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(IntVal(4), Vec()))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = B1.run(t)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe BoolCell(false)
+          case Left(t) =>
             fail("Should be 'right", t)
       }      
     }

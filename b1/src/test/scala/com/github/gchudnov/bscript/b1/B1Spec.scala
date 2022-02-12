@@ -118,7 +118,6 @@ final class B1Spec extends TestSpec:
         val errOrRes = B1.translate(ast0)
         errOrRes match
           case Right(code) =>
-            println(code)
             code.contains("var y: Int = 20") mustBe true
           case Left(t) =>
             fail("Should be 'right", t)

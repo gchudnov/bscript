@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.b1.internal.stdlib
 
 import com.github.gchudnov.bscript.b1.B1
 import com.github.gchudnov.bscript.b1.TestSpec
-import com.github.gchudnov.bscript.interpreter.memory.{IntCell, NothingCell}
+import com.github.gchudnov.bscript.interpreter.memory.{ IntCell, NothingCell }
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.symbols.TypeRef

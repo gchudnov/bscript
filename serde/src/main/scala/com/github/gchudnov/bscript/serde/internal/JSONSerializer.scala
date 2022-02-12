@@ -8,9 +8,9 @@ import org.json4s.native.JsonMethods.*
 
 private[serde] final class JSONSerializer extends Serializer[SerdeException, AST]:
   override def serialize(value: AST): Either[SerdeException, String] =
-    val keeper: KeepASTVisitor = KeepASTVisitor.make(KeepASTVisitor.hasNoStdAnn)
+    val keeper: KeepASTVisitor    = KeepASTVisitor.make(KeepASTVisitor.hasNoStdAnn)
     val ser: JSONSerializeVisitor = JSONSerializeVisitor.make()
-    val s: Unit = ()
+    val s: Unit                   = ()
 
     val errOrRes =
       for

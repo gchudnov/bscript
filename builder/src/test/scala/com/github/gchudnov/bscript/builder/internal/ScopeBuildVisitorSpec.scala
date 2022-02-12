@@ -236,7 +236,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        *   // globals
        *   {
        *     fn contains(auto x, decltype(x)[] xs) -> bool { ... }
-       *     
+       *
        *     bool x = contains(1, []int{ 1, 2, 3 });
        *     x;
        *   }

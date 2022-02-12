@@ -73,8 +73,8 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(TypeCheckVisitorState(ast, meta)) =>
-            val block    = ast.asInstanceOf[Block]
-            val xsVar     = block.statements(2).asInstanceOf[Var] // NOTE: line 3 (last line in the block)
+            val block = ast.asInstanceOf[Block]
+            val xsVar = block.statements(2).asInstanceOf[Var] // NOTE: line 3 (last line in the block)
 
             xsVar.evalType.name mustBe (s"[]${typeNames.i32Type}")
 

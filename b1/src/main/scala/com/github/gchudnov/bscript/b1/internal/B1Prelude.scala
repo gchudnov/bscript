@@ -23,6 +23,7 @@ private[b1] object B1Prelude:
     Round.decl,
     Truncate.decl,
     StrLen.decl,
+    Append.decl,
     Contains.decl,
     IsDefined.decl,
     Coalesce.decl

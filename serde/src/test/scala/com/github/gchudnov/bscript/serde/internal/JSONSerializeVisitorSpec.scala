@@ -47,5 +47,5 @@ final class JSONSerializeVisitorSpec extends TestSpec:
 
   private def eval(ast0: AST): Either[Throwable, JValue] =
     val v1: JSONSerializeVisitor = JSONSerializeVisitor.make()
-    val s1: Unit = ()
+    val s1: Unit                 = ()
     ast0.visit(s1, v1)

@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.lang.util.{Casting, Transform}
+import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 
 import scala.annotation.tailrec
 
@@ -623,16 +623,14 @@ private[internal] final class TypeCheckVisitor(
    * 3) (dst) type must be auto
    */
   @tailrec
-  private def canAssignTo(srcEvalType: Type, srcPromoteToType: Option[Type], dstType: Type): Boolean = {
-    (srcEvalType, dstType) match {
+  private def canAssignTo(srcEvalType: Type, srcPromoteToType: Option[Type], dstType: Type): Boolean =
+    (srcEvalType, dstType) match
       case (VectorType(sType), VectorType(dType)) =>
         canAssignTo(sType, srcPromoteToType, dType)
       case (sType, DeclType(expr)) =>
         canAssignTo(sType, srcPromoteToType, expr.evalType)
       case (sType, dType) =>
         ((srcEvalType.name == dstType.name) || (srcPromoteToType.exists(promoted => promoted.name == dstType.name)) || (dstType == types.autoType))
-    }
-  }
 
   /**
    * Checks the result of promotion, None if promotion is not needed.

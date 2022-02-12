@@ -23,7 +23,7 @@ private[internal] object Contains:
       Block(
         CompiledExpr(callback = Contains.contains, retType = TypeRef(typeNames.boolType))
       ),
-      Seq(ComAnn("Tests whether the list contains the given element."), StdAnn())
+      Seq(ComAnn("Tests whether the collection contains the given element."), StdAnn())
     )
 
   private def contains(s: Any): Either[Throwable, Any] =
@@ -39,14 +39,14 @@ private[internal] object Contains:
                       case (x: Cell, xs: VecCell) =>
                         Right(BoolCell(xs.value.contains(x)))
                       case (x, xs) =>
-                        Left(new B1Exception(s"Unexpected parameter types passed to contains: (${x}, ${xs})"))
+                        Left(new B1Exception(s"Unexpected parameter types are passed to contains: (${x}, ${xs})"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
         for lines <- Right(
                        split(
                          s"""// NOTE: Add [T] to the method
-                            |???
+                            |xs.contains(x)
                             |""".stripMargin
                        )
                      )

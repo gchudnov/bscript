@@ -46,7 +46,7 @@ final class StrLenSpec extends TestSpec:
           case Right(cell) =>
             cell mustBe IntCell(0)
           case Left(t) =>
-            fail("Should be 'right", t)        
+            fail("Should be 'right", t)
       }
     }
   }
