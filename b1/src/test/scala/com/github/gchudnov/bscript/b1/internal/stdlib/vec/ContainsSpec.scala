@@ -50,7 +50,6 @@ final class ContainsSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-
       "return TRUE if int-value is in the collection" in {
         val t = Block(
           VarDecl(
@@ -103,6 +102,6 @@ final class ContainsSpec extends TestSpec:
             cell mustBe BoolCell(false)
           case Left(t) =>
             fail("Should be 'right", t)
-      }      
+      }
     }
   }
