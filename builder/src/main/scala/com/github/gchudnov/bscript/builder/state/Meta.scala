@@ -227,7 +227,7 @@ final case class Meta(
     yield types
 
   /**
-   * Gets aMap { SVar -> Type} for the arguments of a Method
+   * Gets a Map { SVar -> Type} for the arguments of a Method
    */
   def methodArgTypeMap(m: SMethod): Either[Throwable, Map[SVar, Type]] =
     for

@@ -1,15 +1,16 @@
 package com.github.gchudnov.bscript.builder.internal
 
-import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.*
-import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
+import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.lang.util.Casting
+import com.github.gchudnov.bscript.lang.util.{Casting, Transform}
+
+import scala.annotation.tailrec
 
 /**
  * (3-PASS)
@@ -32,8 +33,8 @@ private[internal] final class TypeCheckVisitor(
   types: Types,
   typeCheckLaws: TypeCheckLaws
 ) extends TreeVisitor[TypeCheckState, TypeCheckState]:
-  import TypeCheckVisitor.*
   import Casting.*
+  import TypeCheckVisitor.*
 
   private val commonTable: CommonResult                = typeCheckLaws.commonTable
   private val additionTable: AdditionResult            = typeCheckLaws.additionTable
@@ -378,10 +379,13 @@ private[internal] final class TypeCheckVisitor(
 
   override def visit(s: TypeCheckState, n: ArgDecl): Either[Throwable, TypeCheckState] =
     for
-      evalType <- Right(types.voidType)
-      n1        = n.copy(evalType = evalType)
-      ss1       = s.meta.redefineASTScope(n, n1)
-    yield s.copy(ast = n1, meta = ss1)
+      sVar                <- n.symbol.asSVar
+      st                  <- visitType(s, n.aType)
+      StateType(s1, aType) = st
+      evalType            <- Right(types.voidType)
+      n1                   = n.copy(aType = aType, evalType = evalType)
+      ss1                  = s1.meta.defineVarType(sVar, aType).redefineASTScope(n, n1)
+    yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: TypeCheckState, n: VarDecl): Either[Throwable, TypeCheckState] =
     for
@@ -618,8 +622,17 @@ private[internal] final class TypeCheckVisitor(
    *
    * 3) (dst) type must be auto
    */
-  private def canAssignTo(srcEvalType: Type, srcPromoteToType: Option[Type], dstType: Type): Boolean =
-    ((srcEvalType.name == dstType.name) || (srcPromoteToType.exists(promoted => promoted.name == dstType.name)) || (dstType == types.autoType))
+  @tailrec
+  private def canAssignTo(srcEvalType: Type, srcPromoteToType: Option[Type], dstType: Type): Boolean = {
+    (srcEvalType, dstType) match {
+      case (VectorType(sType), VectorType(dType)) =>
+        canAssignTo(sType, srcPromoteToType, dType)
+      case (sType, DeclType(expr)) =>
+        canAssignTo(sType, srcPromoteToType, expr.evalType)
+      case (sType, dType) =>
+        ((srcEvalType.name == dstType.name) || (srcPromoteToType.exists(promoted => promoted.name == dstType.name)) || (dstType == types.autoType))
+    }
+  }
 
   /**
    * Checks the result of promotion, None if promotion is not needed.
@@ -630,7 +643,7 @@ private[internal] final class TypeCheckVisitor(
   private def visitType(s: TypeCheckState, t: Type): Either[Throwable, StateType] =
     t match
       case VectorType(elementType) =>
-        visitType(s, elementType).map(st => st.copy(aType = VectorType(st.aType)))
+        visitType(s, elementType).map(st => st.copy(xType = VectorType(st.xType)))
       case DeclType(expr) =>
         expr
           .visit(s, this)
@@ -662,5 +675,5 @@ private[builder] object TypeCheckVisitor:
 
   private final case class StateType(
     state: TypeCheckState,
-    aType: Type
+    xType: Type
   )

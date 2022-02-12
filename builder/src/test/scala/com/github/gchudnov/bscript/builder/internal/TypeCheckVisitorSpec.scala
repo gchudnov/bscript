@@ -194,8 +194,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(TypeCheckVisitorState(ast, meta)) =>
-            ()
-//            typeNameForVarInScope(meta)("x", "contains") mustBe (Right(typeNames.autoType))
+            typeNameForVarInScope(meta)("x", "contains") mustBe (Right(typeNames.autoType))
           case Left(t) =>
             fail("Should be 'right", t)
       }

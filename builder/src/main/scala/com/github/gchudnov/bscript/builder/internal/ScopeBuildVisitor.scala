@@ -1,13 +1,12 @@
 package com.github.gchudnov.bscript.builder.internal
 
+import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.{ ScopeBuildState, StateType }
+import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
-import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.{ ScopeBuildState, StateType }
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.builder.state.Meta
-import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.builder.util.Gen
-import com.github.gchudnov.bscript.lang.util.Casting
+import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 
 /**
  * (1-PASS)
@@ -444,7 +443,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
   private def visitType(s: ScopeBuildState, t: Type): Either[Throwable, StateType] =
     t match
       case VectorType(elementType) =>
-        visitType(s, elementType).map(st => st.copy(aType = VectorType(st.aType)))
+        visitType(s, elementType).map(st => st.copy(xType = VectorType(st.xType)))
       case DeclType(expr) =>
         expr
           .visit(s, this)
@@ -478,5 +477,5 @@ private[builder] object ScopeBuildVisitor:
 
   private final case class StateType(
     state: ScopeBuildState,
-    aType: Type
+    xType: Type
   )

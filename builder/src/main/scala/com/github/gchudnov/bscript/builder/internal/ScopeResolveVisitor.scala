@@ -1,12 +1,11 @@
 package com.github.gchudnov.bscript.builder.internal
 
+import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
+import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
-import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.builder.state.Meta
-import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.lang.util.Casting
+import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 
 /**
  * (2-PASS)
@@ -64,8 +63,8 @@ import com.github.gchudnov.bscript.lang.util.Casting
  * ascend. When we see a symbol, we define or resolve it in the current scope.
  */
 private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeResolveState, ScopeResolveState]:
-  import ScopeResolveVisitor.*
   import Casting.*
+  import ScopeResolveVisitor.*
 
   override def visit(s: ScopeResolveState, n: Init): Either[Throwable, ScopeResolveState] =
     for
@@ -103,7 +102,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       st                  <- visitType(s, scope, n.fType)
       StateType(s1, fType) = st
       n1                   = n.copy(fType = fType, symbol = sVar)
-      ss1                  = s1.meta.defineVarType(sVar, st.aType).redefineASTScope(n, n1)
+      ss1                  = s1.meta.defineVarType(sVar, st.xType).redefineASTScope(n, n1)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
@@ -470,7 +469,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
   private def visitType(s: ScopeResolveState, scope: Scope, t: Type): Either[Throwable, StateType] =
     t match
       case VectorType(elementType) =>
-        visitType(s, scope, elementType).map(st => st.copy(aType = VectorType(st.aType)))
+        visitType(s, scope, elementType).map(st => st.copy(xType = VectorType(st.xType)))
       case DeclType(expr) =>
         expr
           .visit(s, this)
@@ -500,5 +499,5 @@ private[builder] object ScopeResolveVisitor:
 
   private final case class StateType(
     state: ScopeResolveState,
-    aType: Type
+    xType: Type
   )
