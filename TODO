@@ -1,5 +1,5 @@
-- TODO: add read to read variable from a string (JSON) -- deserialize(var, string)?
-        OR we can init struct field-by field (?)
+- TODO: how to initialize a struct?
+
 
 - TODO: move KeepASTVisitor to Rewriter
 
