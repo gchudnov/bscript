@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.internal.scala2
+package com.github.gchudnov.bscript.translator.internal.scala2j
 
 import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.translator.laws.{ Initializer, TypeConverter }

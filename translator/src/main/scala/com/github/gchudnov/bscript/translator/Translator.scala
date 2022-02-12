@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2Visitor
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 import com.github.gchudnov.bscript.translator.internal.scala2.ScalaTranslateLaws
-import com.github.gchudnov.bscript.translator.internal.scala2.ScalaJTranslateLaws
+import com.github.gchudnov.bscript.translator.internal.scala2j.ScalaJTranslateLaws
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 

@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.b1.internal.*
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.ast.Block
 import com.github.gchudnov.bscript.interpreter.memory.Cell
-import com.github.gchudnov.bscript.lang.types.Types
+import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
 import com.github.gchudnov.bscript.serde.JSONSerde
 import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.builder.AstMeta
@@ -15,8 +15,8 @@ import com.github.gchudnov.bscript.translator.Translator
 
 sealed trait B1:
 
-  val typeNames = B1TypeNames.make()
-  val types     = Types.make(typeNames)
+  val typeNames: TypeNames = B1TypeNames.make()
+  val types: Types = Types.make(typeNames)
 
   private val typeCheckLaws = B1TypeCheckLaws.make(types)
 

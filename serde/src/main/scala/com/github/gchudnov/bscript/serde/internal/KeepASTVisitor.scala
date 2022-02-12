@@ -2,9 +2,8 @@ package com.github.gchudnov.bscript.serde.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
+import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 import com.github.gchudnov.bscript.serde.internal.KeepASTVisitor.KeepPredicate
-import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.lang.util.Casting
 
 /**
  * Removes AST-nodes that are matching the given predicate. Used to remove [std] methods before serialization.
@@ -192,10 +191,8 @@ private[internal] final class KeepASTVisitor(pred: KeepPredicate) extends TreeVi
     visitAST(n)
 
   private def visitAST(n: AST): Either[Throwable, AST] =
-    Right(pred(n) match
-      case true  => n
-      case false => NothingVal()
-    )
+    if pred(n) then Right(n)
+    else Right(NothingVal())
 
 private[internal] object KeepASTVisitor:
 

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.b1
+package com.github.gchudnov.bscript.b1.internal
 
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.builder.state.Meta

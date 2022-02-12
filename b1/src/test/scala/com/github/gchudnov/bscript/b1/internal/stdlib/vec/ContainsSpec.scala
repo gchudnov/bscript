@@ -13,7 +13,7 @@ final class ContainsSpec extends TestSpec:
 
   "Contains" when {
     "look for an element in the collection" should {
-      "locate it if the value is in the collection" in {
+      "return TRUE if the value is in the collection" in {
         val t = Block(
           VarDecl(
             TypeRef(typeNames.boolType),
@@ -31,9 +31,24 @@ final class ContainsSpec extends TestSpec:
             println(t)
             fail("Should be 'right", t)
       }
+
+      "return FALSE if the value is in the collection" in {
+        val t = Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(IntVal(4), Vec(List(IntVal(1), IntVal(2), IntVal(3)))))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = B1.run(t)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe BoolCell(false)
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }      
     }
   }
-
-  /*
-  com.github.gchudnov.bscript.lang.ast.AstException: Cannot convert argument 'xs' type from '[]i32' to '[]type:UNDEFINED' in 'contains' method call
-  */

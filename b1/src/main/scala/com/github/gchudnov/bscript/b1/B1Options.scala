@@ -6,5 +6,5 @@ final case class B1Options(
   def withPrelude(hasPrelude: Boolean): B1Options = copy(hasPrelude = hasPrelude)
 
 object B1Options:
-  val default =
+  val default: B1Options =
     B1Options()
