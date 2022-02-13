@@ -42,6 +42,41 @@ final class JSONSerializeVisitorSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      "represent struct initialization as a string" in {
+        val t = Block(
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> IntVal(1),
+                "s" -> StrVal("alice"),
+                "b" -> StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> IntVal(2)
+                  )
+                )
+              )
+            )
+          )
+        )
+
+        val expected = resourceToString("data/struct-init-ast.json").toTry.get
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(jValue) =>
+            val actual = compact(render(jValue))
+            println(actual)
+            actual.mustBe(expected)
+          case Left(t) =>
+            fail("Should be 'right", t)        
+      }
     }
   }
 
