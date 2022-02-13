@@ -1,9 +1,9 @@
-package com.github.gchudnov.bscript.b1.internal.laws
+package com.github.gchudnov.bscript.interpreter.laws
 
 import com.github.gchudnov.bscript.interpreter.laws.BoolArithmetic
 import com.github.gchudnov.bscript.interpreter.memory.*
 
-final class B1BasicBoolArithmetic() extends BoolArithmetic:
+final class IBoolArithmetic() extends BoolArithmetic:
 
   override def not(value: Cell): Either[Throwable, Cell] = value match
     case BoolCell(x) => Right(BoolCell(!x))

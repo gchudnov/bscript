@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.interpreter.laws
 import com.github.gchudnov.bscript.interpreter.laws.Comparator
 import com.github.gchudnov.bscript.interpreter.memory.*
 
-final class IBasicComparator() extends Comparator:
+final class IComparator() extends Comparator:
 
   override def less(lhs: Cell, rhs: Cell): Either[Throwable, Cell] = (lhs, rhs) match
     case (IntCell(x), IntCell(y))         => Right(BoolCell(x < y))

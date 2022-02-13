@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.Transform
 
-final class B1BasicInitializer(types: Types, meta: Meta) extends Initializer:
+final class B1Initializer(types: Types, meta: Meta) extends Initializer:
 
   private val voidTypeName: String = types.voidType.name
   private val boolTypeName: String = types.boolType.name

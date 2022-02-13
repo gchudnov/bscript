@@ -3,9 +3,7 @@ package com.github.gchudnov.bscript.b1.internal.laws
 import com.github.gchudnov.bscript.interpreter.laws.Arithmetic
 import com.github.gchudnov.bscript.interpreter.memory.*
 
-// TODO: rename - remove 'Basic'
-
-final class B1BasicArithmetic() extends Arithmetic:
+final class B1Arithmetic() extends Arithmetic:
 
   override def add(lhs: Cell, rhs: Cell): Either[Throwable, Cell] = (lhs, rhs) match
     case (IntCell(x), IntCell(y))         => Right(IntCell(x + y))

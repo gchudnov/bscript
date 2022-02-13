@@ -14,9 +14,9 @@ final case class IInterpretLaws(
 
 object IInterpretLaws:
   def make(types: Types, meta: Meta): InterpreterLaws = IInterpretLaws(
-    mathLaws = new IBasicArithmetic(),
-    boolLaws = new IBasicBoolArithmetic(),
-    cmpLaws = new IBasicComparator(),
-    initLaws = new IBasicInitializer(types, meta),
-    typeCaster = new IBasicTypeCaster(types)
+    mathLaws = new IArithmetic(),
+    boolLaws = new IBoolArithmetic(),
+    cmpLaws = new IComparator(),
+    initLaws = new IInitializer(types, meta),
+    typeCaster = new ITypeCaster(types)
   )

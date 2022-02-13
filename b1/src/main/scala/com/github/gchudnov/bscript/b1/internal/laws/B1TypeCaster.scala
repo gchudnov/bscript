@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.symbols.Type
 
-final class B1BasicTypeCaster(types: Types) extends TypeCaster:
+final class B1TypeCaster(types: Types) extends TypeCaster:
 
   private val autoTypeName: String     = types.autoType.name
   private val voidTypeName: String     = types.voidType.name
