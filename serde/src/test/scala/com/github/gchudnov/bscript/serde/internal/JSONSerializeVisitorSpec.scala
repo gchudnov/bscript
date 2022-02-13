@@ -74,7 +74,7 @@ final class JSONSerializeVisitorSpec extends TestSpec:
             val actual = compact(render(jValue))
             actual.mustBe(expected)
           case Left(t) =>
-            fail("Should be 'right", t)        
+            fail("Should be 'right", t)
       }
     }
   }

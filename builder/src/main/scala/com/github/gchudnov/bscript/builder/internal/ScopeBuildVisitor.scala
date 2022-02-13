@@ -252,7 +252,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
                 case Left(t) => Left(t)
                 case Right((sx, map)) =>
                   for
-                    sy      <- expr.visit(sx, this)
+                    sy    <- expr.visit(sx, this)
                     exprN <- sy.ast.asExpr
                   yield (sy, map + (name -> exprN))
             }

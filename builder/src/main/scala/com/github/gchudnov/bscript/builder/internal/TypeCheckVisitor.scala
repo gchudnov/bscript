@@ -584,7 +584,7 @@ private[internal] final class TypeCheckVisitor(
       rs     <- n.b.visit(ls, this)
       rValue <- rs.ast.asLValue
       _ <- Either.cond(
-             lValue.evalType.isInstanceOf[SStruct], // TODO: replace asSStruct
+             lValue.evalType.isInstanceOf[SStruct],
              (),
              new AstException(s"Left operand of the access 'a.b' expression must be a struct, got '${lValue.evalType.name}' instead.")
            )

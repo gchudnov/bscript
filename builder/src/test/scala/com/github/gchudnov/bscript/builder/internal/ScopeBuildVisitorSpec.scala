@@ -546,14 +546,14 @@ final class ScopeBuildVisitorSpec extends TestSpec:
               )
             )
           ),
-          Var(SymbolRef("a"))          
+          Var(SymbolRef("a"))
         )
 
         val errOrRes = eval(t)
         errOrRes match
           case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
-          case Left(t) => fail("Should be 'right", t)        
+          case Left(t) => fail("Should be 'right", t)
       }
     }
 

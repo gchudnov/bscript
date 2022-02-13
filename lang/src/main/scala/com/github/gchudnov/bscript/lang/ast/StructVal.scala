@@ -5,13 +5,13 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 
 /**
  * Struct Initializer
- * 
+ *
  * {{{
  *   struct A {
  *     a: int
  *     b: string
  *   };
- * 
+ *
  *   A = { a: 1, b: "hello" };
  * }}}
  */

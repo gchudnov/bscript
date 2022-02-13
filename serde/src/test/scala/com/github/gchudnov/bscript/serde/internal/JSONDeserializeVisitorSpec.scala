@@ -75,7 +75,7 @@ final class JSONDeserializeVisitorSpec extends TestSpec:
             actual.mustBe(expected)
           case Left(t) =>
             print(t)
-            fail("Should be 'right", t)                  
+            fail("Should be 'right", t)
       }
     }
   }

@@ -646,7 +646,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
               )
             )
           ),
-          Var(SymbolRef("a"))          
+          Var(SymbolRef("a"))
         )
 
         val errOrRes = eval(t)
@@ -654,8 +654,8 @@ final class TypeCheckVisitorSpec extends TestSpec:
           case Right(TypeCheckVisitorState(ast, meta)) =>
             val block = ast.asInstanceOf[Block]
             block.statements(3).isInstanceOf[Var] mustBe (true)
-          case Left(t) => fail("Should be 'right", t)        
-      }       
+          case Left(t) => fail("Should be 'right", t)
+      }
 
     }
 

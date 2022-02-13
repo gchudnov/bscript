@@ -117,7 +117,7 @@ final class Scala2VisitorSpec extends TestSpec:
 
             actual mustBe expected
           case Left(t) =>
-            fail("Should be 'right", t)        
+            fail("Should be 'right", t)
       }
     }
 

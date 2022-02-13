@@ -37,7 +37,7 @@ object Casting:
 
     def asStructVal: Either[AstException, StructVal] = ast match
       case x: StructVal => Right(x)
-      case _           => Left(new AstException(s"Cannot cast AST to StructVal"))
+      case _            => Left(new AstException(s"Cannot cast AST to StructVal"))
 
   // Scope
   implicit class ScopeOps(scope: Scope):

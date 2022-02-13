@@ -34,7 +34,7 @@ trait TreeVisitor[S, R]:
   def visit(s: S, n: StrVal): Either[Throwable, R]
   def visit(s: S, n: DateVal): Either[Throwable, R]
   def visit(s: S, n: DateTimeVal): Either[Throwable, R]
-  def visit(s: S, n: StructVal): Either[Throwable, R]  
+  def visit(s: S, n: StructVal): Either[Throwable, R]
   def visit(s: S, n: Vec): Either[Throwable, R]
   def visit(s: S, n: Var): Either[Throwable, R]
   def visit(s: S, n: ArgDecl): Either[Throwable, R]

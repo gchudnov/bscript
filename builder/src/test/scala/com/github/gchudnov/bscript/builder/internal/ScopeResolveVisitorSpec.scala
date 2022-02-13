@@ -737,15 +737,15 @@ final class ScopeResolveVisitorSpec extends TestSpec:
               )
             )
           ),
-          Var(SymbolRef("a"))          
+          Var(SymbolRef("a"))
         )
 
         val errOrRes = eval(t)
         errOrRes match
           case Right(ScopeResolveVisitorState(ast, meta)) =>
             typeNameForVarInScope(meta)("a", "#a") mustBe (Right("A"))
-          case Left(t) => fail("Should be 'right", t)        
-      }      
+          case Left(t) => fail("Should be 'right", t)
+      }
 
       /**
        * {{{
