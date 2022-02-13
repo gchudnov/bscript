@@ -96,8 +96,24 @@ final class Scala2VisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """???
-                |""".stripMargin.trim // TODO: impl it
+              """{
+                |  final case class B(
+                |    var y: Int
+                |  )
+                |  final case class A(
+                |    var x: Int,
+                |    var s: String,
+                |    var b: B
+                |  )
+                |  var a: A = A(
+                |    x = 1,
+                |    s = "alice",
+                |    b = B(
+                |        y = 2
+                |      )
+                |  )
+                |}
+                |""".stripMargin.trim
 
             actual mustBe expected
           case Left(t) =>

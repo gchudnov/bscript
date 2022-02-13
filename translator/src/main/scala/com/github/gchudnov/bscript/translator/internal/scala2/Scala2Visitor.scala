@@ -233,15 +233,19 @@ private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeV
 
   override def visit(s: Scala2State, n: StructVal): Either[Throwable, Scala2State] =
     for
-      value <- Right(s"${n.value.toString}") // TODO: wrong! impl it, looks we need to add Meta to the class ? try without it at first
-      lines  = Vector(value)
-    yield s.copy(lines = lines)
-
-/*
-  override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
-    for lines <- laws.initializer.init(n.iType)
-    yield s.copy(lines = lines)
-*/
+      ms <- n.value.foldLeft(Right(s.copy(lines = Seq.empty[String])): Either[Throwable, Scala2State]) { case (acc, (k, v)) =>
+        acc match {
+          case Left(e) => Left(e)
+          case Right(si) =>
+            for {
+              sn <- v.visit(si, this)
+              lines = ShowOps.joinCR(" = ", Seq(k), ShowOps.tabTail(1, sn.lines))
+            } yield sn.copy(lines = ShowOps.joinVAll(",", Seq(si.lines, lines)))
+        }
+      }
+      fields = ms.lines
+      lines  = ShowOps.wrap(s"${n.sType.name}(", ")", ShowOps.wrapEmpty(ShowOps.tabLines(1, fields)))
+    yield ms.copy(lines = lines)
 
   override def visit(s: Scala2State, n: Vec): Either[Throwable, Scala2State] =
     for
