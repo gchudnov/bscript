@@ -67,6 +67,42 @@ final class Scala2VisitorSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      "should translate to code with values" in {
+        val t = Block(
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> IntVal(1),
+                "s" -> StrVal("alice"),
+                "b" -> StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> IntVal(2)
+                  )
+                )
+              )
+            )
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """???
+                |""".stripMargin.trim // TODO: impl code & test
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)        
+      }
     }
 
     "block" should {

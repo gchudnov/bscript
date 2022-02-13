@@ -215,9 +215,15 @@ private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeV
 
   override def visit(s: Scala2State, n: StructVal): Either[Throwable, Scala2State] =
     for
-      value <- Right(s"${n.value.toString}") // TODO: wrong!
+      value <- Right(s"${n.value.toString}") // TODO: wrong! impl it
       lines  = Vector(value)
     yield s.copy(lines = lines)
+
+/*
+  override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
+    for lines <- laws.initializer.init(n.iType)
+    yield s.copy(lines = lines)
+*/
 
   override def visit(s: Scala2State, n: StrVal): Either[Throwable, Scala2State] =
     for
