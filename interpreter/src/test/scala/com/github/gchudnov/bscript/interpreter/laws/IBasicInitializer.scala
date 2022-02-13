@@ -49,7 +49,7 @@ final class IBasicInitializer(types: Types, meta: Meta) extends Initializer:
             meta
               .typeFor(x)
               .left
-              .map(ex => new MemoryException(s"Cannot initialize struct field '${ss.name}.${x.name}'", ex))
+              .map(ex => new MemoryException(s"Cannot get type of the struct field '${ss.name}.${x.name}'", ex))
               .flatMap(t => init(t).map(c => (x.name, c)))
           case other =>
             Left(new MemoryException(s"Cannot initialize struct field '${ss.name}.${s.name}' that is not SVar: '${other}'"))

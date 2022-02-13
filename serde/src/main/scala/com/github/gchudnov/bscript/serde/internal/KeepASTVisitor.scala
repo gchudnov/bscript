@@ -139,6 +139,9 @@ private[internal] final class KeepASTVisitor(pred: KeepPredicate) extends TreeVi
   override def visit(s: Unit, n: DateTimeVal): Either[Throwable, AST] =
     visitAST(n)
 
+  override def visit(s: Unit, n: StructVal): Either[Throwable, AST] =
+    visitAST(n)
+
   override def visit(s: Unit, n: Vec): Either[Throwable, AST] =
     for elements <- Transform.sequence(n.elements.map(n1 => visitAST(n1).flatMap(_.asExpr)))
     yield n.copy(elements = elements)

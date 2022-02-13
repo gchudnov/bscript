@@ -100,7 +100,38 @@ object Cell:
   def apply(value: Map[String, Cell]): Cell =
     struct(value)
 
+  /**
+   * Checks whether two cells have the same type.
+   */
+  def haveSameType(a: Cell, b: Cell): Boolean =
+    a.getClass.getSimpleName == b.getClass.getSimpleName
+
+  /**
+   * Deep-merges two cells, replacing values in the left cell with values from the right cell.
+   */
+  def merge(a: Cell, b: Cell): Either[Throwable, Cell] =
+    if !(haveSameType(a, b)) then Left(new MemoryException(s"Cannot merge cells that have different types: $a, $b"))
+    else
+      (a, b) match
+        case (StructCell(ma), StructCell(mb)) =>
+          mb.foldLeft(Right(ma): Either[Throwable, Map[String, Cell]]) { case (acc, (k, v)) =>
+            acc match
+              case Left(e) => Left(e)
+              case Right(mx) =>
+                for y <- mx.get(k).fold(Right(v))(x => merge(x, v))
+                yield mx + (k -> v)
+          }.map(m => StructCell(m))
+        case (_, _) =>
+          Right(b)
+
+  /**
+   * Implicit Call Operations
+   */
   implicit class CellOps(cell: Cell):
+
+    def asStructCell: Either[Throwable, StructCell] = cell match
+      case struct: StructCell => Right(struct)
+      case other              => Left(new MemoryException(s"Cannot convert ${other} to StructCell"))
 
     def asAny: Either[Throwable, Any] = cell match
       case _: NothingCell.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing

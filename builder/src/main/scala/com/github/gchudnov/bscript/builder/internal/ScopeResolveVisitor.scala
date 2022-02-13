@@ -231,6 +231,25 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
   override def visit(s: ScopeResolveState, n: DateTimeVal): Either[Throwable, ScopeResolveState] =
     Right(s.copy(ast = n))
 
+  override def visit(s: ScopeResolveState, n: StructVal): Either[Throwable, ScopeResolveState] =
+    for
+      scope               <- s.meta.scopeFor(n)
+      st                  <- visitType(s, scope, n.sType)
+      StateType(s1, sType) = st
+      sv <- n.value.foldLeft(Right((s1, Map.empty[String, Expr])): Either[Throwable, (ScopeResolveState, Map[String, Expr])]) { case (acc, (name, expr)) =>
+              acc match
+                case Left(ex) => Left(ex)
+                case Right((sx, map)) =>
+                  for
+                    sy    <- expr.visit(sx, this)
+                    exprN <- sy.ast.asExpr
+                  yield (sy, map + (name -> exprN))
+            }
+      (s2, value1) = sv
+      n1           = n.copy(sType = sType, value = value1)
+      ss1          = s2.meta.redefineASTScope(n, n1)
+    yield s2.copy(ast = n1, meta = ss1)
+
   override def visit(s: ScopeResolveState, n: Vec): Either[Throwable, ScopeResolveState] =
     for
       se <- n.elements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeResolveState, List[Expr])]) { case (acc, expr) =>
@@ -421,7 +440,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
     // Find 'y'-symbol in 'x'-struct
     def member(xVar: SVar, y: Var): Either[Throwable, SVar] =
       for
-        xType <- s.meta.typeFor(xVar).flatMap(_.asStruct)
+        xType <- s.meta.typeFor(xVar).flatMap(_.asSStruct)
         yVar  <- s.meta.resolveMember(y.symbol.name, xType).left.map(_ => new AstException(s"Symbol '${xVar.name}.${y.symbol.name}' cannot be resolved")).flatMap(_.asSVar)
       yield yVar
 

@@ -1163,6 +1163,12 @@ object ScopeResolveVisitorSpec:
 
     override def visit(s: String, n: DateTimeVal): Either[Throwable, Unit] = Right(())
 
+    override def visit(s: String, n: StructVal): Either[Throwable, Unit] = for
+      _ <- Transform.sequence(n.value.toList.map { case (initName, initValue) => initValue.visit(s"${s} -> StructVal(${n.symbol.name}){${initName}}", this) })
+      _ <- checkType(n.sType, s"${s} -> StructVal(symbol=${n.symbol.name},sType=${n.sType.name})")
+      _ <- checkSymbol(n.symbol, s"${s} -> StructVal(sType=${n.sType.name},symbol=${n.symbol.name})")
+    yield ()
+
     override def visit(s: String, n: Vec): Either[Throwable, Unit] =
       Transform.sequence(n.elements.zipWithIndex.map { case (expr, i) => expr.visit(s"${s} -> Vec(${i})", this) }).map(_ => ())
 

@@ -244,8 +244,27 @@ final case class Meta(
                  .map(_.toMap)
     yield types
 
+  /**
+   * Gets AST for the given method
+   */
   def methodAst(m: SMethod): Either[Throwable, AST] =
     methodAsts.get(EqWrap(m)).toRight(new ScopeStateException(s"AST for the SMethod ${m.name} is not found"))
+
+  /**
+   * Returns types for the fields of the given struct.
+   */
+  def structTypes(sStruct: SStruct): Either[Throwable, Map[String, Type]] =
+    Transform
+      .sequence(symbolsFor(sStruct).toList.map { case (fs) =>
+        fs match
+          case x: SVar =>
+            typeFor(x).left
+              .map(ex => new ScopeStateException(s"Cannot find the type of the struct's field '${sStruct.name}.${x.name}'", ex))
+              .map(t => x.name -> t)
+          case other =>
+            Left(new ScopeStateException(s"Expected struct field '${sStruct.name}.${fs.name}' to be SVar, got: '${other}'"))
+      })
+      .map(_.toMap)
 
   /**
    * Defines a Symbol in the given Scope

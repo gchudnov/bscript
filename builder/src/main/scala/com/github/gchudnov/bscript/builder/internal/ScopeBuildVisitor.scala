@@ -239,6 +239,28 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
     for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
     yield s.copy(ast = n, meta = ss1)
 
+  override def visit(s: ScopeBuildState, n: StructVal): Either[Throwable, ScopeBuildState] =
+    val (gen1, anonName) = s.gen.name()
+    val sStruct          = SStruct(s"${n.sType.name}#${anonName}") // NOTE: anonymous struct; NOTE: at the moment we're not defining fields in the anonymous struct, define them ?
+    for
+      st                  <- visitType(s, n.sType)
+      StateType(s1, sType) = st
+      ss1                  = s1.meta.defineStruct(sStruct, s1.curScope)
+      s2                   = s1.copy(meta = ss1, curScope = sStruct)
+      sv <- n.value.foldLeft(Right((s2, Map.empty[String, Expr])): Either[Throwable, (ScopeBuildState, Map[String, Expr])]) { case (acc, (name, expr)) =>
+              acc match
+                case Left(t) => Left(t)
+                case Right((sx, map)) =>
+                  for
+                    sy      <- expr.visit(sx, this)
+                    exprN <- sy.ast.asExpr
+                  yield (sy, map + (name -> exprN))
+            }
+      (s3, value1) = sv
+      n1           = n.copy(sType = sType, value = value1, symbol = sStruct)
+      ss2          = s3.meta.defineASTScope(n1, s.curScope)
+    yield s3.copy(ast = n1, meta = ss2, curScope = s.curScope, gen = gen1)
+
   override def visit(s: ScopeBuildState, n: Vec): Either[Throwable, ScopeBuildState] =
     for
       se <- n.elements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeBuildState, List[Expr])]) { (acc, expr) =>

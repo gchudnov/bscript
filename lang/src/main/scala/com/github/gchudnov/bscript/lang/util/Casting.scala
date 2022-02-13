@@ -31,6 +31,14 @@ object Casting:
       case x: LValue => Right(x)
       case _         => Left(new AstException(s"Cannot cast AST to LValue"))
 
+    def asConstVal: Either[AstException, ConstVal] = ast match
+      case x: ConstVal => Right(x)
+      case _           => Left(new AstException(s"Cannot cast AST to ConstVal"))
+
+    def asStructVal: Either[AstException, StructVal] = ast match
+      case x: StructVal => Right(x)
+      case _           => Left(new AstException(s"Cannot cast AST to StructVal"))
+
   // Scope
   implicit class ScopeOps(scope: Scope):
     def asSMethod: Either[AstException, SMethod] =
@@ -87,7 +95,7 @@ object Casting:
   // Type
   implicit class TypeOps(t: Type):
 
-    def asStruct: Either[AstException, SStruct] =
+    def asSStruct: Either[AstException, SStruct] =
       t match
         case x: SStruct => Right(x)
         case _          => Left(new AstException(s"Cannot cast Type '${t.name}' to a SStruct"))

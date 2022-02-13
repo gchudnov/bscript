@@ -1360,6 +1360,12 @@ object TypeCheckVisitorSpec:
       _ <- checkPromoteToType(n.promoteToType, s"${s} -> DateTimeVal(...) (promote)")
     yield ()
 
+    override def visit(s: String, n: StructVal): Either[Throwable, Unit] = for
+      _ <- checkType(n.evalType, s"${s} -> StructVal(...) (evalType)")
+      _ <- checkPromoteToType(n.promoteToType, s"${s} -> StructVal(...) (promote)")
+      _ <- Transform.sequence(n.value.toList.map { case (name, expr) => expr.visit(s"${s} -> StructVal(${n.symbol.name}(${name})", this) })
+    yield ()
+
     override def visit(s: String, n: Vec): Either[Throwable, Unit] = for
       _ <- Transform.sequence(n.elements.zipWithIndex.map { case (expr, i) => expr.visit(s"${s} -> col(${i})", this) }).map(_ => ())
       _ <- checkType(n.evalType, s"${s} -> ? Vec(...) (evalType)")

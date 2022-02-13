@@ -25,7 +25,7 @@ import scala.annotation.tailrec
  *
  * 1) In the first pass, the parser builds an AST.
  *
- * 2) In the second pass, a tree walSpecUtilker builds a scope tree and populates a symbol table.
+ * 2) In the second pass, a tree walker builds a scope tree and populates a symbol table.
  *
  * 3) is the third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
  */
@@ -333,6 +333,32 @@ private[internal] final class TypeCheckVisitor(
       ss1       = s.meta.redefineASTScope(n, n1)
     yield s.copy(ast = n1, meta = ss1)
 
+  override def visit(s: TypeCheckState, n: StructVal): Either[Throwable, TypeCheckState] =
+    for
+      sStruct <- n.sType.asSStruct
+      sTypes  <- s.meta.structTypes(sStruct)
+      sv <- n.value.foldLeft(Right((s, Map.empty[String, Expr])): Either[Throwable, (TypeCheckState, Map[String, Expr])]) { case (acc, (name, expr)) =>
+              acc match
+                case Left(ex) => Left(ex)
+                case Right((sx, map)) =>
+                  for
+                    lValueType         <- sTypes.get(name).toRight(new AstException(s"Field '${name}' doesn't belong to the struct '${sStruct.name}'"))
+                    sy                 <- expr.visit(sx, this)
+                    exprN              <- sy.ast.asExpr
+                    rValueType          = exprN.evalType
+                    rValuePromoteToType = promoteFromTo(rValueType, lValueType)
+                    promotedRValue <- Either.cond(
+                                        canAssignTo(rValueType, rValuePromoteToType, lValueType),
+                                        exprN.withPromoteToType(rValuePromoteToType),
+                                        new AstException(s"Cannot convert type '${rValueType.name}' to '${lValueType.name}' in the struct assignment")
+                                      )
+                  yield (sy, map + (name -> exprN))
+            }
+      (s1, value1) = sv
+      n1           = n.copy(evalType = n.sType, value = value1)
+      ss1          = s1.meta.redefineASTScope(n, n1)
+    yield s1.copy(ast = n1, meta = ss1)
+
   override def visit(s: TypeCheckState, n: Vec): Either[Throwable, TypeCheckState] =
     for
       es <- n.elements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (TypeCheckState, List[Expr])]) { case (acc, expr) =>
@@ -558,7 +584,7 @@ private[internal] final class TypeCheckVisitor(
       rs     <- n.b.visit(ls, this)
       rValue <- rs.ast.asLValue
       _ <- Either.cond(
-             lValue.evalType.isInstanceOf[SStruct],
+             lValue.evalType.isInstanceOf[SStruct], // TODO: replace asSStruct
              (),
              new AstException(s"Left operand of the access 'a.b' expression must be a struct, got '${lValue.evalType.name}' instead.")
            )

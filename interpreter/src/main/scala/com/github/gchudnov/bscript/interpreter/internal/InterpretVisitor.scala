@@ -11,6 +11,8 @@ import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.lang.util.Casting
+import com.github.gchudnov.bscript.lang.symbols.SStruct
+import com.github.gchudnov.bscript.lang.symbols.SVar
 
 /**
  * 4-PASS
@@ -30,6 +32,7 @@ import com.github.gchudnov.bscript.lang.util.Casting
 private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends TreeVisitor[InterpretState, InterpretState]:
   import InterpretVisitor.*
   import Casting.*
+  import Cell.*
 
   private val mathLaws: Arithmetic     = laws.mathLaws
   private val boolLaws: BoolArithmetic = laws.boolLaws
@@ -245,6 +248,23 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
   override def visit(s: InterpretState, n: DateTimeVal): Either[Throwable, InterpretState] =
     for z <- promote(Cell(n.value), n.promoteToType)
     yield s.copy(retValue = z)
+
+  override def visit(s: InterpretState, n: StructVal): Either[Throwable, InterpretState] =
+    for
+      sc <- n.value.foldLeft(Right((s, Map.empty[String, Cell])): Either[Throwable, (InterpretState, Map[String, Cell])]) { case (acc, (name, expr)) =>
+              acc match
+                case Left(e) => Left(e)
+                case Right((sx, map)) =>
+                  for
+                    sy <- expr.visit(sx, this)
+                    cy  = sy.retValue
+                  yield (sy, map + (name -> cy))
+            }
+      (s1, mc) = sc
+      z0      <- initLaws.init(n.sType).flatMap(_.asStructCell)
+      z1       = StructCell(mc)
+      z2      <- Cell.merge(z0, z1)
+    yield s1.copy(retValue = z2)
 
   override def visit(s: InterpretState, n: Vec): Either[Throwable, InterpretState] =
     for

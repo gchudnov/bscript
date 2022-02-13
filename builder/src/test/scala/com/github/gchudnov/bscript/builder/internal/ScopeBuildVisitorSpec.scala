@@ -507,6 +507,53 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
           case Left(t) => fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct B { int y; };
+       *
+       *     struct A {
+       *       int x;
+       *       string s;
+       *       B b;
+       *     };
+       *
+       *     A a = { 1, "hello", { 2 } };
+       *     a
+       *   }
+       * }}}
+       */
+      "can be initialized if all fields match" in {
+        val t = Block(
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> IntVal(1),
+                "s" -> StrVal("alice"),
+                "b" -> StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> IntVal(2)
+                  )
+                )
+              )
+            )
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(ScopeBuildVisitorState(ast, meta)) =>
+            () // TODO: add assertions
+          case Left(t) => fail("Should be 'right", t)        
+      }
     }
 
     "a program is given" should {
@@ -726,6 +773,11 @@ object ScopeBuildVisitorSpec:
     yield ()
 
     override def visit(s: String, n: DateTimeVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "DateTimeVal")
+    yield ()
+
+    override def visit(s: String, n: StructVal): Either[Throwable, Unit] = for
+      _ <- Transform.sequence(n.value.toList.map { case (initName, initValue) => initValue.visit(s"${s} -> StructVal(${n.symbol.name}){${initName}}", this) })
+      _ <- checkDefined(n, s"${s} -> StructVal(${n.symbol.name})")
     yield ()
 
     override def visit(s: String, n: Vec): Either[Throwable, Unit] =
