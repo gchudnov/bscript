@@ -72,7 +72,6 @@ final class JSONSerializeVisitorSpec extends TestSpec:
         errOrRes match
           case Right(jValue) =>
             val actual = compact(render(jValue))
-            println(actual)
             actual.mustBe(expected)
           case Left(t) =>
             fail("Should be 'right", t)        

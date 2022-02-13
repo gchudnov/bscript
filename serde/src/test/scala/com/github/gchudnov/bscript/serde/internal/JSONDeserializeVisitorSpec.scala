@@ -43,6 +43,40 @@ final class JSONDeserializeVisitorSpec extends TestSpec:
             print(t)
             fail("Should be 'right", t)
       }
+
+      "convert back struct with initialization" in {
+        val input = resourceToString("data/struct-init-ast.json").toTry.get
+
+        val expected = Block(
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> IntVal(1),
+                "s" -> StrVal("alice"),
+                "b" -> StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> IntVal(2)
+                  )
+                )
+              )
+            )
+          )
+        )
+
+        val errOrRes = eval(input)
+        errOrRes match
+          case Right(actual) =>
+            actual.mustBe(expected)
+          case Left(t) =>
+            print(t)
+            fail("Should be 'right", t)                  
+      }
     }
   }
 

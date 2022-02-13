@@ -177,6 +177,14 @@ private[internal] final class JSONDeserializeVisitor:
       value <- parseDateTime(jStr.s)
     yield DateTimeVal(value)
 
+  private def visitStructVal(s: JObject): Either[Throwable, StructVal] =
+    for
+      jType <- Right(s \ Keys.xType)
+      sType <- visitType(jType)
+      jObj  <- (s \ Keys.value).asJObject
+      value <- Transform.sequence(jObj.obj.map { case (name, jEl) => visitAST(jEl).flatMap(_.asExpr).map(expr => (name, expr)) }).map(_.toMap)
+    yield StructVal(sType = sType, value = value)
+
   private def visitVec(s: JObject): Either[Throwable, Vec] =
     for
       jElements <- (s \ Keys.elements).asJArray
@@ -313,6 +321,7 @@ private[internal] final class JSONDeserializeVisitor:
       stringValName   -> visitStrVal,
       dateValName     -> visitDateVal,
       dateTimeValName -> visitDateTimeVal,
+      structValName   -> visitStructVal,
       vecName         -> visitVec,
       varName         -> visitVar,
       argDeclName     -> visitArgDecl,
@@ -389,6 +398,7 @@ private[internal] object JSONDeserializeVisitor:
   val stringValName: String   = classOf[StrVal].getSimpleName
   val dateValName: String     = classOf[DateVal].getSimpleName
   val dateTimeValName: String = classOf[DateTimeVal].getSimpleName
+  val structValName: String   = classOf[StructVal].getSimpleName
   val vecName: String         = classOf[Vec].getSimpleName
   val varName: String         = classOf[Var].getSimpleName
   val argDeclName: String     = classOf[ArgDecl].getSimpleName

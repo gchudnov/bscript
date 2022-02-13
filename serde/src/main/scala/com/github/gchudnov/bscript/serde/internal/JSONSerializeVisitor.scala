@@ -149,6 +149,7 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
   override def visit(s: Unit, n: StructVal): Either[Throwable, JValue] =
     for
       kind <- Right(n.getClass.getSimpleName)
+      sType <- visitType(n.sType)      
       value <- n.value.foldLeft(Right(Map.empty[String, JValue]): Either[Throwable, Map[String, JValue]]) { case (acc, (k, v)) =>
                  acc match
                    case Left(e) => Left(e)
@@ -156,7 +157,7 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
                      for y <- v.visit((), this)
                      yield (m + (k -> y))
                }
-      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.value -> value))
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.xType -> sType) ~ (Keys.value -> value))
     yield jValue
 
   override def visit(s: Unit, n: Vec): Either[Throwable, JValue] =
