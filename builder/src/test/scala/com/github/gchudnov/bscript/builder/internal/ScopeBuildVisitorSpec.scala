@@ -525,7 +525,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "can be initialized if all fields match" in {
+      "initialize with an anonymous struct" in {
         val t = Block(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
@@ -545,13 +545,14 @@ final class ScopeBuildVisitorSpec extends TestSpec:
                 )
               )
             )
-          )
+          ),
+          Var(SymbolRef("a"))          
         )
 
         val errOrRes = eval(t)
         errOrRes match
           case Right(ScopeBuildVisitorState(ast, meta)) =>
-            () // TODO: add assertions
+            findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
           case Left(t) => fail("Should be 'right", t)        
       }
     }

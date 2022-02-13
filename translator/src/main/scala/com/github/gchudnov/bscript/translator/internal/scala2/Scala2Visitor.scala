@@ -213,18 +213,6 @@ private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeV
       lines  = Vector(value)
     yield s.copy(lines = lines)
 
-  override def visit(s: Scala2State, n: StructVal): Either[Throwable, Scala2State] =
-    for
-      value <- Right(s"${n.value.toString}") // TODO: wrong! impl it
-      lines  = Vector(value)
-    yield s.copy(lines = lines)
-
-/*
-  override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
-    for lines <- laws.initializer.init(n.iType)
-    yield s.copy(lines = lines)
-*/
-
   override def visit(s: Scala2State, n: StrVal): Either[Throwable, Scala2State] =
     for
       value <- Right(s"\"${n.value}\"")
@@ -242,6 +230,18 @@ private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeV
     lines   = Vector(value)
     imports = Set("java.time.OffsetDateTime", "java.time.format.DateTimeFormatter")
   yield s.copy(lines = lines, s.imports ++ imports)
+
+  override def visit(s: Scala2State, n: StructVal): Either[Throwable, Scala2State] =
+    for
+      value <- Right(s"${n.value.toString}") // TODO: wrong! impl it, looks we need to add Meta to the class ? try without it at first
+      lines  = Vector(value)
+    yield s.copy(lines = lines)
+
+/*
+  override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
+    for lines <- laws.initializer.init(n.iType)
+    yield s.copy(lines = lines)
+*/
 
   override def visit(s: Scala2State, n: Vec): Either[Throwable, Scala2State] =
     for

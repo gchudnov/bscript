@@ -955,6 +955,62 @@ final class InterpretVisitorSpec extends TestSpec:
           case Left(t)                         => fail("Should be 'right", t)
       }
 
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct B { int y; };
+       *
+       *     struct A {
+       *       int x;
+       *       string s;
+       *       B b;
+       *     };
+       *
+       *     A a = { 1, "hello", { 2 } };
+       *     a
+       *   }
+       * }}}
+       */
+      "initialize with an anonymous struct" in {
+        val t = Block(
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> IntVal(1),
+                "s" -> StrVal("alice"),
+                "b" -> StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> IntVal(2)
+                  )
+                )
+              )
+            )
+          ),
+          Var(SymbolRef("a"))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(InterpretState(_, ms, c)) =>
+            c mustBe (StructCell(
+              Map(
+                "x" -> IntCell(1),
+                "s" -> StrCell("alice"),
+                "b" -> StructCell(
+                  Map("y" -> IntCell(2))
+                )
+              )
+            ))
+          case Left(t) => fail("Should be 'right", t)
+      }
+
     }
 
     "there is a program that uses compiled functions" should {

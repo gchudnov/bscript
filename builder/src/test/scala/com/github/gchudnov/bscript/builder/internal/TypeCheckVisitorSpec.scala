@@ -606,6 +606,59 @@ final class TypeCheckVisitorSpec extends TestSpec:
       }
     }
 
+    "a struct is defined" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct B { int y; };
+       *
+       *     struct A {
+       *       int x;
+       *       string s;
+       *       B b;
+       *     };
+       *
+       *     A a = { 1, "hello", { 2 } };
+       *     a
+       *   }
+       * }}}
+       */
+      "initialize with an anonymous struct" in {
+        val t = Block(
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> IntVal(1),
+                "s" -> StrVal("alice"),
+                "b" -> StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> IntVal(2)
+                  )
+                )
+              )
+            )
+          ),
+          Var(SymbolRef("a"))          
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(TypeCheckVisitorState(ast, meta)) =>
+            val block = ast.asInstanceOf[Block]
+            block.statements(3).isInstanceOf[Var] mustBe (true)
+          case Left(t) => fail("Should be 'right", t)        
+      }       
+
+    }
+
     "variable declaration" should {
 
       /**
