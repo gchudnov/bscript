@@ -185,6 +185,76 @@ final class Scala2VisitorSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int x = 1;
+       *     int f(int x) { int y = 1; return g(2*x + y); }
+       *     int g(int x) { return (x - 1); }
+       *     int main() { return f(3); }
+       *     main();
+       *   }
+       * }}}
+       */
+      "translate to code call without arguments" in {
+        val t = Block(
+          VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
+          MethodDecl(
+            TypeRef(typeNames.i32Type),
+            "f",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(1)),
+              Call(SymbolRef("g"), List(Add(Mul(IntVal(2), Var(SymbolRef("x"))), Var(SymbolRef("y")))))
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.i32Type),
+            "g",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Sub(Var(SymbolRef("x")), IntVal(1))
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.i32Type),
+            "main",
+            List.empty[ArgDecl],
+            Block(
+              Call(SymbolRef("f"), List(IntVal(3)))
+            )
+          ),
+          Call(SymbolRef("main"), List.empty[Expr])
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """
+                |{
+                |  var x: Int = 1
+                |  def f(x: Int): Int = {
+                |    var y: Int = 1
+                |    g((2 * x) + y)
+                |  }
+                |  def g(x: Int): Int = {
+                |    (x - 1)
+                |  }
+                |  def main(): Int = {
+                |    f(3)
+                |  }
+                |  main()
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
 
     "if" should {

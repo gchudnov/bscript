@@ -269,6 +269,14 @@ final class ShowOpsSpec extends TestSpec:
 
         actual mustBe expected
       }
+
+      "wrap a seq with an empty string" in {
+        val ss       = List("")
+        val actual   = ShowOps.wrapIfNonWrapped("(", ")", ss)
+        val expected = List("()")
+
+        actual mustBe expected
+      }
     }
 
     "wrapEmpty" should {
