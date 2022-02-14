@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.lang.util
 
-object ShowOps:
+object LineOps:
 
   private val NL: String    = System.lineSeparator
   private val SPACE: String = " "
@@ -70,6 +70,18 @@ object ShowOps:
 
   /**
    * Pad tail of the array with N spaces
+   * 
+   * 
+   * {{{
+   * example:
+   *   2
+   *   ,
+   *   "ABC"  
+   *   "DEF"
+   * output:
+   *   "ABC"
+   *   "  DEF"  
+   * }}}
    */
   def padTail(n: Int, lines: Seq[String]): Seq[String] =
     if lines.isEmpty then Seq.empty[String]

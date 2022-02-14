@@ -33,6 +33,8 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
   import InterpretVisitor.*
   import Casting.*
   import Cell.*
+  import MemorySpace.*
+  import com.github.gchudnov.bscript.lang.util.Show.*
 
   private val mathLaws: Arithmetic     = laws.mathLaws
   private val boolLaws: BoolArithmetic = laws.boolLaws
@@ -321,9 +323,10 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
       sMethod    <- n.id.asSMethod
       methodDecl <- s.meta.methodAst(sMethod).flatMap(_.asMethodDecl)
       sVars      <- s.meta.methodArgSVars(sMethod)
+      msInit      = MemorySpace(n.id.name, Some(s.memSpace))
       s1 <- sVars
               .zip(n.args)
-              .foldLeft(Right(s.copy(memSpace = MemorySpace(n.id.name, Some(s.memSpace)), retValue = VoidCell)): Either[Throwable, InterpretState]) { case (acc, (arg, expr)) =>
+              .foldLeft(Right(s.copy(memSpace = msInit, retValue = VoidCell)): Either[Throwable, InterpretState]) { case (acc, (arg, expr)) =>
                 acc match
                   case Left(ex) => Left(ex)
                   case Right(sx) =>
@@ -334,7 +337,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
               }
       s2       <- methodDecl.body.visit(s1, this)
       retValue <- promote(s2.retValue, n.promoteToType)
-      ms       <- s1.memSpace.pop()
+      ms       <- s2.memSpace.pop()
     yield s2.copy(memSpace = ms, retValue = retValue)
 
   override def visit(s: InterpretState, n: If): Either[Throwable, InterpretState] =

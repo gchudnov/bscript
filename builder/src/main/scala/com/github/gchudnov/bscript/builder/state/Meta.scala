@@ -370,7 +370,7 @@ object Meta:
   implicit val metaShow: Show[Meta] = new Show[Meta]:
     import ScopeTree.*
     import com.github.gchudnov.bscript.lang.util.Show.*
-    import com.github.gchudnov.bscript.lang.util.ShowOps.*
+    import com.github.gchudnov.bscript.lang.util.LineOps.*
 
     override def show(a: Meta): String =
       val sb = new StringBuilder

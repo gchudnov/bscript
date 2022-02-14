@@ -1,14 +1,21 @@
-{
+[{
   "name": "globals",
+  "depth": -1,
+  "parent": null,
   "members": {
     "a": "i32(10)"
-  },
-  "parent": null
-}
+  }
+},
 {
   "name": "locals",
+  "depth": 0,
+  "parent": "globals",
   "members": {
-    "a": "struct({"x":"i32(0)","b":"struct({"y":"i32(0)"})"})"
-  },
-  "parent": "globals"
-}
+    "a": {
+      "x": "i32(0)",
+      "b": {
+        "y": "i32(0)"
+      }
+    }
+  }
+}]

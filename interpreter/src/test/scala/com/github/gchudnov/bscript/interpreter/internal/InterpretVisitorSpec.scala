@@ -842,7 +842,7 @@ final class InterpretVisitorSpec extends TestSpec:
        * }}}
        */
       "evaluate the result when struct fields are assigned in functions" in {
-        import com.github.gchudnov.bscript.lang.util.Show.ShowOps        
+        import com.github.gchudnov.bscript.lang.util.Show.ShowOps
         import com.github.gchudnov.bscript.builder.state.Meta.*
 
         val t = Block(
@@ -888,16 +888,13 @@ final class InterpretVisitorSpec extends TestSpec:
         val expected = StructCell(
           Map(
             "x" -> IntCell(6),
-            "b" -> StructCell(Map("y" -> IntCell(2))) // TODO: now the result is incorrect, fix it
+            "b" -> StructCell(Map("y" -> IntCell(2)))
           )
         )
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(meta, ms, c)) => 
-            println(meta.show())
-
-            println(c) // TODO: remove later
+          case Right(InterpretState(meta, ms, c)) =>
             c mustBe expected
 
           case Left(t) =>

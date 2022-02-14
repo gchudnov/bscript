@@ -1,7 +1,8 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.lang.util.Show.ShowOps
+import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.interpreter.memory.StructCell
 
 /**
  * Immutable Memory Area
@@ -121,42 +122,31 @@ object MemorySpace:
       case Diff.Added(k, v)      => Diff.Added(s"${prefix}${sep}${k}", v)
       case Diff.Updated(k, b, a) => Diff.Updated(s"${prefix}${sep}${k}", b, a)
 
-  implicit val metaShow: Show[MemorySpace] = new Show[MemorySpace]:
+  implicit val memorySpaceShow: Show[MemorySpace] = new Show[MemorySpace]:
     import Cell.*
-    import com.github.gchudnov.bscript.lang.util.ShowOps.*
+    import Show.*
 
     override def show(a: MemorySpace): String =
 
-      def iterate(depth: Int, ms: MemorySpace): String =
-        val sb = new StringBuilder
+      def iterate(d: Int, ms: MemorySpace): Seq[String] =
+        val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
 
-        // if parent exists, print it first
-        val parentStr = ms.parent.fold("")(it => iterate(1, it) + "\n")
-        sb.append(parentStr)
+        val membersCell: Cell = StructCell(ms.members)
+        val membersCellLines  = LineOps.split(membersCell.show())
 
-        sb.append("{\n")
+        val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
+        val depthLines      = Seq(s"\"depth\": ${d}")
+        val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => LineOps.quote(it.name)).getOrElse("null")}")
+        val membersLines    = LineOps.joinCR(": ", Seq("\"members\""), membersCellLines)
 
-        val membersStr = tabTail(depth, makeMembersStr(ms.members))
+        val lineLines = Seq(
+          nameLines,
+          depthLines,
+          parentNameLines,
+          membersLines
+        )
 
-        sb.append(tabLine(depth, s""""name": ${quote(ms.name)},\n"""))
-        sb.append(tabLine(depth, s""""members": ${membersStr},\n"""))
-        sb.append(tabLine(depth, s""""parent": ${ms.parent.map(it => quote(it.name)).getOrElse("null")}\n"""))
+        val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
+        LineOps.joinVAll(",", Seq(parentLines, objLines))
 
-        sb.append("}")
-        sb.toString()
-
-      iterate(1, a)
-
-    private def makeMembersStr(m: Map[String, Cell]): String =
-      val sb = new StringBuilder()
-      sb.append("{\n")
-
-      val pairs = m.map { case (k, v) =>
-        tabLine(1, s""""${k}": ${quote(v.show())}""")
-      }
-
-      val pairsStr = pairs.mkString(",\n")
-      sb.append(pairsStr)
-
-      sb.append("\n}")
-      sb.toString()
+      LineOps.join(LineOps.wrap("[", "]", iterate(0, a)))

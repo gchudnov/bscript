@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.ShowOps.split
+import com.github.gchudnov.bscript.lang.util.LineOps.split
 
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch

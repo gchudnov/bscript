@@ -6,7 +6,6 @@ import com.github.gchudnov.bscript.lang.util.Show.ShowOps
 import com.github.gchudnov.bscript.interpreter.memory.*
 
 final class MemorySpaceSpec extends TestSpec:
-  import MemorySpaceSpec.*
 
   "MemorySpace" when {
 
@@ -150,13 +149,13 @@ final class MemorySpaceSpec extends TestSpec:
        * }}}
        */
       "modify cell by its path" in {
-        val aStruct = StructCell(
+        val initStruct = StructCell(
           "x" -> IntCell(0),
           "b" -> StructCell("y" -> IntCell(0))
         )
 
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
-        val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+        val locals  = MemorySpace("locals", Map("a" -> initStruct), Some(globals))
 
         val errOrUpd = locals.patch(CellPath("a.b.y"), IntCell(12))
         errOrUpd match
@@ -165,13 +164,13 @@ final class MemorySpaceSpec extends TestSpec:
             MemorySpace.diff(locals, updated) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
-                val expected = StructCell(
+                val newStruct = StructCell(
                   "x" -> IntCell(0),
                   "b" -> StructCell("y" -> IntCell(12))
                 )
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals:a", aStruct, expected)
+                  Diff.Updated("locals:a", initStruct, newStruct)
                 )
       }
 
@@ -415,16 +414,10 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val res = resourceToString("data/mem-space-2.json").toTry.get
+        val expected = resourceToString("data/mem-space-2.json").toTry.get
+        val actual   = locals.show()
 
-        val actual   = dehydrate(locals.show())
-        val expected = dehydrate(res)
-
-        actual mustBe (expected)
+        actual.trim mustBe (expected.trim)
       }
     }
   }
-
-object MemorySpaceSpec:
-  def dehydrate(s: String): String =
-    s.replaceAll("\\s", "")

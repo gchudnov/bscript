@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
+import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
 
 /**
  * A visitor that translates AST to Scala 2.13 code
@@ -239,11 +239,11 @@ private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeV
                 case Right(si) =>
                   for
                     sn   <- v.visit(si, this)
-                    lines = ShowOps.joinCR(" = ", Seq(k), ShowOps.tabTail(1, sn.lines))
-                  yield sn.copy(lines = ShowOps.joinVAll(",", Seq(si.lines, lines)))
+                    lines = LineOps.joinCR(" = ", Seq(k), LineOps.tabTail(1, sn.lines))
+                  yield sn.copy(lines = LineOps.joinVAll(",", Seq(si.lines, lines)))
             }
       fields = ms.lines
-      lines  = ShowOps.wrap(s"${n.sType.name}(", ")", ShowOps.wrapEmpty(ShowOps.tabLines(1, fields)))
+      lines  = LineOps.wrap(s"${n.sType.name}(", ")", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
     yield ms.copy(lines = lines)
 
   override def visit(s: Scala2State, n: Vec): Either[Throwable, Scala2State] =
@@ -395,40 +395,40 @@ private[translator] object Scala2Visitor:
     new Scala2Visitor(laws)
 
   private def padLines(p: String, lines: Seq[String]): Seq[String] =
-    ShowOps.padLines(p, lines)
+    LineOps.padLines(p, lines)
 
   private def tabLines(depth: Int, lines: Seq[String]): Seq[String] =
-    ShowOps.tabLines(depth, lines)
+    LineOps.tabLines(depth, lines)
 
   private def tabTail(depth: Int, lines: Seq[String]): Seq[String] =
-    ShowOps.tabTail(depth, lines)
+    LineOps.tabTail(depth, lines)
 
   private def join(sep: String, lhs: Seq[String], rhs: Seq[String]): Seq[String] =
-    ShowOps.join(sep, lhs, rhs)
+    LineOps.join(sep, lhs, rhs)
 
   private def joinAll(sep: String, linesLines: Seq[Seq[String]]): Seq[String] =
-    ShowOps.joinAll(sep, linesLines)
+    LineOps.joinAll(sep, linesLines)
 
   private def joinVAll(sep: String, linesLines: Seq[Seq[String]]): Seq[String] =
-    ShowOps.joinVAll(sep, linesLines)
+    LineOps.joinVAll(sep, linesLines)
 
   private def joinCR(sep: String, lhs: Seq[String], rhs: Seq[String]): Seq[String] =
-    ShowOps.joinCR(sep, lhs, rhs)
+    LineOps.joinCR(sep, lhs, rhs)
 
   private def prepend(start: String, lines: Seq[String]): Seq[String] =
-    ShowOps.prepend(start, lines)
+    LineOps.prepend(start, lines)
 
   private def wrap(start: String, end: String, lines: Seq[String]): Seq[String] =
-    ShowOps.wrap(start, end, lines)
+    LineOps.wrap(start, end, lines)
 
   private def wrapEmpty(lines: Seq[String]): Seq[String] =
-    ShowOps.wrapEmpty(lines)
+    LineOps.wrapEmpty(lines)
 
   private def rwrap(lines: Seq[String]): Seq[String] =
-    ShowOps.wrap("(", ")", lines)
+    LineOps.wrap("(", ")", lines)
 
   private def rwrapIfNonWrapped(lines: Seq[String]): Seq[String] =
-    ShowOps.wrapIfNonWrapped("(", ")", lines)
+    LineOps.wrapIfNonWrapped("(", ")", lines)
 
   private def rwrapMl(lines: Seq[String]): Seq[String] =
-    ShowOps.wrapIfMultiline("(", ")", lines)
+    LineOps.wrapIfMultiline("(", ")", lines)

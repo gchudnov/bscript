@@ -194,16 +194,15 @@ final class B1Spec extends TestSpec:
         val expected = StructCell(
           Map(
             "x" -> IntCell(6),
-            "b" -> StructCell(Map("y" -> IntCell(2))) // TODO: now the result is incorrect, fix it
+            "b" -> StructCell(Map("y" -> IntCell(2)))
           )
         )
 
         val errOrRes = B1.run(ast0)
         errOrRes match
           case Right(cell) =>
-            println(cell) // TODO: remove later
-
-          // cell mustBe expected
+            cell mustBe expected
+          // TODO: impl analysis
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)

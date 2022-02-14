@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.translator.internal.scala2.laws
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.{ ShowOps, Transform }
+import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
 import com.github.gchudnov.bscript.translator.laws.Initializer
 import com.github.gchudnov.bscript.translator.TranslateException
 
@@ -54,9 +54,9 @@ final class ScalaInitializer(typeNames: TypeNames, meta: Meta) extends Initializ
                           .typeFor(x)
                           .left
                           .map(ex => new TranslateException(s"Cannot initialize struct field", ex))
-                          .flatMap(t => init(t).map(ls => ShowOps.joinCR(" = ", Seq(x.name), ShowOps.tabTail(1, ls))))
+                          .flatMap(t => init(t).map(ls => LineOps.joinCR(" = ", Seq(x.name), LineOps.tabTail(1, ls))))
                       case other =>
                         Left(new TranslateException(s"Cannot initialize struct field that is not a type '${other}'"))
                   })
-      lines = ShowOps.wrap(s"${ss.name}(", ")", ShowOps.wrapEmpty(ShowOps.tabLines(1, ShowOps.joinVAll(",", fields))))
+      lines = LineOps.wrap(s"${ss.name}(", ")", LineOps.wrapEmpty(LineOps.tabLines(1, LineOps.joinVAll(",", fields))))
     yield lines
