@@ -820,6 +820,8 @@ final class InterpretVisitorSpec extends TestSpec:
           case Left(t)                         => fail("Should be 'right", t)
       }
 
+      // TODO: add a test that assigns to struct fields in functions
+
       /**
        * {{{
        *   // globals

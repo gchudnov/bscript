@@ -1,5 +1,4 @@
-- TODO: how to initialize a struct?
-
+- TODO: add code to trace execution of functions (rewrite AST??)
 
 - TODO: move KeepASTVisitor to Rewriter
 
@@ -7,11 +6,9 @@
 - TODO: improve b1 debugging capabilities (trace state change in function calls)
 
 - TODO: add cli to eval AST
-- TODO: make public, release lib
-- TODO: add scala 3 translator
+- TODO: release lib
 
-* TODO: how to run eval with input args?
-* TODO: how to improve debugging for errors like: Operation (int + void) is not defined?
 * TODO: add unreachable code check
 * TODO: do not allow to redefine the var in the same block
-- TODO: add stdout so we cal print something
+- TODO: add stdout
+

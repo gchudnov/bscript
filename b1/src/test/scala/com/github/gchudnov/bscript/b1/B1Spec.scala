@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.b1.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.builder.AstMeta
-import com.github.gchudnov.bscript.interpreter.memory.IntCell
+import com.github.gchudnov.bscript.interpreter.memory.{ IntCell, StructCell }
 
 final class B1Spec extends TestSpec:
 
@@ -120,6 +120,94 @@ final class B1Spec extends TestSpec:
           case Right(code) =>
             code.contains("var y: Int = 20") mustBe true
           case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "AST is analyzed" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct A {
+       *       int x;
+       *       B b;
+       *     };
+       *     struct B { int y; };
+       *
+       *     A a;
+       *
+       *     void g(int x) { a.x = x; }
+       *     void f(int x) { int y = 1; g(2*x); a.b.y = 2; }
+       *     void main() { f(3); }
+       *
+       *     main();
+       *     a;
+       *   }
+       * }}}
+       */
+      "trace the memory state between function calls" in {
+        val ast0 = Block(
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "g",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Assign(
+                Access(Var(SymbolRef("a")), Var(SymbolRef("x"))),
+                Var(SymbolRef("x"))
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "f",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(1)),
+              Call(SymbolRef("g"), List(Mul(IntVal(2), Var(SymbolRef("x"))))),
+              Assign(
+                Access(Access(Var(SymbolRef("a")), Var(SymbolRef("b"))), Var(SymbolRef("y"))),
+                IntVal(2)
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "main",
+            List.empty[ArgDecl],
+            Block(
+              Call(SymbolRef("f"), List(IntVal(3)))
+            )
+          ),
+          Call(SymbolRef("main"), List.empty[Expr]),
+          Var(SymbolRef("a"))
+        )
+
+        // val errOrRes1 = B1.translate(ast0)
+        // println(errOrRes1)
+
+        // TODO: fixme: method call is without parenthesis!!!! fix it, see: `"functions are called" should {` example
+
+        val errOrRes = B1.run(ast0)
+        errOrRes match
+          case Right(cell) =>
+            println(cell)
+
+            val expected = StructCell(
+              Map(
+                "x" -> IntCell(6),
+                "b" -> StructCell(Map("y" -> IntCell(2))) // TODO: now the result is incorrect, fix it
+              )
+            )
+
+            cell mustBe expected
+          case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }
