@@ -124,7 +124,7 @@ final class B1Spec extends TestSpec:
       }
     }
 
-    "AST is analyzed" should {
+    "AST is inspected" should {
 
       /**
        * {{{
@@ -202,7 +202,7 @@ final class B1Spec extends TestSpec:
         errOrRes match
           case Right(cell) =>
             cell mustBe expected
-          // TODO: impl analysis
+          // TODO: impl inspecting
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)

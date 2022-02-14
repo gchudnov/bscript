@@ -56,6 +56,10 @@ val interpretLaws: InterpretLaws = ???
 val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, astMeta.meta, interpretLaws)
 ```
 
+### Inspector
+
+TBD
+
 ### Translator
 
 * [/translator](translator) - Translates AST to the given programming language. At the moment only translation to Scala is supported.

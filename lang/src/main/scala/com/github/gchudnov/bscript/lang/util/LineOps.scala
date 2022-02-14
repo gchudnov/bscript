@@ -70,17 +70,16 @@ object LineOps:
 
   /**
    * Pad tail of the array with N spaces
-   * 
-   * 
+   *
    * {{{
    * example:
    *   2
    *   ,
-   *   "ABC"  
+   *   "ABC"
    *   "DEF"
    * output:
    *   "ABC"
-   *   "  DEF"  
+   *   "  DEF"
    * }}}
    */
   def padTail(n: Int, lines: Seq[String]): Seq[String] =
