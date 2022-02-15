@@ -4,6 +4,25 @@ AST Evaluation & Debugging
 
 ## Modules
 
+### Lang
+
+* [/lang](lang) - Basic Language primitives - AST, Symbols & Types.
+
+```scala
+// TBD
+```
+
+### Rewriter
+
+* [/rewriter](rewriter) - Rewrites AST
+
+* `FilterVisitor` - used to filter AST nodes based on predicate: `AST => Boolean`.
+* `MapVisitor` - used to map AST node to a different AST node: `AST => AST`
+
+```scala
+// TBD
+```
+
 ### Serde
 
 * [/serde](serde) - A Serializer & Deserializer for AST.
@@ -56,10 +75,6 @@ val interpretLaws: InterpretLaws = ???
 val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, astMeta.meta, interpretLaws)
 ```
 
-### Inspector
-
-TBD
-
 ### Translator
 
 * [/translator](translator) - Translates AST to the given programming language. At the moment only translation to Scala is supported.
@@ -70,6 +85,14 @@ val typeNames: TypeNames   = ???
 val meta: Meta             = ???
 
 val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNames, meta)
+```
+
+### Inspector
+
+* [/inspector](inspector) - allows to trace memory state between function calls.
+
+```scala
+// TBD
 ```
 
 ### B1
