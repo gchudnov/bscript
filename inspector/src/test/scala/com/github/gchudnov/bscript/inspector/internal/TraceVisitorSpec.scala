@@ -1,15 +1,17 @@
-package com.github.gchudnov.bscript.inspector
+package com.github.gchudnov.bscript.inspector.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.inspector.internal.InspectorTypeNames
+import com.github.gchudnov.bscript.inspector.TestSpec
 
-final class InspectorSpec extends TestSpec:
-  "Inspector" when {
+
+final class TraceVisitorSpec extends TestSpec {
+  "TraceVisitor" when {
     val typeNames = InspectorTypeNames.make()
 
-    "AST is inspected" should {
+    "AST is augmented" should {
 
       /**
        * {{{
@@ -41,8 +43,8 @@ final class InspectorSpec extends TestSpec:
        *      { trace("main-enter"); r = main(); trace("main-exit"); r; }
        *   }
        * }}}
-       */      
-      "provide information about the AST between function calls" in {
+       */  
+      "produce a new AST" in {
         val t = Block(
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
@@ -83,7 +85,8 @@ final class InspectorSpec extends TestSpec:
           Var(SymbolRef("a"))
         )
 
-        // TODO: impl it
+        // TODO: add a test to verify that AST was modified
       }
     }
   }
+}

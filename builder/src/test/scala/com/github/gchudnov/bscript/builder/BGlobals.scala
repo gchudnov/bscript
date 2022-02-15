@@ -60,13 +60,6 @@ object BGlobals:
 
     (meta, g)
 
-  private val utcZone: ZoneId = ZoneId.of("Z")
-
-  private val unitDays: String    = "days"
-  private val unitHours: String   = "hours"
-  private val unitMinutes: String = "minutes"
-  private val unitSeconds: String = "seconds"
-
   def prelude: Block = Block(
     MethodDecl(
       TypeRef(typeNames.voidType),

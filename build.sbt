@@ -46,7 +46,7 @@ lazy val interpreter = (project in file("interpreter"))
   )
 
 lazy val inspector = (project in file("inspector"))
-  .dependsOn(lang, builder, interpreter)
+  .dependsOn(lang, builder, interpreter, translator)
   .settings(allSettings: _*)
   .settings(
     name := "inspector",
