@@ -1,17 +1,17 @@
-package com.github.gchudnov.bscript.inspector.internal
+package com.github.gchudnov.bscript.rewriter.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.inspector.internal.InspectorTypeNames
-import com.github.gchudnov.bscript.inspector.TestSpec
+import com.github.gchudnov.bscript.rewriter.internal.RTypeNames
+import com.github.gchudnov.bscript.rewriter.TestSpec
 
 
-final class TraceVisitorSpec extends TestSpec {
-  "TraceVisitor" when {
-    val typeNames = InspectorTypeNames.make()
+final class MapVisitorSpec extends TestSpec {
+  "MapVisitor" when {
+    val typeNames = RTypeNames.make()
 
-    "AST is augmented" should {
+    "AST is mapped" should {
 
       /**
        * {{{
@@ -84,6 +84,8 @@ final class TraceVisitorSpec extends TestSpec {
           Call(SymbolRef("main"), List.empty[Expr]),
           Var(SymbolRef("a"))
         )
+
+        // TODO: add functions that can trace
 
         // TODO: add a test to verify that AST was modified
       }

@@ -23,6 +23,15 @@ object Dependencies {
     compile ++ test
   }
 
+  val Rewriter: Seq[ModuleID] = {
+    val compile = Seq(
+    )
+    val test = Seq(
+      scalatest
+    ) map (_ % "test")
+    compile ++ test
+  }
+
   val Serde: Seq[ModuleID] = {
     val compile = Seq(
       json4sNative

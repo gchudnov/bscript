@@ -21,8 +21,16 @@ lazy val lang = (project in file("lang"))
     libraryDependencies ++= Dependencies.Lang
   )
 
-lazy val serde = (project in file("serde"))
+lazy val rewriter = (project in file("rewriter"))
   .dependsOn(lang)
+  .settings(allSettings: _*)
+  .settings(
+    name := "rewriter",
+    libraryDependencies ++= Dependencies.Rewriter
+  )
+
+lazy val serde = (project in file("serde"))
+  .dependsOn(lang, rewriter)
   .settings(allSettings: _*)
   .settings(
     name := "serde",
@@ -45,20 +53,20 @@ lazy val interpreter = (project in file("interpreter"))
     libraryDependencies ++= Dependencies.Interpreter
   )
 
-lazy val inspector = (project in file("inspector"))
-  .dependsOn(lang, builder, interpreter, translator)
-  .settings(allSettings: _*)
-  .settings(
-    name := "inspector",
-    libraryDependencies ++= Dependencies.Inspector
-  )
-
 lazy val translator = (project in file("translator"))
   .dependsOn(lang, builder)
   .settings(allSettings: _*)
   .settings(
     name := "translator",
     libraryDependencies ++= Dependencies.Translator
+  )
+
+lazy val inspector = (project in file("inspector"))
+  .dependsOn(lang, builder, interpreter, translator, rewriter)
+  .settings(allSettings: _*)
+  .settings(
+    name := "inspector",
+    libraryDependencies ++= Dependencies.Inspector
   )
 
 lazy val b1 = (project in file("b1"))
@@ -86,7 +94,7 @@ lazy val b1Cli = (project in file("b1-cli"))
   )
 
 lazy val root = (project in file("."))
-  .aggregate(lang, serde, builder, interpreter, inspector, translator, b1, b1Cli)
+  .aggregate(lang, rewriter, serde, builder, interpreter, translator, inspector, b1, b1Cli)
   .settings(allSettings: _*)
   .settings(
     name := "bscript"
