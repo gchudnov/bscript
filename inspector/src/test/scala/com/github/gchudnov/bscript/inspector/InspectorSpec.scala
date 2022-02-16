@@ -30,18 +30,18 @@ final class InspectorSpec extends TestSpec:
        *     main();
        *     a;
        *   }
-       * 
+       *
        *   // after transformation
        *   {
        *      main();
        *   }
-       * 
+       *
        *   // becomes
        *   {
        *      { trace("main-enter"); r = main(); trace("main-exit"); r; }
        *   }
        * }}}
-       */      
+       */
       "provide information about the AST between function calls" in {
         val t = Block(
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
