@@ -15,8 +15,10 @@ private[serde] final class JSONSerializer extends Serializer[SerdeException, AST
 
     val errOrRes =
       for
-        filteredAst <- Rewriter.filter(value, ast => !Predicates.hasStdAnn(ast))
-        jValue      <- filteredAst.visit(unitState, ser)
+        filteredAst <- Rewriter
+                         .filter(value, ast => !Predicates.hasStdAnn(ast))
+                         .flatMap(_.toRight(new SerdeException("The whole AST was filtered out. No AST to Serialize")))
+        jValue <- filteredAst.visit(unitState, ser)
       yield compact(render(jValue))
 
     errOrRes.left.map {

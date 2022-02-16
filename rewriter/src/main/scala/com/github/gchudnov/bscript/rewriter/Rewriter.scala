@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.rewriter.internal.{ FilterState, FilterVisito
 
 object Rewriter:
 
-  def filter(ast: AST, pred: (AST) => Boolean): Either[Throwable, AST] =
+  def filter(ast: AST, pred: (AST) => Boolean): Either[Throwable, Option[AST]] =
     val filterVisitor = FilterVisitor.make(pred)
     val filterState   = FilterState.make()
     ast.visit(filterState, filterVisitor)
