@@ -20,7 +20,15 @@ AST Evaluation & Debugging
 * `MapVisitor` - used to map AST node to a different AST node: `AST => AST`
 
 ```scala
-// TBD
+val ast0: AST = ???
+
+// filter
+val pred: (AST) => Boolean = ???
+val errOrRes: Either[Throwable, Option[AST]] = Rewriter.filter(ast0, pred)
+
+// map
+val f: (AST) => AST = ???
+val errOrRes: Either[Throwable, AST] = Rewriter.map(ast0, f)
 ```
 
 ### Serde
