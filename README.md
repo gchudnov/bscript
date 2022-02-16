@@ -8,8 +8,52 @@ AST Evaluation & Debugging
 
 * [/lang](lang) - Basic Language primitives - AST, Symbols & Types.
 
+`TreeVisitor[S, R]` - trait that all AST-processors must implement.
+
+Supported nodes:
+
 ```scala
-// TBD
+Init
+UnaryMinus
+Add
+Sub
+Mul
+Div
+Mod
+Less
+LessEqual
+Greater
+GreaterEqual
+Equal
+NotEqual
+Not
+And
+Or
+Assign
+NothingVal
+VoidVal
+BoolVal
+IntVal
+LongVal
+FloatVal
+DoubleVal
+DecimalVal
+StrVal
+DateVal
+DateTimeVal
+StructVal
+Vec
+Var
+ArgDecl
+VarDecl
+FieldDecl
+MethodDecl
+StructDecl
+Block
+Call
+If
+Access
+CompiledExpr
 ```
 
 ### Rewriter
