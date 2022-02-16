@@ -2,6 +2,6 @@ package com.github.gchudnov.bscript.rewriter.internal
 
 final case class MapState()
 
-object MapState:
+private[rewriter] object MapState:
   def make(): MapState =
     MapState()

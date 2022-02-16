@@ -2,6 +2,6 @@ package com.github.gchudnov.bscript.rewriter.internal
 
 final case class FilterState()
 
-object FilterState:
+private[rewriter] object FilterState:
   def make(): FilterState = 
     FilterState()

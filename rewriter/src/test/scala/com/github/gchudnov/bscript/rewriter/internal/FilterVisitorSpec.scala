@@ -75,8 +75,32 @@ final class FilterVisitorSpec extends TestSpec {
           Var(SymbolRef("a"))
         )
 
-        // TODO: impl it
+        val p = (n: AST) => n match {
+          case _: MethodDecl => false
+          case _: Call => false
+          case _ => true
+        }
+
+        val expected = Block(
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
+          Var(SymbolRef("a"))          
+        )
+
+        val errOrRes = eval(t, p)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)        
       }
     }
+  }
+
+  private def eval(ast: AST, pred: (AST) => Boolean): Either[Throwable, AST] = {
+    val filterVisitor = FilterVisitor.make(pred)
+    val filterState   = FilterState.make()
+    ast.visit(filterState, filterVisitor)
   }
 }
