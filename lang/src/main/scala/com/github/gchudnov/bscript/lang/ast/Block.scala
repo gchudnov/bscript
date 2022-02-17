@@ -43,6 +43,14 @@ object Block:
         Block(statements = block.statements ++ other.statements, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
       else sys.error("Cannot join Blocks with different evalType and promoteToType values")
 
+    def +:(other: AST): Block =
+      other match
+        case x: Block =>
+          x ++ block
+        case x: Expr =>
+          Block(statements = x +: block.statements, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
+        case _ => sys.error("Cannot add non-Expr to Block")
+
     def :+(other: AST): Block =
       other match
         case x: Block =>

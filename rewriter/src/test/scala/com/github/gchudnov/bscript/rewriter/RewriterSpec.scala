@@ -62,4 +62,27 @@ final class RewriterSpec extends TestSpec:
             fail("Should be 'right", t)
       }
     }
+
+    "find" should {
+      "locate a node" in {
+        val ast0 = Block(
+          VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0))
+        )
+
+        val pred = (n: AST) =>
+          n match
+            case x: IntVal => true
+            case _         => false
+
+        val expected = Some(IntVal(0))
+
+        val errOrRes = Rewriter.find(ast0, pred)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
   }

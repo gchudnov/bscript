@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 
 /**
  * Filters AST-nodes that matches the given predicate.
- * 
+ *
  * If predicate returns 'true', the node is kept, otherwise it is removed.
  */
 private[internal] final class FilterVisitor(pred: (AST) => Boolean) extends TreeVisitor[FilterState, Option[AST]]:

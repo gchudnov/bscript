@@ -13,195 +13,120 @@ private[internal] final class FindVisitor(pred: (AST) => Boolean) extends TreeVi
   override def visit(s: FindState, n: Init): Either[Throwable, Option[AST]] =
     Right(findAST(n))
 
-  // TODO: impl it
+  def foundOrElse[T <: AST](value: Option[T])(alternative: => Either[Throwable, Option[AST]]): Either[Throwable, Option[AST]] =
+    value match
+      case Some(v) => Right(Some(v))
+      case None    => alternative
 
   override def visit(s: FindState, n: UnaryMinus): Either[Throwable, Option[AST]] =
     for
-      oExpr <- n.expr.visit(s, this).flatMap(toExpr)
-      nn = (for
-             expr <- oExpr
-             n1    = n.copy(expr = expr)
-             n2   <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.expr.visit(s, this))
+    yield n2
 
   override def visit(s: FindState, n: Add): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Sub): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Mul): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Div): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Mod): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Less): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: LessEqual): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Greater): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: GreaterEqual): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Equal): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: NotEqual): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Not): Either[Throwable, Option[AST]] =
     for
-      oExpr <- n.expr.visit(s, this).flatMap(toExpr)
-      nn = (for
-             expr <- oExpr
-             n1    = n.copy(expr = expr)
-             n2   <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.expr.visit(s, this))
+    yield n2
 
   override def visit(s: FindState, n: And): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Or): Either[Throwable, Option[AST]] =
     for
-      lExpr <- n.lhs.visit(s, this).flatMap(toExpr)
-      rExpr <- n.rhs.visit(s, this).flatMap(toExpr)
-      nn = (for
-             lhs <- lExpr
-             rhs <- rExpr
-             n1   = n.copy(lhs = lhs, rhs = rhs)
-             n2  <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.lhs.visit(s, this))
+      n3 <- foundOrElse(n2)(n.rhs.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: Assign): Either[Throwable, Option[AST]] =
     for
-      oId   <- n.id.visit(s, this).flatMap(toLValue)
-      oExpr <- n.expr.visit(s, this).flatMap(toExpr)
-      nn = (for
-             id   <- oId
-             expr <- oExpr
-             n1    = n.copy(id = id, expr = expr)
-             n2   <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.id.visit(s, this))
+      n3 <- foundOrElse(n2)(n.expr.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: NothingVal): Either[Throwable, Option[AST]] =
     Right(findAST(n))
@@ -238,16 +163,14 @@ private[internal] final class FindVisitor(pred: (AST) => Boolean) extends TreeVi
 
   override def visit(s: FindState, n: StructVal): Either[Throwable, Option[AST]] =
     for
-      value <- visitMap(s, n.value)
-      n1     = n.copy(value = value)
-      n2     = findAST(n1)
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(visitMap(s, n.value))
     yield n2
 
   override def visit(s: FindState, n: Vec): Either[Throwable, Option[AST]] =
     for
-      elements <- Transform.sequence(n.elements.map(it => it.visit(s, this).flatMap(toExpr))).map(_.collect { case Some(it) => it })
-      n1        = n.copy(elements = elements)
-      n2        = findAST(n1)
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(visitSeq(s, n.elements))
     yield n2
 
   override def visit(s: FindState, n: Var): Either[Throwable, Option[AST]] =
@@ -258,73 +181,52 @@ private[internal] final class FindVisitor(pred: (AST) => Boolean) extends TreeVi
 
   override def visit(s: FindState, n: VarDecl): Either[Throwable, Option[AST]] =
     for
-      oExpr <- n.expr.visit(s, this).flatMap(toExpr)
-      nn = (for
-             expr <- oExpr
-             n1    = n.copy(expr = expr)
-             n2   <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.expr.visit(s, this))
+    yield n2
 
   override def visit(s: FindState, n: FieldDecl): Either[Throwable, Option[AST]] =
     Right(findAST(n))
 
   override def visit(s: FindState, n: MethodDecl): Either[Throwable, Option[AST]] =
     for
-      params <- Transform.sequence(n.params.map(it => it.visit(s, this).flatMap(toArgDecl))).map(_.collect { case Some(it) => it })
-      oBody  <- n.body.visit(s, this).flatMap(toBlock)
-      nn = (for
-             body <- oBody
-             n1    = n.copy(params = params, body = body)
-             n2   <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.body.visit(s, this))
+      n3 <- foundOrElse(n2)(visitSeq(s, n.params))
+    yield n3
 
   override def visit(s: FindState, n: StructDecl): Either[Throwable, Option[AST]] =
     for
-      fields <- Transform.sequence(n.fields.map(it => it.visit(s, this).flatMap(toFieldDecl))).map(_.collect { case Some(it) => it })
-      n1      = n.copy(fields = fields)
-      n2      = findAST(n1)
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(visitSeq(s, n.fields))
     yield n2
 
   override def visit(s: FindState, n: Block): Either[Throwable, Option[AST]] =
     for
-      statements <- Transform.sequence(n.statements.map(it => it.visit(s, this).flatMap(toExpr))).map(_.collect { case Some(it) => it })
-      n1          = n.copy(statements = statements.toList)
-      n2          = findAST(n1)
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(visitSeq(s, n.statements))
     yield n2
 
   override def visit(s: FindState, n: Call): Either[Throwable, Option[AST]] =
     for
-      args <- Transform.sequence(n.args.map(it => it.visit(s, this).flatMap(toExpr))).map(_.collect { case Some(it) => it })
-      n1    = n.copy(args = args)
-      n2    = findAST(n1)
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(visitSeq(s, n.args))
     yield n2
 
   override def visit(s: FindState, n: If): Either[Throwable, Option[AST]] =
     for
-      oCond <- n.cond.visit(s, this).flatMap(toExpr)
-      oThen <- n.then1.visit(s, this).flatMap(toExpr)
-      oElse <- Transform.sequence(n.else1.map(it => it.visit(s, this).flatMap(toExpr))).map(_.flatten)
-      nn = (for
-             cond  <- oCond
-             then1 <- oThen
-             n1     = n.copy(cond = cond, then1 = then1, else1 = oElse)
-             n2    <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.cond.visit(s, this))
+      n3 <- foundOrElse(n2)(n.then1.visit(s, this))
+      n4 <- foundOrElse(n3)(n.else1.fold(Right(n3))(_.visit(s, this)))
+    yield n4
 
   override def visit(s: FindState, n: Access): Either[Throwable, Option[AST]] =
     for
-      oA <- n.a.visit(s, this).flatMap(toLValue)
-      oB <- n.b.visit(s, this).flatMap(toLValue)
-      nn = (for
-             a  <- oA
-             b  <- oB
-             n1  = n.copy(a = a, b = b)
-             n2 <- findAST(n1)
-           yield n2)
-    yield nn
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(n.a.visit(s, this))
+      n3 <- foundOrElse(n2)(n.b.visit(s, this))
+    yield n3
 
   override def visit(s: FindState, n: CompiledExpr): Either[Throwable, Option[AST]] =
     Right(findAST(n))
@@ -333,36 +235,27 @@ private[internal] final class FindVisitor(pred: (AST) => Boolean) extends TreeVi
     if pred(n) then Some(n)
     else None
 
-  private def visitMap(s: FindState, m: Map[String, Expr]): Either[Throwable, Map[String, Expr]] =
-    m.foldLeft(Right(Map.empty[String, Expr]): Either[Throwable, Map[String, Expr]]) { case (acc, (k, v)) =>
+  private def visitMap(s: FindState, m: Map[String, Expr]): Either[Throwable, Option[AST]] =
+    m.foldLeft((Right(None): Either[Throwable, Option[AST]])) { case (acc, (k, v)) =>
       acc match
-        case Left(e) => Left(e)
-        case Right(m) =>
-          for
-            v1 <- v.visit(s, this)
-            v2 <- Transform.sequence(v1.map(_.asExpr))
-            m1 = v2 match
-                   case Some(it) =>
-                     m + (k -> it)
-                   case None =>
-                     m
-          yield m1
+        case Left(e) =>
+          Left(e)
+        case Right(Some(n)) =>
+          Right(Some(n))
+        case Right(None) =>
+          v.visit(s, this)
     }
 
-  private def toExpr(n: Option[AST]): Either[Throwable, Option[Expr]] =
-    Transform.sequence(n.map(_.asExpr))
-
-  private def toLValue(n: Option[AST]): Either[Throwable, Option[LValue]] =
-    Transform.sequence(n.map(_.asLValue))
-
-  private def toArgDecl(n: Option[AST]): Either[Throwable, Option[ArgDecl]] =
-    Transform.sequence(n.map(_.asArgDecl))
-
-  private def toFieldDecl(n: Option[AST]): Either[Throwable, Option[FieldDecl]] =
-    Transform.sequence(n.map(_.asFieldDecl))
-
-  private def toBlock(n: Option[AST]): Either[Throwable, Option[Block]] =
-    Transform.sequence(n.map(_.asBlock))
+  private def visitSeq(s: FindState, ns: Seq[Expr]): Either[Throwable, Option[AST]] =
+    ns.foldLeft(Right(None): Either[Throwable, Option[AST]]) { case (acc, n) =>
+      acc match
+        case Left(e) =>
+          Left(e)
+        case Right(Some(n)) =>
+          Right(Some(n))
+        case Right(None) =>
+          n.visit(s, this)
+    }
 
 private[rewriter] object FindVisitor:
 
