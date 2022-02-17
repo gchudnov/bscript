@@ -10,6 +10,7 @@ import com.github.gchudnov.bscript.rewriter.Predicates
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
+import com.github.gchudnov.bscript.lang.util.LineOps.split
 
 import scala.util.control.Exception.allCatch
 
@@ -44,16 +45,40 @@ private[inspector] object MemWatch:
       Block(
         CompiledExpr(callback = MemWatch.memWatch, retType = TypeRef(typeNames.voidType))
       ),
-      Seq(ComAnn("Used to watch memory cells"), StdAnn())
+      Seq(ComAnn("Used to watch memory updates"), StdAnn())
     )
 
+  /**
+   * {{{
+   *   // translates
+   *   f(...);
+   *
+   *   // into
+   *   {
+   *     memWatch("f", 1);
+   *     auto r = f(...);
+   *     memWatch("f", 2);
+   *     return r;
+   *   }
+   * }}}
+   */
   private def memWatch(s: Any): Either[Throwable, Any] =
+    val argMethodName = "methodName" // str
+    val argAction     = "action"     // i32
+
     s match
       case s @ InterpretState(_, ms, c) =>
         ???
 
       case s: Scala2State =>
-        ???
+        for lines <- Right(
+                       split(
+                         s"""// no-op; the implementation is B1 specific
+                            |//        and cannot be expressed in scala
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines)
 
       case other =>
         Left(new InspectorException(s"Unexpected state passed to memWatch: ${other}"))
