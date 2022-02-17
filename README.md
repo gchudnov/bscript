@@ -60,9 +60,9 @@ CompiledExpr
 
 * [/rewriter](rewriter) - Rewrites AST
 
-* `FilterVisitor` - used to filter AST nodes.
-* `MapVisitor` - used to map AST nodes.
-* `FindVisitor` - used to find AST nodes.
+* `FilterVisitor` - filter AST nodes.
+* `MapVisitor` - map AST nodes.
+* `FindVisitor` - find AST nodes.
 
 ```scala
 val ast0: AST = ???
@@ -74,6 +74,10 @@ val errOrRes: Either[Throwable, Option[AST]] = Rewriter.filter(ast0, pred)
 // map
 val f: (AST) => AST = ???
 val errOrRes: Either[Throwable, AST] = Rewriter.map(ast0, f)
+
+// find
+val pred: (AST) => Boolean = ???
+val errOrRes: Either[Throwable, Option[AST]] = Rewriter.find(ast0, pred)
 ```
 
 ### Serde
