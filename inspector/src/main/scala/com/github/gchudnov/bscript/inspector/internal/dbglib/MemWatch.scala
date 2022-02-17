@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.inspector.InspectorException
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.Block
 import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.rewriter.Rewriter
 import com.github.gchudnov.bscript.rewriter.Predicates
@@ -13,6 +14,7 @@ import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 
 import scala.util.control.Exception.allCatch
+import com.github.gchudnov.bscript.interpreter.memory.VoidCell
 
 /**
  * Trace memory between function calls.
@@ -50,10 +52,10 @@ private[inspector] object MemWatch:
 
   /**
    * {{{
-   *   // translates
+   *   // translates from:
    *   f(...);
    *
-   *   // into
+   *   // into:
    *   {
    *     memWatch("f", 1);
    *     auto r = f(...);
@@ -68,7 +70,11 @@ private[inspector] object MemWatch:
 
     s match
       case s @ InterpretState(_, ms, c) =>
-        ???
+        for
+          methodNameCell <- ms.fetch(CellPath(argMethodName))
+          actionCell     <- ms.fetch(CellPath(argAction))
+          retVal          = VoidCell
+        yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
         for lines <- Right(
