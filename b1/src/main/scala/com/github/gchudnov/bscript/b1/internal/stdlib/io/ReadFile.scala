@@ -39,7 +39,7 @@ private[internal] object ReadFile:
     val argPath = "path" // string
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           pathCell <- ms.fetch(CellPath(argPath))
           retVal <- pathCell match

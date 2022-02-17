@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.internal.InterpretVisitor
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
+import com.github.gchudnov.bscript.interpreter.internal.Stash
 import com.github.gchudnov.bscript.builder.state.Meta
 
 sealed trait Interpreter:
@@ -16,9 +17,10 @@ sealed trait Interpreter:
   def interpret(ast1: AST, meta: Meta, laws: InterpreterLaws): Either[Throwable, Cell] =
     val globalMemoryName = "globals"
     val ms               = MemorySpace(globalMemoryName)
+    val stash            = Stash.empty
 
     val interpretVisitor = InterpretVisitor.make(laws)
-    val interpretState   = InterpretState.make(meta = meta, memSpace = ms, retValue = VoidCell)
+    val interpretState   = InterpretState.make(meta = meta, stash = stash, memSpace = ms, retValue = VoidCell)
 
     ast1
       .visit(interpretState, interpretVisitor)

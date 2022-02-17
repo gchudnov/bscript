@@ -36,7 +36,7 @@ private[internal] object StrLen:
     val arg0 = "s"
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           cell <- ms.fetch(CellPath(arg0))
           retVal <- cell match

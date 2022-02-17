@@ -29,7 +29,7 @@ private[internal] object Today:
    */
   private def today(s: Any): Either[Throwable, Any] =
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for retVal <- Right(DateCell(LocalDate.now(utcZone)))
         yield s.copy(memSpace = ms, retValue = retVal)
 

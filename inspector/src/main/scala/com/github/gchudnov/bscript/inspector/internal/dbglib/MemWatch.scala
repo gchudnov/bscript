@@ -42,7 +42,8 @@ private[inspector] object MemWatch:
       "memWatch",
       List(
         ArgDecl(TypeRef(typeNames.strType), "methodName"), // name of the method to watch
-        ArgDecl(TypeRef(typeNames.i32Type), "action")      // 1 - enter, 2 - exit
+        ArgDecl(TypeRef(typeNames.i32Type), "action"),     // 1 - enter, 2 - exit
+        ArgDecl(TypeRef(typeNames.strType), "path")        // cell-path to watch
       ),
       Block(
         CompiledExpr(callback = MemWatch.memWatch, retType = TypeRef(typeNames.voidType))
@@ -67,13 +68,18 @@ private[inspector] object MemWatch:
   private def memWatch(s: Any): Either[Throwable, Any] =
     val argMethodName = "methodName" // str
     val argAction     = "action"     // i32
+    val argPath       = "path"       // str
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           methodNameCell <- ms.fetch(CellPath(argMethodName))
           actionCell     <- ms.fetch(CellPath(argAction))
-          retVal          = VoidCell
+          pathCell       <- ms.fetch(CellPath(argPath))
+
+          // TODO: impl mem watch
+
+          retVal = VoidCell
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>

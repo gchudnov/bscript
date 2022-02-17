@@ -69,7 +69,7 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) =>
+          case Right(InterpretState(_, _, ms, c)) =>
             c mustBe (VoidCell)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -95,7 +95,7 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) =>
+          case Right(InterpretState(_, _, ms, c)) =>
             c mustBe Cell.nothing
           case Left(t) =>
             fail("Should be 'right", t)
@@ -141,8 +141,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(5)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(5)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -202,8 +202,8 @@ final class InterpretVisitorSpec extends TestSpec:
         blocks.foreach { t =>
           val errOrRes = eval(t)
           errOrRes match
-            case Right(InterpretState(_, ms, c)) => c mustBe (VoidCell)
-            case Left(t)                         => fail("Should be 'right", t)
+            case Right(InterpretState(_, _, ms, c)) => c mustBe (VoidCell)
+            case Left(t)                            => fail("Should be 'right", t)
         }
       }
     }
@@ -269,8 +269,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(4)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(4)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -294,8 +294,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(9)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(9)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -323,8 +323,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(1)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(1)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -353,8 +353,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(2)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(2)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -371,8 +371,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(3)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(3)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -386,8 +386,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe StrCell("alice")
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe StrCell("alice")
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -440,8 +440,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(-1)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(-1)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -458,8 +458,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe LongCell(6)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe LongCell(6)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -475,8 +475,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe FloatCell(2.0f)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe FloatCell(2.0f)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -493,8 +493,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(2)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(2)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -511,8 +511,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(true)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(true)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -526,8 +526,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(false)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(false)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -541,8 +541,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(false)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(false)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -555,8 +555,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(false)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(false)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -577,8 +577,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(0)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(0)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -599,8 +599,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(1)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(1)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -617,8 +617,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(true)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(true)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -632,8 +632,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(true)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(true)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -647,8 +647,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(true)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(true)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -662,8 +662,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(false)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(false)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -684,8 +684,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(1)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(1)
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -706,8 +706,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(0)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(0)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -737,8 +737,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe BoolCell(true)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe BoolCell(true)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -764,8 +764,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe IntCell(20)
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(20)
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -816,8 +816,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (IntCell(6))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (IntCell(6))
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -894,7 +894,7 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(meta, ms, c)) =>
+          case Right(InterpretState(meta, _, ms, c)) =>
             c mustBe expected
 
           case Left(t) =>
@@ -941,8 +941,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (IntCell(10))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (IntCell(10))
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -992,8 +992,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (IntCell(3))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (IntCell(3))
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -1033,8 +1033,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (LongCell(5))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (LongCell(5))
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -1080,7 +1080,7 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) =>
+          case Right(InterpretState(_, _, ms, c)) =>
             c mustBe (StructCell(
               Map(
                 "x" -> IntCell(1),
@@ -1115,8 +1115,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (IntCell(3))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (IntCell(3))
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -1139,8 +1139,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (DateTimeCell(OffsetDateTime.parse("2021-10-04T12:00+02:00")))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (DateTimeCell(OffsetDateTime.parse("2021-10-04T12:00+02:00")))
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -1163,8 +1163,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (DateTimeCell(OffsetDateTime.parse("2021-10-04T17:00+02:00")))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (DateTimeCell(OffsetDateTime.parse("2021-10-04T17:00+02:00")))
+          case Left(t)                            => fail("Should be 'right", t)
       }
 
       /**
@@ -1187,8 +1187,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
         val errOrRes = eval(t)
         errOrRes match
-          case Right(InterpretState(_, ms, c)) => c mustBe (IntCell(5))
-          case Left(t)                         => fail("Should be 'right", t)
+          case Right(InterpretState(_, _, ms, c)) => c mustBe (IntCell(5))
+          case Left(t)                            => fail("Should be 'right", t)
       }
     }
 
@@ -1212,7 +1212,7 @@ final class InterpretVisitorSpec extends TestSpec:
 
       val errOrRes = eval(t)
       errOrRes match
-        case Right(InterpretState(_, ms, c)) =>
+        case Right(InterpretState(_, _, ms, c)) =>
           c mustBe BoolCell(false)
         case Left(t) => fail("Should be 'right", t)
     }
@@ -1237,7 +1237,7 @@ final class InterpretVisitorSpec extends TestSpec:
 
       val errOrRes = eval(t)
       errOrRes match
-        case Right(InterpretState(_, ms, c)) =>
+        case Right(InterpretState(_, _, ms, c)) =>
           c mustBe BoolCell(true)
         case Left(t) => fail("Should be 'right", t)
     }
@@ -1264,8 +1264,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
       val errOrRes = eval(t)
       errOrRes match
-        case Right(InterpretState(_, ms, c)) => c mustBe (IntCell(17))
-        case Left(t)                         => fail("Should be 'right", t)
+        case Right(InterpretState(_, _, ms, c)) => c mustBe (IntCell(17))
+        case Left(t)                            => fail("Should be 'right", t)
     }
 
     /**
@@ -1286,8 +1286,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
       val errOrRes = eval(t)
       errOrRes match
-        case Right(InterpretState(_, ms, c)) => c.isInstanceOf[DateCell] mustBe true
-        case Left(t)                         => fail("Should be 'right", t)
+        case Right(InterpretState(_, _, ms, c)) => c.isInstanceOf[DateCell] mustBe true
+        case Left(t)                            => fail("Should be 'right", t)
     }
 
     /**
@@ -1308,8 +1308,8 @@ final class InterpretVisitorSpec extends TestSpec:
 
       val errOrRes = eval(t)
       errOrRes match
-        case Right(InterpretState(_, ms, c)) => c.isInstanceOf[DateTimeCell] mustBe true
-        case Left(t)                         => fail("Should be 'right", t)
+        case Right(InterpretState(_, _, ms, c)) => c.isInstanceOf[DateTimeCell] mustBe true
+        case Left(t)                            => fail("Should be 'right", t)
     }
   }
 
@@ -1325,7 +1325,7 @@ final class InterpretVisitorSpec extends TestSpec:
         val laws = IInterpretLaws.make(types, astMeta.meta)
 
         val interpretVisitor = InterpretVisitor.make(laws)
-        val interpretState   = InterpretState.make(meta = astMeta.meta, memSpace = ms, retValue = VoidCell)
+        val interpretState   = InterpretState.make(meta = astMeta.meta, Stash.empty, memSpace = ms, retValue = VoidCell)
 
         astMeta.ast.visit(interpretState, interpretVisitor)
       })

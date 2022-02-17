@@ -39,7 +39,7 @@ private[internal] object IsDefined:
     val argX = "x" // auto
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           xCell <- ms.fetch(CellPath(argX))
           flag = xCell match

@@ -43,7 +43,7 @@ private[internal] object Round:
       n.setScale(p, BigDecimal.RoundingMode.HALF_UP)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell     <- ms.fetch(CellPath(argValue))
           precisionCell <- ms.fetch(CellPath(argPrecision))

@@ -43,7 +43,7 @@ private[internal] object AdjustDateTime:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell  <- ms.fetch(CellPath(argValue))
           offsetCell <- ms.fetch(CellPath(argOffset))

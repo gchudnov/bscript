@@ -208,7 +208,7 @@ object IGlobals:
     val arg0 = "s"
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           cell <- ms.fetch(CellPath(arg0))
           retVal <- cell match
@@ -236,7 +236,7 @@ object IGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell  <- ms.fetch(CellPath(argValue))
           offsetCell <- ms.fetch(CellPath(argOffset))
@@ -277,7 +277,7 @@ object IGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell  <- ms.fetch(CellPath(argValue))
           offsetCell <- ms.fetch(CellPath(argOffset))
@@ -317,7 +317,7 @@ object IGlobals:
     val argUnit  = "unit"  // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell <- ms.fetch(CellPath(argValue))
           unitCell  <- ms.fetch(CellPath(argUnit))
@@ -357,7 +357,7 @@ object IGlobals:
     val argX = "x" // auto
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           xCell <- ms.fetch(CellPath(argX))
           flag = xCell match
@@ -386,7 +386,7 @@ object IGlobals:
     val argY = "y" // auto
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           xCell <- ms.fetch(CellPath(argX))
           yCell <- ms.fetch(CellPath(argY))
@@ -405,7 +405,7 @@ object IGlobals:
    */
   private def today(s: Any): Either[Throwable, Any] =
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for retVal <- Right(DateCell(LocalDate.now(utcZone)))
         yield s.copy(memSpace = ms, retValue = retVal)
 
@@ -417,7 +417,7 @@ object IGlobals:
    */
   private def now(s: Any): Either[Throwable, Any] =
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for retVal <- Right(DateTimeCell(OffsetDateTime.now(utcZone)))
         yield s.copy(memSpace = ms, retValue = retVal)
 
@@ -442,7 +442,7 @@ object IGlobals:
       n.setScale(p, BigDecimal.RoundingMode.HALF_UP)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell     <- ms.fetch(CellPath(argValue))
           precisionCell <- ms.fetch(CellPath(argPrecision))
@@ -479,7 +479,7 @@ object IGlobals:
       n.setScale(p, BigDecimal.RoundingMode.DOWN)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell     <- ms.fetch(CellPath(argValue))
           precisionCell <- ms.fetch(CellPath(argPrecision))

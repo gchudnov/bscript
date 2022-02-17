@@ -40,7 +40,7 @@ private[internal] object Coalesce:
     val argY = "y" // auto
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           xCell <- ms.fetch(CellPath(argX))
           yCell <- ms.fetch(CellPath(argY))

@@ -31,7 +31,7 @@ private[internal] object Append:
     val argXS = "xs" // vec[decltype(x)]
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           xCell  <- ms.fetch(CellPath(argX))
           xsCell <- ms.fetch(CellPath(argXS))

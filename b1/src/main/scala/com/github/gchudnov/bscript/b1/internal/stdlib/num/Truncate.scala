@@ -44,7 +44,7 @@ private[internal] object Truncate:
       n.setScale(p, BigDecimal.RoundingMode.DOWN)
 
     s match
-      case s @ InterpretState(_, ms, c) =>
+      case s @ InterpretState(_, _, ms, c) =>
         for
           valueCell     <- ms.fetch(CellPath(argValue))
           precisionCell <- ms.fetch(CellPath(argPrecision))
