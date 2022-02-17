@@ -60,8 +60,9 @@ CompiledExpr
 
 * [/rewriter](rewriter) - Rewrites AST
 
-* `FilterVisitor` - used to filter AST nodes based on predicate: `AST => Boolean`.
-* `MapVisitor` - used to map AST node to a different AST node: `AST => AST`
+* `FilterVisitor` - used to filter AST nodes.
+* `MapVisitor` - used to map AST nodes.
+* `FindVisitor` - used to find AST nodes.
 
 ```scala
 val ast0: AST = ???

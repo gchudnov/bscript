@@ -1,3 +1,4 @@
+- TODO: add FindVisitor
 - TODO: add code to trace execution of functions (rewrite AST??)
 
 - TODO: move KeepASTVisitor to Rewriter
