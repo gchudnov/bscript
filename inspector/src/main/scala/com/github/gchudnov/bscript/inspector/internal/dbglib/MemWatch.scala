@@ -5,16 +5,18 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.Block
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.interpreter.memory.*
+import com.github.gchudnov.bscript.interpreter.memory.VoidCell
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.rewriter.Rewriter
 import com.github.gchudnov.bscript.rewriter.Predicates
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
+import com.github.gchudnov.bscript.interpreter.internal.StashEntry
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 
 import scala.util.control.Exception.allCatch
-import com.github.gchudnov.bscript.interpreter.memory.VoidCell
+import scala.collection.mutable.Stack
 
 /**
  * Trace memory between function calls.
@@ -22,6 +24,9 @@ import com.github.gchudnov.bscript.interpreter.memory.VoidCell
 private[inspector] object MemWatch:
   import Casting.*
   import Block.*
+
+  // TODO: add diff
+  final case class MemWatchStashEntry(calls: Map[String, Stack[Cell]]) extends StashEntry
 
   /**
    * Rewrites AST with memory tracing capabilities

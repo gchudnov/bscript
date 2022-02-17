@@ -5,6 +5,10 @@ import com.github.gchudnov.bscript.interpreter.TestSpec
 final class DiffSpec extends TestSpec:
   import Diff.*
 
+  sealed trait Box
+  final case class IntBox(n: Int)    extends Box
+  final case class StrBox(s: String) extends Box
+
   "Diff" when {
     "two maps are empty" should {
       "return empty change-set" in {
@@ -74,8 +78,8 @@ final class DiffSpec extends TestSpec:
 
     "with custom case classes as values" should {
       "find out that nothing has changed" in {
-        val x = Map("a" -> IntCell(1))
-        val y = Map("a" -> IntCell(1))
+        val x = Map("a" -> IntBox(1))
+        val y = Map("a" -> IntBox(1))
 
         val z = Diff.calc(x, y)
 
@@ -83,17 +87,17 @@ final class DiffSpec extends TestSpec:
       }
 
       "find out when a value was added" in {
-        val x = Map("a" -> IntCell(1))
-        val y = Map("a" -> IntCell(1), "foo" -> StrCell("A"))
+        val x = Map("a" -> IntBox(1))
+        val y = Map("a" -> IntBox(1), "foo" -> StrBox("A"))
 
         val z = Diff.calc(x, y)
 
-        z.toList mustBe List(Added("foo", StrCell("A")))
+        z.toList mustBe List(Added("foo", StrBox("A")))
       }
 
       "find out when values were removed" in {
-        val x = Map("a" -> IntCell(1), "foo" -> StrCell("A"))
-        val y = Map("a" -> IntCell(1))
+        val x = Map("a" -> IntBox(1), "foo" -> StrBox("A"))
+        val y = Map("a" -> IntBox(1))
 
         val z = Diff.calc(x, y)
 
@@ -101,16 +105,12 @@ final class DiffSpec extends TestSpec:
       }
 
       "find out when values were updated" in {
-        val x = Map("a" -> IntCell(1), "foo" -> StrCell("A"))
-        val y = Map("a" -> IntCell(2), "foo" -> StrCell("B"))
+        val x = Map("a" -> IntBox(1), "foo" -> StrBox("A"))
+        val y = Map("a" -> IntBox(2), "foo" -> StrBox("B"))
 
         val z = Diff.calc(x, y)
 
-        z.toList mustBe List(Updated("a", IntCell(1), IntCell(2)), Updated("foo", StrCell("A"), StrCell("B")))
+        z.toList mustBe List(Updated("a", IntBox(1), IntBox(2)), Updated("foo", StrBox("A"), StrBox("B")))
       }
     }
   }
-
-  sealed trait Cell
-  final case class IntCell(n: Int)
-  final case class StrCell(s: String)
