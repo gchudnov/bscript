@@ -82,7 +82,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
 
 object MemorySpace:
 
-  private val sep: String = ":"
+  private val sep: String = "/"
 
   def apply(name: String): MemorySpace =
     new MemorySpace(name = name, members = Map.empty[String, Cell], parent = None)
@@ -112,15 +112,20 @@ object MemorySpace:
           case (None, None) =>
             Right(List.empty[Diff.Change[String, Cell]])
 
-        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(appendNamePrefix((ns :+ a.name).mkString(sep), _)))
+        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(appendNamePrefix(makeMemoryPath(ns :+ a.name), _)))
 
     iterate(List.empty[String], before, after)
 
   private[memory] def appendNamePrefix[V](prefix: String, change: Diff.Change[String, V]): Diff.Change[String, V] =
+    def toKey(k: String): String = s"${prefix}${sep}${k}"
+
     change match
-      case Diff.Removed(k, v)    => Diff.Removed(s"${prefix}${sep}${k}", v)
-      case Diff.Added(k, v)      => Diff.Added(s"${prefix}${sep}${k}", v)
-      case Diff.Updated(k, b, a) => Diff.Updated(s"${prefix}${sep}${k}", b, a)
+      case Diff.Removed(k, v)    => Diff.Removed(toKey(k), v)
+      case Diff.Added(k, v)      => Diff.Added(toKey(k), v)
+      case Diff.Updated(k, b, a) => Diff.Updated(toKey(k), b, a)
+
+  private def makeMemoryPath(ps: Seq[String]): String =
+    ps.mkString(sep)
 
   implicit val memorySpaceShow: Show[MemorySpace] = new Show[MemorySpace]:
     import Cell.*

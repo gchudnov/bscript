@@ -126,6 +126,24 @@ object Cell:
           Right(b)
 
   /**
+   * Calculate the difference between two cells.
+   */
+  def diff(name: String, before: Cell, after: Cell): Iterable[Diff.Change[String, Cell]] = {
+
+    def iterate(ns: List[String], a: Cell, b: Cell): Iterable[Diff.Change[String, Cell]] = {
+      (before, after) match
+        case (StructCell(ba), StructCell(aa)) =>
+          ???
+        case (VecCell(ba), VecCell(aa)) =>
+          ???
+        case (x, y) =>
+          List(Diff.Updated(CellPath.make(ns).value, x, y))
+    }
+
+    iterate(List(name), before, after)
+  }
+
+  /**
    * Implicit Call Operations
    */
   implicit class CellOps(cell: Cell):

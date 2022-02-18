@@ -74,7 +74,7 @@ final class MemorySpaceSpec extends TestSpec:
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("main:f:globals:a", IntCell(10), IntCell(20))
+                  Diff.Updated("main/f/globals/a", IntCell(10), IntCell(20))
                 )
       }
 
@@ -101,7 +101,7 @@ final class MemorySpaceSpec extends TestSpec:
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("main:f:b", StrCell("B"), IntCell(20))
+                  Diff.Updated("main/f/b", StrCell("B"), IntCell(20))
                 )
       }
 
@@ -128,7 +128,7 @@ final class MemorySpaceSpec extends TestSpec:
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("main:c", DoubleCell(12.34), FloatCell(20.1f))
+                  Diff.Updated("main/c", DoubleCell(12.34), FloatCell(20.1f))
                 )
       }
     }
@@ -170,7 +170,7 @@ final class MemorySpaceSpec extends TestSpec:
                 )
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals:a", initStruct, newStruct)
+                  Diff.Updated("locals/a", initStruct, newStruct)
                 )
       }
 
@@ -206,7 +206,7 @@ final class MemorySpaceSpec extends TestSpec:
                 val expected = IntCell(22)
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals:a", aStruct, expected)
+                  Diff.Updated("locals/a", aStruct, expected)
                 )
       }
 
@@ -248,7 +248,7 @@ final class MemorySpaceSpec extends TestSpec:
 
         val keys = updated.map(_.key)
 
-        keys must contain allElementsOf List("parent:1", "parent:3", "parent:4")
+        keys must contain allElementsOf List("parent/1", "parent/3", "parent/4")
       }
     }
 
@@ -335,9 +335,9 @@ final class MemorySpaceSpec extends TestSpec:
           case Left(_) => fail("should be 'right")
           case Right(diff) =>
             diff must contain theSameElementsAs List(
-              Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y", FloatCell(1.2f)),
-              Diff.Added("s:z", StrCell("str"))
+              Diff.Updated("s/x", IntCell(1), IntCell(2)),
+              Diff.Removed("s/y", FloatCell(1.2f)),
+              Diff.Added("s/z", StrCell("str"))
             )
       }
 
@@ -354,12 +354,12 @@ final class MemorySpaceSpec extends TestSpec:
           case Left(_) => fail("should be 'right")
           case Right(diff) =>
             diff must contain theSameElementsAs List(
-              Diff.Updated("s:p:x", StrCell("A"), StrCell("B")),
-              Diff.Removed("s:p:u", LongCell(1L)),
-              Diff.Added("s:p:struct", StructCell(Map("x" -> StrCell("alice")))),
-              Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y", FloatCell(1.2f)),
-              Diff.Added("s:z", StrCell("str"))
+              Diff.Updated("s/p/x", StrCell("A"), StrCell("B")),
+              Diff.Removed("s/p/u", LongCell(1L)),
+              Diff.Added("s/p/struct", StructCell(Map("x" -> StrCell("alice")))),
+              Diff.Updated("s/x", IntCell(1), IntCell(2)),
+              Diff.Removed("s/y", FloatCell(1.2f)),
+              Diff.Added("s/z", StrCell("str"))
             )
       }
 
@@ -375,11 +375,11 @@ final class MemorySpaceSpec extends TestSpec:
           case Left(_) => fail("should be 'right")
           case Right(diff) =>
             diff must contain theSameElementsAs List(
-              Diff.Added("s:p:x", StrCell("B")),
-              Diff.Added("s:p:struct", StructCell(Map("x" -> StrCell("alice")))),
-              Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y", FloatCell(1.2f)),
-              Diff.Added("s:z", StrCell("str"))
+              Diff.Added("s/p/x", StrCell("B")),
+              Diff.Added("s/p/struct", StructCell(Map("x" -> StrCell("alice")))),
+              Diff.Updated("s/x", IntCell(1), IntCell(2)),
+              Diff.Removed("s/y", FloatCell(1.2f)),
+              Diff.Added("s/z", StrCell("str"))
             )
       }
 
@@ -395,11 +395,11 @@ final class MemorySpaceSpec extends TestSpec:
           case Left(_) => fail("should be 'right")
           case Right(diff) =>
             diff must contain theSameElementsAs List(
-              Diff.Removed("s:p:x", StrCell("A")),
-              Diff.Removed("s:p:u", LongCell(1L)),
-              Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y", FloatCell(1.2f)),
-              Diff.Added("s:z", StrCell("str"))
+              Diff.Removed("s/p/x", StrCell("A")),
+              Diff.Removed("s/p/u", LongCell(1L)),
+              Diff.Updated("s/x", IntCell(1), IntCell(2)),
+              Diff.Removed("s/y", FloatCell(1.2f)),
+              Diff.Added("s/z", StrCell("str"))
             )
       }
     }

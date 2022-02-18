@@ -25,3 +25,6 @@ final case class CellPath(value: String):
 object CellPath:
   val sep: String   = "."
   private val sepRx = "\\."
+
+  def make(ps: Seq[String]): CellPath =
+    CellPath(ps.mkString(sep))
