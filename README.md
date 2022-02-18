@@ -194,7 +194,28 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 
 Allows to run and debug AST.
 
-Assembly `b1-cli`first.
+```text
+b1-cli 1.0.0
+Usage: b1-cli [options] <file>
+
+  -h, --help           prints this usage text
+  --version            prints the version
+  -r, --run            Run AST (default)
+  -d, --debug <value>  Debug AST
+  -c, --cell <value>   Path to the variable to trace its value in debug mode
+  <file>               AST file to be interpreted
+
+Examples:
+
+  - Run AST
+    b1-cli --run /path/to/ast.json
+    b1-cli /path/to/ast.json
+
+  - Debug AST
+    b1-cli --debug --cell="a.b.c" /path/to/ast.json
+```
+
+To use the command line utility, assembly `b1-cli`first:
 
 ```bash
 sbt assembly

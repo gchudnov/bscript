@@ -66,13 +66,13 @@ object B1Config:
         .validate(_ => Left(OEffectVersionKey)),
       opt[Unit](ArgRunShort, ArgRunLong)
         .action((_, c) => c.copy(action = RunAction))
-        .text("Run AST"),
+        .text("Run AST (default)"),
       opt[Unit](ArgDebugShort, ArgDebugLong)
         .action((_, c) => c.copy(action = DebugAction))
         .text("Debug AST"),
       opt[String](ArgCellShort, ArgCellLong)
         .action((x, c) => c.copy(cellPath = CellPath(x)))
-        .text("Path to the variable to trace its value"),
+        .text("Path to the variable to trace its value in debug mode"),
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(file = x))
