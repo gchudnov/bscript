@@ -118,7 +118,7 @@ object MemorySpace:
 
   private[memory] def appendNamePrefix[V](prefix: String, change: Diff.Change[String, V]): Diff.Change[String, V] =
     change match
-      case Diff.Removed(k)       => Diff.Removed(s"${prefix}${sep}${k}")
+      case Diff.Removed(k, v)    => Diff.Removed(s"${prefix}${sep}${k}", v)
       case Diff.Added(k, v)      => Diff.Added(s"${prefix}${sep}${k}", v)
       case Diff.Updated(k, b, a) => Diff.Updated(s"${prefix}${sep}${k}", b, a)
 

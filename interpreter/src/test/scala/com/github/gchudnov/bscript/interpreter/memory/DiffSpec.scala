@@ -50,7 +50,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(x, y)
 
-        z.toList mustBe List(Removed("b"))
+        z.toList mustBe List(Removed("b", 2))
       }
     }
 
@@ -72,7 +72,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(x, y)
 
-        z.toList must contain theSameElementsAs List(Updated("1", "foo", "baz"), Removed("3"), Added("4", "boo"))
+        z.toList must contain theSameElementsAs List(Updated("1", "foo", "baz"), Removed("3", "baz"), Added("4", "boo"))
       }
     }
 
@@ -101,7 +101,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(x, y)
 
-        z.toList mustBe List(Removed("foo"))
+        z.toList mustBe List(Removed("foo", StrBox("A")))
       }
 
       "find out when values were updated" in {

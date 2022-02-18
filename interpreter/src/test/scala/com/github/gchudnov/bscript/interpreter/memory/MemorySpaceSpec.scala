@@ -243,7 +243,7 @@ final class MemorySpaceSpec extends TestSpec:
 
     "name prefix" should {
       "be appended to the name in the diff results" in {
-        val changes = List(Diff.Updated("1", "foo", "baz"), Diff.Removed("3"), Diff.Added("4", "boo"))
+        val changes = List(Diff.Updated("1", "foo", "baz"), Diff.Removed("3", "foo"), Diff.Added("4", "boo"))
         val updated = changes.map(MemorySpace.appendNamePrefix("parent", _))
 
         val keys = updated.map(_.key)
@@ -336,7 +336,7 @@ final class MemorySpaceSpec extends TestSpec:
           case Right(diff) =>
             diff must contain theSameElementsAs List(
               Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y"),
+              Diff.Removed("s:y", FloatCell(1.2f)),
               Diff.Added("s:z", StrCell("str"))
             )
       }
@@ -355,10 +355,10 @@ final class MemorySpaceSpec extends TestSpec:
           case Right(diff) =>
             diff must contain theSameElementsAs List(
               Diff.Updated("s:p:x", StrCell("A"), StrCell("B")),
-              Diff.Removed("s:p:u"),
+              Diff.Removed("s:p:u", LongCell(1L)),
               Diff.Added("s:p:struct", StructCell(Map("x" -> StrCell("alice")))),
               Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y"),
+              Diff.Removed("s:y", FloatCell(1.2f)),
               Diff.Added("s:z", StrCell("str"))
             )
       }
@@ -378,7 +378,7 @@ final class MemorySpaceSpec extends TestSpec:
               Diff.Added("s:p:x", StrCell("B")),
               Diff.Added("s:p:struct", StructCell(Map("x" -> StrCell("alice")))),
               Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y"),
+              Diff.Removed("s:y", FloatCell(1.2f)),
               Diff.Added("s:z", StrCell("str"))
             )
       }
@@ -395,10 +395,10 @@ final class MemorySpaceSpec extends TestSpec:
           case Left(_) => fail("should be 'right")
           case Right(diff) =>
             diff must contain theSameElementsAs List(
-              Diff.Removed("s:p:x"),
-              Diff.Removed("s:p:u"),
+              Diff.Removed("s:p:x", StrCell("A")),
+              Diff.Removed("s:p:u", LongCell(1L)),
               Diff.Updated("s:x", IntCell(1), IntCell(2)),
-              Diff.Removed("s:y"),
+              Diff.Removed("s:y", FloatCell(1.2f)),
               Diff.Added("s:z", StrCell("str"))
             )
       }

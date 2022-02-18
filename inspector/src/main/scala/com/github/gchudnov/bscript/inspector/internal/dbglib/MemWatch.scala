@@ -13,7 +13,9 @@ import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 import com.github.gchudnov.bscript.interpreter.internal.StashEntry
+import com.github.gchudnov.bscript.interpreter.internal.Stash
 import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.interpreter.memory.Diff
 
 import scala.util.control.Exception.allCatch
 import scala.collection.mutable.Stack
@@ -25,14 +27,30 @@ private[inspector] object MemWatch:
   import Casting.*
   import Block.*
 
-  // TODO: add diff
-  final case class MemWatchStashEntry(calls: Map[String, Stack[Cell]]) extends StashEntry
+  private val memWatchMethodName: String = "memWatch"
+
+  final case class MemWatchDiff(name: String, path: CellPath, diffs: List[Diff.Change[String, Cell]])
+  final case class MemWatchStashEntry(calls: Map[String, Stack[Cell]], log: Vector[MemWatchDiff]) extends StashEntry
+
+  object MemWatchStashEntry:
+    val name: String = "memWatch"
+
+    def asMemWatchStashEntry(stashEntry: StashEntry): Either[Throwable, MemWatchStashEntry] =
+      Either.cond(
+        stashEntry.isInstanceOf[MemWatchStashEntry],
+        stashEntry.asInstanceOf[MemWatchStashEntry],
+        new InspectorException(s"Cannot cast StashEntry '${stashEntry}' to MemWatchStashEntry")
+      )
+
+  object MemWatchDiff:
+    def calc(lhs: Cell, rhs: Cell): List[Diff.Change[String, Cell]] =
+      ??? // TODO: impl it
 
   /**
    * Rewrites AST with memory tracing capabilities
    */
-  def make(ast0: AST, typeNames: TypeNames): Either[Throwable, AST] =
-    val wrapCall     = makeWrapCall(typeNames)
+  def make(path: CellPath, ast0: AST, typeNames: TypeNames): Either[Throwable, AST] =
+    val wrapCall     = makeWrapCall(path, typeNames)
     val mapper       = makeMapAST(ast0, wrapCall)
     val memWatchDecl = decl(typeNames)
 
@@ -44,7 +62,7 @@ private[inspector] object MemWatch:
   private def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.voidType),
-      "memWatch",
+      memWatchMethodName,
       List(
         ArgDecl(TypeRef(typeNames.strType), "methodName"), // name of the method to watch
         ArgDecl(TypeRef(typeNames.i32Type), "action"),     // 1 - enter, 2 - exit
@@ -63,9 +81,9 @@ private[inspector] object MemWatch:
    *
    *   // into:
    *   {
-   *     memWatch("f", 1);
+   *     memWatch("f", 1);  // stores memory state before f()
    *     auto r = f(...);
-   *     memWatch("f", 2);
+   *     memWatch("f", 2);  // stores memory state after f() and calculates diff
    *     return r;
    *   }
    * }}}
@@ -76,16 +94,35 @@ private[inspector] object MemWatch:
     val argPath       = "path"       // str
 
     s match
-      case s @ InterpretState(_, _, ms, c) =>
+      case s @ InterpretState(_, stash, ms, c) =>
         for
           methodNameCell <- ms.fetch(CellPath(argMethodName))
           actionCell     <- ms.fetch(CellPath(argAction))
           pathCell       <- ms.fetch(CellPath(argPath))
+          newEntry <- (methodNameCell, actionCell, pathCell) match
+                        case (StrCell(methodName), IntCell(action), StrCell(path)) =>
+                          for
+                            watchCell <- ms.fetch(CellPath(path))
+                            entry <- MemWatchStashEntry.asMemWatchStashEntry(
+                                       stash.m.getOrElse(MemWatchStashEntry.name, MemWatchStashEntry(Map.empty[String, Stack[Cell]], Vector.empty[MemWatchDiff]))
+                                     )
+                            stack = entry.calls.getOrElse(methodName, Stack.empty[Cell])
+                            newEntry = (if (action == 1) then
+                                          val newStack = stack.push(watchCell)
+                                          entry.copy(calls = entry.calls + (methodName -> newStack))
+                                        else
+                                          val prevWatchCell = stack.pop()
+                                          val diffs         = MemWatchDiff.calc(prevWatchCell, watchCell)
+                                          entry.copy(calls = entry.calls + (methodName -> stack), log = entry.log :+ MemWatchDiff(methodName, CellPath(path), diffs))
+                                       )
+                          yield newEntry
 
-          // TODO: impl mem watch
+                        case other =>
+                          Left(new InspectorException(s"Unexpected type of arguments passed to memWatch: ${other}"))
 
-          retVal = VoidCell
-        yield s.copy(memSpace = ms, retValue = retVal)
+          newStash = Stash(stash.m + (MemWatchStashEntry.name -> newEntry))
+          retVal   = VoidCell
+        yield s.copy(memSpace = ms, stash = newStash, retValue = retVal)
 
       case s: Scala2State =>
         for lines <- Right(
@@ -114,11 +151,11 @@ private[inspector] object MemWatch:
       case other =>
         sys.error("Expected Expr, got AST: " + other) // NOTE: we should not hit this line, since everything is an Expr
 
-  private def makeWrapCall(typeNames: TypeNames): (Call) => AST = (c: Call) =>
+  private def makeWrapCall(path: CellPath, typeNames: TypeNames): (Call) => AST = (c: Call) =>
     Block(
-      Call(SymbolRef("memWatch"), List(StrVal(c.id.name), IntVal(1))),
+      Call(SymbolRef(memWatchMethodName), List(StrVal(c.id.name), IntVal(1), StrVal(path.value))),
       VarDecl(TypeRef(typeNames.autoType), "r", c),
-      Call(SymbolRef("memWatch"), List(StrVal(c.id.name), IntVal(2))),
+      Call(SymbolRef(memWatchMethodName), List(StrVal(c.id.name), IntVal(2), StrVal(path.value))),
       Var(SymbolRef("r"))
     )
 
