@@ -191,7 +191,7 @@ final class B1Spec extends TestSpec:
        *   }
        * }}}
        */
-      "trace the memory state between function calls" in {
+      "trace the memory state between function calls with nested calls" in {
         val ast0 = Block(
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
@@ -244,6 +244,91 @@ final class B1Spec extends TestSpec:
           MemWatchDiff("g", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(6)))),
           MemWatchDiff("f", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(6)), Diff.Updated("a.b.y", IntCell(0), IntCell(2)))),
           MemWatchDiff("main", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(6)), Diff.Updated("a.b.y", IntCell(0), IntCell(2))))
+        )
+
+        val errOrRes = B1.debug("a", ast0)
+        errOrRes match
+          case Right((cell, log)) =>
+            cell mustBe expectedCell
+            log must contain allElementsOf expectedLog
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct A {
+       *       int x;
+       *       B b;
+       *     };
+       *     struct B { int y; };
+       *
+       *     A a;
+       *
+       *     void f(int x) { a.b.y = x; }
+       *     void g(int x) { a.x = x; }
+       *     void h() { }
+       *
+       *     f(10);
+       *     g(20);
+       *     h();
+       *   }
+       * }}}
+       */
+      "trace the memory state between function calls with sequential calls" in {
+        val ast0 = Block(
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "f",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Assign(
+                Access(Access(Var(SymbolRef("a")), Var(SymbolRef("b"))), Var(SymbolRef("y"))),
+                Var(SymbolRef("x"))
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "g",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Assign(
+                Access(Var(SymbolRef("a")), Var(SymbolRef("x"))),
+                Var(SymbolRef("x"))
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "h",
+            List.empty[ArgDecl],
+            Block(
+            )
+          ),
+          Call(SymbolRef("f"), List(IntVal(10))),
+          Call(SymbolRef("g"), List(IntVal(20))),
+          Call(SymbolRef("h"), List.empty[Expr]),
+          Var(SymbolRef("a"))
+        )
+
+        val expectedCell = StructCell(
+          Map(
+            "x" -> IntCell(20),
+            "b" -> StructCell(Map("y" -> IntCell(10)))
+          )
+        )
+
+        val expectedLog = Vector(
+          MemWatchDiff("f", CellPath("a"), List(Diff.Updated("a.b.y", IntCell(0), IntCell(10)))),
+          MemWatchDiff("g", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(20)))),
+          MemWatchDiff("h", CellPath("a"), List())
         )
 
         val errOrRes = B1.debug("a", ast0)
