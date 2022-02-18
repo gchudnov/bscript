@@ -20,110 +20,110 @@ final class B1Spec extends TestSpec:
       Var(SymbolRef("y"))
     )
 
-    // "AST is deserialized" should {
-    //   "produce AST" in {
-    //     val input = resourceToString("data/var-decl-ast.json").toTry.get
+    "AST is deserialized" should {
+      "produce AST" in {
+        val input = resourceToString("data/var-decl-ast.json").toTry.get
 
-    //     val expected = astA
+        val expected = astA
 
-    //     val errOrRes = B1.load(input)
-    //     errOrRes match
-    //       case Right(actual) =>
-    //         actual mustBe (expected)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+        val errOrRes = B1.load(input)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
-    // "AST is serialized" should {
-    //   "produce JSON" in {
-    //     val t = astA
+    "AST is serialized" should {
+      "produce JSON" in {
+        val t = astA
 
-    //     val expected = resourceToString("data/var-decl-ast.json").toTry.get
+        val expected = resourceToString("data/var-decl-ast.json").toTry.get
 
-    //     val errOrRes = B1.save(t)
-    //     errOrRes match
-    //       case Right(actual) =>
-    //         actual mustBe (expected)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+        val errOrRes = B1.save(t)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
-    // "AST is built" should {
-    //   "produce a new AST" in {
-    //     val ast0 = astB
+    "AST is built" should {
+      "produce a new AST" in {
+        val ast0 = astB
 
-    //     val errOrRes = B1.build(ast0, B1Options.default.withPrelude(false))
-    //     errOrRes match
-    //       case Right(AstMeta(ast1, meta1)) =>
-    //         val block    = ast1.asInstanceOf[Block]
-    //         val autoDecl = block.statements(0).asInstanceOf[VarDecl]
-    //         val varDecl  = block.statements(1).asInstanceOf[VarDecl]
-    //         val yVar     = block.statements(2).asInstanceOf[Var]
+        val errOrRes = B1.build(ast0, B1Options.default.withPrelude(false))
+        errOrRes match
+          case Right(AstMeta(ast1, meta1)) =>
+            val block    = ast1.asInstanceOf[Block]
+            val autoDecl = block.statements(0).asInstanceOf[VarDecl]
+            val varDecl  = block.statements(1).asInstanceOf[VarDecl]
+            val yVar     = block.statements(2).asInstanceOf[Var]
 
-    //         autoDecl.evalType.name mustBe (typeNames.voidType)
-    //         autoDecl.expr.evalType.name mustBe (typeNames.i32Type)
-    //         varDecl.vType.name mustBe (typeNames.i32Type)
-    //         yVar.evalType.name mustBe (typeNames.i32Type)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+            autoDecl.evalType.name mustBe (typeNames.voidType)
+            autoDecl.expr.evalType.name mustBe (typeNames.i32Type)
+            varDecl.vType.name mustBe (typeNames.i32Type)
+            yVar.evalType.name mustBe (typeNames.i32Type)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
-    // "AST is interpreter" should {
-    //   "produce the result" in {
-    //     val ast0 = astB
+    "AST is interpreter" should {
+      "produce the result" in {
+        val ast0 = astB
 
-    //     val errOrRes = B1.build(ast0).flatMap(B1.interpret)
-    //     errOrRes match
-    //       case Right(cell) =>
-    //         cell mustBe IntCell(20)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+        val errOrRes = B1.build(ast0).flatMap(B1.interpret)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe IntCell(20)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
-    // "AST is run" should {
-    //   "build & interpret it" in {
-    //     val ast0 = astB
+    "AST is run" should {
+      "build & interpret it" in {
+        val ast0 = astB
 
-    //     val errOrRes = B1.run(ast0)
-    //     errOrRes match
-    //       case Right(cell) =>
-    //         cell mustBe IntCell(20)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+        val errOrRes = B1.run(ast0)
+        errOrRes match
+          case Right(cell) =>
+            cell mustBe IntCell(20)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
-    // "AST is translated" should {
-    //   "produce Scala code without prelude" in {
-    //     val ast0 = astB
+    "AST is translated" should {
+      "produce Scala code without prelude" in {
+        val ast0 = astB
 
-    //     val errOrRes = B1.translate(ast0, B1Options.default.withPrelude(false))
-    //     errOrRes match
-    //       case Right(code) =>
-    //         code mustBe """{
-    //                       |  var x: Int = 10
-    //                       |  var y: Int = 20
-    //                       |  y
-    //                       |}""".stripMargin
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
+        val errOrRes = B1.translate(ast0, B1Options.default.withPrelude(false))
+        errOrRes match
+          case Right(code) =>
+            code mustBe """{
+                          |  var x: Int = 10
+                          |  var y: Int = 20
+                          |  y
+                          |}""".stripMargin
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
 
-    //   "produce Scala code with prelude" in {
-    //     val ast0 = astB
+      "produce Scala code with prelude" in {
+        val ast0 = astB
 
-    //     val errOrRes = B1.translate(ast0)
-    //     errOrRes match
-    //       case Right(code) =>
-    //         code.contains("var y: Int = 20") mustBe true
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+        val errOrRes = B1.translate(ast0)
+        errOrRes match
+          case Right(code) =>
+            code.contains("var y: Int = 20") mustBe true
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
     "AST is inspected" should {
 
@@ -158,14 +158,13 @@ final class B1Spec extends TestSpec:
         )
 
         val expectedCell = IntCell(2)
-        val expectedLog = Vector(MemWatchDiff("main",CellPath("y"),List(Diff.Updated("y",IntCell(1),IntCell(2)))))
-
+        val expectedLog  = Vector(MemWatchDiff("main", CellPath("y"), List(Diff.Updated("y", IntCell(1), IntCell(2)))))
 
         val errOrRes = B1.debug("y", ast0)
         errOrRes match
           case Right((cell, log)) =>
             cell mustBe expectedCell
-            expectedLog must contain allElementsOf expectedLog
+            log must contain allElementsOf expectedLog
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)
@@ -233,24 +232,28 @@ final class B1Spec extends TestSpec:
           Var(SymbolRef("a"))
         )
 
-        // val errOrRes1 = B1.translate(ast0)
-        // println(errOrRes1)
+        val expectedCell = StructCell(
+          Map(
+            "x" -> IntCell(6),
+            "b" -> StructCell(Map("y" -> IntCell(2)))
+          )
+        )
 
-        // val expected = StructCell(
-        //   Map(
-        //     "x" -> IntCell(6),
-        //     "b" -> StructCell(Map("y" -> IntCell(2)))
-        //   )
-        // )
+        // NOTE: we have duplication of diff entries because the functions are nested: main() -> f() -> g()
+        val expectedLog = Vector(
+          MemWatchDiff("g", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(6)))),
+          MemWatchDiff("f", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(6)), Diff.Updated("a.b.y", IntCell(0), IntCell(2)))),
+          MemWatchDiff("main", CellPath("a"), List(Diff.Updated("a.x", IntCell(0), IntCell(6)), Diff.Updated("a.b.y", IntCell(0), IntCell(2))))
+        )
 
-        // val errOrRes = B1.run(ast0)
-        // errOrRes match
-        //   case Right(cell) =>
-        //     cell mustBe expected
-        //   // TODO: impl inspecting
-        //   case Left(t) =>
-        //     println(t)
-        //     fail("Should be 'right", t)
+        val errOrRes = B1.debug("a", ast0)
+        errOrRes match
+          case Right((cell, log)) =>
+            cell mustBe expectedCell
+            log must contain allElementsOf expectedLog
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
       }
     }
   }
