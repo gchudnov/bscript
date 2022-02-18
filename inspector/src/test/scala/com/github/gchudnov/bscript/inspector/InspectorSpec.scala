@@ -22,7 +22,7 @@ final class InspectorSpec extends TestSpec:
        *   main();
        * }}}
        */
-      "provide information about the AST between function calls" in {
+      "wrap AST to trace memory between function calls" in {
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(1)),
           MethodDecl(
@@ -36,8 +36,7 @@ final class InspectorSpec extends TestSpec:
               )
             )
           ),
-          Call(SymbolRef("main"), List.empty[Expr]),
-          Var(SymbolRef("a"))
+          Call(SymbolRef("main"), List.empty[Expr])
         )
 
         val errOrRes = Inspector.memWatch(CellPath("y"), t, typeNames)
@@ -45,7 +44,7 @@ final class InspectorSpec extends TestSpec:
           case Right(actual) =>
             val block      = actual.asInstanceOf[Block]
             val methodDecl = block.statements(0).asInstanceOf[MethodDecl]
-            val callBlock  = block.statements(2).asInstanceOf[Block] // NOTE: `Call(SymbolRef("main"), List.empty[Expr])` is wrapped in a `Block`
+            val callBlock  = block.statements(3).asInstanceOf[Block] // NOTE: `Call(SymbolRef("main"), List.empty[Expr])` is wrapped in a `Block`
 
             methodDecl.name mustBe ("memWatch")
 

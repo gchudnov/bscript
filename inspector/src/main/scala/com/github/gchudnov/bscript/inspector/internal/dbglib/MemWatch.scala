@@ -29,19 +29,6 @@ private[inspector] object MemWatch:
 
   private val memWatchMethodName: String = "memWatch"
 
-  final case class MemWatchDiff(name: String, path: CellPath, diffs: List[Diff.Change[String, Cell]])
-  final case class MemWatchStashEntry(calls: Map[String, Stack[Option[Cell]]], log: Vector[MemWatchDiff]) extends StashEntry
-
-  object MemWatchStashEntry:
-    val name: String = "memWatch"
-
-    def asMemWatchStashEntry(stashEntry: StashEntry): Either[Throwable, MemWatchStashEntry] =
-      Either.cond(
-        stashEntry.isInstanceOf[MemWatchStashEntry],
-        stashEntry.asInstanceOf[MemWatchStashEntry],
-        new InspectorException(s"Cannot cast StashEntry '${stashEntry}' to MemWatchStashEntry")
-      )
-
   /**
    * Rewrites AST with memory tracing capabilities
    */
@@ -97,26 +84,24 @@ private[inspector] object MemWatch:
           pathCell       <- ms.tryFetch(CellPath(argPath))
           newEntry <- (methodNameCell, actionCell, pathCell) match
                         case (StrCell(methodName), IntCell(action), StrCell(path)) =>
-                          for
-                            entry <- MemWatchStashEntry.asMemWatchStashEntry(
-                                       stash.m.getOrElse(MemWatchStashEntry.name, MemWatchStashEntry(Map.empty[String, Stack[Option[Cell]]], Vector.empty[MemWatchDiff]))
-                                     )
-                            watchedCell = ms.fetch(CellPath(path))
-                            stack       = entry.calls.getOrElse(methodName, Stack.empty[Option[Cell]])
-                            newEntry = (if (action == 1) then
-                                          val newStack = stack.push(watchedCell)
-                                          entry.copy(calls = entry.calls + (methodName -> newStack))
-                                        else
-                                          val prevWatchedCell = stack.pop()
-                                          val diffs           = Cell.diff(path, prevWatchedCell, watchedCell).toList
-                                          entry.copy(calls = entry.calls + (methodName -> stack), log = entry.log :+ MemWatchDiff(methodName, CellPath(path), diffs))
-                                       )
-                          yield newEntry
-
+                          val entry       = MemWatchStashEntry.get(stash)
+                          val watchedCell = ms.fetch(CellPath(path))
+                          val stack       = entry.calls.getOrElse(methodName, Stack.empty[Option[Cell]])
+                          val newEntry =
+                            (
+                              if (action == 1) then
+                                val newStack = stack.push(watchedCell)
+                                entry.copy(calls = entry.calls + (methodName -> newStack))
+                              else
+                                val prevWatchedCell = stack.pop()
+                                val diffs           = Cell.diff(path, prevWatchedCell, watchedCell).toList
+                                entry.copy(calls = entry.calls + (methodName -> stack), log = entry.log :+ MemWatchDiff(methodName, CellPath(path), diffs))
+                            )
+                          Right(newEntry)
                         case other =>
                           Left(new InspectorException(s"Unexpected type of arguments passed to memWatch: ${other}"))
 
-          newStash = Stash(stash.m + (MemWatchStashEntry.name -> newEntry))
+          newStash = Stash(stash.value + (MemWatchStashEntry.name -> newEntry))
           retVal   = VoidCell
         yield s.copy(memSpace = ms, stash = newStash, retValue = retVal)
 

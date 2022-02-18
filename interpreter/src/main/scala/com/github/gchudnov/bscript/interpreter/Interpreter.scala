@@ -15,6 +15,15 @@ sealed trait Interpreter:
    * NOTE: AST must be built before the interpretation.
    */
   def interpret(ast1: AST, meta: Meta, laws: InterpreterLaws): Either[Throwable, Cell] =
+    interpret_(ast1, meta, laws)
+      .map(_.retValue)
+
+  /**
+   * Interprets AST.
+   *
+   * Low-level API. Returns an interpreter state.
+   */
+  def interpret_(ast1: AST, meta: Meta, laws: InterpreterLaws): Either[Throwable, InterpretState] =
     val globalMemoryName = "globals"
     val ms               = MemorySpace(globalMemoryName)
     val stash            = Stash.empty
@@ -24,6 +33,5 @@ sealed trait Interpreter:
 
     ast1
       .visit(interpretState, interpretVisitor)
-      .map(_.retValue)
 
 object Interpreter extends Interpreter

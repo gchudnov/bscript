@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.inspector.internal.InspectorTypeNames
 import com.github.gchudnov.bscript.inspector.internal.dbglib.MemWatch
-import com.github.gchudnov.bscript.inspector.internal.dbglib.MemWatch.{ MemWatchDiff, MemWatchStashEntry }
+import com.github.gchudnov.bscript.inspector.internal.dbglib.{ MemWatchDiff, MemWatchStashEntry }
 import com.github.gchudnov.bscript.interpreter.memory.CellPath
 
 final class MemWatchSpec extends TestSpec:
