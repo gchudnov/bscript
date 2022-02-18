@@ -10,6 +10,8 @@
     "eval",
     "inmap",
     "Minuser",
+    "OEFFECT",
+    "preprocess",
     "scalatest",
     "semanticdb",
     "Serde",

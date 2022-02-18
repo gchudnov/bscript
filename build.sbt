@@ -15,6 +15,7 @@ lazy val testSettings = Seq(
 lazy val allSettings = Settings.shared ++ testSettings
 
 lazy val lang = (project in file("lang"))
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "lang",
@@ -23,6 +24,7 @@ lazy val lang = (project in file("lang"))
 
 lazy val rewriter = (project in file("rewriter"))
   .dependsOn(lang)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "rewriter",
@@ -31,6 +33,7 @@ lazy val rewriter = (project in file("rewriter"))
 
 lazy val serde = (project in file("serde"))
   .dependsOn(lang, rewriter)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "serde",
@@ -39,6 +42,7 @@ lazy val serde = (project in file("serde"))
 
 lazy val builder = (project in file("builder"))
   .dependsOn(lang)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "builder",
@@ -47,6 +51,7 @@ lazy val builder = (project in file("builder"))
 
 lazy val interpreter = (project in file("interpreter"))
   .dependsOn(lang, builder)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "interpreter",
@@ -55,6 +60,7 @@ lazy val interpreter = (project in file("interpreter"))
 
 lazy val translator = (project in file("translator"))
   .dependsOn(lang, builder)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "translator",
@@ -63,6 +69,7 @@ lazy val translator = (project in file("translator"))
 
 lazy val inspector = (project in file("inspector"))
   .dependsOn(lang, builder, interpreter, translator, rewriter)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "inspector",
@@ -71,6 +78,7 @@ lazy val inspector = (project in file("inspector"))
 
 lazy val b1 = (project in file("b1"))
   .dependsOn(lang, serde, builder, interpreter, translator, inspector)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "b1",
@@ -86,15 +94,16 @@ lazy val b1Cli = (project in file("b1-cli"))
     name := "b1-cli",
     libraryDependencies ++= Dependencies.B1Cli,
     buildInfoKeys                 := Seq[BuildInfoKey](name, version, scalaVersion, sbtVersion),
-    buildInfoPackage              := "com.github.gchudnov.bscript.b1",
-    assembly / mainClass          := Some("com.github.gchudnov.bscript.b1.Main"),
-    assembly / assemblyOption     := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = false))),
-    assembly / assemblyOutputPath := new File(s"./target/${name.value}.jar"),
+    buildInfoPackage              := "com.github.gchudnov.bscript.b1.cli",
+    assembly / mainClass          := Some("com.github.gchudnov.bscript.b1.cli.Main"),
+    assembly / assemblyOption     := (assembly / assemblyOption).value.withPrependShellScript(Some(defaultUniversalScript(shebang = true))),
+    assembly / assemblyOutputPath := new File(s"./target/${name.value}"),
     assembly / assemblyJarName    := s"${name.value}"
   )
 
 lazy val root = (project in file("."))
   .aggregate(lang, rewriter, serde, builder, interpreter, translator, inspector, b1, b1Cli)
+  .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
     name := "bscript"

@@ -22,9 +22,15 @@ final case class CellPath(value: String):
     if value.isEmpty then List.empty[String]
     else value.split(sepRx).toList
 
+  def isEmpty: Boolean =
+    value.isEmpty
+
 object CellPath:
   val sep: String   = "."
   private val sepRx = "\\."
+
+  val empty: CellPath =
+    CellPath("")
 
   def make(ps: Seq[String]): CellPath =
     CellPath(ps.mkString(sep))

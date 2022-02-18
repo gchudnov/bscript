@@ -11,7 +11,7 @@ import scala.util.control.Exception.allCatch
 
 private[b1] object FileOps:
 
-  def stringFromPath(path: Path): Either[Throwable, String] =
+  def stringFrom(path: Path): Either[Throwable, String] =
     allCatch.either(Files.readString(path, StandardCharsets.UTF_8))
 
   def saveString(path: Path, data: String): Either[Throwable, Unit] =
