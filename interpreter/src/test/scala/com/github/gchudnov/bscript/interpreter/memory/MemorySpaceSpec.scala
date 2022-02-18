@@ -17,7 +17,48 @@ final class MemorySpaceSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *   struct A {
+     *     int x;
+     *     B b;
+     *   };
+     *   struct B { int y; };
+     *
+     *   A a;
+     *
+     *   a.b.y; // here 'a.b.y' is a path
+     * }}}
+     */
     "fetch" should {
+      val aStruct = StructCell(
+        "x" -> IntCell(0),
+        "b" -> StructCell("y" -> IntCell(3))
+      )
+
+      val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
+      val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+
+      "return a cell by its path if the path exists" in {
+        val optCell = locals.fetch(CellPath("a.b.y"))
+        optCell match
+          case None =>
+            fail("should be 'right")
+          case Some(actual) =>
+            actual mustBe IntCell(3)
+      }
+
+      "return no value if the path is invalid" in {
+        val optCell = locals.fetch(CellPath("a.b.y.z"))
+        optCell match
+          case None =>
+            succeed
+          case Some(actual) =>
+            fail("should be 'left")
+      }
+    }
+
+    "tryFetch" should {
 
       /**
        * {{{
@@ -133,7 +174,7 @@ final class MemorySpaceSpec extends TestSpec:
       }
     }
 
-    "patch" should {
+    "tryPatch" should {
 
       /**
        * {{{
@@ -404,7 +445,7 @@ final class MemorySpaceSpec extends TestSpec:
       }
     }
 
-    "showed" should {
+    "displayed" should {
       "display the hierarchy" in {
         val aStruct = StructCell(
           "x" -> IntCell(0),

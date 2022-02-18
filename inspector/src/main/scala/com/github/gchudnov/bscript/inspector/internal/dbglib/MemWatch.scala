@@ -30,7 +30,7 @@ private[inspector] object MemWatch:
   private val memWatchMethodName: String = "memWatch"
 
   final case class MemWatchDiff(name: String, path: CellPath, diffs: List[Diff.Change[String, Cell]])
-  final case class MemWatchStashEntry(calls: Map[String, Stack[Cell]], log: Vector[MemWatchDiff]) extends StashEntry
+  final case class MemWatchStashEntry(calls: Map[String, Stack[Option[Cell]]], log: Vector[MemWatchDiff]) extends StashEntry
 
   object MemWatchStashEntry:
     val name: String = "memWatch"
@@ -41,10 +41,6 @@ private[inspector] object MemWatch:
         stashEntry.asInstanceOf[MemWatchStashEntry],
         new InspectorException(s"Cannot cast StashEntry '${stashEntry}' to MemWatchStashEntry")
       )
-
-  object MemWatchDiff:
-    def calc(lhs: Cell, rhs: Cell): List[Diff.Change[String, Cell]] =
-      ??? // TODO: impl it
 
   /**
    * Rewrites AST with memory tracing capabilities
@@ -102,17 +98,17 @@ private[inspector] object MemWatch:
           newEntry <- (methodNameCell, actionCell, pathCell) match
                         case (StrCell(methodName), IntCell(action), StrCell(path)) =>
                           for
-                            watchCell <- ms.tryFetch(CellPath(path))
                             entry <- MemWatchStashEntry.asMemWatchStashEntry(
-                                       stash.m.getOrElse(MemWatchStashEntry.name, MemWatchStashEntry(Map.empty[String, Stack[Cell]], Vector.empty[MemWatchDiff]))
+                                       stash.m.getOrElse(MemWatchStashEntry.name, MemWatchStashEntry(Map.empty[String, Stack[Option[Cell]]], Vector.empty[MemWatchDiff]))
                                      )
-                            stack = entry.calls.getOrElse(methodName, Stack.empty[Cell])
+                            watchedCell = ms.fetch(CellPath(path))
+                            stack       = entry.calls.getOrElse(methodName, Stack.empty[Option[Cell]])
                             newEntry = (if (action == 1) then
-                                          val newStack = stack.push(watchCell)
+                                          val newStack = stack.push(watchedCell)
                                           entry.copy(calls = entry.calls + (methodName -> newStack))
                                         else
-                                          val prevWatchCell = stack.pop()
-                                          val diffs         = MemWatchDiff.calc(prevWatchCell, watchCell)
+                                          val prevWatchedCell = stack.pop()
+                                          val diffs           = Cell.diff(path, prevWatchedCell, watchedCell).toList
                                           entry.copy(calls = entry.calls + (methodName -> stack), log = entry.log :+ MemWatchDiff(methodName, CellPath(path), diffs))
                                        )
                           yield newEntry

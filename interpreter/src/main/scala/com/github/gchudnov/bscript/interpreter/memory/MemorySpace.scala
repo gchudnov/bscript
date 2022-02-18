@@ -16,6 +16,26 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
+  def fetch(path: CellPath): Option[Cell] =
+    def iterate(ps: List[String], where: Cell): Option[Cell] = ps match
+      case h :: tail =>
+        where match
+          case sc: StructCell =>
+            sc.value
+              .get(h)
+              .flatMap(c => iterate(tail, c))
+          case other =>
+            None
+      case Nil =>
+        Some(where)
+
+    val parts = path.split
+    if parts.isEmpty then None
+    else
+      val (h, tail) = (parts.head, parts.tail)
+      get(h)
+        .flatMap(c => iterate(tail, c))
+
   def tryFetch(path: CellPath): Either[Throwable, Cell] =
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
