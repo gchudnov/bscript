@@ -92,7 +92,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Added(2, 3))        
+        z.toList must contain theSameElementsAs List(Added(2, 3))
       }
 
       "find removals" in {
@@ -101,7 +101,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Removed(2, 3))           
+        z.toList must contain theSameElementsAs List(Removed(2, 3))
       }
 
       "find updates and removals" in {
@@ -110,7 +110,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Updated(0, 1, 3), Updated(1, 2, 4), Removed(2, 3))      
+        z.toList must contain theSameElementsAs List(Updated(0, 1, 3), Updated(1, 2, 4), Removed(2, 3))
       }
 
       "find updates and additions" in {
@@ -119,7 +119,7 @@ final class DiffSpec extends TestSpec:
 
         val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Updated(0, 1, 3), Updated(1, 2, 4), Added(2, 3))              
+        z.toList must contain theSameElementsAs List(Updated(0, 1, 3), Updated(1, 2, 4), Added(2, 3))
       }
 
       "find additions when the initial collection is empty" in {

@@ -156,8 +156,7 @@ object Cell:
 
       a.foreach { case (k, va) =>
         val vb = b.get(k)
-        if vb.isEmpty then
-          rs ++= iterate(ns :+ k, vb, Some(va))
+        if vb.isEmpty then rs ++= iterate(ns :+ k, vb, Some(va))
       }
 
       rs.result()
@@ -172,10 +171,8 @@ object Cell:
           diffList(ns, ba, aa)
 
         case (Some(x), Some(y)) =>
-          if x != y then
-            List(Diff.Updated(path, x, y))
-          else
-            List.empty[Diff.Change[String, Cell]]
+          if x != y then List(Diff.Updated(path, x, y))
+          else List.empty[Diff.Change[String, Cell]]
 
         case (Some(x), None) =>
           List(Diff.Removed(path, x))

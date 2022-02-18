@@ -94,7 +94,7 @@ final class MemWatchSpec extends TestSpec:
           case Right(actual) =>
             val block      = actual.asInstanceOf[Block]
             val methodDecl = block.statements(0).asInstanceOf[MethodDecl]
-            val callBlock  = block.statements(7).asInstanceOf[Block]
+            val callBlock  = block.statements(7).asInstanceOf[Block] // NOTE: `Call(SymbolRef("main"), List.empty[Expr])` is wrapped in a `Block`
 
             methodDecl.name mustBe ("memWatch")
 

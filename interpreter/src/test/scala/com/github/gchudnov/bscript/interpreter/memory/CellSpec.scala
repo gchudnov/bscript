@@ -58,8 +58,8 @@ final class CellSpec extends TestSpec:
       "calc it for structs" in {
         val cellA1 = Cell(1)
         val cellA2 = Cell(2)
-        val cellB = Cell("alice")
-        val cellC = Cell(12.34)
+        val cellB  = Cell("alice")
+        val cellC  = Cell(12.34)
 
         val a = StructCell(Map("a" -> cellA1, "b" -> cellB))
         val b = StructCell(Map("a" -> cellA2, "c" -> cellC))

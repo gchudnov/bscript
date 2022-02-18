@@ -165,7 +165,7 @@ private[inspector] object MemWatch:
           case Right(optMd) =>
             optMd match
               case Some(md) =>
-                if (Predicates.hasStdAnn(md)) then wrapCall(c) else c
+                if (!Predicates.hasStdAnn(md)) then wrapCall(c) else c
               case None =>
                 throw new InspectorException(s"Could not find MethodDecl '$methodName' for the Call")
           case Left(e) =>
