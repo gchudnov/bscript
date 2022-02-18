@@ -6,12 +6,13 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.builder.AstMeta
 import com.github.gchudnov.bscript.interpreter.memory.{ IntCell, StructCell }
+import com.github.gchudnov.bscript.interpreter.memory.{ CellPath, Diff }
+import com.github.gchudnov.bscript.inspector.internal.dbglib.{ MemWatchDiff, MemWatchStashEntry }
 
 final class B1Spec extends TestSpec:
+  val typeNames = B1.typeNames
 
   "B1" when {
-    val typeNames = B1.typeNames
-
     val astA = VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0))
     val astB = Block(
       VarDecl(TypeRef(typeNames.autoType), "x", IntVal(10)),
@@ -156,13 +157,15 @@ final class B1Spec extends TestSpec:
           Var(SymbolRef("y"))
         )
 
-        val expected = IntCell(2)
+        val expectedCell = IntCell(2)
+        val expectedLog = Vector(MemWatchDiff("main",CellPath("y"),List(Diff.Updated("y",IntCell(1),IntCell(2)))))
 
-        val errOrRes = B1.run(ast0)
+
+        val errOrRes = B1.debug("y", ast0)
         errOrRes match
-          case Right(cell) =>
-            cell mustBe expected
-          // TODO: impl inspecting
+          case Right((cell, log)) =>
+            cell mustBe expectedCell
+            expectedLog must contain allElementsOf expectedLog
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)

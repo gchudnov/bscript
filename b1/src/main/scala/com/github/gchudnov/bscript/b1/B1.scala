@@ -74,7 +74,7 @@ sealed trait B1:
   /**
    * Debug - Set MemWatch & Build & Interpret
    */
-  def debug(ast0: AST, path: String, opts: B1Options = B1Options.default): Either[Throwable, (Cell, Seq[MemWatchDiff])] =
+  def debug(path: String, ast0: AST, opts: B1Options = B1Options.default): Either[Throwable, (Cell, Seq[MemWatchDiff])] =
     for
       ast1    <- Inspector.memWatch(CellPath(path), ast0, typeNames)
       is      <- build(ast1, opts).flatMap(am => interpret_(am.ast, am.meta))
