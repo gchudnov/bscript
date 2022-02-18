@@ -215,7 +215,7 @@ Examples:
     b1-cli --debug --cell="a.b.c" /path/to/ast.json
 ```
 
-To use the command line utility, assembly `b1-cli`first:
+To use the command line utility, assembly `b1-cli` first:
 
 ```bash
 sbt assembly

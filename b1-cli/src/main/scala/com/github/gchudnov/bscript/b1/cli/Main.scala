@@ -18,7 +18,7 @@ object Main:
         case x: ExitException =>
           sys.exit(x.code)
         case t =>
-          Console.err.println(t.getMessage)
+          Console.err.println(t)
           sys.exit(1)
       },
       _ => ()
