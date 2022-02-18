@@ -194,10 +194,10 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 
 Allows to run and debug AST.
 
-To run, assembly `b1-cli`first.
+Assembly `b1-cli`first.
 
-```sbt
-assembly
+```bash
+sbt assembly
 ```
 
 Run:
