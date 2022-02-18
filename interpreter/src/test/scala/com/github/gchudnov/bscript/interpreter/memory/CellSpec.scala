@@ -43,6 +43,44 @@ final class CellSpec extends TestSpec:
       }
     }
 
+    "difference is calculated" should {
+      "calc it for primitives" in {
+        val a = Cell(1)
+        val b = Cell(2)
+
+        val actual = Cell.diff("A", a, b)
+
+        val expected = List(Diff.Updated("A", a, b))
+
+        actual.toList must contain theSameElementsAs expected
+      }
+
+      "calc it for structs" in {
+        val cellA1 = Cell(1)
+        val cellA2 = Cell(2)
+        val cellB = Cell("alice")
+        val cellC = Cell(12.34)
+
+        val a = StructCell(Map("a" -> cellA1, "b" -> cellB))
+        val b = StructCell(Map("a" -> cellA2, "c" -> cellC))
+
+        val actual = Cell.diff("A", a, b)
+
+        val expected = List(Diff.Updated("A.a", cellA1, cellA2), Diff.Removed("A.b", cellB), Diff.Added("A.c", cellC))
+
+        actual.toList must contain theSameElementsAs expected
+      }
+
+      "calc it for arrays" in {
+        val a = Cell(List(Cell(1), Cell(2), Cell(3)))
+        val b = Cell(List(Cell(1), Cell(2), Cell(3), Cell(4)))
+
+        val actual = Cell.diff("A", a, b)
+
+        val expected = List(Diff.Added("A.2", Cell(4)))
+      }
+    }
+
     "converted to a string" should {
       import Show.*
       import Cell.*

@@ -81,54 +81,54 @@ final class DiffSpec extends TestSpec:
         val xs = List(1, 2, 3)
         val ys = List(4, 5, 6)
 
-        val z = Diff.calc("arr", xs, ys)
+        val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Updated("arr", 1, 4), Updated("arr", 2, 5), Updated("arr", 3, 6))
+        z.toList must contain theSameElementsAs List(Updated(0, 1, 4), Updated(1, 2, 5), Updated(2, 3, 6))
       }
 
       "find additions" in {
         val xs = List(1, 2)
         val ys = List(1, 2, 3)
 
-        val z = Diff.calc("arr", xs, ys)
+        val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Added("arr", 3))        
+        z.toList must contain theSameElementsAs List(Added(2, 3))        
       }
 
       "find removals" in {
         val xs = List(1, 2, 3)
         val ys = List(1, 2)
 
-        val z = Diff.calc("arr", xs, ys)
+        val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Removed("arr", 3))           
+        z.toList must contain theSameElementsAs List(Removed(2, 3))           
       }
 
       "find updates and removals" in {
         val xs = List(1, 2, 3)
         val ys = List(3, 4)
 
-        val z = Diff.calc("arr", xs, ys)
+        val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Updated("arr", 1, 3), Updated("arr", 2, 4), Removed("arr", 3))      
+        z.toList must contain theSameElementsAs List(Updated(0, 1, 3), Updated(1, 2, 4), Removed(2, 3))      
       }
 
       "find updates and additions" in {
         val xs = List(1, 2)
         val ys = List(3, 4, 3)
 
-        val z = Diff.calc("arr", xs, ys)
+        val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Updated("arr", 1, 3), Updated("arr", 2, 4), Added("arr", 3))              
+        z.toList must contain theSameElementsAs List(Updated(0, 1, 3), Updated(1, 2, 4), Added(2, 3))              
       }
 
       "find additions when the initial collection is empty" in {
         val xs = List.empty[Int]
         val ys = List(1, 2, 3)
 
-        val z = Diff.calc("arr", xs, ys)
+        val z = Diff.calc(xs, ys)
 
-        z.toList must contain theSameElementsAs List(Added("arr", 1), Added("arr", 2), Added("arr", 3))
+        z.toList must contain theSameElementsAs List(Added(0, 1), Added(1, 2), Added(2, 3))
       }
     }
 

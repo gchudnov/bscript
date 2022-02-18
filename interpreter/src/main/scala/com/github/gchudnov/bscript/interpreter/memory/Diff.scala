@@ -24,18 +24,18 @@ object Diff:
 
     rs.result()
 
-  def calc[K, V](key: K, before: Seq[V], after: Seq[V]): Iterable[Change[K, V]] =
-    val rs = Iterable.newBuilder[Change[K, V]]
+  def calc[V](before: Seq[V], after: Seq[V]): Iterable[Change[Int, V]] =
+    val rs = Iterable.newBuilder[Change[Int, V]]
 
-    after.zip(before).foreach { case (va, vb) =>
-      if vb != va then rs += Updated(key, vb, va)
+    (after.zip(before)).zipWithIndex.foreach { case ((va, vb), i) =>
+      if vb != va then rs += Updated(i, vb, va)
     }
 
     if before.size > after.size then
       val bTail = before.drop(after.size)
-      bTail.foreach(vb => rs += Removed(key, vb))
+      bTail.zipWithIndex.foreach({ case (vb, i) => rs += Removed(i + after.size, vb) })
     else if after.size > before.size then
       val aTail = after.drop(before.size)
-      aTail.foreach(va => rs += Added(key, va))
+      aTail.zipWithIndex.foreach({ case (va, i) => rs += Added(i + before.size, va) })
 
     rs.result()
