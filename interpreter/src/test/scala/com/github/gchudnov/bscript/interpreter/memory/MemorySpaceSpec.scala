@@ -244,7 +244,7 @@ final class MemorySpaceSpec extends TestSpec:
     "name prefix" should {
       "be appended to the name in the diff results" in {
         val changes = List(Diff.Updated("1", "foo", "baz"), Diff.Removed("3", "foo"), Diff.Added("4", "boo"))
-        val updated = changes.map(MemorySpace.appendNamePrefix("parent", _))
+        val updated = changes.map(MemorySpace.appendKeyPrefix("parent", _))
 
         val keys = updated.map(_.key)
 

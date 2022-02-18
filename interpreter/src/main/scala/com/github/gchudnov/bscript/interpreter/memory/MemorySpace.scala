@@ -112,11 +112,11 @@ object MemorySpace:
           case (None, None) =>
             Right(List.empty[Diff.Change[String, Cell]])
 
-        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(appendNamePrefix(makeMemoryPath(ns :+ a.name), _)))
+        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(appendKeyPrefix(makeMemoryPath(ns :+ a.name), _)))
 
     iterate(List.empty[String], before, after)
 
-  private[memory] def appendNamePrefix[V](prefix: String, change: Diff.Change[String, V]): Diff.Change[String, V] =
+  private[memory] def appendKeyPrefix[V](prefix: String, change: Diff.Change[String, V]): Diff.Change[String, V] =
     def toKey(k: String): String = s"${prefix}${sep}${k}"
 
     change match

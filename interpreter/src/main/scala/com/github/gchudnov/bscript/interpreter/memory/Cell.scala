@@ -128,20 +128,27 @@ object Cell:
   /**
    * Calculate the difference between two cells.
    */
-  def diff(name: String, before: Cell, after: Cell): Iterable[Diff.Change[String, Cell]] = {
+  def diff(name: String, before: Cell, after: Cell): Iterable[Diff.Change[String, Cell]] =
 
-    def iterate(ns: List[String], a: Cell, b: Cell): Iterable[Diff.Change[String, Cell]] = {
+    def iterate(ns: List[String], a: Cell, b: Cell): Iterable[Diff.Change[String, Cell]] =
+      val path = CellPath.make(ns).value
       (before, after) match
         case (StructCell(ba), StructCell(aa)) =>
-          ???
+          Diff.calc(ba, aa).map(appendKeyPrefix(path, _))
         case (VecCell(ba), VecCell(aa)) =>
-          ???
+          Diff.calc(path, ba, aa)
         case (x, y) =>
-          List(Diff.Updated(CellPath.make(ns).value, x, y))
-    }
+          List(Diff.Updated(path, x, y))
 
     iterate(List(name), before, after)
-  }
+
+  private def appendKeyPrefix[V](prefix: String, change: Diff.Change[String, V]): Diff.Change[String, V] =
+    def toKey(k: String): String = s"${prefix}${CellPath.sep}${k}"
+
+    change match
+      case Diff.Removed(k, v)    => Diff.Removed(toKey(k), v)
+      case Diff.Added(k, v)      => Diff.Added(toKey(k), v)
+      case Diff.Updated(k, b, a) => Diff.Updated(toKey(k), b, a)
 
   /**
    * Implicit Call Operations
