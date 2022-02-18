@@ -41,7 +41,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrCell = locals.fetch(CellPath("a.b.y"))
+        val errOrCell = locals.tryFetch(CellPath("a.b.y"))
         errOrCell match
           case Left(_) => fail("should be 'right")
           case Right(actual) =>
@@ -157,7 +157,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
         val locals  = MemorySpace("locals", Map("a" -> initStruct), Some(globals))
 
-        val errOrUpd = locals.patch(CellPath("a.b.y"), IntCell(12))
+        val errOrUpd = locals.tryPatch(CellPath("a.b.y"), IntCell(12))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
@@ -196,7 +196,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.patch(CellPath("a"), IntCell(22))
+        val errOrUpd = locals.tryPatch(CellPath("a"), IntCell(22))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
@@ -219,7 +219,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.patch(CellPath("a.b.y.z"), IntCell(12))
+        val errOrUpd = locals.tryPatch(CellPath("a.b.y.z"), IntCell(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
           case Right(_) => fail("should be 'left")
@@ -234,7 +234,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> IntCell(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.patch(CellPath(""), IntCell(12))
+        val errOrUpd = locals.tryPatch(CellPath(""), IntCell(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("Path to update a Cell is empty") mustBe (true)
           case Right(_) => fail("should be 'left")

@@ -96,13 +96,13 @@ private[inspector] object MemWatch:
     s match
       case s @ InterpretState(_, stash, ms, c) =>
         for
-          methodNameCell <- ms.fetch(CellPath(argMethodName))
-          actionCell     <- ms.fetch(CellPath(argAction))
-          pathCell       <- ms.fetch(CellPath(argPath))
+          methodNameCell <- ms.tryFetch(CellPath(argMethodName))
+          actionCell     <- ms.tryFetch(CellPath(argAction))
+          pathCell       <- ms.tryFetch(CellPath(argPath))
           newEntry <- (methodNameCell, actionCell, pathCell) match
                         case (StrCell(methodName), IntCell(action), StrCell(path)) =>
                           for
-                            watchCell <- ms.fetch(CellPath(path))
+                            watchCell <- ms.tryFetch(CellPath(path))
                             entry <- MemWatchStashEntry.asMemWatchStashEntry(
                                        stash.m.getOrElse(MemWatchStashEntry.name, MemWatchStashEntry(Map.empty[String, Stack[Cell]], Vector.empty[MemWatchDiff]))
                                      )

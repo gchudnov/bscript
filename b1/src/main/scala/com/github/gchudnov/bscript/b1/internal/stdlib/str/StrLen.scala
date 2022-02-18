@@ -38,7 +38,7 @@ private[internal] object StrLen:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          cell <- ms.fetch(CellPath(arg0))
+          cell <- ms.tryFetch(CellPath(arg0))
           retVal <- cell match
                       case StrCell(value) =>
                         Right(IntCell(value.length))

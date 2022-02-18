@@ -33,8 +33,8 @@ private[internal] object Append:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          xCell  <- ms.fetch(CellPath(argX))
-          xsCell <- ms.fetch(CellPath(argXS))
+          xCell  <- ms.tryFetch(CellPath(argX))
+          xsCell <- ms.tryFetch(CellPath(argXS))
           retVal <- (xCell, xsCell) match
                       case (x: Cell, xs: VecCell) =>
                         Right(VecCell(xs.value :+ x))

@@ -42,8 +42,8 @@ private[internal] object Coalesce:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          xCell <- ms.fetch(CellPath(argX))
-          yCell <- ms.fetch(CellPath(argY))
+          xCell <- ms.tryFetch(CellPath(argX))
+          yCell <- ms.tryFetch(CellPath(argY))
           retVal = (xCell, yCell) match
                      case (NothingCell, y) =>
                        y

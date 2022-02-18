@@ -45,9 +45,9 @@ private[internal] object SetDateTime:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell  <- ms.fetch(CellPath(argValue))
-          offsetCell <- ms.fetch(CellPath(argOffset))
-          unitCell   <- ms.fetch(CellPath(argUnit))
+          valueCell  <- ms.tryFetch(CellPath(argValue))
+          offsetCell <- ms.tryFetch(CellPath(argOffset))
+          unitCell   <- ms.tryFetch(CellPath(argUnit))
 
           retVal <- (valueCell, offsetCell, unitCell) match
                       case (DateTimeCell(value), IntCell(offset), StrCell(unit)) =>

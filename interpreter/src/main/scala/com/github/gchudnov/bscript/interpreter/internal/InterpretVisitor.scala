@@ -202,7 +202,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
                   .flatMap(promotedValue => es.memSpace.tryUpdate(v.symbol.name, promotedValue))
               case a: Access =>
                 promote(es.retValue, n.expr.promoteToType)
-                  .flatMap(promotedValue => es.memSpace.patch(CellPath(a.path), promotedValue))
+                  .flatMap(promotedValue => es.memSpace.tryPatch(CellPath(a.path), promotedValue))
               case other =>
                 Left(new AstException(s"Cannot Assign a value '${n.expr}' to '${other}'"))
     yield es.copy(memSpace = ms, retValue = VoidCell)
@@ -315,7 +315,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
                   case Right(sx) =>
                     stmt.visit(sx, this)
               }
-      ms <- s1.memSpace.pop()
+      ms <- s1.memSpace.tryPop()
     yield s1.copy(memSpace = ms)
 
   override def visit(s: InterpretState, n: Call): Either[Throwable, InterpretState] =
@@ -337,7 +337,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
               }
       s2       <- methodDecl.body.visit(s1, this)
       retValue <- promote(s2.retValue, n.promoteToType)
-      ms       <- s2.memSpace.pop()
+      ms       <- s2.memSpace.tryPop()
     yield s2.copy(memSpace = ms, retValue = retValue)
 
   override def visit(s: InterpretState, n: If): Either[Throwable, InterpretState] =
@@ -349,7 +349,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
     yield rs
 
   override def visit(s: InterpretState, n: Access): Either[Throwable, InterpretState] =
-    for cell <- s.memSpace.fetch(CellPath(n.path))
+    for cell <- s.memSpace.tryFetch(CellPath(n.path))
     yield s.copy(retValue = cell)
 
   override def visit(s: InterpretState, n: CompiledExpr): Either[Throwable, InterpretState] =

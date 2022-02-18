@@ -41,7 +41,7 @@ private[internal] object IsDefined:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          xCell <- ms.fetch(CellPath(argX))
+          xCell <- ms.tryFetch(CellPath(argX))
           flag = xCell match
                    case NothingCell =>
                      false

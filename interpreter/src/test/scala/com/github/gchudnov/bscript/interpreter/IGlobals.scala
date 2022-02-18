@@ -210,7 +210,7 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          cell <- ms.fetch(CellPath(arg0))
+          cell <- ms.tryFetch(CellPath(arg0))
           retVal <- cell match
                       case StrCell(value) =>
                         Right(IntCell(value.length))
@@ -238,9 +238,9 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell  <- ms.fetch(CellPath(argValue))
-          offsetCell <- ms.fetch(CellPath(argOffset))
-          unitCell   <- ms.fetch(CellPath(argUnit))
+          valueCell  <- ms.tryFetch(CellPath(argValue))
+          offsetCell <- ms.tryFetch(CellPath(argOffset))
+          unitCell   <- ms.tryFetch(CellPath(argUnit))
 
           retVal <- (valueCell, offsetCell, unitCell) match
                       case (DateTimeCell(value), IntCell(offset), StrCell(unit)) =>
@@ -279,9 +279,9 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell  <- ms.fetch(CellPath(argValue))
-          offsetCell <- ms.fetch(CellPath(argOffset))
-          unitCell   <- ms.fetch(CellPath(argUnit))
+          valueCell  <- ms.tryFetch(CellPath(argValue))
+          offsetCell <- ms.tryFetch(CellPath(argOffset))
+          unitCell   <- ms.tryFetch(CellPath(argUnit))
 
           retVal <- (valueCell, offsetCell, unitCell) match
                       case (DateTimeCell(value), IntCell(offset), StrCell(unit)) =>
@@ -319,8 +319,8 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell <- ms.fetch(CellPath(argValue))
-          unitCell  <- ms.fetch(CellPath(argUnit))
+          valueCell <- ms.tryFetch(CellPath(argValue))
+          unitCell  <- ms.tryFetch(CellPath(argUnit))
 
           retVal <- (valueCell, unitCell) match
                       case (DateTimeCell(value), StrCell(unit)) =>
@@ -359,7 +359,7 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          xCell <- ms.fetch(CellPath(argX))
+          xCell <- ms.tryFetch(CellPath(argX))
           flag = xCell match
                    case NothingCell =>
                      false
@@ -388,8 +388,8 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          xCell <- ms.fetch(CellPath(argX))
-          yCell <- ms.fetch(CellPath(argY))
+          xCell <- ms.tryFetch(CellPath(argX))
+          yCell <- ms.tryFetch(CellPath(argY))
           retVal = (xCell, yCell) match
                      case (NothingCell, y) =>
                        y
@@ -444,8 +444,8 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell     <- ms.fetch(CellPath(argValue))
-          precisionCell <- ms.fetch(CellPath(argPrecision))
+          valueCell     <- ms.tryFetch(CellPath(argValue))
+          precisionCell <- ms.tryFetch(CellPath(argPrecision))
           retVal <- (valueCell, precisionCell) match
                       case (FloatCell(x), IntCell(p)) =>
                         Right(FloatCell(roundF32(x, p)))
@@ -481,8 +481,8 @@ object IGlobals:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell     <- ms.fetch(CellPath(argValue))
-          precisionCell <- ms.fetch(CellPath(argPrecision))
+          valueCell     <- ms.tryFetch(CellPath(argValue))
+          precisionCell <- ms.tryFetch(CellPath(argPrecision))
           retVal <- (valueCell, precisionCell) match
                       case (FloatCell(x), IntCell(p)) =>
                         Right(FloatCell(truncateF32(x, p)))

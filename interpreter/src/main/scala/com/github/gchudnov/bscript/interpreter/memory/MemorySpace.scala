@@ -16,9 +16,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
-  // TODO: rename to tryFetch, add plain fetch that returns an Option
-
-  def fetch(path: CellPath): Either[Throwable, Cell] =
+  def tryFetch(path: CellPath): Either[Throwable, Cell] =
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
         where match
@@ -53,7 +51,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     update(id, value)
       .toRight(new MemoryException(s"Cannot find MemorySpace for: '${id}'"))
 
-  def patch(path: CellPath, value: Cell): Either[Throwable, MemorySpace] =
+  def tryPatch(path: CellPath, value: Cell): Either[Throwable, MemorySpace] =
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
         where match
@@ -75,7 +73,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
         .toRight(new MemoryException(s"Cannot find MemorySpace with variable '${h}'"))
         .flatMap(c => iterate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update MemorySpace with the updated cell ${uc} at '${h}'"))))
 
-  def pop(): Either[Throwable, MemorySpace] =
+  def tryPop(): Either[Throwable, MemorySpace] =
     parent.toRight(new MemoryException(s"Cannot pop a memory space, getting a parent one."))
 
   override def toString: String =

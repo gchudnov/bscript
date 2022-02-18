@@ -45,8 +45,8 @@ private[internal] object Round:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell     <- ms.fetch(CellPath(argValue))
-          precisionCell <- ms.fetch(CellPath(argPrecision))
+          valueCell     <- ms.tryFetch(CellPath(argValue))
+          precisionCell <- ms.tryFetch(CellPath(argPrecision))
           retVal <- (valueCell, precisionCell) match
                       case (FloatCell(x), IntCell(p)) =>
                         Right(FloatCell(roundF32(x, p)))

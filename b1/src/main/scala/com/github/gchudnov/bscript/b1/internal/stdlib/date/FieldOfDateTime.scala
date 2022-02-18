@@ -43,8 +43,8 @@ private[internal] object FieldOfDateTime:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          valueCell <- ms.fetch(CellPath(argValue))
-          unitCell  <- ms.fetch(CellPath(argUnit))
+          valueCell <- ms.tryFetch(CellPath(argValue))
+          unitCell  <- ms.tryFetch(CellPath(argUnit))
 
           retVal <- (valueCell, unitCell) match
                       case (DateTimeCell(value), StrCell(unit)) =>

@@ -41,7 +41,7 @@ private[internal] object ReadFile:
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
-          pathCell <- ms.fetch(CellPath(argPath))
+          pathCell <- ms.tryFetch(CellPath(argPath))
           retVal <- pathCell match
                       case StrCell(path) =>
                         for
