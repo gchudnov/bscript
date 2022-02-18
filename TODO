@@ -1,5 +1,5 @@
-= TODO: parse options in CLI
-= TODO: add cli to eval AST
+= TODO: improve b1-cli output
+
 - TODO: release lib
 
 * TODO: add unreachable code check

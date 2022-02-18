@@ -65,10 +65,10 @@ object B1Config:
         .text("prints the version")
         .validate(_ => Left(OEffectVersionKey)),
       opt[Unit](ArgRunShort, ArgRunLong)
-        .action((x, c) => c.copy(action = RunAction))
+        .action((_, c) => c.copy(action = RunAction))
         .text("Run AST"),
-      opt[File](ArgDebugShort, ArgDebugLong)
-        .action((x, c) => c.copy(action = DebugAction))
+      opt[Unit](ArgDebugShort, ArgDebugLong)
+        .action((_, c) => c.copy(action = DebugAction))
         .text("Debug AST"),
       opt[String](ArgCellShort, ArgCellLong)
         .action((x, c) => c.copy(cellPath = CellPath(x)))

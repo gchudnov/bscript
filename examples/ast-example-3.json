@@ -1,0 +1,1 @@
+{"kind":"Block","statements":[{"kind":"VarDecl","type":"i32","name":"y","expr":{"kind":"IntVal","value":"1"}},{"kind":"MethodDecl","retType":"void","name":"main","params":[],"body":{"kind":"Block","statements":[{"kind":"Assign","id":{"kind":"Var","symbol":"y"},"expr":{"kind":"IntVal","value":"2"}}]}},{"kind":"Call","id":"main","args":[]},{"kind":"Var","symbol":"y"}]}
