@@ -1,5 +1,3 @@
-= TODO: improve b1 debugging capabilities (trace state change in function calls)
-
 - TODO: add cli to eval AST
 - TODO: release lib
 

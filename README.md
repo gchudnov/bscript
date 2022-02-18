@@ -146,10 +146,13 @@ val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNa
 
 ### Inspector
 
-* [/inspector](inspector) - allows to trace memory state between function calls.
+* [/inspector](inspector) - updates AST to trace memory changes between function calls.
 
 ```scala
-// TBD
+val ast0: AST              = ???
+val typeNames: TypeNames   = ???
+
+val errOrRes: Either[Throwable, AST] = Inspector.memWatch("a.b", ast0, typeNames)
 ```
 
 ### B1
@@ -177,6 +180,9 @@ val errOrCell: Either[Throwable, Cell] = B1.interpret(astMeta)
 
 // Run - A shortcut for `B1.build` and `B1.interpret`
 val errOrCell: Either[Throwable, Cell] = B1.run(ast0)
+
+// Debug - Augment code with memory tracing and Run it
+val errOrRes: Either[Throwable, (Cell, Seq[MemWatchDiff])] = B1.debug("a", ast0)
 
 // Translate AST to Scala
 val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
