@@ -48,7 +48,7 @@ final class CellSpec extends TestSpec:
         val a = Cell(1)
         val b = Cell(2)
 
-        val actual = Cell.diff("A", a, b)
+        val actual = Cell.diff("A", Some(a), Some(b))
 
         val expected = List(Diff.Updated("A", a, b))
 
@@ -64,7 +64,7 @@ final class CellSpec extends TestSpec:
         val a = StructCell(Map("a" -> cellA1, "b" -> cellB))
         val b = StructCell(Map("a" -> cellA2, "c" -> cellC))
 
-        val actual = Cell.diff("A", a, b)
+        val actual = Cell.diff("A", Some(a), Some(b))
 
         val expected = List(Diff.Updated("A.a", cellA1, cellA2), Diff.Removed("A.b", cellB), Diff.Added("A.c", cellC))
 
@@ -75,9 +75,23 @@ final class CellSpec extends TestSpec:
         val a = Cell(List(Cell(1), Cell(2), Cell(3)))
         val b = Cell(List(Cell(1), Cell(2), Cell(3), Cell(4)))
 
-        val actual = Cell.diff("A", a, b)
+        val actual = Cell.diff("A", Some(a), Some(b))
 
         val expected = List(Diff.Added("A.2", Cell(4)))
+      }
+
+      "calc it for nested structs" in {
+        val a = StructCell(Map("a" -> Cell(1), "b" -> StructCell(Map("c" -> Cell(true))), "d" -> VecCell(List(Cell("alice")))))
+        val b = StructCell(Map("a" -> Cell(1), "b" -> StructCell(Map("c" -> Cell(false))), "d" -> VecCell(List(Cell("bob")))))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Updated("A.b.c", Cell(true), Cell(false)),
+          Diff.Updated("A.d.0", Cell("alice"), Cell("bob"))
+        )
+
+        actual.toList must contain theSameElementsAs expected
       }
     }
 

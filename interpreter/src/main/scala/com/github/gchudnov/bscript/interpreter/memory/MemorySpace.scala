@@ -16,6 +16,8 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
+  // TODO: rename to tryFetch, add plain fetch that returns an Option
+
   def fetch(path: CellPath): Either[Throwable, Cell] =
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>

@@ -128,17 +128,63 @@ object Cell:
   /**
    * Calculate the difference between two cells.
    */
-  def diff(name: String, before: Cell, after: Cell): Iterable[Diff.Change[String, Cell]] =
+  def diff(name: String, before: Option[Cell], after: Option[Cell]): Iterable[Diff.Change[String, Cell]] =
 
-    def iterate(ns: List[String], a: Cell, b: Cell): Iterable[Diff.Change[String, Cell]] =
+    def diffList(ns: List[String], b: List[Cell], a: List[Cell]): Iterable[Diff.Change[String, Cell]] =
+      val rs = Iterable.newBuilder[Diff.Change[String, Cell]]
+
+      (b.zip(a)).zipWithIndex.foreach { case ((vb, va), i) =>
+        rs ++= iterate(ns :+ s"${i}", Some(vb), Some(va))
+      }
+
+      if b.size > a.size then
+        val bTail = b.drop(a.size)
+        bTail.zipWithIndex.foreach { case (vb, i) => rs ++= iterate(ns :+ s"${(i + a.size)}", Some(vb), None) }
+      else if a.size > b.size then
+        val aTail = a.drop(b.size)
+        aTail.zipWithIndex.foreach { case (va, i) => rs ++= iterate(ns :+ s"${i + b.size}", None, Some(va)) }
+
+      rs.result()
+
+    def diffMap(ns: List[String], b: Map[String, Cell], a: Map[String, Cell]): Iterable[Diff.Change[String, Cell]] =
+      val rs = Iterable.newBuilder[Diff.Change[String, Cell]]
+
+      b.foreach { case (k, vb) =>
+        val va = a.get(k)
+        rs ++= iterate(ns :+ k, Some(vb), va)
+      }
+
+      a.foreach { case (k, va) =>
+        val vb = b.get(k)
+        if vb.isEmpty then
+          rs ++= iterate(ns :+ k, vb, Some(va))
+      }
+
+      rs.result()
+
+    def iterate(ns: List[String], b: Option[Cell], a: Option[Cell]): Iterable[Diff.Change[String, Cell]] =
       val path = CellPath.make(ns).value
-      (before, after) match
-        case (StructCell(ba), StructCell(aa)) =>
-          Diff.calc(ba, aa).map(appendKeyPrefix(path, _))
-        case (VecCell(ba), VecCell(aa)) =>
-          Diff.calc(ba, aa).map(appendKeyPrefix(path, _))
-        case (x, y) =>
-          List(Diff.Updated(path, x, y))
+      (b, a) match
+        case (Some(StructCell(ba)), Some(StructCell(aa))) =>
+          diffMap(ns, ba, aa)
+
+        case (Some(VecCell(ba)), Some(VecCell(aa))) =>
+          diffList(ns, ba, aa)
+
+        case (Some(x), Some(y)) =>
+          if x != y then
+            List(Diff.Updated(path, x, y))
+          else
+            List.empty[Diff.Change[String, Cell]]
+
+        case (Some(x), None) =>
+          List(Diff.Removed(path, x))
+
+        case (None, Some(x)) =>
+          List(Diff.Added(path, x))
+
+        case (None, None) =>
+          List.empty[Diff.Change[String, Cell]]
 
     iterate(List(name), before, after)
 

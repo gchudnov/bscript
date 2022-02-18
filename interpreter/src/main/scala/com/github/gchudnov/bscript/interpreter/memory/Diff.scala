@@ -27,15 +27,15 @@ object Diff:
   def calc[V](before: Seq[V], after: Seq[V]): Iterable[Change[Int, V]] =
     val rs = Iterable.newBuilder[Change[Int, V]]
 
-    (after.zip(before)).zipWithIndex.foreach { case ((va, vb), i) =>
+    (before.zip(after)).zipWithIndex.foreach { case ((vb, va), i) =>
       if vb != va then rs += Updated(i, vb, va)
     }
 
     if before.size > after.size then
       val bTail = before.drop(after.size)
-      bTail.zipWithIndex.foreach({ case (vb, i) => rs += Removed(i + after.size, vb) })
+      bTail.zipWithIndex.foreach { case (vb, i) => rs += Removed(i + after.size, vb) }
     else if after.size > before.size then
       val aTail = after.drop(before.size)
-      aTail.zipWithIndex.foreach({ case (va, i) => rs += Added(i + before.size, va) })
+      aTail.zipWithIndex.foreach { case (va, i) => rs += Added(i + before.size, va) }
 
     rs.result()
