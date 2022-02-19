@@ -22,7 +22,7 @@ object MemWatchDisplay:
 
       // method
       val methodFgColor = if (diffs.isEmpty) then WHITE_TEXT() else YELLOW_TEXT()
-      val methodLine = s"method: '$methodName' | watch: '$path'"
+      val methodLine = s"method: $methodName() | watch: '$path'"
       Console.out.println(colorize(Display.padRight(methodLine, Display.lineWidth), methodFgColor))
 
       // diffs
