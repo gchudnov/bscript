@@ -21,7 +21,7 @@ object MemWatchDisplay:
       val diffs = it.diffs
 
       // method
-      val methodFgColor = if (diffs.isEmpty) then WHITE_TEXT() else BRIGHT_YELLOW_TEXT()
+      val methodFgColor = if (diffs.isEmpty) then WHITE_TEXT() else YELLOW_TEXT()
       val methodLine = s"method: '$methodName' | watch: '$path'"
       Console.out.println(colorize(Display.padRight(methodLine, Display.lineWidth), methodFgColor))
 
@@ -37,7 +37,7 @@ object MemWatchDisplay:
             val color = BRIGHT_GREEN_TEXT()
             (line, color)            
           case Diff.Updated(key, before, after) =>
-            val line = s"  '${key}' | ${before.asInstanceOf[Cell].show()} -> ${after.asInstanceOf[Cell].show()}"
+            val line = s"  * '${key}' | ${before.asInstanceOf[Cell].show()} -> ${after.asInstanceOf[Cell].show()}"
             val color = BRIGHT_YELLOW_TEXT()
             (line, color)            
         }
