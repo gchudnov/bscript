@@ -235,7 +235,7 @@ cd ./target
 ./b1-cli --debug --cell="y" ../examples/ast-example-3.json
 ```
 
-### Example
+#### Example
 
 Command
 
