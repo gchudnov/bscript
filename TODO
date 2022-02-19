@@ -1,8 +1,5 @@
-= TODO: improve b1-cli output
-
 - TODO: release lib
 
 * TODO: add unreachable code check
 * TODO: do not allow to redefine the var in the same block
 - TODO: add stdout
-

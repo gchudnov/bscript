@@ -234,3 +234,13 @@ cd ./target
 ./b1-cli --debug --cell="a" ../examples/ast-example-2.json
 ./b1-cli --debug --cell="y" ../examples/ast-example-3.json
 ```
+
+![ast-example-1.png](examples/ast-example-1.png)
+
+## Contact
+
+[Grigorii Chudnov](mailto:g.chudnov@gmail.com)
+
+## License
+
+Distributed under the [The MIT License (MIT)](LICENSE).
