@@ -235,6 +235,16 @@ cd ./target
 ./b1-cli --debug --cell="y" ../examples/ast-example-3.json
 ```
 
+### Example
+
+Command
+
+```bash
+./b1-cli --debug --cell="a" ../examples/ast-example-1.json
+```
+
+Output
+
 ![ast-example-1.png](examples/ast-example-1.png)
 
 ## Contact
