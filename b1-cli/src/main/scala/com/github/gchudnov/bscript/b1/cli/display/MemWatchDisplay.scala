@@ -26,18 +26,19 @@ object MemWatchDisplay:
       Console.out.println(colorize(Display.padRight(methodLine, Display.lineWidth), methodFgColor))
 
       // diffs
+      val maxKeyWidth = if diffs.nonEmpty then diffs.map(_.key.length).max else 0
       diffs.foreach(diff => {
         val (line, fgColor) = diff match {
           case Diff.Removed(key, value) =>
-            val line = s"  - '${key}' | ${value.asInstanceOf[Cell].show()}"
+            val line = s"  - ${Display.padRight(singleQuote(key), maxKeyWidth + 2)} | ${value.asInstanceOf[Cell].show()}"
             val color = BRIGHT_RED_TEXT()
             (line, color)
           case Diff.Added(key, value) =>
-            val line = s"  + '${key}' | ${value.asInstanceOf[Cell].show()}"
+            val line = s"  + ${Display.padRight(singleQuote(key), maxKeyWidth + 2)} | ${value.asInstanceOf[Cell].show()}"
             val color = BRIGHT_GREEN_TEXT()
             (line, color)            
           case Diff.Updated(key, before, after) =>
-            val line = s"  * '${key}' | ${before.asInstanceOf[Cell].show()} -> ${after.asInstanceOf[Cell].show()}"
+            val line = s"  * ${Display.padRight(singleQuote(key), maxKeyWidth + 2)} | ${before.asInstanceOf[Cell].show()} -> ${after.asInstanceOf[Cell].show()}"
             val color = BRIGHT_YELLOW_TEXT()
             (line, color)            
         }
@@ -47,3 +48,6 @@ object MemWatchDisplay:
 
       Console.out.println()
     })
+
+  private def singleQuote(s: String): String = 
+    "'" + s + "'"
