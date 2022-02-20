@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.inspector.internal.dbglib
 import com.github.gchudnov.bscript.inspector.InspectorException
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.Block
+import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.memory.VoidCell
@@ -26,6 +27,7 @@ import scala.collection.mutable.Stack
 private[inspector] object MemWatch:
   import Casting.*
   import Block.*
+  import AST.*
 
   private val memWatchMethodName: String = "memWatch"
 

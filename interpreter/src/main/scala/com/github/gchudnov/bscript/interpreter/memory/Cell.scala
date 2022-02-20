@@ -194,10 +194,9 @@ object Cell:
       case Diff.Updated(k, b, a) => Diff.Updated(toKey(k), b, a)
 
   /**
-   * Implicit Call Operations
+   * Extension Call Operations
    */
-  implicit class CellOps(cell: Cell):
-
+  extension (cell: Cell)
     def asStructCell: Either[Throwable, StructCell] = cell match
       case struct: StructCell => Right(struct)
       case other              => Left(new MemoryException(s"Cannot convert ${other} to StructCell"))
