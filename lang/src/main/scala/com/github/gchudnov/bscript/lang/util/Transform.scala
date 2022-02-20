@@ -16,7 +16,7 @@ object Transform:
         case Left(x)  => Left(x)
         case Right(x) => Right(Some(x))
 
-  def traverse[A, CC[A] <: collection.Iterable[A], E, B](xs: CC[A])(f: A => Either[E, B])(implicit cbf: Factory[B, CC[B]]): Either[E, CC[B]] =
+  def traverse[A, CC[A] <: collection.Iterable[A], E, B](xs: CC[A])(f: A => Either[E, B])(using cbf: Factory[B, CC[B]]): Either[E, CC[B]] =
     val builder = cbf.newBuilder
     val i       = xs.iterator
     while i.hasNext do

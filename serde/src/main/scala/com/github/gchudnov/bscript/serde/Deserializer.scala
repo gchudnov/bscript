@@ -1,6 +1,5 @@
 package com.github.gchudnov.bscript.serde
 
-import scala.annotation.nowarn
 import scala.util.{ Failure, Success, Try }
 
 trait Deserializer[R <: Throwable, +T]:
@@ -16,7 +15,7 @@ trait Deserializer[R <: Throwable, +T]:
   def asTry: Deserializer[R, Try[T]] =
     Deserializer(deserialize(_).fold(e => Right(Failure(e)), v => Right(Success(v))))
 
-  def asOption(implicit @nowarn ev: T <:< AnyRef): Deserializer[R, Option[T]] =
+  def asOption(using ev: T <:< AnyRef): Deserializer[R, Option[T]] =
     Deserializer(deserialize(_).fold(_ => Right(None), v => Right(Some(v))))
 
 object Deserializer:
