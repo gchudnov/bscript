@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SBlock, SMethod, SSt
 object Casting:
 
   // AST
-  implicit class AstOps(ast: AST):
+  extension (ast: AST)
     def asExpr: Either[AstException, Expr] = ast match
       case x: Expr => Right(x)
       case _       => Left(new AstException(s"Cannot cast AST to Expr"))
@@ -40,7 +40,7 @@ object Casting:
       case _            => Left(new AstException(s"Cannot cast AST to StructVal"))
 
   // Scope
-  implicit class ScopeOps(scope: Scope):
+  extension (scope: Scope)
     def asSMethod: Either[AstException, SMethod] =
       scope match
         case m: SMethod => Right(m)
@@ -63,8 +63,7 @@ object Casting:
       case _          => "?"
 
   // Symbol
-  implicit class SymbolOps(sym: Symbol):
-
+  extension (sym: Symbol)
     def asSVar: Either[AstException, SVar] =
       sym match
         case s: SVar => Right(s)
@@ -93,8 +92,7 @@ object Casting:
       case _          => "?"
 
   // Type
-  implicit class TypeOps(t: Type):
-
+  extension (t: Type)
     def asSStruct: Either[AstException, SStruct] =
       t match
         case x: SStruct => Right(x)
