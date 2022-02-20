@@ -364,8 +364,8 @@ private[interpreter] object InterpretVisitor:
   def make(laws: InterpreterLaws): InterpretVisitor =
     new InterpretVisitor(laws)
 
-  implicit class AnyOps(a: Any):
+  extension (a: Any)
     def asInterpretState: Either[Throwable, InterpretState] =
       a match
         case x: InterpretState => Right(x)
-        case _                 => Left(new AstException("Cannot cast Any to InterpretState"))
+        case other             => Left(new AstException(s"Cannot cast ${other} to InterpretState"))

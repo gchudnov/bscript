@@ -417,8 +417,7 @@ private[internal] object JSONDeserializeVisitor:
   def make(): JSONDeserializeVisitor =
     new JSONDeserializeVisitor()
 
-  implicit class JValueOps(value: JValue):
-
+  extension (value: JValue)
     def asJString: Either[Throwable, JString] =
       value match
         case s: JString =>
