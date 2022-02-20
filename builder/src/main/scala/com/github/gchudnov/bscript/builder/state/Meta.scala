@@ -6,6 +6,7 @@ import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
 import com.github.gchudnov.bscript.builder.util.EqWrap
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
+import com.github.gchudnov.bscript.lang.util.Show
 
 /**
  * Metadata - Scope & Symbol State
@@ -367,132 +368,132 @@ object Meta:
       .defineBuiltInType(types.datetimeType, g)
     m
 
-  implicit val metaShow: Show[Meta] = new Show[Meta]:
-    import ScopeTree.*
-    import com.github.gchudnov.bscript.lang.util.Show.*
+  given Show[Meta] with
+    import ScopeTree.{ given, * }
     import com.github.gchudnov.bscript.lang.util.LineOps.*
 
-    override def show(a: Meta): String =
-      val sb = new StringBuilder
-      sb.append("{\n")
+    extension (a: Meta)
+      def show: String =
+        val sb = new StringBuilder
+        sb.append("{\n")
 
-      val treeStr           = tabTail(1, a.scopeTree.show())
-      val scopeSymbolsStr   = tabTail(1, scopeSymbolsToMapStr(1)(a.scopeSymbols))
-      val symbolScopesStr   = tabTail(1, symbolScopesToMapStr(1)(a.symbolScopes))
-      val methodArgsStr     = tabTail(1, methodArgsToMapStr(1)(a.methodArgs))
-      val methodRetTypesStr = tabTail(1, methodRetTypesToMapStr(1)(a.methodRetTypes))
-      val methodAstsStr     = tabTail(1, methodAstsToMapStr(1)(a.methodAsts))
-      val varTypesStr       = tabTail(1, varTypesToMapStr(1)(a.varTypes))
-      val methodsStr        = tabTail(1, methodsToMapStr(1)(a))
+        val treeStr           = tabTail(1, a.scopeTree.show)
+        val scopeSymbolsStr   = tabTail(1, scopeSymbolsToMapStr(1)(a.scopeSymbols))
+        val symbolScopesStr   = tabTail(1, symbolScopesToMapStr(1)(a.symbolScopes))
+        val methodArgsStr     = tabTail(1, methodArgsToMapStr(1)(a.methodArgs))
+        val methodRetTypesStr = tabTail(1, methodRetTypesToMapStr(1)(a.methodRetTypes))
+        val methodAstsStr     = tabTail(1, methodAstsToMapStr(1)(a.methodAsts))
+        val varTypesStr       = tabTail(1, varTypesToMapStr(1)(a.varTypes))
+        val methodsStr        = tabTail(1, methodsToMapStr(1))
 
-      sb.append(tabLine(1, s""""scopeTree": ${treeStr},\n"""))
-      sb.append(tabLine(1, s""""scopeSymbols": ${scopeSymbolsStr},\n"""))
-      sb.append(tabLine(1, s""""symbolScopes": ${symbolScopesStr},\n"""))
-      sb.append(tabLine(1, s""""methodArgs": ${methodArgsStr},\n"""))
-      sb.append(tabLine(1, s""""methodRetTypes": ${methodRetTypesStr},\n"""))
-      sb.append(tabLine(1, s""""methodAsts": ${methodAstsStr},\n"""))
-      sb.append(tabLine(1, s""""varTypes": ${varTypesStr},\n"""))
-      sb.append(tabLine(1, s""""methods": ${methodsStr}\n"""))
+        sb.append(tabLine(1, s""""scopeTree": ${treeStr},\n"""))
+        sb.append(tabLine(1, s""""scopeSymbols": ${scopeSymbolsStr},\n"""))
+        sb.append(tabLine(1, s""""symbolScopes": ${symbolScopesStr},\n"""))
+        sb.append(tabLine(1, s""""methodArgs": ${methodArgsStr},\n"""))
+        sb.append(tabLine(1, s""""methodRetTypes": ${methodRetTypesStr},\n"""))
+        sb.append(tabLine(1, s""""methodAsts": ${methodAstsStr},\n"""))
+        sb.append(tabLine(1, s""""varTypes": ${varTypesStr},\n"""))
+        sb.append(tabLine(1, s""""methods": ${methodsStr}\n"""))
 
-      sb.append("}")
-      sb.toString()
+        sb.append("}")
+        sb.toString()
 
-    private def scopeSymbolsToMapStr(depth: Int)(m: Map[EqWrap[Scope], Set[Symbol]]): String =
-      namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
-        (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
-      })
+      private def scopeSymbolsToMapStr(depth: Int)(m: Map[EqWrap[Scope], Set[Symbol]]): String =
+        namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
+          (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
+        })
 
-    private def methodArgsToMapStr(depth: Int)(m: Map[EqWrap[SMethod], List[SVar]]): String =
-      namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
-        (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
-      })
+      private def methodArgsToMapStr(depth: Int)(m: Map[EqWrap[SMethod], List[SVar]]): String =
+        namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
+          (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
+        })
 
-    private def symbolScopesToMapStr(depth: Int)(m: Map[EqWrap[Symbol], Scope]): String =
-      namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
-        (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
-      })
+      private def symbolScopesToMapStr(depth: Int)(m: Map[EqWrap[Symbol], Scope]): String =
+        namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
+          (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
+        })
 
-    private def methodRetTypesToMapStr(depth: Int)(m: Map[EqWrap[SMethod], Type]): String =
-      namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
-        (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
-      })
+      private def methodRetTypesToMapStr(depth: Int)(m: Map[EqWrap[SMethod], Type]): String =
+        namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
+          (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
+        })
 
-    private def varTypesToMapStr(depth: Int)(m: Map[EqWrap[SVar], Type]): String =
-      namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
-        (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
-      })
+      private def varTypesToMapStr(depth: Int)(m: Map[EqWrap[SVar], Type]): String =
+        namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
+          (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
+        })
 
-    private def methodAstsToMapStr(depth: Int)(m: Map[EqWrap[SMethod], AST]): String =
-      namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
-        (
-          k.value.asInstanceOf[Named],
-          new Named:
-            val name: String = "(omitted)"
-        )
-      })
+      private def methodAstsToMapStr(depth: Int)(m: Map[EqWrap[SMethod], AST]): String =
+        namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
+          (
+            k.value.asInstanceOf[Named],
+            new Named:
+              val name: String = "(omitted)"
+          )
+        })
 
-    private def namedTuples1ToMapStr(depth: Int)(xs: List[(Named, Named)]): String =
-      val sb = new StringBuilder
-      sb.append(s"{\n")
+      private def namedTuples1ToMapStr(depth: Int)(xs: List[(Named, Named)]): String =
+        val sb = new StringBuilder
+        sb.append(s"{\n")
 
-      val lines = xs
-        .sortBy(_._1.name)
-        .map { case (k, v) =>
-          tabLine(depth, s"""${quote(k.name)}: ${quote(v.name)}""")
-        }
-
-      val body = lines.mkString(",\n")
-      sb.append(body + (if body.nonEmpty then "\n" else ""))
-
-      sb.append(s"}")
-      sb.toString()
-
-    private def namedTuplesToMapStr(depth: Int)(xs: List[(Named, Iterable[Named])]): String =
-      val sb = new StringBuilder
-      sb.append(s"{\n")
-
-      val lines = xs
-        .sortBy(_._1.name)
-        .map { case (k, vs) =>
-          tabLine(depth, s"""${quote(k.name)}: ${listStr(asList(vs.toList.sortBy(_.name)).map(quote))}""")
-        }
-
-      val body = lines.mkString(",\n")
-      sb.append(body + (if body.nonEmpty then "\n" else ""))
-
-      sb.append(s"}")
-      sb.toString()
-
-    private def methodsToMapStr(depth: Int)(a: Meta): String =
-      val sb = new StringBuilder
-      sb.append(s"[\n")
-
-      val ms = a.scopeTree.vertices
-        .filter(_.value.isInstanceOf[SMethod])
-        .map(it => EqWrap(it.value.asInstanceOf[SMethod]))
-        .toList
-
-      val lines = ms
-        .sortBy(_.value.name)
-        .map { m =>
-          val retTypeStr = a.methodRetTypes.get(m).map(_.name).getOrElse("?")
-          val args       = a.methodArgs.getOrElse(m, List.empty[SVar])
-          val argsWithTypes = args.map { arg =>
-            val retType = a.varTypes.getOrElse(EqWrap(arg), TypeRef("?"))
-            s"${arg.name}: ${retType.name}"
+        val lines = xs
+          .sortBy(_._1.name)
+          .map { case (k, v) =>
+            tabLine(depth, s"""${quote(k.name)}: ${quote(v.name)}""")
           }
 
-          tabLine(depth, quote(s"""fn ${m.value.name}(${argsWithTypes.mkString(", ")}) -> ${retTypeStr}"""))
-        }
+        val body = lines.mkString(",\n")
+        sb.append(body + (if body.nonEmpty then "\n" else ""))
 
-      val body = lines.mkString(",\n")
-      sb.append(body + (if body.nonEmpty then "\n" else ""))
+        sb.append(s"}")
+        sb.toString()
 
-      sb.append(s"]")
-      sb.toString()
+      private def namedTuplesToMapStr(depth: Int)(xs: List[(Named, Iterable[Named])]): String =
+        val sb = new StringBuilder
+        sb.append(s"{\n")
 
-    private def asList(ss: Iterable[Named]): List[String] =
-      ss.map(_.name).toList
+        val lines = xs
+          .sortBy(_._1.name)
+          .map { case (k, vs) =>
+            tabLine(depth, s"""${quote(k.name)}: ${listStr(asList(vs.toList.sortBy(_.name)).map(quote))}""")
+          }
 
-    private def listStr(xs: List[String]): String =
-      xs.mkString("[", ",", "]")
+        val body = lines.mkString(",\n")
+        sb.append(body + (if body.nonEmpty then "\n" else ""))
+
+        sb.append(s"}")
+        sb.toString()
+
+      private def methodsToMapStr(depth: Int): String =
+        val sb = new StringBuilder
+        sb.append(s"[\n")
+
+        val ms = a.scopeTree.vertices
+          .filter(_.value.isInstanceOf[SMethod])
+          .map(it => EqWrap(it.value.asInstanceOf[SMethod]))
+          .toList
+
+        val lines = ms
+          .sortBy(_.value.name)
+          .map { m =>
+            val retTypeStr = a.methodRetTypes.get(m).map(_.name).getOrElse("?")
+            val args       = a.methodArgs.getOrElse(m, List.empty[SVar])
+            val argsWithTypes = args.map { arg =>
+              val retType = a.varTypes.getOrElse(EqWrap(arg), TypeRef("?"))
+              s"${arg.name}: ${retType.name}"
+            }
+
+            tabLine(depth, quote(s"""fn ${m.value.name}(${argsWithTypes.mkString(", ")}) -> ${retTypeStr}"""))
+          }
+
+        val body = lines.mkString(",\n")
+        sb.append(body + (if body.nonEmpty then "\n" else ""))
+
+        sb.append(s"]")
+        sb.toString()
+
+      private def asList(ss: Iterable[Named]): List[String] =
+        ss.map(_.name).toList
+
+      private def listStr(xs: List[String]): String =
+        xs.mkString("[", ",", "]")

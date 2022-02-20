@@ -304,13 +304,12 @@ final class ScopeStateSpec extends TestSpec:
     }
 
     "show" should {
-      import Meta.*
-      import com.github.gchudnov.bscript.lang.util.Show.*
+      import Meta.{ *, given }
 
       "display an empty state" in {
         val t1 = Meta.empty
 
-        val s = t1.show()
+        val s = t1.show
 
         s mustBe ("""{
                      |  "scopeTree": {
@@ -378,7 +377,7 @@ final class ScopeStateSpec extends TestSpec:
           .defineVarType(y, p1)
           .defineVarType(z, p2)
 
-        val s = t1.show()
+        val s = t1.show
 
         s mustBe ("""{
                      |  "scopeTree": {

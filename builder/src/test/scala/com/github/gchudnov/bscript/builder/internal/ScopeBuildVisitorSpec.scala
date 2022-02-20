@@ -10,7 +10,6 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
-import com.github.gchudnov.bscript.lang.util.Show.ShowOps
 import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitorSpec.dehydrate
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.EqWrap
@@ -44,7 +43,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(ScopeBuildVisitorState(ast, meta)) =>
             findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
-            meta.show().contains("x") mustBe (true)
+            meta.show.contains("x") mustBe (true)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -127,7 +126,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(ScopeBuildVisitorState(ast, meta)) =>
             // check that scope has the proper shape
-            val actual   = dehydrate(meta.show())
+            val actual   = dehydrate(meta.show)
             val expected = dehydrate(res)
             actual mustBe expected
 

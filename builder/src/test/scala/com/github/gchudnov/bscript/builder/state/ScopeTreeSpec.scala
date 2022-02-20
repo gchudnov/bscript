@@ -254,13 +254,12 @@ final class ScopeTreeSpec extends TestSpec:
     }
 
     "show" should {
-      import ScopeTree.*
-      import com.github.gchudnov.bscript.lang.util.Show.*
+      import ScopeTree.{ *, given }
 
       "display an empty tree" in {
         val t0 = ScopeTree.empty
 
-        val s = t0.show()
+        val s = t0.show
 
         s mustBe ("""{
                      |  "vertices": [],
@@ -290,7 +289,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b2, b0)
           .link(b3, b2)
 
-        val s = t1.show()
+        val s = t1.show
 
         s mustBe ("""{
                      |  "vertices": ["b0","b1","b2","b3"],

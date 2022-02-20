@@ -220,28 +220,29 @@ object Cell:
       case BoolCell(x) => Right(x)
       case other       => Left(new MemoryException(s"Cannot convert ${other} to Boolean"))
 
-  implicit val cellShow: Show[Cell] = new Show[Cell]:
-    override def show(a: Cell): String = a match
-      case _: NothingCell.type => s"\"nothing\""
-      case _: VoidCell.type    => s"\"void\""
-      case BoolCell(value)     => s"\"bool(${value})\""
-      case IntCell(value)      => s"\"i32(${value})\""
-      case LongCell(value)     => s"\"i64(${value})\""
-      case FloatCell(value)    => s"\"f32(${value})\""
-      case DoubleCell(value)   => s"\"f64(${value})\""
-      case DecimalCell(value)  => s"\"dec(${value})\""
-      case StrCell(value)      => s"\"str(${value})\""
-      case DateCell(value)     => s"\"date(${value.toString})\""
-      case DateTimeCell(value) => s"\"datetime(${value.toString})\""
-      case VecCell(value) =>
-        val lineLines = value.map(it => LineOps.split(show(it)))
-        val lines     = LineOps.wrap("[", "]", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(", ", lineLines))))
-        LineOps.join(lines)
-      case StructCell(value) =>
-        val lineLines = value.toList.map { case (k, v) =>
-          val vLines  = LineOps.split(show(v))
-          val kvLines = LineOps.joinCR(": ", Seq(s"\"${k}\""), vLines)
-          kvLines
-        }
-        val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-        LineOps.join(lines)
+  given Show[Cell] with
+    extension (a: Cell)
+      def show: String = a match
+        case _: NothingCell.type => s"\"nothing\""
+        case _: VoidCell.type    => s"\"void\""
+        case BoolCell(value)     => s"\"bool(${value})\""
+        case IntCell(value)      => s"\"i32(${value})\""
+        case LongCell(value)     => s"\"i64(${value})\""
+        case FloatCell(value)    => s"\"f32(${value})\""
+        case DoubleCell(value)   => s"\"f64(${value})\""
+        case DecimalCell(value)  => s"\"dec(${value})\""
+        case StrCell(value)      => s"\"str(${value})\""
+        case DateCell(value)     => s"\"date(${value.toString})\""
+        case DateTimeCell(value) => s"\"datetime(${value.toString})\""
+        case VecCell(value) =>
+          val lineLines = value.map(it => LineOps.split(it.show))
+          val lines     = LineOps.wrap("[", "]", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(", ", lineLines))))
+          LineOps.join(lines)
+        case StructCell(value) =>
+          val lineLines = value.toList.map { case (k, v) =>
+            val vLines  = LineOps.split(v.show)
+            val kvLines = LineOps.joinCR(": ", Seq(s"\"${k}\""), vLines)
+            kvLines
+          }
+          val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
+          LineOps.join(lines)

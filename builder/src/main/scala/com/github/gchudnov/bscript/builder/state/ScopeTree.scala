@@ -63,38 +63,38 @@ object ScopeTree:
       edges = Map.empty[EqWrap[Scope], Scope]
     )
 
-  implicit val scopeTreeShow: Show[ScopeTree] = new Show[ScopeTree]:
+  given Show[ScopeTree] with
+    extension (a: ScopeTree)
+      def show: String =
+        val sb = new StringBuilder
+        sb.append("{\n")
 
-    override def show(a: ScopeTree): String =
-      val sb = new StringBuilder
-      sb.append("{\n")
+        val vs = listStr(
+          a.vertices.toList
+            .map(_.value.name)
+            .sorted
+            .map(it => quote(it))
+        )
 
-      val vs = listStr(
-        a.vertices.toList
-          .map(_.value.name)
-          .sorted
-          .map(it => quote(it))
-      )
+        val es = listStr(
+          a.edges.toList
+            .sortBy(kv => s"${kv._1.value.name};${kv._2.name}")
+            .map { case (c, p) =>
+              listStr(List(quote(c.value.name), quote(p.name)))
+            }
+        )
 
-      val es = listStr(
-        a.edges.toList
-          .sortBy(kv => s"${kv._1.value.name};${kv._2.name}")
-          .map { case (c, p) =>
-            listStr(List(quote(c.value.name), quote(p.name)))
-          }
-      )
+        sb.append(s"""${spaced(1)}"vertices": ${vs},\n""")
+        sb.append(s"""${spaced(1)}"edges": ${es}\n""")
 
-      sb.append(s"""${spaced(1)}"vertices": ${vs},\n""")
-      sb.append(s"""${spaced(1)}"edges": ${es}\n""")
+        sb.append("}")
+        sb.toString()
 
-      sb.append("}")
-      sb.toString()
+      private def spaced(depth: Int): String =
+        "  ".repeat(depth)
 
-    private def spaced(depth: Int): String =
-      "  ".repeat(depth)
+      private def quote(s: String): String =
+        s"\"${s}\""
 
-    private def quote(s: String): String =
-      s"\"${s}\""
-
-    private def listStr(xs: List[String]): String =
-      xs.mkString("[", ",", "]")
+      private def listStr(xs: List[String]): String =
+        xs.mkString("[", ",", "]")

@@ -34,7 +34,6 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
   import Casting.*
   import Cell.*
   import MemorySpace.*
-  import com.github.gchudnov.bscript.lang.util.Show.*
 
   private val mathLaws: Arithmetic     = laws.mathLaws
   private val boolLaws: BoolArithmetic = laws.boolLaws

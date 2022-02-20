@@ -147,31 +147,31 @@ object MemorySpace:
   private def makeMemoryPath(ps: Seq[String]): String =
     ps.mkString(sep)
 
-  implicit val memorySpaceShow: Show[MemorySpace] = new Show[MemorySpace]:
-    import Cell.*
-    import Show.*
+  given Show[MemorySpace] with
+    import Cell.{ given, * }
 
-    override def show(a: MemorySpace): String =
+    extension (a: MemorySpace)
+      def show: String =
 
-      def iterate(d: Int, ms: MemorySpace): Seq[String] =
-        val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
+        def iterate(d: Int, ms: MemorySpace): Seq[String] =
+          val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
 
-        val membersCell: Cell = StructCell(ms.members)
-        val membersCellLines  = LineOps.split(membersCell.show())
+          val membersCell: Cell = StructCell(ms.members)
+          val membersCellLines  = LineOps.split(membersCell.show)
 
-        val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
-        val depthLines      = Seq(s"\"depth\": ${d}")
-        val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => LineOps.quote(it.name)).getOrElse("null")}")
-        val membersLines    = LineOps.joinCR(": ", Seq("\"members\""), membersCellLines)
+          val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
+          val depthLines      = Seq(s"\"depth\": ${d}")
+          val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => LineOps.quote(it.name)).getOrElse("null")}")
+          val membersLines    = LineOps.joinCR(": ", Seq("\"members\""), membersCellLines)
 
-        val lineLines = Seq(
-          nameLines,
-          depthLines,
-          parentNameLines,
-          membersLines
-        )
+          val lineLines = Seq(
+            nameLines,
+            depthLines,
+            parentNameLines,
+            membersLines
+          )
 
-        val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-        LineOps.joinVAll(",", Seq(parentLines, objLines))
+          val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
+          LineOps.joinVAll(",", Seq(parentLines, objLines))
 
-      LineOps.join(LineOps.wrap("[", "]", iterate(0, a)))
+        LineOps.join(LineOps.wrap("[", "]", iterate(0, a)))

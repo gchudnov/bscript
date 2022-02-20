@@ -2,7 +2,6 @@ package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.interpreter.util.ResourceOps.resourceToString
-import com.github.gchudnov.bscript.lang.util.Show.ShowOps
 import com.github.gchudnov.bscript.interpreter.memory.*
 
 final class MemorySpaceSpec extends TestSpec:
@@ -456,7 +455,7 @@ final class MemorySpaceSpec extends TestSpec:
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
         val expected = resourceToString("data/mem-space-2.json").toTry.get
-        val actual   = locals.show()
+        val actual   = locals.show
 
         actual.trim mustBe (expected.trim)
       }

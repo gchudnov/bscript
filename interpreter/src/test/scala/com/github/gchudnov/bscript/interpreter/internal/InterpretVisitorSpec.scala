@@ -842,7 +842,6 @@ final class InterpretVisitorSpec extends TestSpec:
        * }}}
        */
       "evaluate the result when struct fields are assigned in functions" in {
-        import com.github.gchudnov.bscript.lang.util.Show.ShowOps
         import com.github.gchudnov.bscript.builder.state.Meta.*
 
         val t = Block(
