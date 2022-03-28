@@ -1,28 +1,36 @@
 package com.github.gchudnov.bscript.b1.cli.display
 
-import com.diogonunes.jcolor.Ansi.colorize
-import com.diogonunes.jcolor.Attribute.*
 import com.github.gchudnov.bscript.inspector.internal.dbglib.MemWatchDiff
 import com.github.gchudnov.bscript.interpreter.memory.Diff
 import com.github.gchudnov.bscript.interpreter.memory.Cell
+
+import com.github.gchudnov.swearwolf.rich.IdRichText.*
+import com.github.gchudnov.swearwolf.rich.RichText
+import com.github.gchudnov.swearwolf.term.*
+import com.github.gchudnov.swearwolf.util.*
+import com.github.gchudnov.swearwolf.util.TextStyle.*
 
 object MemWatchDisplay:
   import Cell.*
 
   private val header = "WATCH LOG"
 
-  Console.out.println(colorize(Display.padRight(header, Display.lineWidth), BRIGHT_BLACK_TEXT(), BRIGHT_WHITE_BACK()))
-
   def print(log: Seq[MemWatchDiff]): Unit =
+    val writer = Writer.syncId(Term.syncId())
+
+    val headerText = Display.padRight(header, Display.lineWidth)
+    writer.putLn(headerText, Foreground(Color.Black) | Background(Color.White))
+
     log.foreach(it =>
       val methodName = it.name
       val path       = it.path.value
       val diffs      = it.diffs
 
       // method
-      val methodFgColor = if (diffs.isEmpty) then WHITE_TEXT() else YELLOW_TEXT()
+      val methodFgColor = if (diffs.isEmpty) then Foreground(Color.White) else Foreground(Color.Yellow)
       val methodLine    = s"method: $methodName() | watch: '$path'"
-      Console.out.println(colorize(Display.padRight(methodLine, Display.lineWidth), methodFgColor))
+      val methodText = Display.padRight(methodLine, Display.lineWidth)
+      writer.putLn(methodText, methodFgColor)
 
       // diffs
       val maxKeyWidth = if diffs.nonEmpty then diffs.map(_.key.length).max else 0
@@ -30,21 +38,21 @@ object MemWatchDisplay:
         val (line, fgColor) = diff match
           case Diff.Removed(key, value) =>
             val line  = s"  - ${Display.padRight(singleQuote(key), maxKeyWidth + 2)} | ${value.asInstanceOf[Cell].show}"
-            val color = BRIGHT_RED_TEXT()
+            val color = Foreground(Color.OrangeRed)
             (line, color)
           case Diff.Added(key, value) =>
             val line  = s"  + ${Display.padRight(singleQuote(key), maxKeyWidth + 2)} | ${value.asInstanceOf[Cell].show}"
-            val color = BRIGHT_GREEN_TEXT()
+            val color = Foreground(Color.GreenYellow)
             (line, color)
           case Diff.Updated(key, before, after) =>
             val line  = s"  * ${Display.padRight(singleQuote(key), maxKeyWidth + 2)} | ${before.asInstanceOf[Cell].show} -> ${after.asInstanceOf[Cell].show}"
-            val color = BRIGHT_YELLOW_TEXT()
+            val color = Foreground(Color.Gold)
             (line, color)
 
-        Console.out.println(colorize(line, fgColor))
+        writer.putLn(line, fgColor)
       )
 
-      Console.out.println()
+      writer.putLn("")
     )
 
   private def singleQuote(s: String): String =

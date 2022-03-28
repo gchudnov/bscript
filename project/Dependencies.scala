@@ -6,13 +6,13 @@ object Dependencies {
     val scopt              = "4.0.1"
     val scalatest          = "3.2.11"
     val json4sNative       = "4.0.4"
-    val jColor             = "5.2.0"
+    val swearwolf          = "2.0.0-SNAPSHOT"
   }
 
-  private val scalatest    = "org.scalatest"    %% "scalatest"     % versions.scalatest
-  private val json4sNative = "org.json4s"       %% "json4s-native" % versions.json4sNative
-  private val scopt        = "com.github.scopt" %% "scopt"         % versions.scopt
-  private val jColor       = "com.diogonunes"    % "JColor"        % versions.jColor
+  private val scalatest     = "org.scalatest"       %% "scalatest"      % versions.scalatest
+  private val json4sNative  = "org.json4s"          %% "json4s-native"  % versions.json4sNative
+  private val scopt         = "com.github.scopt"    %% "scopt"          % versions.scopt
+  private val swearwolfRich = "com.github.gchudnov" %% "swearwolf-rich" % versions.swearwolf
 
   val Lang: Seq[ModuleID] = {
     val compile = Seq(
@@ -90,7 +90,7 @@ object Dependencies {
   val B1Cli: Seq[ModuleID] = {
     val compile = Seq(
       scopt,
-      jColor
+      swearwolfRich
     )
     val test = Seq(
       scalatest
