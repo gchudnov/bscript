@@ -18,7 +18,7 @@ lazy val lang = (project in file("lang"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "lang",
+    name := "bscript-lang",
     libraryDependencies ++= Dependencies.Lang
   )
 
@@ -27,7 +27,7 @@ lazy val rewriter = (project in file("rewriter"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "rewriter",
+    name := "bscript-rewriter",
     libraryDependencies ++= Dependencies.Rewriter
   )
 
@@ -36,7 +36,7 @@ lazy val serde = (project in file("serde"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "serde",
+    name := "bscript-serde",
     libraryDependencies ++= Dependencies.Serde
   )
 
@@ -45,7 +45,7 @@ lazy val builder = (project in file("builder"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "builder",
+    name := "bscript-builder",
     libraryDependencies ++= Dependencies.Builder
   )
 
@@ -54,7 +54,7 @@ lazy val interpreter = (project in file("interpreter"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "interpreter",
+    name := "bscript-interpreter",
     libraryDependencies ++= Dependencies.Interpreter
   )
 
@@ -63,7 +63,7 @@ lazy val translator = (project in file("translator"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "translator",
+    name := "bscript-translator",
     libraryDependencies ++= Dependencies.Translator
   )
 
@@ -72,7 +72,7 @@ lazy val inspector = (project in file("inspector"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "inspector",
+    name := "bscript-inspector",
     libraryDependencies ++= Dependencies.Inspector
   )
 
@@ -81,7 +81,7 @@ lazy val b1 = (project in file("b1"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(
-    name := "b1",
+    name := "bscript-b1",
     libraryDependencies ++= Dependencies.B1
   )
 

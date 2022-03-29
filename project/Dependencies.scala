@@ -6,7 +6,7 @@ object Dependencies {
     val scopt              = "4.0.1"
     val scalatest          = "3.2.11"
     val json4sNative       = "4.0.4"
-    val swearwolf          = "2.0.0-SNAPSHOT"
+    val swearwolf          = "2.0.0"
   }
 
   private val scalatest     = "org.scalatest"       %% "scalatest"      % versions.scalatest
