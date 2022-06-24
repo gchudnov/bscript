@@ -87,7 +87,7 @@ lazy val b1 = (project in file("b1"))
 
 lazy val b1Cli = (project in file("b1-cli"))
   .enablePlugins(BuildInfoPlugin)
-  .dependsOn(b1)
+  .dependsOn(b1, interpreter, inspector)
   .settings(allSettings: _*)
   .settings(Settings.assemblySettings)
   .settings(
