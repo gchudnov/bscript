@@ -369,7 +369,7 @@ object Meta:
     m
 
   given Show[Meta] with
-    import ScopeTree.{ given, * }
+    import ScopeTree.{ *, given }
     import com.github.gchudnov.bscript.lang.util.LineOps.*
 
     extension (a: Meta)

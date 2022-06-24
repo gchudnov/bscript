@@ -148,7 +148,7 @@ object MemorySpace:
     ps.mkString(sep)
 
   given Show[MemorySpace] with
-    import Cell.{ given, * }
+    import Cell.{ *, given }
 
     extension (a: MemorySpace)
       def show: String =

@@ -29,7 +29,7 @@ object MemWatchDisplay:
       // method
       val methodFgColor = if (diffs.isEmpty) then Foreground(Color.White) else Foreground(Color.Yellow)
       val methodLine    = s"method: $methodName() | watch: '$path'"
-      val methodText = Display.padRight(methodLine, Display.lineWidth)
+      val methodText    = Display.padRight(methodLine, Display.lineWidth)
       writer.putLn(methodText, methodFgColor)
 
       // diffs
