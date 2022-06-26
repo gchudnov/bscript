@@ -42,13 +42,13 @@ private[internal] object CastLong:
       Right(n)
 
     def exactCastF32(n: Float): Either[Throwable, Long] =
-      allCatch.either(BigDecimal.valueOf(n).toLongExact)
+      allCatch.either(BigDecimal.valueOf(n).toLongExact).left.map(t => new B1Exception(s"Cannot convert float ${n} to the exact long", t))
 
     def exactCastF64(n: Double): Either[Throwable, Long] =
-      allCatch.either(BigDecimal.valueOf(n).toLongExact)
+      allCatch.either(BigDecimal.valueOf(n).toLongExact).left.map(t => new B1Exception(s"Cannot convert double ${n} to the exact long", t))
 
     def exactCastDec(n: BigDecimal): Either[Throwable, Long] =
-      allCatch.either(n.toLongExact)
+      allCatch.either(n.toLongExact).left.map(t => new B1Exception(s"Cannot convert bigDecimal ${n} to the exact long", t))
 
     s match
       case s @ InterpretState(_, _, ms, _) =>

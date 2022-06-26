@@ -54,7 +54,7 @@ final class CastIntSpec extends TestSpec:
        *   }
        * }}}
        */
-      "not cast if not exact" in {
+      "fail to cast if not exact" in {
         val t = Block(
           VarDecl(
             TypeRef(typeNames.f64Type),
@@ -74,7 +74,7 @@ final class CastIntSpec extends TestSpec:
           case Right(_) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage.contains("Rounding necessary") mustBe true
+            t.getMessage.contains("Cannot convert double") mustBe true
       }
     }
 
@@ -141,7 +141,7 @@ final class CastIntSpec extends TestSpec:
           case Right(_) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage.contains("integer overflow") mustBe true
+            t.getMessage.contains("Cannot convert long") mustBe true
       }
     }
   }

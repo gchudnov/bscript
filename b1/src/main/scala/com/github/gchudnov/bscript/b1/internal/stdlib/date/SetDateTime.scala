@@ -63,7 +63,7 @@ private[internal] object SetDateTime:
                           case `unitSeconds` =>
                             allCatch.either(value.withSecond(offset)).map(DateTimeCell.apply)
                           case other =>
-                            Left(new B1Exception(s"Unexpected unit of time was passed to ${fnName}: ${other}"))
+                            Left(new B1Exception(s"Unexpected date-time unit passed to ${fnName}: '${other}'"))
                       case other =>
                         Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
@@ -86,7 +86,7 @@ private[internal] object SetDateTime:
                             |  case `unitSeconds` =>
                             |    ${argValue}.withSecond(${argOffset})
                             |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: $${${argUnit}}")
+                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
                             |}
                             |""".stripMargin
                        )

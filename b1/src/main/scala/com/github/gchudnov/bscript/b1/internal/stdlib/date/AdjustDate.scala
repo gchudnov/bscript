@@ -58,7 +58,7 @@ private[internal] object AdjustDate:
                           case `unitDays` =>
                             allCatch.either(value.plusDays(offset.toLong)).map(DateCell.apply)
                           case other =>
-                            Left(new B1Exception(s"Unexpected unit of date was passed to ${fnName}: ${other}"))
+                            Left(new B1Exception(s"Unexpected date-time unit passed to ${fnName}: '${other}'"))
                       case other =>
                         Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)

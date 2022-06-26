@@ -39,16 +39,16 @@ private[internal] object CastInt:
       Right(n)
 
     def exactCastI64(n: Long): Either[Throwable, Int] =
-      allCatch.either(Math.toIntExact(n))
+      allCatch.either(Math.toIntExact(n)).left.map(t => new B1Exception(s"Cannot convert long ${n} to the exact int", t))
 
     def exactCastF32(n: Float): Either[Throwable, Int] =
-      allCatch.either(BigDecimal.valueOf(n).toIntExact)
+      allCatch.either(BigDecimal.valueOf(n).toIntExact).left.map(t => new B1Exception(s"Cannot convert float ${n} to the exact int", t))
 
     def exactCastF64(n: Double): Either[Throwable, Int] =
-      allCatch.either(BigDecimal.valueOf(n).toIntExact)
+      allCatch.either(BigDecimal.valueOf(n).toIntExact).left.map(t => new B1Exception(s"Cannot convert double ${n} to the exact int", t))
 
     def exactCastDec(n: BigDecimal): Either[Throwable, Int] =
-      allCatch.either(n.toIntExact)
+      allCatch.either(n.toIntExact).left.map(t => new B1Exception(s"Cannot convert bigDecimal ${n} to the exact int", t))
 
     s match
       case s @ InterpretState(_, _, ms, _) =>

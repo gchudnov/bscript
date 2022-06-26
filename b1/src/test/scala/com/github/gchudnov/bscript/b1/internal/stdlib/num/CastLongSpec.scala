@@ -74,7 +74,7 @@ final class CastLongSpec extends TestSpec:
           case Right(_) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage.contains("Rounding necessary") mustBe true
+            t.getMessage.contains("Cannot convert double") mustBe true
       }
     }
 
@@ -141,7 +141,7 @@ final class CastLongSpec extends TestSpec:
           case Right(_) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage.contains("Overflow") mustBe true
+            t.getMessage.contains("Cannot convert bigDecimal") mustBe true
       }
     }
   }
