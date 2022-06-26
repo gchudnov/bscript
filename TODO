@@ -1,5 +1,8 @@
-- TODO: release lib
+- TODO: add 'Cast' to force type conversion OR  safe toInt / toFloat, ... ??? find the best option
 
-* TODO: add unreachable code check
-* TODO: do not allow to redefine the var in the same block
+- TODO: b1-cli - make run / debug as commands
+- TODO: b1-cli - add 'gen' command to generate scala code
+
+- TODO: add unreachable code check
+- TODO: do not allow to redefine the var in the same block
 - TODO: add stdout

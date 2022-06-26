@@ -10,7 +10,7 @@ import com.github.gchudnov.bscript.interpreter.memory.{ CellPath, Diff }
 import com.github.gchudnov.bscript.inspector.internal.dbglib.{ MemWatchDiff, MemWatchStashEntry }
 
 final class B1Spec extends TestSpec:
-  val typeNames = B1.typeNames
+  private val typeNames = B1.typeNames
 
   "B1" when {
     val astA = VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0))

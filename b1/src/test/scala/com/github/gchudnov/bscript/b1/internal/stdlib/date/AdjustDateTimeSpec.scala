@@ -13,6 +13,15 @@ final class AdjustDateTimeSpec extends TestSpec:
 
   "AdjustDateTime" when {
     "datetime is adjusted by a number of days" should {
+
+      /**
+       * {{{
+       *   {
+       *     datetime x = offsetDateTime(datetime("2020-01-01T00:00:00.000Z"), 1, "days");
+       *     x
+       *   }
+       * }}}
+       */
       "return a new datetime" in {
         val t = Block(
           VarDecl(

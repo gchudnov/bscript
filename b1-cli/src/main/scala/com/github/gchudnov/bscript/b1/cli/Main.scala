@@ -11,7 +11,7 @@ import scopt.DefaultOParserSetup
 import scopt.OParserSetup
 
 object Main:
-  private val osetup: OEEffectSetup = makeOZEffectSetup()
+  private val osetup: OEEffectSetup = makeOEEffectSetup()
   private val psetup: OParserSetup  = makePEffectSetup()
 
   def main(args: Array[String]): Unit =
@@ -32,7 +32,7 @@ object Main:
       _   <- runAction(cfg)
     yield ()
 
-  private def makeOZEffectSetup(): OEEffectSetup =
+  private def makeOEEffectSetup(): OEEffectSetup =
     StdioEffectSetup.make()
 
   private def makePEffectSetup(): OParserSetup =
