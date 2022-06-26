@@ -1,5 +1,3 @@
-- TODO: add 'Cast' to force type conversion OR  safe toInt / toFloat, ... ??? find the best option
-
 - TODO: b1-cli - make run / debug as commands
 - TODO: b1-cli - add 'gen' command to generate scala code
 
