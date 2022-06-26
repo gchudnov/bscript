@@ -22,6 +22,7 @@ private[b1] object B1Prelude:
     Printf.decl,
     ReadFile.decl,
     CastInt.decl,
+    CastLong.decl,
     Round.decl,
     Truncate.decl,
     StrLen.decl,

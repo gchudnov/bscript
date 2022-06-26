@@ -5,17 +5,17 @@ import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef }
 
-final class CastIntSpec extends TestSpec:
+final class CastLongSpec extends TestSpec:
   private val typeNames = B1.typeNames
 
-  "CastInt" when {
-    "double to int" should {
+  "CastLong" when {
+    "double to long" should {
 
       /**
        * {{{
        *   {
        *     double x = 12.0;
-       *     int y = exactInt(x);
+       *     long y = exactLong(x);
        *     y
        *   }
        * }}}
@@ -28,9 +28,9 @@ final class CastIntSpec extends TestSpec:
             DoubleVal(12.0)
           ),
           VarDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.i64Type),
             "y",
-            Call(SymbolRef("exactInt"), List(Var(SymbolRef("x"))))
+            Call(SymbolRef("exactLong"), List(Var(SymbolRef("x"))))
           ),
           Var(SymbolRef("y"))
         )
@@ -38,7 +38,7 @@ final class CastIntSpec extends TestSpec:
         val errOrRes = B1.run(t)
         errOrRes match
           case Right(cell) =>
-            cell mustBe IntCell(12)
+            cell mustBe LongCell(12)
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -49,7 +49,7 @@ final class CastIntSpec extends TestSpec:
        * {{{
        *   {
        *     double x = 12.34;
-       *     int y = exactInt(x);
+       *     long y = exactLong(x);
        *     // throws
        *   }
        * }}}
@@ -62,9 +62,9 @@ final class CastIntSpec extends TestSpec:
             DoubleVal(12.34)
           ),
           VarDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.i64Type),
             "y",
-            Call(SymbolRef("exactInt"), List(Var(SymbolRef("x"))))
+            Call(SymbolRef("exactLong"), List(Var(SymbolRef("x"))))
           ),
           Var(SymbolRef("y"))
         )
@@ -78,13 +78,13 @@ final class CastIntSpec extends TestSpec:
       }
     }
 
-    "long to int" should {
+    "dec to long" should {
 
       /**
        * {{{
        *   {
-       *     long x = 123;
-       *     int y = exactInt(x);
+       *     dec x = 123;
+       *     long y = exactLong(x);
        *     y
        *   }
        * }}}
@@ -92,14 +92,14 @@ final class CastIntSpec extends TestSpec:
       "cast if within range" in {
         val t = Block(
           VarDecl(
-            TypeRef(typeNames.i64Type),
+            TypeRef(typeNames.decType),
             "x",
-            LongVal(123)
+            DecimalVal(BigDecimal("123"))
           ),
           VarDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.i64Type),
             "y",
-            Call(SymbolRef("exactInt"), List(Var(SymbolRef("x"))))
+            Call(SymbolRef("exactLong"), List(Var(SymbolRef("x"))))
           ),
           Var(SymbolRef("y"))
         )
@@ -107,7 +107,7 @@ final class CastIntSpec extends TestSpec:
         val errOrRes = B1.run(t)
         errOrRes match
           case Right(cell) =>
-            cell mustBe IntCell(123)
+            cell mustBe LongCell(123)
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -115,8 +115,8 @@ final class CastIntSpec extends TestSpec:
       /**
        * {{{
        *   {
-       *     long x = Long.MAX_VALUE;
-       *     int y = exactInt(x);
+       *     dec x = 12345678901234567890;
+       *     long y = exactLong(x);
        *     // throws
        *   }
        * }}}
@@ -124,14 +124,14 @@ final class CastIntSpec extends TestSpec:
       "not cast if out of range" in {
         val t = Block(
           VarDecl(
-            TypeRef(typeNames.i64Type),
+            TypeRef(typeNames.decType),
             "x",
-            LongVal(Long.MaxValue)
+            DecimalVal(BigDecimal("12345678901234567890"))
           ),
           VarDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.i64Type),
             "y",
-            Call(SymbolRef("exactInt"), List(Var(SymbolRef("x"))))
+            Call(SymbolRef("exactLong"), List(Var(SymbolRef("x"))))
           ),
           Var(SymbolRef("y"))
         )
@@ -141,7 +141,7 @@ final class CastIntSpec extends TestSpec:
           case Right(_) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage.contains("integer overflow") mustBe true
+            t.getMessage.contains("Overflow") mustBe true
       }
     }
   }

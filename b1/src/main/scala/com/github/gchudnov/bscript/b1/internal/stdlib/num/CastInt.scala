@@ -14,17 +14,19 @@ import scala.util.control.Exception.allCatch
 
 private[internal] object CastInt:
 
+  private val fnName = "exactInt"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.i32Type),
-      "exactInt",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "value")
       ),
       Block(
         CompiledExpr(callback = CastInt.exactToInt, retType = TypeRef(typeNames.i32Type))
       ),
-      Seq(ComAnn("Safely casts a number to int or returns an error on runtime"), StdAnn())
+      Seq(ComAnn(s"Safely casts a number to ${typeNames.i32Type} or returns an error on runtime"), StdAnn())
     )
 
   /**
@@ -49,7 +51,7 @@ private[internal] object CastInt:
       allCatch.either(n.toIntExact)
 
     s match
-      case s @ InterpretState(_, _, ms, c) =>
+      case s @ InterpretState(_, _, ms, _) =>
         for
           valueCell <- ms.tryFetch(CellPath(argValue))
           retVal <- (valueCell) match
@@ -64,7 +66,7 @@ private[internal] object CastInt:
                       case (DecimalCell(x)) =>
                         exactCastDec(x).map(IntCell.apply)
                       case other =>
-                        Left(new B1Exception(s"Unexpected type of arguments passed to exactInt: ${other}"))
+                        Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -76,7 +78,7 @@ private[internal] object CastInt:
                             |  case x: Int =>
                             |    x
                             |  case x: Long =>
-                            |     Math.toIntExact(x)
+                            |    Math.toIntExact(x)
                             |  case x: Float =>
                             |    BigDecimal.valueOf(x).toIntExact
                             |  case x: Double =>
@@ -92,4 +94,4 @@ private[internal] object CastInt:
         yield s.copy(lines = lines, imports = s.imports + "java.lang.Math")
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to exactInt: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))
