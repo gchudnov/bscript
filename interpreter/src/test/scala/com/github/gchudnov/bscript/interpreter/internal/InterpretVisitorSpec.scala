@@ -897,7 +897,6 @@ final class InterpretVisitorSpec extends TestSpec:
             c mustBe expected
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 

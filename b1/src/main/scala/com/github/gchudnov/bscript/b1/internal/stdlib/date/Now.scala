@@ -13,10 +13,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 private[internal] object Now:
   import DateTime.*
 
+  private val fnName = "now"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.datetimeType),
-      "now",
+      fnName,
       List.empty[ArgDecl],
       Block(
         CompiledExpr(callback = Now.now, retType = TypeRef(typeNames.datetimeType))
@@ -43,4 +45,4 @@ private[internal] object Now:
         yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.OffsetDateTime", "java.time.ZoneId"))
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to now: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

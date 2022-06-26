@@ -11,10 +11,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object IsDefined:
 
+  private val fnName = "isDefined"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.boolType),
-      "isDefined",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "x")
       ),
@@ -65,4 +67,4 @@ private[internal] object IsDefined:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to isDefined: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

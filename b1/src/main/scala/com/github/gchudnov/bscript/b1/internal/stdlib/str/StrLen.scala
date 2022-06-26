@@ -11,10 +11,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object StrLen:
 
+  private val fnName = "strLen"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.i32Type),
-      "strLen",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.strType), "s")
       ),
@@ -43,7 +45,7 @@ private[internal] object StrLen:
                       case StrCell(value) =>
                         Right(IntCell(value.length))
                       case other =>
-                        Left(new B1Exception(s"Unexpected type of arguments passed to strLen: ${other}"))
+                        Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -56,4 +58,4 @@ private[internal] object StrLen:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to strLen: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

@@ -6,10 +6,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object Printf:
 
+  private val fnName = "printf"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.voidType),
-      "printf",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.strType), "format"),
         ArgDecl(TypeRef(typeNames.autoType), "value")

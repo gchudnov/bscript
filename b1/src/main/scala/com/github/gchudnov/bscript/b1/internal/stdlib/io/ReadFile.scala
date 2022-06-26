@@ -15,10 +15,12 @@ import java.nio.charset.StandardCharsets
 
 private[internal] object ReadFile:
 
+  private val fnName = "readFile"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.strType),
-      "readFile",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.strType), "path")
       ),
@@ -49,7 +51,7 @@ private[internal] object ReadFile:
                           contents <- allCatch.either(Files.readString(filePath, StandardCharsets.UTF_8))
                         yield StrCell(contents)
                       case other =>
-                        Left(new B1Exception(s"Unexpected type of argument passed to readFile: ${other}"))
+                        Left(new B1Exception(s"Unexpected type of argument passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -70,4 +72,4 @@ private[internal] object ReadFile:
         yield s.copy(lines = lines, imports = s.imports ++ imports)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to readFile: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

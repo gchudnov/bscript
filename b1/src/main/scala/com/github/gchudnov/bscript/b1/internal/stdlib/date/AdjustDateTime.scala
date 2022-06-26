@@ -14,10 +14,12 @@ import scala.util.control.Exception.allCatch
 private[internal] object AdjustDateTime:
   import DateTime.*
 
+  private val fnName = "offsetDateTime"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.datetimeType),
-      "offsetDateTime",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
         ArgDecl(TypeRef(typeNames.i32Type), "offset"),
@@ -62,9 +64,9 @@ private[internal] object AdjustDateTime:
                           case `unitSeconds` =>
                             allCatch.either(value.plusSeconds(offset.toLong)).map(DateTimeCell.apply)
                           case other =>
-                            Left(new B1Exception(s"Unexpected unit of time was passed to offsetDateTime: ${other}"))
+                            Left(new B1Exception(s"Unexpected unit of time was passed to ${fnName}: ${other}"))
                       case other =>
-                        Left(new B1Exception(s"Unexpected type of arguments passed to offsetDateTime: ${other}"))
+                        Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -85,7 +87,7 @@ private[internal] object AdjustDateTime:
                             |  case `unitSeconds` =>
                             |    ${argValue}.plusSeconds(${argOffset}.toLong)
                             |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected unit of time was passed to offsetDateTime: $${${argUnit}}")
+                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: $${${argUnit}}")
                             |}
                             |""".stripMargin
                        )
@@ -93,4 +95,4 @@ private[internal] object AdjustDateTime:
         yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to offsetDateTime: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

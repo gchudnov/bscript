@@ -11,10 +11,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object Coalesce:
 
+  private val fnName = "coalesce"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       DeclType(Var(SymbolRef("x"))),
-      "coalesce",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "x"),
         ArgDecl(TypeRef(typeNames.autoType), "y")
@@ -66,4 +68,4 @@ private[internal] object Coalesce:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to coalesce: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

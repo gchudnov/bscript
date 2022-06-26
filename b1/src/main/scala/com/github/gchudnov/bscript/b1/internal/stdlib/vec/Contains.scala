@@ -12,10 +12,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object Contains:
 
+  private val fnName = "contains"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.boolType),
-      "contains",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "x"),
         ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
@@ -39,7 +41,7 @@ private[internal] object Contains:
                       case (x: Cell, xs: VecCell) =>
                         Right(BoolCell(xs.value.contains(x)))
                       case (x, xs) =>
-                        Left(new B1Exception(s"Unexpected parameter types are passed to contains: (${x}, ${xs})"))
+                        Left(new B1Exception(s"Unexpected parameter types are passed to ${fnName}: (${x}, ${xs})"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -53,4 +55,4 @@ private[internal] object Contains:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to contains: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

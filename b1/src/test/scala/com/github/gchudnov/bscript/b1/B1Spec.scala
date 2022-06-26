@@ -166,7 +166,6 @@ final class B1Spec extends TestSpec:
             cell mustBe expectedCell
             log must contain allElementsOf expectedLog
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -252,7 +251,6 @@ final class B1Spec extends TestSpec:
             cell mustBe expectedCell
             log must contain allElementsOf expectedLog
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -337,7 +335,6 @@ final class B1Spec extends TestSpec:
             cell mustBe expectedCell
             log must contain allElementsOf expectedLog
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }

@@ -11,10 +11,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object Truncate:
 
+  private val fnName = "truncate"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       DeclType(Var(SymbolRef("value"))),
-      "truncate",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
         ArgDecl(TypeRef(typeNames.i32Type), "precision")
@@ -56,7 +58,7 @@ private[internal] object Truncate:
                       case (DecimalCell(x), IntCell(p)) =>
                         Right(DecimalCell(truncateDec(x, p)))
                       case other =>
-                        Left(new B1Exception(s"Unexpected type of arguments passed to truncate: ${other}"))
+                        Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -94,4 +96,4 @@ private[internal] object Truncate:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to truncate: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

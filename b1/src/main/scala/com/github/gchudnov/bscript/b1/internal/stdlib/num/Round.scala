@@ -11,10 +11,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object Round:
 
+  private val fnName = "round"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       DeclType(Var(SymbolRef("value"))),
-      "round",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
         ArgDecl(TypeRef(typeNames.i32Type), "precision")
@@ -55,7 +57,7 @@ private[internal] object Round:
                       case (DecimalCell(x), IntCell(p)) =>
                         Right(DecimalCell(roundDec(x, p)))
                       case other =>
-                        Left(new B1Exception(s"Unexpected type of arguments passed to round: ${other}"))
+                        Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -90,4 +92,4 @@ private[internal] object Round:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to round: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

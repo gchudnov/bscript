@@ -12,10 +12,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 
 private[internal] object Append:
 
+  private val fnName = "append"
+
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       VectorType(DeclType(Var(SymbolRef("x")))),
-      "append",
+      fnName,
       List(
         ArgDecl(TypeRef(typeNames.autoType), "x"),
         ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
@@ -39,7 +41,7 @@ private[internal] object Append:
                       case (x: Cell, xs: VecCell) =>
                         Right(VecCell(xs.value :+ x))
                       case (x, xs) =>
-                        Left(new B1Exception(s"Unexpected parameter types are passed to append: (${x}, ${xs})"))
+                        Left(new B1Exception(s"Unexpected parameter types are passed to ${fnName}: (${x}, ${xs})"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala2State =>
@@ -53,4 +55,4 @@ private[internal] object Append:
         yield s.copy(lines = lines)
 
       case other =>
-        Left(new B1Exception(s"Unexpected state passed to append: ${other}"))
+        Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))
