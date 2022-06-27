@@ -32,6 +32,18 @@ private[internal] object BetweenTemp:
       Seq(ComAnn("Calculates difference between two temporal points in time"), StdAnn())
     )
 
+  /**
+   * Get the number of date-time units between two given dates
+   *
+   * {{{
+   *   Given:
+   *     result = betweenDates(a, b, "days")
+   *
+   *   Returns:
+   *     result > 0, if a < b
+   *     result < 0, if a > b
+   * }}}
+   */
   private def betweenDates(s: Any): Either[Throwable, Any] =
     val argFirst = "first" // date | dateTime
     val argLast  = "last"  // date | dateTime
