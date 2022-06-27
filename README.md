@@ -195,24 +195,35 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 Allows to run and debug AST.
 
 ```text
-b1-cli 1.0.0
-Usage: b1-cli [options] <file>
+b1-cli 1.1.2
+Usage: b1-cli [run|debug|export] [options] <file>
 
-  -h, --help           prints this usage text
-  --version            prints the version
-  -r, --run            Run AST (default)
-  -d, --debug <value>  Debug AST
-  -c, --cell <value>   Path to the variable to trace its value in debug mode
-  <file>               AST file to be interpreted
+  -h, --help               prints this usage text
+  --version                prints the version
+  <file>                   AST file to be interpreted
+
+Command: run
+run AST-file
+
+Command: debug [options]
+debug AST-file
+  -r, --ref <value>        reference to the variable to watch: a.b.c
+
+Command: export [options]
+export AST-file
+  -l, --lang <value>       language to export: [scala2,scala2j]
+  -o, --out <value>        Path to output file
 
 Examples:
 
   - Run AST
-    b1-cli --run /path/to/ast.json
-    b1-cli /path/to/ast.json
+    b1-cli run /path/to/ast.json
 
   - Debug AST
-    b1-cli --debug --cell="a.b.c" /path/to/ast.json
+    b1-cli debug --ref="a.b.c" /path/to/ast.json
+
+  - Export AST
+    b1-cli export --lang=scala2 --out=/path/to/out.scala /path/to/ast.json
 ```
 
 To use the command line utility, assembly `b1-cli` first:
@@ -227,12 +238,16 @@ Run:
 cd ./target
 
 # run
-./b1-cli ../examples/ast-example-1.json
+./b1-cli run ../examples/ast-example-1.json
 
 # debug
-./b1-cli --debug --cell="a" ../examples/ast-example-1.json
-./b1-cli --debug --cell="a" ../examples/ast-example-2.json
-./b1-cli --debug --cell="y" ../examples/ast-example-3.json
+./b1-cli debug --ref="a" ../examples/ast-example-1.json
+./b1-cli debug --ref="a" ../examples/ast-example-2.json
+./b1-cli debug --ref="y" ../examples/ast-example-3.json
+
+# export
+b1-cli export --lang=scala2 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
+b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
 ```
 
 #### Example
@@ -240,7 +255,7 @@ cd ./target
 Command
 
 ```bash
-./b1-cli --debug --cell="a" ../examples/ast-example-1.json
+./b1-cli debug --ref="a" ../examples/ast-example-1.json
 ```
 
 Output

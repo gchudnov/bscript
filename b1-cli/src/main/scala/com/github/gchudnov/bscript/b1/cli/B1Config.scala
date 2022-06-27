@@ -71,8 +71,8 @@ object B1Config:
   private val ArgHelpShort   = 'h'
   private val ArgHelpLong    = "help"
   private val ArgVersionLong = "version"
-  private val ArgCellShort   = 'c'
-  private val ArgCellLong    = "cell"
+  private val ArgRefShort    = 'r'
+  private val ArgRefLong     = "ref"
   private val ArgOutShort    = 'o'
   private val ArgOutLong     = "out"
   private val ArgLangShort   = 'l'
@@ -119,26 +119,29 @@ object B1Config:
         .required()
         .action((x, c) => c.copy(file = x))
         .text("AST file to be interpreted"),
+      note(""),
       cmd(CmdRun)
         .optional()
         .action((_, c) => c.copy(command = Command.run))
-        .text("run AST")
+        .text("run AST-file")
         .children(
         ),
+      note(""),
       cmd(CmdDebug)
         .optional()
         .action((_, c) => c.copy(command = Command.debug))
-        .text("debug AST")
+        .text("debug AST-file")
         .children(
-          opt[String](ArgCellShort, ArgCellLong)
+          opt[String](ArgRefShort, ArgRefLong)
             .required()
             .action((x, c) => c.copy(command = Command.withDebugCell(c.command, CellPath(x))))
-            .text("Path to the variable to debug: a.b.c")
+            .text("reference to the variable to watch: a.b.c")
         ),
+      note(""),
       cmd(CmdExport)
         .optional()
         .action((_, c) => c.copy(command = Command.exprt))
-        .text("export AST")
+        .text("export AST-file")
         .children(
           opt[Lang](ArgLangShort, ArgLangLong)
             .required()
@@ -153,11 +156,13 @@ object B1Config:
              |Examples:
              |
              |  - Run AST
-             |    b1-cli --run /path/to/ast.json
-             |    b1-cli /path/to/ast.json
+             |    b1-cli run /path/to/ast.json
              |
              |  - Debug AST
-             |    b1-cli --debug --cell="a.b.c" /path/to/ast.json
+             |    b1-cli debug --ref="a.b.c" /path/to/ast.json
+             |
+             |  - Export AST
+             |    b1-cli export --lang=scala2 --out=/path/to/out.scala /path/to/ast.json
              |""".stripMargin),
       checkConfig(c =>
         // NOTE: if an error, return Left("String with a description")
