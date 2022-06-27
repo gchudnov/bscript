@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 
+import java.time.OffsetDateTime
 import scala.util.control.Exception.allCatch
 
 private[internal] object AdjustDateTime:
@@ -45,6 +46,18 @@ private[internal] object AdjustDateTime:
     val argOffset = "offset" // integer offset
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
+    def dateTimePlusDays(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
+      allCatch.either(x.plusDays(offset.toLong))
+
+    def dateTimePlusHours(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
+      allCatch.either(x.plusHours(offset.toLong))
+
+    def dateTimePlusMinutes(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
+      allCatch.either(x.plusMinutes(offset.toLong))
+
+    def dateTimePlusSeconds(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
+      allCatch.either(x.plusSeconds(offset.toLong))
+
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
@@ -56,13 +69,13 @@ private[internal] object AdjustDateTime:
                       case (DateTimeCell(value), IntCell(offset), StrCell(unit)) =>
                         unit.trim.toLowerCase match
                           case `unitDays` =>
-                            allCatch.either(value.plusDays(offset.toLong)).map(DateTimeCell.apply)
+                            dateTimePlusDays(value, offset).map(DateTimeCell.apply)
                           case `unitHours` =>
-                            allCatch.either(value.plusHours(offset.toLong)).map(DateTimeCell.apply)
+                            dateTimePlusHours(value, offset).map(DateTimeCell.apply)
                           case `unitMinutes` =>
-                            allCatch.either(value.plusMinutes(offset.toLong)).map(DateTimeCell.apply)
+                            dateTimePlusMinutes(value, offset).map(DateTimeCell.apply)
                           case `unitSeconds` =>
-                            allCatch.either(value.plusSeconds(offset.toLong)).map(DateTimeCell.apply)
+                            dateTimePlusSeconds(value, offset).map(DateTimeCell.apply)
                           case other =>
                             Left(new B1Exception(s"Unexpected date-time unit passed to ${fnName}: '${other}'"))
                       case other =>

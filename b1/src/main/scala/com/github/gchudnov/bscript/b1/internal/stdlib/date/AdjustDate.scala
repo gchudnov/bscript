@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 
+import java.time.LocalDate
 import scala.util.control.Exception.allCatch
 
 private[internal] object AdjustDate:
@@ -45,6 +46,9 @@ private[internal] object AdjustDate:
     val argOffset = "offset" // integer offset
     val argUnit   = "unit"   // string unit of the offset (DAYS)
 
+    def datePlusDays(x: LocalDate, offset: Int): Either[Throwable, LocalDate] =
+      allCatch.either(x.plusDays(offset.toLong))
+
     s match
       case s @ InterpretState(_, _, ms, c) =>
         for
@@ -56,7 +60,7 @@ private[internal] object AdjustDate:
                       case (DateCell(value), IntCell(offset), StrCell(unit)) =>
                         unit.trim.toLowerCase match
                           case `unitDays` =>
-                            allCatch.either(value.plusDays(offset.toLong)).map(DateCell.apply)
+                            datePlusDays(value, offset).map(DateCell.apply)
                           case other =>
                             Left(new B1Exception(s"Unexpected date-time unit passed to ${fnName}: '${other}'"))
                       case other =>
