@@ -13,6 +13,16 @@ final class SetDateTimeSpec extends TestSpec:
 
   "SetDateTime" when {
     "a field is set" should {
+      /**
+       * {{{
+       *   {
+       *     dateTime x = setDateTime("2020-01-01T00:00:00.000Z", 3, "days");
+       *     x
+       *   }
+       *
+       *   evaluates to "2020-01-03T00:00Z"
+       * }}}
+       */
       "set days" in {
         val t = Block(
           VarDecl(
