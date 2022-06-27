@@ -15,7 +15,7 @@ private[b1] object B1Prelude:
   private val methods = List(
     AdjustDateTime.decl,
     AdjustDate.decl,
-    BetweenDates.decl,
+    BetweenTemp.decl,
     FieldOfDateTime.decl,
     Now.decl,
     SetDateTime.decl,

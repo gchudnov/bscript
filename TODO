@@ -1,7 +1,3 @@
-- TODO: add 'betweenDates'
-      case (a: LocalDate, b: LocalDate) =>
-        Try(BigDecimal(ChronoUnit.DAYS.between(b, a))) match {
-
 - TODO: change Scala2State to just ScalaState and use Scala3
 
 - TODO: b1-cli - make run / debug as commands

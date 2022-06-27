@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef }
 
 import java.time.LocalDate
 
-final class BetweenDatesSpec extends TestSpec:
+final class BetweenTempSpec extends TestSpec:
   private val typeNames = B1.typeNames
 
   "BetweenDates" when {
@@ -16,17 +16,17 @@ final class BetweenDatesSpec extends TestSpec:
       /**
        * {{{
        *   {
-       *     val dd = betweenDates(date("2022-02-01"), date("2022-03-01"), "days");
-       *     dd
+       *     val x = betweenTemp(date("2022-02-01"), date("2022-03-01"), "days");
+       *     x
        *   }
        * }}}
        */
-      "provide the output if b >= a" in {
+      "positive value if a < b" in {
         val t = Block(
           VarDecl(
             TypeRef(typeNames.i32Type),
-            "dd",
-            Call(SymbolRef("betweenDates"), List(DateVal(LocalDate.parse("2022-02-01")), DateVal(LocalDate.parse("2022-03-01")), StrVal("days")))
+            "x",
+            Call(SymbolRef("betweenTemp"), List(DateVal(LocalDate.parse("2022-02-01")), DateVal(LocalDate.parse("2022-03-01")), StrVal("days")))
           ),
           Var(SymbolRef("x"))
         )
@@ -34,7 +34,7 @@ final class BetweenDatesSpec extends TestSpec:
         val errOrRes = B1.run(t)
         errOrRes match
           case Right(cell) =>
-            cell mustBe IntCell(100)
+            cell mustBe IntCell(28)
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -42,28 +42,27 @@ final class BetweenDatesSpec extends TestSpec:
       /**
        * {{{
        *   {
-       *     val dd = betweenDates(date("2022-03-01"), date("2022-02-01"), "days");
-       *     dd
+       *     val x = betweenTemp(date("2022-03-01"), date("2022-02-01"), "days");
+       *     x
        *   }
        * }}}
        */
-      "report an error if b < a" in {
+      "negative value if a > b" in {
         val t = Block(
           VarDecl(
             TypeRef(typeNames.i32Type),
-            "dd",
-            Call(SymbolRef("betweenDates"), List(DateVal(LocalDate.parse("2022-03-01")), DateVal(LocalDate.parse("2022-02-01")), StrVal("days")))
+            "x",
+            Call(SymbolRef("betweenTemp"), List(DateVal(LocalDate.parse("2022-03-01")), DateVal(LocalDate.parse("2022-02-01")), StrVal("days")))
           ),
           Var(SymbolRef("x"))
         )
 
         val errOrRes = B1.run(t)
         errOrRes match
-          case Right(_) =>
-            fail("Should be 'left")
+          case Right(cell) =>
+            cell mustBe IntCell(-28)
           case Left(t) =>
-            println(t.getMessage)
-            t.getMessage.contains("XXX") mustBe true
+            fail("Should be 'right", t)
       }
     }
   }

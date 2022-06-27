@@ -12,10 +12,10 @@ import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
 import scala.util.control.Exception.allCatch
 import java.time.temporal.{ ChronoUnit, Temporal }
 
-private[internal] object BetweenDates:
+private[internal] object BetweenTemp:
   import DateTime.*
 
-  private val fnName = "betweenDates" // TODO: should we rename?
+  private val fnName = "betweenTemp"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
@@ -27,31 +27,33 @@ private[internal] object BetweenDates:
         ArgDecl(TypeRef(typeNames.strType), "unit")
       ),
       Block(
-        CompiledExpr(callback = BetweenDates.betweenDates, retType = TypeRef(typeNames.i32Type))
+        CompiledExpr(callback = BetweenTemp.betweenDates, retType = TypeRef(typeNames.i32Type))
       ),
       Seq(ComAnn("Calculates difference between two temporal points in time"), StdAnn())
     )
 
   private def betweenDates(s: Any): Either[Throwable, Any] =
-    val argFirst = "first" // date
-    val argLast  = "last"  // date
-    val argUnit  = "unit"  // string unit of the offset (DAYS)
+    val argFirst = "first" // date | dateTime
+    val argLast  = "last"  // date | dateTime
+    val argUnit  = "unit"  // string unit of time  (DAYS | HOURS | MINUTES | SECONDS)
 
     def tempDiff(first: Temporal, last: Temporal, unit: ChronoUnit): Either[Throwable, Int] =
-      allCatch.either(unit.between(last, first).toInt).left.map(t => new B1Exception(s"Cannot find ${unit.name()}-diff between '${first}' and '${last}' in ${fnName}", t))
+      allCatch.either(unit.between(first, last).toInt).left.map(t => new B1Exception(s"Cannot find ${unit.name()}-diff between '${first}' and '${last}' in ${fnName}", t))
 
     def tempDiffByUnit(first: Temporal, last: Temporal, unit: String): Either[Throwable, Int] =
-      unit.trim.toLowerCase match
+      val chronoUnitOrErr = unit.trim.toLowerCase match
         case `unitDays` =>
-          tempDiff(first, last, ChronoUnit.DAYS)
+          Right(ChronoUnit.DAYS)
         case `unitHours` =>
-          tempDiff(first, last, ChronoUnit.HOURS)
+          Right(ChronoUnit.HOURS)
         case `unitMinutes` =>
-          tempDiff(first, last, ChronoUnit.MINUTES)
+          Right(ChronoUnit.MINUTES)
         case `unitSeconds` =>
-          tempDiff(first, last, ChronoUnit.SECONDS)
+          Right(ChronoUnit.SECONDS)
         case other =>
           Left(new B1Exception(s"Unexpected date-time unit passed to ${fnName}: '${other}'"))
+
+      chronoUnitOrErr.flatMap(chronoUnit => tempDiff(first, last, chronoUnit))
 
     s match
       case s @ InterpretState(_, _, ms, c) =>
@@ -83,18 +85,20 @@ private[internal] object BetweenDates:
                             |val unitMinutes: String = "${unitMinutes}"
                             |val unitSeconds: String = "${unitSeconds}"
                             |
-                            |${argUnit}.trim.toLowerCase match {
+                            |val chronoUnit = ${argUnit}.trim.toLowerCase match {
                             |  case `unitDays` =>
-                            |    ChronoUnit.DAYS.between(${argFirst}, ${argLast}).toInt
+                            |    ChronoUnit.DAYS
                             |  case `unitHours` =>
-                            |    ChronoUnit.HOURS.between(${argFirst}, ${argLast}).toInt
+                            |    ChronoUnit.HOURS
                             |  case `unitMinutes` =>
-                            |    ChronoUnit.MINUTES.between(${argFirst}, ${argLast}).toInt
+                            |    ChronoUnit.MINUTES
                             |  case `unitSeconds` =>
-                            |    ChronoUnit.SECONDS.between(${argFirst}, ${argLast}).toInt
+                            |    ChronoUnit.SECONDS
                             |  case _ =>
                             |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
                             |}
+                            |
+                            |chronoUnit.between(${argFirst}, ${argLast}).toInt
                             |""".stripMargin
                        )
                      )
