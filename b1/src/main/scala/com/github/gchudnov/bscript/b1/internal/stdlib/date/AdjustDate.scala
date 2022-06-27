@@ -76,7 +76,7 @@ private[internal] object AdjustDate:
                             |  case `unitDays` =>
                             |    ${argValue}.plusDays(${argOffset}.toLong)
                             |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: $${${argUnit}}")
+                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: '$${${argUnit}}'")
                             |}
                             |""".stripMargin
                        )

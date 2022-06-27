@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.b1.cli
 
-import com.github.gchudnov.bscript.b1.B1
+import com.github.gchudnov.bscript.b1.{ B1, B1Options }
 import com.github.gchudnov.bscript.b1.cli.display.{ CellDisplay, MemWatchDisplay }
 import com.github.gchudnov.bscript.b1.cli.eopt.ExitException
 import com.github.gchudnov.bscript.b1.cli.eopt.oeeffectsetup.{ OEEffectSetup, StdioEffectSetup }
@@ -55,5 +55,8 @@ object Main:
                  _               = MemWatchDisplay.print(log)
                yield ()
              case Command.Export(lang, outFile) =>
-               ???
+               for
+                 res <- B1.translate(ast0, B1Options.default.withPrelude(true))
+                 _   <- FileOps.saveString(outFile.toPath, res)
+               yield ()
     yield ()

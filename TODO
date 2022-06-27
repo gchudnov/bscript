@@ -1,5 +1,5 @@
-- TODO: b1-cli - make run / debug as commands
-- TODO: b1-cli - add 'gen' command to generate scala code
+- TODO: implement scala2j
+        b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
 
 - TODO: add unreachable code check
 - TODO: do not allow to redefine the var in the same block

@@ -246,8 +246,7 @@ cd ./target
 ./b1-cli debug --ref="y" ../examples/ast-example-3.json
 
 # export
-b1-cli export --lang=scala2 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
-b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
+./b1-cli export --lang=scala2 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
 ```
 
 #### Example
