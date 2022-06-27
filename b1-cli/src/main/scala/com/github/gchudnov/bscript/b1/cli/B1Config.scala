@@ -1,28 +1,63 @@
 package com.github.gchudnov.bscript.b1.cli
 
+import com.github.gchudnov.bscript.b1.cli.BuildInfo as AppBuildInfo
 import com.github.gchudnov.bscript.b1.cli.eopt.SuccessExitException
 import com.github.gchudnov.bscript.b1.cli.eopt.oeeffectsetup.OEEffectSetup
-import com.github.gchudnov.bscript.b1.cli.BuildInfo as AppBuildInfo
 import com.github.gchudnov.bscript.interpreter.memory.CellPath
-import scopt.OEffect
 import scopt.OEffect.ReportError
-import scopt.OParser
-import scopt.OParserSetup
+import scopt.{ OEffect, OParser, OParserSetup, Read }
 
 import java.io.File
 
-sealed trait Action
+enum Lang:
+  case Scala2
+  case Scala2J
 
-case object RunAction   extends Action
-case object DebugAction extends Action
+sealed trait Command
+
+object Command:
+  final case class Run() extends Command
+
+  final case class Debug(cellPath: CellPath) extends Command
+
+  final case class Export(lang: Lang, outFile: File) extends Command
+
+  val run: Run =
+    Run()
+
+  val debug: Debug =
+    Debug(cellPath = CellPath.empty)
+
+  val exprt: Export =
+    Export(lang = Lang.Scala2, outFile = new File("."))
+
+  def withDebugCell(c: Command, cellPath: CellPath): Command =
+    c match
+      case x: Debug =>
+        x.copy(cellPath = cellPath)
+      case _ =>
+        Command.debug.copy(cellPath = cellPath)
+
+  def withExportOut(c: Command, outFile: File): Command =
+    c match
+      case x: Export =>
+        x.copy(outFile = outFile)
+      case _ =>
+        Command.exprt.copy(outFile = outFile)
+
+  def withExportLang(c: Command, lang: Lang): Command =
+    c match
+      case x: Export =>
+        x.copy(lang = lang)
+      case _ =>
+        Command.exprt.copy(lang = lang)
 
 /**
  * A config built from the command line arguments.
  */
 final case class B1Config(
   file: File,
-  cellPath: CellPath,
-  action: Action
+  command: Command
 )
 
 object B1Config:
@@ -30,25 +65,41 @@ object B1Config:
   val empty: B1Config =
     new B1Config(
       file = new File("."),
-      cellPath = CellPath.empty,
-      action = RunAction
+      command = Command.Run()
     )
 
   private val ArgHelpShort   = 'h'
   private val ArgHelpLong    = "help"
   private val ArgVersionLong = "version"
-  private val ArgRunShort    = 'r'
-  private val ArgRunLong     = "run"
-  private val ArgDebugShort  = 'd'
-  private val ArgDebugLong   = "debug"
-  private val ArgFileShort   = 'f'
-  private val ArgFileLong    = "file"
   private val ArgCellShort   = 'c'
   private val ArgCellLong    = "cell"
+  private val ArgOutShort    = 'o'
+  private val ArgOutLong     = "out"
+  private val ArgLangShort   = 'l'
+  private val ArgLangLong    = "lang"
+
+  private val CmdRun    = "run"
+  private val CmdDebug  = "debug"
+  private val CmdExport = "export"
 
   private val OEffectPrefix     = "OEFFECT"
   private val OEffectHelpKey    = s"$OEffectPrefix:HELP"
   private val OEffectVersionKey = s"$OEffectPrefix:VERSION"
+
+  private val scala2Key                      = "scala2"
+  private val scala2JKey                     = "scala2j"
+  private val allowedLanguages: List[String] = List(scala2Key, scala2JKey)
+  private val allowedLanguagesStr: String    = allowedLanguages.mkString(",")
+
+  private implicit val langRead: Read[Lang] =
+    Read.stringRead.map {
+      case `scala2Key` =>
+        Lang.Scala2
+      case `scala2JKey` =>
+        Lang.Scala2J
+      case _ =>
+        throw new IllegalArgumentException(s"lang must be one of [${allowedLanguagesStr}]")
+    }
 
   private val argsBuilder = OParser.builder[B1Config]
   private val argsParser =
@@ -64,19 +115,40 @@ object B1Config:
         .optional()
         .text("prints the version")
         .validate(_ => Left(OEffectVersionKey)),
-      opt[Unit](ArgRunShort, ArgRunLong)
-        .action((_, c) => c.copy(action = RunAction))
-        .text("Run AST (default)"),
-      opt[Unit](ArgDebugShort, ArgDebugLong)
-        .action((_, c) => c.copy(action = DebugAction))
-        .text("Debug AST"),
-      opt[String](ArgCellShort, ArgCellLong)
-        .action((x, c) => c.copy(cellPath = CellPath(x)))
-        .text("Path to the variable to trace its value in debug mode"),
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(file = x))
         .text("AST file to be interpreted"),
+      cmd(CmdRun)
+        .optional()
+        .action((_, c) => c.copy(command = Command.run))
+        .text("run AST")
+        .children(
+        ),
+      cmd(CmdDebug)
+        .optional()
+        .action((_, c) => c.copy(command = Command.debug))
+        .text("debug AST")
+        .children(
+          opt[String](ArgCellShort, ArgCellLong)
+            .required()
+            .action((x, c) => c.copy(command = Command.withDebugCell(c.command, CellPath(x))))
+            .text("Path to the variable to debug: a.b.c")
+        ),
+      cmd(CmdExport)
+        .optional()
+        .action((_, c) => c.copy(command = Command.exprt))
+        .text("export AST")
+        .children(
+          opt[Lang](ArgLangShort, ArgLangLong)
+            .required()
+            .action((x, c) => c.copy(command = Command.withExportLang(c.command, x)))
+            .text(s"language to export: [${allowedLanguagesStr}]"),
+          opt[File](ArgOutShort, ArgOutLong)
+            .required()
+            .action((x, c) => c.copy(command = Command.withExportOut(c.command, x)))
+            .text("Path to output file")
+        ),
       note("""
              |Examples:
              |
@@ -88,9 +160,8 @@ object B1Config:
              |    b1-cli --debug --cell="a.b.c" /path/to/ast.json
              |""".stripMargin),
       checkConfig(c =>
-        if c.action == DebugAction && c.cellPath.isEmpty
-        then Left("Cell path is required for debug mode")
-        else Right(())
+        // NOTE: if an error, return Left("String with a description")
+        Right(())
       )
     )
 

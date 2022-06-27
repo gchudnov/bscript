@@ -1,14 +1,11 @@
 package com.github.gchudnov.bscript.b1.cli
 
 import com.github.gchudnov.bscript.b1.B1
-import com.github.gchudnov.bscript.b1.cli.display.CellDisplay
-import com.github.gchudnov.bscript.b1.cli.display.MemWatchDisplay
+import com.github.gchudnov.bscript.b1.cli.display.{ CellDisplay, MemWatchDisplay }
 import com.github.gchudnov.bscript.b1.cli.eopt.ExitException
-import com.github.gchudnov.bscript.b1.cli.eopt.oeeffectsetup.OEEffectSetup
-import com.github.gchudnov.bscript.b1.cli.eopt.oeeffectsetup.StdioEffectSetup
+import com.github.gchudnov.bscript.b1.cli.eopt.oeeffectsetup.{ OEEffectSetup, StdioEffectSetup }
 import com.github.gchudnov.bscript.b1.internal.util.FileOps
-import scopt.DefaultOParserSetup
-import scopt.OParserSetup
+import scopt.{ DefaultOParserSetup, OParserSetup }
 
 object Main:
   private val osetup: OEEffectSetup = makeOEEffectSetup()
@@ -44,17 +41,19 @@ object Main:
     for
       data <- FileOps.stringFrom(cfg.file.toPath)
       ast0 <- B1.load(data)
-      _ <- cfg.action match
-             case RunAction =>
+      _ <- cfg.command match
+             case Command.Run() =>
                for
                  retValue <- B1.run(ast0)
                  _         = CellDisplay.print(retValue)
                yield ()
-             case DebugAction =>
+             case Command.Debug(cellPath) =>
                for
-                 res            <- B1.debug(cfg.cellPath.value, ast0)
+                 res            <- B1.debug(cellPath.value, ast0)
                  (retValue, log) = res
                  _               = CellDisplay.print(retValue)
                  _               = MemWatchDisplay.print(log)
                yield ()
+             case Command.Export(lang, outFile) =>
+               ???
     yield ()
