@@ -277,6 +277,23 @@ final class LineOpsSpec extends TestSpec:
 
         actual mustBe expected
       }
+
+      "wrap if a function call" in {
+        val ss = List("isDefined(x)")
+
+        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val expected = List("(isDefined(x))")
+
+        actual mustBe expected
+      }
+
+      "not wrap if already wrapped without a content" in {
+        val ss       = List("()")
+        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val expected = List("()")
+
+        actual mustBe expected
+      }
     }
 
     "wrapEmpty" should {

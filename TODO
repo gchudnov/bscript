@@ -1,6 +1,7 @@
-- TODO: implement scala2j
+
+- TODO: implement scala2j -- java types for scala
         b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
 
 - TODO: add unreachable code check
-- TODO: do not allow to redefine the var in the same block
-- TODO: add stdout
+- TODO: do not allow to redefine the var in the same block | OR is that OK?? shadowing ???
+- TODO: add stdout | printf

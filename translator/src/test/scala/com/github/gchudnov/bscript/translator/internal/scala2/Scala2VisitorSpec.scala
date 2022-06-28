@@ -11,6 +11,8 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.builder.Builder
 
+import java.time.LocalDate
+
 final class Scala2VisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = TGlobals.typeNames
@@ -286,6 +288,138 @@ final class Scala2VisitorSpec extends TestSpec:
                 |  (2 + 5)
                 |} else {
                 |  if (1L > 2) {}
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "omit 'else' if there is no code inside" in {
+        val t        = If(Less(IntVal(4), IntVal(5)), Block(Add(IntVal(2), IntVal(3))), None) // NOTE: ELSE is empty here
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """if (4 < 5) {
+                |  (2 + 3)
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "wrap function call with 1 arg in IF-condition with round brackets" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.boolType),
+            "isValid",
+            List(ArgDecl(TypeRef(typeNames.boolType), "x")),
+            Block(
+              BoolVal(false)
+            )
+          ),
+          If(
+            Call(SymbolRef("isValid"), List(BoolVal(true))),
+            IntVal(1),
+            Some(IntVal(0))
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """{
+                |  def isValid(x: Boolean): Boolean = {
+                |    false
+                |  }
+                |  if (isValid(true)) 1 else 0
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "wrap function call with no args in IF-condition with round brackets" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.boolType),
+            "isValid",
+            List.empty[ArgDecl],
+            Block(
+              BoolVal(true)
+            )
+          ),
+          If(
+            Call(SymbolRef("isValid"), List.empty[Expr]),
+            IntVal(1),
+            Some(IntVal(0))
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """{
+                |  def isValid(): Boolean = {
+                |    true
+                |  }
+                |  if (isValid()) 1 else 0
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "assignment" should {
+      "write function call" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.boolType),
+            "calc",
+            List(ArgDecl(TypeRef(typeNames.dateType), "x"), ArgDecl(TypeRef(typeNames.dateType), "y")),
+            Block(
+              BoolVal(true)
+            )
+          ),
+          VarDecl(
+            TypeRef(typeNames.dateType),
+            "a",
+            DateVal(LocalDate.parse("2020-01-01"))
+          ),
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "res",
+            Call(SymbolRef("calc"), List(Var(SymbolRef("a")), DateVal(LocalDate.parse("2022-03-04"))))
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """import java.time.LocalDate
+                |
+                |{
+                |  def calc(x: LocalDate, y: LocalDate): Boolean = {
+                |    true
+                |  }
+                |  var a: LocalDate = LocalDate.parse("2020-01-01")
+                |  var res: Boolean = calc(a, LocalDate.parse("2022-03-04"))
                 |}
                 |""".stripMargin.trim
 

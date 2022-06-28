@@ -226,7 +226,7 @@ object LineOps:
    * }}}
    */
   def wrapIfNonWrapped(start: String, end: String, lines: Seq[String]): Seq[String] =
-    if lines.nonEmpty && !lines.head.startsWith(start) && !lines.last.endsWith(end) then wrap(start, end, lines)
+    if lines.nonEmpty && !(lines.head.startsWith(start) && lines.last.endsWith(end)) then wrap(start, end, lines)
     else lines
 
   /**
