@@ -195,12 +195,12 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 Allows to run and debug AST.
 
 ```text
-b1-cli 1.1.2
+b1-cli 1.2.0
 Usage: b1-cli [run|debug|export] [options] <file>
 
   -h, --help               prints this usage text
   --version                prints the version
-  <file>                   AST file to be interpreted
+  <file>                   AST file to be processed
 
 Command: run
 run AST-file
@@ -213,6 +213,7 @@ Command: export [options]
 export AST-file
   -l, --lang <value>       language to export: [scala2,scala2j]
   -o, --out <value>        Path to output file
+  --prelude <value>        include standard library functions in the generated code (default: true)
 
 Examples:
 

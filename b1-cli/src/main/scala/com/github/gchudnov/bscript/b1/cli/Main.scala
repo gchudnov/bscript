@@ -54,9 +54,9 @@ object Main:
                  _               = CellDisplay.print(retValue)
                  _               = MemWatchDisplay.print(log)
                yield ()
-             case Command.Export(lang, outFile) =>
+             case Command.Export(lang, outFile, prelude) =>
                for
-                 res <- B1.translate(ast0, B1Options.default.withPrelude(true))
+                 res <- B1.translate(ast0, B1Options.default.withPrelude(prelude))
                  _   <- FileOps.saveString(outFile.toPath, res)
                yield ()
     yield ()

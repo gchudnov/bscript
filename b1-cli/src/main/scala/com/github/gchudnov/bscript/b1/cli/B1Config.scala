@@ -13,44 +13,60 @@ enum Lang:
   case Scala2
   case Scala2J
 
-sealed trait Command
+sealed trait Command:
+  import Command.Run
+  import Command.Debug
+  import Command.Export
 
-object Command:
-  final case class Run() extends Command
-
-  final case class Debug(cellPath: CellPath) extends Command
-
-  final case class Export(lang: Lang, outFile: File) extends Command
-
-  val run: Run =
-    Run()
-
-  val debug: Debug =
-    Debug(cellPath = CellPath.empty)
-
-  val exprt: Export =
-    Export(lang = Lang.Scala2, outFile = new File("."))
-
-  def withDebugCell(c: Command, cellPath: CellPath): Command =
-    c match
+  def withDebugCell(cellPath: CellPath): Command =
+    this match
       case x: Debug =>
         x.copy(cellPath = cellPath)
       case _ =>
-        Command.debug.copy(cellPath = cellPath)
+        Debug.empty.copy(cellPath = cellPath)
 
-  def withExportOut(c: Command, outFile: File): Command =
-    c match
+  def withExportOut(outFile: File): Command =
+    this match
       case x: Export =>
         x.copy(outFile = outFile)
       case _ =>
-        Command.exprt.copy(outFile = outFile)
+        Export.empty.copy(outFile = outFile)
 
-  def withExportLang(c: Command, lang: Lang): Command =
-    c match
+  def withExportLang(lang: Lang): Command =
+    this match
       case x: Export =>
         x.copy(lang = lang)
       case _ =>
-        Command.exprt.copy(lang = lang)
+        Export.empty.copy(lang = lang)
+
+  def withExportPrelude(prelude: Boolean): Command =
+    this match
+      case x: Export =>
+        x.copy(prelude = prelude)
+      case _ =>
+        Export.empty.copy(prelude = prelude)
+
+object Command:
+  // Run
+  final case class Run() extends Command
+
+  object Run:
+    val empty: Run =
+      Run()
+
+  // Debug
+  final case class Debug(cellPath: CellPath) extends Command
+
+  object Debug:
+    val empty: Debug =
+      Debug(cellPath = CellPath.empty)
+
+  // Export
+  final case class Export(lang: Lang, outFile: File, prelude: Boolean) extends Command
+
+  object Export:
+    val empty: Export =
+      Export(lang = Lang.Scala2, outFile = new File("."), prelude = true)
 
 /**
  * A config built from the command line arguments.
@@ -61,6 +77,7 @@ final case class B1Config(
 )
 
 object B1Config:
+  import Command.*
 
   val empty: B1Config =
     new B1Config(
@@ -77,6 +94,7 @@ object B1Config:
   private val ArgOutLong     = "out"
   private val ArgLangShort   = 'l'
   private val ArgLangLong    = "lang"
+  private val ArgPreludeLong = "prelude"
 
   private val CmdRun    = "run"
   private val CmdDebug  = "debug"
@@ -122,35 +140,39 @@ object B1Config:
       note(""),
       cmd(CmdRun)
         .optional()
-        .action((_, c) => c.copy(command = Command.run))
+        .action((_, c) => c.copy(command = Run.empty))
         .text("run AST-file")
         .children(
         ),
       note(""),
       cmd(CmdDebug)
         .optional()
-        .action((_, c) => c.copy(command = Command.debug))
+        .action((_, c) => c.copy(command = Debug.empty))
         .text("debug AST-file")
         .children(
           opt[String](ArgRefShort, ArgRefLong)
             .required()
-            .action((x, c) => c.copy(command = Command.withDebugCell(c.command, CellPath(x))))
+            .action((x, c) => c.copy(command = c.command.withDebugCell(CellPath(x))))
             .text("reference to the variable to watch: a.b.c")
         ),
       note(""),
       cmd(CmdExport)
         .optional()
-        .action((_, c) => c.copy(command = Command.exprt))
+        .action((_, c) => c.copy(command = Export.empty))
         .text("export AST-file")
         .children(
           opt[Lang](ArgLangShort, ArgLangLong)
             .required()
-            .action((x, c) => c.copy(command = Command.withExportLang(c.command, x)))
+            .action((x, c) => c.copy(command = c.command.withExportLang(x)))
             .text(s"language to export: [${allowedLanguagesStr}]"),
           opt[File](ArgOutShort, ArgOutLong)
             .required()
-            .action((x, c) => c.copy(command = Command.withExportOut(c.command, x)))
-            .text("Path to output file")
+            .action((x, c) => c.copy(command = c.command.withExportOut(x)))
+            .text("Path to output file"),
+          opt[Boolean](ArgPreludeLong)
+            .optional()
+            .action((x, c) => c.copy(command = c.command.withExportPrelude(x)))
+            .text(s"include standard library functions in the generated code (default: ${Export.empty.prelude})")
         ),
       note("""
              |Examples:
