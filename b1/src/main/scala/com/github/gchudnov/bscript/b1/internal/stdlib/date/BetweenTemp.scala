@@ -22,8 +22,8 @@ private[internal] object BetweenTemp:
       TypeRef(typeNames.i32Type),
       fnName,
       List(
-        ArgDecl(TypeRef(typeNames.dateType), "first"),
-        ArgDecl(TypeRef(typeNames.dateType), "last"),
+        ArgDecl(TypeRef(typeNames.autoType), "first"),
+        ArgDecl(TypeRef(typeNames.autoType), "last"),
         ArgDecl(TypeRef(typeNames.strType), "unit")
       ),
       Block(
