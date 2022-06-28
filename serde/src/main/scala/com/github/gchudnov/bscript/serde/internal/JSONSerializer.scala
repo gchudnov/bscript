@@ -11,7 +11,7 @@ import org.json4s.native.JsonMethods.*
 private[serde] final class JSONSerializer extends Serializer[SerdeException, AST]:
   override def serialize(value: AST): Either[SerdeException, String] =
     val ser: JSONSerializeVisitor = JSONSerializeVisitor.make()
-    val unitState                 = ()
+    val unitState: Unit           = ()
 
     val errOrRes =
       for

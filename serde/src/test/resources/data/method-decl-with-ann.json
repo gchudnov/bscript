@@ -1,0 +1,1 @@
+{"kind":"Block","statements":[{"kind":"MethodDecl","retType":"void","name":"exit","params":[{"kind":"ArgDecl","type":"int","name":"code"}],"body":{"kind":"Block","statements":[]},"annotations":[{"kind":"ComAnn","value":"Terminates the application with the provided status code"}]}]}

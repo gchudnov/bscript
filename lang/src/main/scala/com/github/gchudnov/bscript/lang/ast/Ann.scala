@@ -17,4 +17,8 @@ final case class ComAnn(value: String) extends Ann
  * Used, for example, to prevent serialization of [std] functions.
  */
 final case class StdAnn() extends Ann:
-  override val value: String = "[std]"
+  import StdAnn.*
+  override val value: String = marker
+
+object StdAnn:
+  val marker: String = "[std]"

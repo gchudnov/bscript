@@ -239,7 +239,9 @@ private[internal] final class JSONDeserializeVisitor:
       params   <- Transform.sequence(jParams.arr.map(jEl => visitAST(jEl).flatMap(_.asArgDecl)))
       jBody    <- (s \ Keys.body).asJObject
       body     <- visitAST(jBody).flatMap(_.asBlock)
-    yield MethodDecl(retType, name, params, body)
+      jAnns    <- (s \ Keys.annotations).asJArray
+      anns     <- Transform.sequence(jAnns.arr.map(jEl => visitAnn(jEl)))
+    yield MethodDecl(retType, name, params, body, anns)
 
   private def visitStructDecl(s: JObject): Either[Throwable, StructDecl] =
     for
@@ -368,6 +370,21 @@ private[internal] final class JSONDeserializeVisitor:
       case _ =>
         Left(new SerdeException("Cannot extract Type from JValue"))
 
+  private def visitAnn(s: JValue): Either[Throwable, Ann] =
+    s match
+      case o: JObject =>
+        for
+          kind <- (o \ Keys.kind).asJString.map(_.s)
+          t <- kind match
+                 case `comAnnName` =>
+                   for value <- (o \ Keys.value).asJString.map(_.s)
+                   yield ComAnn(value)
+                 case `stdAnnName` =>
+                   Right(StdAnn()) // NOTE: the value is not important, since we're not allowing to override it
+        yield t
+      case _ =>
+        Left(new SerdeException("Cannot extract Annotation from JValue"))
+
 private[internal] object JSONDeserializeVisitor:
 
   val initName: String        = classOf[Init].getSimpleName
@@ -413,6 +430,8 @@ private[internal] object JSONDeserializeVisitor:
   val accessName: String      = classOf[Access].getSimpleName
   val declTypeName: String    = classOf[DeclType].getSimpleName
   val comExprName: String     = classOf[CompiledExpr].getSimpleName
+  val comAnnName: String      = classOf[ComAnn].getSimpleName
+  val stdAnnName: String      = classOf[StdAnn].getSimpleName
 
   def make(): JSONDeserializeVisitor =
     new JSONDeserializeVisitor()

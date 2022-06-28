@@ -52,5 +52,30 @@ final class JSONSerializerSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      "annotations are serialized" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "exit",
+            List(
+              ArgDecl(TypeRef(typeNames.i32Type), "code")
+            ),
+            Block(
+            ),
+            Seq(ComAnn("Terminates the application with the provided status code"))
+          )
+        )
+
+        val expected = resourceToString("data/method-decl-with-ann.json").toTry.get
+
+        val ser      = new JSONSerializer()
+        val errOrRes = ser.serialize(t)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
   }

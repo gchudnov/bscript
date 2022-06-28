@@ -118,7 +118,7 @@ object B1Config:
       arg[File]("<file>")
         .required()
         .action((x, c) => c.copy(file = x))
-        .text("AST file to be interpreted"),
+        .text("AST file to be processed"),
       note(""),
       cmd(CmdRun)
         .optional()

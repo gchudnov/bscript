@@ -201,7 +201,9 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
       name    <- Right(n.name)
       params  <- Transform.sequence(n.params.map(n1 => n1.visit((), this)))
       body    <- n.body.visit((), this)
-      jValue   = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.body -> body))
+      anns    <- Transform.sequence(n.annotations.map(a => visitAnn(a)))
+      jValue =
+        ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.retType -> retType) ~ (Keys.name -> name) ~ (Keys.params -> params) ~ (Keys.body -> body) ~ (Keys.annotations -> anns))
     yield jValue
 
   override def visit(s: Unit, n: StructDecl): Either[Throwable, JValue] =
@@ -306,6 +308,10 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
 
   private def visitOptType(ot: Option[Type]): Either[Throwable, JValue] =
     Transform.sequence(ot.map(t => visitType(t))).map(_.getOrElse(JNull))
+
+  private def visitAnn(ann: Ann): Either[Throwable, JValue] =
+    val jValue = ((Keys.kind -> ann.getClass.getSimpleName) ~ (Keys.value -> ann.value))
+    Right(jValue)
 
 private[internal] object JSONSerializeVisitor:
 

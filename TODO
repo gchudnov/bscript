@@ -1,10 +1,7 @@
-- TODO: implement scala2j
-        b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
 - TODO: export command -- add option to include/exclude prelude: --prelude=true|false
 
-- TODO:   def betweenTemp(first: LocalDate, last: LocalDate, unit: String): Int = {
-            // NOTE: Add [T <: Temporal] to the method ^^^ NOTE: Temporal is not enforced here
-
+- TODO: implement scala2j
+        b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
 
 - TODO: add unreachable code check
 - TODO: do not allow to redefine the var in the same block

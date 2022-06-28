@@ -23,3 +23,4 @@ private[internal] object Keys:
   val xType: String       = "type"
   val retType: String     = "retType"
   val elementType: String = "elementType"
+  val annotations: String = "annotations"
