@@ -121,6 +121,55 @@ final class Scala2VisitorSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      "preserve the order of definition" in {
+        val t = Block(
+          StructDecl(
+            "A",
+            List(
+              FieldDecl(TypeRef(typeNames.i32Type), "a"),
+              FieldDecl(TypeRef(typeNames.i32Type), "b"),
+              FieldDecl(TypeRef(typeNames.i32Type), "c"),
+              FieldDecl(TypeRef(typeNames.i32Type), "d"),
+              FieldDecl(TypeRef(typeNames.i32Type), "e"),
+              FieldDecl(TypeRef(typeNames.i32Type), "f"),
+              FieldDecl(TypeRef(typeNames.i32Type), "g")
+            )
+          ),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A")))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """{
+                |  final case class A(
+                |    var a: Int,
+                |    var b: Int,
+                |    var c: Int,
+                |    var d: Int,
+                |    var e: Int,
+                |    var f: Int,
+                |    var g: Int
+                |  )
+                |  var a: A = A(
+                |    a = 0,
+                |    b = 0,
+                |    c = 0,
+                |    d = 0,
+                |    e = 0,
+                |    f = 0,
+                |    g = 0
+                |  )
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
 
     "block" should {

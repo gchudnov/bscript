@@ -47,7 +47,7 @@ final class ScalaInitializer(typeNames: TypeNames, meta: Meta) extends Initializ
   private def initStruct(ss: SStruct): Either[Throwable, Seq[String]] =
     for
       fields <- Transform
-                  .sequence(meta.symbolsFor(ss).toList.map { case (s) =>
+                  .sequence(meta.symbolsFor(ss).map { case (s) =>
                     s match
                       case x: SVar =>
                         meta

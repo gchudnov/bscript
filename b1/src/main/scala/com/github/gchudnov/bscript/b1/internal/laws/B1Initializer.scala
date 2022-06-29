@@ -43,7 +43,7 @@ final class B1Initializer(types: Types, meta: Meta) extends Initializer:
 
   private def initStruct(ss: SStruct): Either[MemoryException, Cell] =
     Transform
-      .sequence(meta.symbolsFor(ss).toList.map { case (s) =>
+      .sequence(meta.symbolsFor(ss).map { case (s) =>
         s match
           case x: SVar =>
             meta

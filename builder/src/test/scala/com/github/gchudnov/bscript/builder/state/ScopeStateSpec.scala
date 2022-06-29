@@ -48,7 +48,7 @@ final class ScopeStateSpec extends TestSpec:
         t1.scopeTree.parent(m0) mustBe (Some(b0))
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(m0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(m0)))
 
         t1.symbolScopes.size mustBe (1)
         t1.symbolScopes.get(EqWrap(m0)) mustBe (Some(b0))
@@ -70,7 +70,7 @@ final class ScopeStateSpec extends TestSpec:
         t1.scopeTree.parent(k0) mustBe (Some(b0))
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(k0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(k0)))
 
         t1.symbolScopes.size mustBe (1)
         t1.symbolScopes.get(EqWrap(k0)) mustBe (Some(b0))
@@ -95,7 +95,7 @@ final class ScopeStateSpec extends TestSpec:
         t1.scopeTree.edges.size mustBe (0)
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(i0, i1, i2)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(i0, i1, i2)))
 
         t1.symbolScopes.size mustBe (3)
         t1.symbolScopes.get(EqWrap(i0)) mustBe (Some(b0))
@@ -118,8 +118,8 @@ final class ScopeStateSpec extends TestSpec:
         t1.scopeTree.edges.size mustBe (1)
 
         t1.scopeSymbols.size mustBe (2)
-        t1.scopeSymbols.get(EqWrap(k0)) mustBe (Some(Set(f0)))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(k0)))
+        t1.scopeSymbols.get(EqWrap(k0)) mustBe (Some(List(f0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(k0)))
 
         t1.symbolScopes.size mustBe (2)
         t1.symbolScopes.get(EqWrap(f0)) mustBe (Some(k0))
@@ -141,8 +141,8 @@ final class ScopeStateSpec extends TestSpec:
         t1.scopeTree.edges.size mustBe (1)
 
         t1.scopeSymbols.size mustBe (2)
-        t1.scopeSymbols.get(EqWrap(m0)) mustBe (Some(Set(a0)))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(m0)))
+        t1.scopeSymbols.get(EqWrap(m0)) mustBe (Some(List(a0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(m0)))
 
         t1.symbolScopes.size mustBe (2)
         t1.symbolScopes.get(EqWrap(a0)) mustBe (Some(m0))
@@ -168,7 +168,7 @@ final class ScopeStateSpec extends TestSpec:
         t1.scopeTree.edges.size mustBe (1)
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(m0, i0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(i0, m0))) // NOTE: the order is important
 
         t1.symbolScopes.size mustBe (2)
         t1.symbolScopes.get(EqWrap(i0)) mustBe (Some(b0))
@@ -211,7 +211,7 @@ final class ScopeStateSpec extends TestSpec:
 
         t1.symbolScopes.size mustBe (1)
         t1.symbolScopes.get(EqWrap(v0)) mustBe (Some(b0))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(v0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(v0)))
       }
 
       "define variable type" in {
@@ -230,7 +230,7 @@ final class ScopeStateSpec extends TestSpec:
 
         t1.symbolScopes.size mustBe (1)
         t1.symbolScopes.get(EqWrap(v0)) mustBe (Some(b0))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(Set(v0)))
+        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(v0)))
 
         t1.varTypes.size mustBe (1)
         t1.varTypes.get(EqWrap(v0)) mustBe (Some(p0))

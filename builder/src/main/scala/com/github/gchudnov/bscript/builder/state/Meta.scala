@@ -8,6 +8,8 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Show
 
+import scala.collection.mutable.StringBuilder as MStringBuilder
+
 /**
  * Metadata - Scope & Symbol State
  *
@@ -18,11 +20,11 @@ import com.github.gchudnov.bscript.lang.util.Show
  * @param scopeTree
  *   Scope tree where a child Scope points to a parent Scope (child -> parent)
  * @param scopeSymbols
- *   All symbols that belong to a scope; { Scope -> Set[Symbol] }
+ *   All symbols that belong to a scope; { Scope -> List[Symbol] } NOTE: We use `List[Symbol]` and NOT a Set to maintain the order Symbols were added.
  * @param symbolScopes
  *   Scope a Symbol belongs to; { Symbol -> Scope }
  * @param methodArgs
- *   Arguments that belong to a method; { Method -> List[Var] }
+ *   Arguments that belong to a method; { Method -> List[Var] } NOTE: We use `List[Var]` and NOT a Set to maintain the order Vars were added.
  * @param methodRetTypes
  *   Return Type, associated with a method; { Method -> Type }
  * @param methodAsts
@@ -34,13 +36,13 @@ import com.github.gchudnov.bscript.lang.util.Show
  */
 final case class Meta(
   scopeTree: ScopeTree,
-  scopeSymbols: Map[EqWrap[Scope], Set[Symbol]], // Pass #1
-  symbolScopes: Map[EqWrap[Symbol], Scope],      // Pass #1
-  methodArgs: Map[EqWrap[SMethod], List[SVar]],  // Pass #1
-  methodRetTypes: Map[EqWrap[SMethod], Type],    // Pass   #2
-  methodAsts: Map[EqWrap[SMethod], AST],         // Pass   #2
-  astScopes: Map[EqWrap[AST], Scope],            // Pass #1
-  varTypes: Map[EqWrap[SVar], Type]              // Pass   #2
+  scopeSymbols: Map[EqWrap[Scope], List[Symbol]], // Pass #1
+  symbolScopes: Map[EqWrap[Symbol], Scope],       // Pass #1
+  methodArgs: Map[EqWrap[SMethod], List[SVar]],   // Pass #1
+  methodRetTypes: Map[EqWrap[SMethod], Type],     // Pass   #2
+  methodAsts: Map[EqWrap[SMethod], AST],          // Pass   #2
+  astScopes: Map[EqWrap[AST], Scope],             // Pass #1
+  varTypes: Map[EqWrap[SVar], Type]               // Pass   #2
 ):
 
   /**
@@ -202,8 +204,8 @@ final case class Meta(
   /**
    * Gets all symbols in the given scope
    */
-  def symbolsFor(s: Scope): Set[Symbol] =
-    scopeSymbols.getOrElse(EqWrap(s), Set.empty[Symbol])
+  def symbolsFor(s: Scope): List[Symbol] =
+    scopeSymbols.getOrElse(EqWrap(s), List.empty[Symbol])
 
   /**
    * Get Method Arguments Symbols
@@ -281,10 +283,12 @@ final case class Meta(
   /**
    * Adds a Symbol to the provided Scope
    */
-  private def addScopeSymbol(symbol: Symbol, scope: Scope): (Map[EqWrap[Scope], Set[Symbol]], Map[EqWrap[Symbol], Scope]) =
-    val ss = scopeSymbols.getOrElse(EqWrap(scope), Set.empty[Symbol])
+  private def addScopeSymbol(symbol: Symbol, scope: Scope): (Map[EqWrap[Scope], List[Symbol]], Map[EqWrap[Symbol], Scope]) =
+    val ss = scopeSymbols.getOrElse(EqWrap(scope), List.empty[Symbol])
 
-    val newScopeSymbols = scopeSymbols + (EqWrap(scope)  -> (ss + symbol))
+    assert(!ss.contains(symbol), "Symbol already exists in the collection of Scope Symbols.")
+
+    val newScopeSymbols = scopeSymbols + (EqWrap(scope)  -> (ss :+ symbol))
     val newSymbolScopes = symbolScopes + (EqWrap(symbol) -> scope)
 
     (newScopeSymbols, newSymbolScopes)
@@ -293,7 +297,10 @@ final case class Meta(
    * Add a Var to the provided Method
    */
   private def addMethodArg(sMethod: SMethod, arg: SVar) =
-    val args          = methodArgs.getOrElse(EqWrap(sMethod), List.empty[SVar])
+    val args = methodArgs.getOrElse(EqWrap(sMethod), List.empty[SVar])
+
+    assert(!args.contains(arg), "Argument already exists in the collection of Method Arguments.")
+
     val newMethodArgs = methodArgs + (EqWrap(sMethod) -> (args :+ arg))
     newMethodArgs
 
@@ -341,9 +348,9 @@ object Meta:
   val empty: Meta =
     Meta(
       scopeTree = ScopeTree.empty,
-      scopeSymbols = Map.empty[EqWrap[Scope], Set[Symbol]],
+      scopeSymbols = Map.empty[EqWrap[Scope], List[Symbol]],
       symbolScopes = Map.empty[EqWrap[Symbol], Scope],
-      methodArgs = Map.empty[EqWrap[SMethod], List[SVar]], // NOTE: must be ordered, cannot use Set here
+      methodArgs = Map.empty[EqWrap[SMethod], List[SVar]],
       methodRetTypes = Map.empty[EqWrap[SMethod], Type],
       methodAsts = Map.empty[EqWrap[SMethod], AST],
       astScopes = Map.empty[EqWrap[AST], Scope],
@@ -374,7 +381,7 @@ object Meta:
 
     extension (a: Meta)
       def show: String =
-        val sb = new StringBuilder
+        val sb = new MStringBuilder
         sb.append("{\n")
 
         val treeStr           = tabTail(1, a.scopeTree.show)
@@ -398,7 +405,7 @@ object Meta:
         sb.append("}")
         sb.toString()
 
-      private def scopeSymbolsToMapStr(depth: Int)(m: Map[EqWrap[Scope], Set[Symbol]]): String =
+      private def scopeSymbolsToMapStr(depth: Int)(m: Map[EqWrap[Scope], List[Symbol]]): String =
         namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
           (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
         })
@@ -433,7 +440,7 @@ object Meta:
         })
 
       private def namedTuples1ToMapStr(depth: Int)(xs: List[(Named, Named)]): String =
-        val sb = new StringBuilder
+        val sb = new MStringBuilder
         sb.append(s"{\n")
 
         val lines = xs
@@ -449,7 +456,7 @@ object Meta:
         sb.toString()
 
       private def namedTuplesToMapStr(depth: Int)(xs: List[(Named, Iterable[Named])]): String =
-        val sb = new StringBuilder
+        val sb = new MStringBuilder
         sb.append(s"{\n")
 
         val lines = xs
@@ -465,7 +472,7 @@ object Meta:
         sb.toString()
 
       private def methodsToMapStr(depth: Int): String =
-        val sb = new StringBuilder
+        val sb = new MStringBuilder
         sb.append(s"[\n")
 
         val ms = a.scopeTree.vertices
