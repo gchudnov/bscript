@@ -1,3 +1,11 @@
+- TODO: check if it is possible to generate  scala code for date comparison < | > | <= | >\ | ==
+
+- TODO: add code that checks for dead conditions: (xxx == false) --- add an option 'check' ?? or do we want to check during building / running phase ??
+        ^ comparison must be inside of IF
+
+- TODO: add a check that verifies that there are no trailing spaces in strings
+
+
 
 - TODO: implement scala2j -- java types for scala
         b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment

@@ -405,6 +405,17 @@ object Meta:
         sb.append("}")
         sb.toString()
 
+      def showMethod(sMethod: SMethod): String =
+        val m          = EqWrap(sMethod)
+        val retTypeStr = a.methodRetTypes.get(m).map(_.name).getOrElse("?")
+        val args       = a.methodArgs.getOrElse(m, List.empty[SVar])
+        val argsWithTypes = args.map { arg =>
+          val retType = a.varTypes.getOrElse(EqWrap(arg), TypeRef("?"))
+          s"${arg.name}: ${retType.name}"
+        }
+
+        s"""fn ${m.value.name}(${argsWithTypes.mkString(", ")}) -> ${retTypeStr}"""
+
       private def scopeSymbolsToMapStr(depth: Int)(m: Map[EqWrap[Scope], List[Symbol]]): String =
         namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
           (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
@@ -477,20 +488,14 @@ object Meta:
 
         val ms = a.scopeTree.vertices
           .filter(_.value.isInstanceOf[SMethod])
-          .map(it => EqWrap(it.value.asInstanceOf[SMethod]))
+          .map(it => it.value.asInstanceOf[SMethod])
           .toList
 
         val lines = ms
-          .sortBy(_.value.name)
+          .sortBy(_.name)
           .map { m =>
-            val retTypeStr = a.methodRetTypes.get(m).map(_.name).getOrElse("?")
-            val args       = a.methodArgs.getOrElse(m, List.empty[SVar])
-            val argsWithTypes = args.map { arg =>
-              val retType = a.varTypes.getOrElse(EqWrap(arg), TypeRef("?"))
-              s"${arg.name}: ${retType.name}"
-            }
-
-            tabLine(depth, quote(s"""fn ${m.value.name}(${argsWithTypes.mkString(", ")}) -> ${retTypeStr}"""))
+            val methodStr = showMethod(m)
+            tabLine(depth, quote(methodStr))
           }
 
         val body = lines.mkString(",\n")

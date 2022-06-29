@@ -500,7 +500,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(_) => fail("Should be 'left")
-          case Left(t)  => t.getMessage mustBe ("Cannot convert argument 'x' type from 'string' to 'int' in 'g' method call")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert argument 'x' type from 'string' to 'int' in 'fn g(x: int, y: float) -> float' method call")
       }
 
       /**
@@ -570,7 +570,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(_) => fail("Should be 'left")
-          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'string' to 'float' in the return statement of method 'g'")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'string' to 'float' in the return statement of method 'fn g(x: int, y: float) -> float' (no detail)")
       }
 
       /**
@@ -724,7 +724,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(_) => fail("Should be 'left")
-          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'string' to 'float' in variable 'a' declaration")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'string' to 'float' in variable 'a' declaration (no detail)")
       }
 
       /**
@@ -1005,7 +1005,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(_) => fail("Should be 'left")
-          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'double' to 'int' in the assignment")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'double' to 'int' in the assignment (no detail)")
       }
 
       /**
@@ -1070,7 +1070,7 @@ final class TypeCheckVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(_) => fail("Should be 'left")
-          case Left(t)  => t.getMessage mustBe ("Cannot convert type '[]float' to '[]int' in variable 'a' declaration")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert type '[]float' to '[]int' in variable 'a' declaration (no detail)")
       }
 
       /**
@@ -1115,6 +1115,90 @@ final class TypeCheckVisitorSpec extends TestSpec:
             block.statements(0).asInstanceOf[VarDecl].expr.evalType.name mustBe (s"[]${typeNames.f64Type}")
           case Left(t) =>
             fail("Should be 'right", t)
+      }
+    }
+
+    "errors" should {
+
+      /**
+       * {{{
+       *   {
+       *     int g(int x) {
+       *       x = ();
+       *     }
+       *     int f() {
+       *       g(1);
+       *       ()
+       *     }
+       *   }
+       * }}}
+       */
+      "provide context in assignment" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.f32Type),
+            "g",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Assign(Var(SymbolRef("x")), VoidVal())
+              // VarDecl(TypeRef(typeNames.datetimeType), "a", VoidVal())
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "f",
+            List.empty[ArgDecl],
+            Block(
+              Call(SymbolRef("g"), List(IntVal(1))),
+              VoidVal()
+            )
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(_) => fail("Should be 'left")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'void' to 'int' in the assignment (fn g(x: int) -> float)")
+      }
+
+      /**
+       * {{{
+       *   {
+       *     int g(int x) {
+       *       datatime a = ();
+       *     }
+       *     int f() {
+       *       g(1);
+       *       ()
+       *     }
+       *   }
+       * }}}
+       */
+      "provide context in declaration" in {
+        val t = Block(
+          MethodDecl(
+            TypeRef(typeNames.f32Type),
+            "g",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              VarDecl(TypeRef(typeNames.datetimeType), "a", VoidVal())
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "f",
+            List.empty[ArgDecl],
+            Block(
+              Call(SymbolRef("g"), List(IntVal(1))),
+              VoidVal()
+            )
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(_) => fail("Should be 'left")
+          case Left(t)  => t.getMessage mustBe ("Cannot convert type 'void' to 'datetime' in variable 'a' declaration (fn g(x: int) -> float)")
       }
     }
 

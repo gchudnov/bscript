@@ -274,7 +274,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b3, b2)
 
         val expected = List(b3, b2, b0)
-        val actual = t1.pathToRoot(b3)
+        val actual   = t1.pathToRoot(b3)
 
         actual mustBe expected
       }

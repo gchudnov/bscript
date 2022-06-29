@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.internal
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.*
-import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.state.{ Ctx, Meta }
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -249,7 +249,7 @@ private[internal] final class TypeCheckVisitor(
       promotedRValue <- Either.cond(
                           canAssignTo(rValue.evalType, rValuePromoteToType, lValue.evalType),
                           rValue.withPromoteToType(rValuePromoteToType),
-                          new AstException(s"Cannot convert type '${rValue.evalType.name}' to '${lValue.evalType.name}' in the assignment")
+                          new AstException(s"Cannot convert type '${rValue.evalType.name}' to '${lValue.evalType.name}' in the assignment (${Ctx.str(rs.meta, n)})")
                         )
       evalType = types.voidType
       n1       = n.copy(id = lValue, expr = promotedRValue, evalType = evalType)
@@ -350,9 +350,11 @@ private[internal] final class TypeCheckVisitor(
                     promotedRValue <- Either.cond(
                                         canAssignTo(rValueType, rValuePromoteToType, lValueType),
                                         exprN.withPromoteToType(rValuePromoteToType),
-                                        new AstException(s"Cannot convert type '${rValueType.name}' to '${lValueType.name}' in the struct assignment")
+                                        new AstException(
+                                          s"Cannot convert type '${rValueType.name}' to '${lValueType.name}' in the struct '${sStruct.name}' assignment (${Ctx.str(sy.meta, n)})"
+                                        )
                                       )
-                  yield (sy, map + (name -> exprN))
+                  yield (sy, map + (name -> promotedRValue))
             }
       (s1, value1) = sv
       n1           = n.copy(evalType = n.sType, value = value1)
@@ -425,7 +427,7 @@ private[internal] final class TypeCheckVisitor(
       promotedExpr <- Either.cond(
                         canAssignTo(expr.evalType, exprPromoteToType, varType),
                         expr.withPromoteToType(exprPromoteToType),
-                        new AstException(s"Cannot convert type '${expr.evalType.name}' to '${varType.name}' in variable '${n.name}' declaration")
+                        new AstException(s"Cannot convert type '${expr.evalType.name}' to '${varType.name}' in variable '${n.name}' declaration (${Ctx.str(s2.meta, n)})")
                       )
       evalType = types.voidType
       n1       = n.copy(vType = varType, expr = promotedExpr, evalType = evalType)
@@ -460,7 +462,9 @@ private[internal] final class TypeCheckVisitor(
       promotedBody <- Either.cond(
                         canAssignTo(body.evalType.declType, bodyPromoteToType, retType.declType),
                         body.withPromoteToType(bodyPromoteToType),
-                        new AstException(s"Cannot convert type '${body.evalType.name}' to '${retType.name}' in the return statement of method '${n.name}'")
+                        new AstException(
+                          s"Cannot convert type '${body.evalType.name}' to '${retType.name}' in the return statement of method '${s3.meta.showMethod(sMethod)}' (${Ctx.str(s3.meta, n)})"
+                        )
                       )
       evalType = types.voidType
       n1       = n.copy(params = params, body = promotedBody, evalType = evalType, retType = retType)
@@ -524,7 +528,7 @@ private[internal] final class TypeCheckVisitor(
       _ <- Either.cond(
              methodArgTypes.size == callExprs.size,
              (),
-             new AstException(s"Not enough arguments for the method call are provided. Expected: ${methodArgTypes.size}, got: ${callExprs.size}")
+             new AstException(s"Not enough arguments for the method ${s.meta.showMethod(sMethod)} call are provided. Expected: ${methodArgTypes.size}, got: ${callExprs.size}")
            )
       promotedCallExprs <- Transform.sequence(
                              methodArgSVars
@@ -539,7 +543,7 @@ private[internal] final class TypeCheckVisitor(
                                    canAssignTo(actualArgType, argPromoteToType, methodArgType),
                                    callArgExpr.withPromoteToType(argPromoteToType),
                                    new AstException(
-                                     s"Cannot convert argument '${methodArgSVar.name}' type from '${actualArgType.name}' to '${methodArgType.name}' in '${n.id.name}' method call"
+                                     s"Cannot convert argument '${methodArgSVar.name}' type from '${actualArgType.name}' to '${methodArgType.name}' in '${s.meta.showMethod(sMethod)}' method call"
                                    )
                                  )
                                }

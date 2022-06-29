@@ -74,7 +74,7 @@ final case class ScopeTree(vertices: Set[EqWrap[Scope]], edges: Map[EqWrap[Scope
     iterate(List(scope), scope)
 
 object ScopeTree:
-  
+
   val empty: ScopeTree =
     ScopeTree(
       vertices = Set.empty[EqWrap[Scope]],
