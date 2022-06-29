@@ -286,7 +286,16 @@ final case class Meta(
   private def addScopeSymbol(symbol: Symbol, scope: Scope): (Map[EqWrap[Scope], List[Symbol]], Map[EqWrap[Symbol], Scope]) =
     val ss = scopeSymbols.getOrElse(EqWrap(scope), List.empty[Symbol])
 
-    assert(!ss.contains(symbol), "Symbol already exists in the collection of Scope Symbols.")
+    assert(!ss.contains(symbol), s"Symbol ${symbol.name} already exists in the collection of Scope Symbols ${scopeSymbols}.")
+
+    // TODO: check the TODO-list, there is a point to prevent redefinition of vars / methods; with the assert ^^ it is prohibited
+
+    // NOTE: if we're trying to insert the same symbol, replace it | NOT needed anymore
+    //    val ss1 = ss.indexOf(symbol) match
+    //      case -1 =>
+    //        ss :+ symbol
+    //      case n =>
+    //        ss.updated(n, symbol)
 
     val newScopeSymbols = scopeSymbols + (EqWrap(scope)  -> (ss :+ symbol))
     val newSymbolScopes = symbolScopes + (EqWrap(symbol) -> scope)
@@ -299,7 +308,7 @@ final case class Meta(
   private def addMethodArg(sMethod: SMethod, arg: SVar) =
     val args = methodArgs.getOrElse(EqWrap(sMethod), List.empty[SVar])
 
-    assert(!args.contains(arg), "Argument already exists in the collection of Method Arguments.")
+    assert(!args.contains(arg), s"Argument ${arg.name} already exists in the collection of Method Arguments ${methodArgs}.")
 
     val newMethodArgs = methodArgs + (EqWrap(sMethod) -> (args :+ arg))
     newMethodArgs
