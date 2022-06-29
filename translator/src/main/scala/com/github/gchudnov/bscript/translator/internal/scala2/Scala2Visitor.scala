@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
+import com.github.gchudnov.bscript.lang.util.{ Casting, LineOps, Transform }
 
 /**
  * A visitor that translates AST to Scala 2.13 code
@@ -16,6 +16,7 @@ import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
  * NOTE: not all ASTs can be convertible to Scala. Some of them can produce ill-formed code.
  */
 private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeVisitor[Scala2State, Scala2State]:
+  import Casting.*
   import Scala2Visitor.*
 
   override def visit(s: Scala2State, n: Init): Either[Throwable, Scala2State] =
@@ -231,15 +232,23 @@ private[translator] final class Scala2Visitor(laws: TranslateLaws) extends TreeV
     imports = Set("java.time.OffsetDateTime", "java.time.format.DateTimeFormatter")
   yield s.copy(lines = lines, s.imports ++ imports)
 
+  // TODO: the order of visiting is incorrect
+  // TODO: check the order during interpretation as well
+  // TODO: check the order of method arguments, it should be the proper one
+  // TODO: check other visitors with the same signature
+  // TODO: check if in our prev PR we missed something
   override def visit(s: Scala2State, n: StructVal): Either[Throwable, Scala2State] =
     for
-      ms <- n.value.foldLeft(Right(s.copy(lines = Seq.empty[String])): Either[Throwable, Scala2State]) { case (acc, (k, v)) =>
+      sStruct <- n.sType.asSStruct
+      sFields  = s.meta.symbolsFor(sStruct)
+      ms <- sFields.foldLeft(Right(s.copy(lines = Seq.empty[String])): Either[Throwable, Scala2State]) { case (acc, sField) =>
               acc match
                 case Left(e) => Left(e)
                 case Right(si) =>
+                  val expr = n.value(sField.name)
                   for
-                    sn   <- v.visit(si, this)
-                    lines = LineOps.joinCR(" = ", Seq(k), LineOps.tabTail(1, sn.lines))
+                    sn   <- expr.visit(si, this)
+                    lines = LineOps.joinCR(" = ", Seq(sField.name), LineOps.tabTail(1, sn.lines))
                   yield sn.copy(lines = LineOps.joinVAll(",", Seq(si.lines, lines)))
             }
       fields = ms.lines

@@ -122,7 +122,7 @@ final class Scala2VisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "preserve the order of definition" in {
+      "preserve the order fields they are defined" in {
         val t = Block(
           StructDecl(
             "A",
@@ -162,6 +162,62 @@ final class Scala2VisitorSpec extends TestSpec:
                 |    e = 0,
                 |    f = 0,
                 |    g = 0
+                |  )
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "preserve the order fields during explicit initialization" in {
+        val t = Block(
+          StructDecl(
+            "A",
+            List(
+              FieldDecl(TypeRef(typeNames.i32Type), "a"),
+              FieldDecl(TypeRef(typeNames.i32Type), "b"),
+              FieldDecl(TypeRef(typeNames.i32Type), "c"),
+              FieldDecl(TypeRef(typeNames.i32Type), "d"),
+              FieldDecl(TypeRef(typeNames.i32Type), "e")
+            )
+          ),
+          VarDecl(
+            TypeRef("A"),
+            "x",
+            StructVal(
+              TypeRef("A"),
+              Map(
+                "a" -> IntVal(1),
+                "b" -> IntVal(2),
+                "c" -> IntVal(3),
+                "d" -> IntVal(4),
+                "e" -> IntVal(5)
+              )
+            )
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """{
+                |  final case class A(
+                |    var a: Int,
+                |    var b: Int,
+                |    var c: Int,
+                |    var d: Int,
+                |    var e: Int
+                |  )
+                |  var x: A = A(
+                |    a = 1,
+                |    b = 2,
+                |    c = 3,
+                |    d = 4,
+                |    e = 5
                 |  )
                 |}
                 |""".stripMargin.trim
@@ -820,7 +876,7 @@ final class Scala2VisitorSpec extends TestSpec:
         val laws = ScalaTranslateLaws.make(typeNames, astMeta.meta)
 
         val scalaVisitor = Scala2Visitor.make(laws)
-        val scalaState   = Scala2State.make()
+        val scalaState   = Scala2State.make(astMeta.meta)
 
         astMeta.ast.visit(scalaState, scalaVisitor)
       })

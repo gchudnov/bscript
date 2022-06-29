@@ -252,7 +252,11 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
 
   override def visit(s: InterpretState, n: StructVal): Either[Throwable, InterpretState] =
     for
-      sc <- n.value.foldLeft(Right((s, Map.empty[String, Cell])): Either[Throwable, (InterpretState, Map[String, Cell])]) { case (acc, (name, expr)) =>
+      sStruct <- n.sType.asSStruct
+      sFields  = s.meta.symbolsFor(sStruct)
+      sc <- sFields.foldLeft(Right((s, Map.empty[String, Cell])): Either[Throwable, (InterpretState, Map[String, Cell])]) { case (acc, sField) =>
+              val name = sField.name
+              val expr = n.value(name)
               acc match
                 case Left(e) => Left(e)
                 case Right((sx, map)) =>
