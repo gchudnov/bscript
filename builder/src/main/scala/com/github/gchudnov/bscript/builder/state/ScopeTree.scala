@@ -4,6 +4,9 @@ import com.github.gchudnov.bscript.lang.symbols.Scope
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.builder.util.EqWrap
 
+import scala.annotation.tailrec
+import scala.collection.mutable.StringBuilder as MStringBuilder
+
 /**
  * Scope Tree
  *
@@ -56,7 +59,22 @@ final case class ScopeTree(vertices: Set[EqWrap[Scope]], edges: Map[EqWrap[Scope
     if vertices.size == 1 then vertices.headOption.map(_.value)
     else None
 
+  /**
+   * Returns the complete path to root
+   */
+  def pathToRoot(scope: Scope): List[Scope] =
+    @tailrec
+    def iterate(acc: List[Scope], x: Scope): List[Scope] =
+      parent(x) match
+        case Some(p) =>
+          iterate(acc :+ p, p)
+        case None =>
+          acc
+
+    iterate(List(scope), scope)
+
 object ScopeTree:
+  
   val empty: ScopeTree =
     ScopeTree(
       vertices = Set.empty[EqWrap[Scope]],
@@ -66,7 +84,7 @@ object ScopeTree:
   given Show[ScopeTree] with
     extension (a: ScopeTree)
       def show: String =
-        val sb = new StringBuilder
+        val sb = new MStringBuilder
         sb.append("{\n")
 
         val vs = listStr(

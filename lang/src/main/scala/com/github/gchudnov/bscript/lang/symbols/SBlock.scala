@@ -1,3 +1,3 @@
 package com.github.gchudnov.bscript.lang.symbols
 
-final case class SBlock(name: String) extends Scope with Symbol
+final case class SBlock(name: String) extends Symbol with Scope

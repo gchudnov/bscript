@@ -217,7 +217,7 @@ final class ScopeTreeSpec extends TestSpec:
 
       /**
        * {{{
-       *       b0
+       *        b0
        *       /  \
        *     b1'  b1''
        * }}}
@@ -250,6 +250,33 @@ final class ScopeTreeSpec extends TestSpec:
         t1.vertices.size mustBe (3)
         t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(m0), EqWrap(s0))
         t1.edges.size mustBe (2)
+      }
+
+      /**
+       * {{{
+       *      b0
+       *     /  \
+       *    b1  b2
+       *         \
+       *          b3
+       * }}}
+       */
+      "return path to root" in {
+        val b0 = SBlock("b0")
+        val b1 = SBlock("b1")
+        val b2 = SBlock("b2")
+        val b3 = SBlock("b3")
+
+        val t1 = ScopeTree.empty
+          .add(b0)
+          .link(b1, b0)
+          .link(b2, b0)
+          .link(b3, b2)
+
+        val expected = List(b3, b2, b0)
+        val actual = t1.pathToRoot(b3)
+
+        actual mustBe expected
       }
     }
 
