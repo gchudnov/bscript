@@ -190,7 +190,7 @@ private[internal] final class JSONDeserializeVisitor:
       jElements <- (s \ Keys.elements).asJArray
       elements  <- Transform.sequence(jElements.arr.map(jEl => visitAST(jEl).flatMap(_.asExpr)))
       optElementType <- (s \ Keys.elementType) match
-                          case JNothing =>
+                          case JNothing | JNull =>
                             Right(None)
                           case jType =>
                             visitType(jType).map(Some(_))
@@ -272,7 +272,7 @@ private[internal] final class JSONDeserializeVisitor:
       then1 <- visitAST(jThen).flatMap(_.asExpr)
       jElse <- Right(s \ Keys.else1)
       else1 <- jElse match
-                 case JNothing =>
+                 case JNothing | JNull =>
                    Right(None)
                  case jElse =>
                    visitAST(jElse).flatMap(_.asExpr).map(Some(_))

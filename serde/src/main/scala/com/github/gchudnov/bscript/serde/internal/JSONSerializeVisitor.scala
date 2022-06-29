@@ -230,7 +230,7 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
     for
       cond  <- n.cond.visit((), this)
       then1 <- n.then1.visit((), this)
-      else1 <- Transform.sequence(n.else1.map(_.visit((), this))).map(_.getOrElse(JNull))
+      else1 <- Transform.sequence(n.else1.map(_.visit((), this))).map(_.getOrElse(JNothing))
       jValue = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.cond -> cond) ~ (Keys.then1 -> then1) ~ (Keys.else1 -> else1))
     yield jValue
 
@@ -307,7 +307,7 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
         Right(JString(t.name))
 
   private def visitOptType(ot: Option[Type]): Either[Throwable, JValue] =
-    Transform.sequence(ot.map(t => visitType(t))).map(_.getOrElse(JNull))
+    Transform.sequence(ot.map(t => visitType(t))).map(_.getOrElse(JNothing))
 
   private def visitAnn(ann: Ann): Either[Throwable, JValue] =
     val jValue = ((Keys.kind -> ann.getClass.getSimpleName) ~ (Keys.value -> ann.value))

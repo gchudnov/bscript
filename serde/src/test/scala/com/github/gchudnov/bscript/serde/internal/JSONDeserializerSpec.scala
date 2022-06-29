@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.serde.internal
 
-import com.github.gchudnov.bscript.lang.ast.{ ArgDecl, Block, ComAnn, IntVal, MethodDecl, VarDecl }
+import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
@@ -26,7 +26,7 @@ final class JSONDeserializerSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "deserialize annotations as well" in {
+      "restore annotations" in {
         val input = resourceToString("data/method-decl-with-ann.json").toTry.get
 
         val expected = Block(
@@ -41,6 +41,48 @@ final class JSONDeserializerSpec extends TestSpec:
             Seq(ComAnn("Terminates the application with the provided status code"))
           )
         )
+
+        val de       = new JSONDeserializer()
+        val errOrRes = de.deserialize(input)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "parse NULL-ELSE in IF-THEN-ELSE" in {
+        val input = resourceToString("data/if-then-else-null.json").toTry.get
+
+        val expected = If(BoolVal(true), Add(IntVal(2), IntVal(5)))
+
+        val de       = new JSONDeserializer()
+        val errOrRes = de.deserialize(input)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "parse absent ELSE in IF-THEN-ELSE" in {
+        val input = resourceToString("data/if-then-else.json").toTry.get
+
+        val expected = If(BoolVal(true), Add(IntVal(2), IntVal(5)))
+
+        val de       = new JSONDeserializer()
+        val errOrRes = de.deserialize(input)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "read a collection" in {
+        val input = resourceToString("data/vec.json").toTry.get
+
+        val expected = Vec(List(IntVal(1), IntVal(2), IntVal(3)))
 
         val de       = new JSONDeserializer()
         val errOrRes = de.deserialize(input)

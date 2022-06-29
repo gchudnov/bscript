@@ -1,3 +1,4 @@
+- TODO: when a struct is initialized, init fields in the order they defined in the struct.
 
 - TODO: implement scala2j -- java types for scala
         b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment

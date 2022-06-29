@@ -53,7 +53,7 @@ final class JSONSerializerSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "annotations are serialized" in {
+      "preserve annotations" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.voidType),
@@ -68,6 +68,34 @@ final class JSONSerializerSpec extends TestSpec:
         )
 
         val expected = resourceToString("data/method-decl-with-ann.json").toTry.get
+
+        val ser      = new JSONSerializer()
+        val errOrRes = ser.serialize(t)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "do not save ELSE as NULL in IF-THEN-ELSE when it is absent" in {
+        val t = If(BoolVal(true), Add(IntVal(2), IntVal(5)))
+
+        val expected = resourceToString("data/if-then-else.json").toTry.get
+
+        val ser      = new JSONSerializer()
+        val errOrRes = ser.serialize(t)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "write a collection" in {
+        val t = Vec(List(IntVal(1), IntVal(2), IntVal(3)))
+
+        val expected = resourceToString("data/vec.json").toTry.get
 
         val ser      = new JSONSerializer()
         val errOrRes = ser.serialize(t)
