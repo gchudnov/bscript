@@ -195,7 +195,7 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 Allows to run and debug AST.
 
 ```text
-b1-cli 1.2.0
+b1-cli 1.3.0
 Usage: b1-cli [run|debug|export] [options] <file>
 
   -h, --help               prints this usage text
@@ -211,7 +211,7 @@ debug AST-file
 
 Command: export [options]
 export AST-file
-  -l, --lang <value>       language to export: [scala2,scala2j]
+  -l, --lang <value>       language to export: [scala3,scala3j]
   -o, --out <value>        Path to output file
   --prelude <value>        include standard library functions in the generated code (default: true)
 
@@ -224,7 +224,7 @@ Examples:
     b1-cli debug --ref="a.b.c" /path/to/ast.json
 
   - Export AST
-    b1-cli export --lang=scala2 --out=/path/to/out.scala /path/to/ast.json
+    b1-cli export --lang=scala3 --out=/path/to/out.scala /path/to/ast.json
 ```
 
 To use the command line utility, assembly `b1-cli` first:
@@ -247,7 +247,7 @@ cd ./target
 ./b1-cli debug --ref="y" ../examples/ast-example-3.json
 
 # export
-./b1-cli export --lang=scala2 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
+./b1-cli export --lang=scala3 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
 ```
 
 #### Example

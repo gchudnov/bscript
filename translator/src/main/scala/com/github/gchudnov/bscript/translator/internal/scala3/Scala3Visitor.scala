@@ -373,7 +373,7 @@ private[translator] final class Scala3Visitor(laws: TranslateLaws) extends TreeV
       elseLines = es.map(_.lines)
 
       cond2        = wrap("if ", "", rwrapIfNonWrapped(condLines))
-      condThen     = joinCR(" ", cond2, thenLines)
+      condThen     = joinCR(" then ", cond2, thenLines)
       condThenElse = elseLines.map(else2 => joinCR(" else ", condThen, else2)).getOrElse(condThen)
 
       lines = condThenElse

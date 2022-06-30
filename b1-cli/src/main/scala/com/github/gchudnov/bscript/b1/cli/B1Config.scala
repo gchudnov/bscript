@@ -184,7 +184,7 @@ object B1Config:
              |    b1-cli debug --ref="a.b.c" /path/to/ast.json
              |
              |  - Export AST
-             |    b1-cli export --lang=scala2 --out=/path/to/out.scala /path/to/ast.json
+             |    b1-cli export --lang=scala3 --out=/path/to/out.scala /path/to/ast.json
              |""".stripMargin),
       checkConfig(c =>
         // NOTE: if an error, return Left("String with a description")

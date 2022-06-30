@@ -1,13 +1,12 @@
 - TODO: change to scala 3, but with brackets and `then` in IF-conditions.
-- TODO: change scala2j to scala3j
 
 - TODO: check if it is possible to generate  scala code for date comparison < | > | <= | >\ | ==
 
 - TODO: add code that checks for dead conditions: (xxx == false) --- add an option 'check' ?? or do we want to check during building / running phase ??
         ^ comparison must be inside of IF
 
-- TODO: implement scala2j -- java types for scala
-        b1-cli export --lang=scala2j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
+- TODO: implement scala3j -- java types for scala
+        b1-cli export --lang=scala3j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
 
 - TODO: add unreachable code check
 - TODO: do not allow to redefine the var in the same block | OR is that OK?? shadowing ???

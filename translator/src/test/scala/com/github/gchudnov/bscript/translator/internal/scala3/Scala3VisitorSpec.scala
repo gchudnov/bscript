@@ -13,11 +13,11 @@ import com.github.gchudnov.bscript.builder.Builder
 
 import java.time.LocalDate
 
-final class Scala2VisitorSpec extends TestSpec:
+final class Scala3VisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = TGlobals.typeNames
 
-  "Scala2Visitor" when {
+  "Scala3Visitor" when {
 
     "unary minus" should {
 
@@ -373,7 +373,7 @@ final class Scala2VisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """if (7 < 5) (2 + 5) else if (1L > 2) {}
+              """if (7 < 5) then (2 + 5) else if (1L > 2) then {}
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -389,10 +389,10 @@ final class Scala2VisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """if (7 < 5) {
+              """if (7 < 5) then {
                 |  (2 + 5)
                 |} else {
-                |  if (1L > 2) {}
+                |  if (1L > 2) then {}
                 |}
                 |""".stripMargin.trim
 
@@ -408,7 +408,7 @@ final class Scala2VisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """if (4 < 5) {
+              """if (4 < 5) then {
                 |  (2 + 3)
                 |}
                 |""".stripMargin.trim
@@ -444,7 +444,7 @@ final class Scala2VisitorSpec extends TestSpec:
                 |  def isValid(x: Boolean): Boolean = {
                 |    false
                 |  }
-                |  if (isValid(true)) 1 else 0
+                |  if (isValid(true)) then 1 else 0
                 |}
                 |""".stripMargin.trim
 
@@ -479,7 +479,7 @@ final class Scala2VisitorSpec extends TestSpec:
                 |  def isValid(): Boolean = {
                 |    true
                 |  }
-                |  if (isValid()) 1 else 0
+                |  if (isValid()) then 1 else 0
                 |}
                 |""".stripMargin.trim
 
@@ -580,7 +580,7 @@ final class Scala2VisitorSpec extends TestSpec:
             val expected =
               """{
                 |  def f(x: Int): Int = {
-                |    if (x > 0) (x + f(x - 1)) else 0
+                |    if (x > 0) then (x + f(x - 1)) else 0
                 |  }
                 |  f(4)
                 |}
@@ -620,7 +620,7 @@ final class Scala2VisitorSpec extends TestSpec:
             val expected =
               """{
                 |  def f(x: Int): Int = {
-                |    if (x > 0) {
+                |    if (x > 0) then {
                 |      (x + f(x - 1))
                 |    } else {
                 |      0
