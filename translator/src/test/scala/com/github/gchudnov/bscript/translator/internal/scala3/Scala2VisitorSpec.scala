@@ -1,7 +1,7 @@
-package com.github.gchudnov.bscript.translator.internal.scala2
+package com.github.gchudnov.bscript.translator.internal.scala3
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.internal.scala2.Scala2Visitor.*
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Visitor.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
 import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef, VectorType }
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
@@ -865,7 +865,7 @@ final class Scala2VisitorSpec extends TestSpec:
     }
   }
 
-  private def eval(ast0: AST): Either[Throwable, Scala2State] =
+  private def eval(ast0: AST): Either[Throwable, Scala3State] =
     val types         = Types.make(typeNames)
     val typeCheckLaws = TTypeCheckLaws.make(types)
 
@@ -875,8 +875,8 @@ final class Scala2VisitorSpec extends TestSpec:
 
         val laws = ScalaTranslateLaws.make(typeNames, astMeta.meta)
 
-        val scalaVisitor = Scala2Visitor.make(laws)
-        val scalaState   = Scala2State.make(astMeta.meta)
+        val scalaVisitor = Scala3Visitor.make(laws)
+        val scalaState   = Scala3State.make(astMeta.meta)
 
         astMeta.ast.visit(scalaState, scalaVisitor)
       })

@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.rewriter.Rewriter
 import com.github.gchudnov.bscript.rewriter.Predicates
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.interpreter.internal.StashEntry
 import com.github.gchudnov.bscript.interpreter.internal.Stash
 import com.github.gchudnov.bscript.lang.util.LineOps.split
@@ -107,11 +107,11 @@ private[inspector] object MemWatch:
           retVal   = VoidCell
         yield s.copy(memSpace = ms, stash = newStash, retValue = retVal)
 
-      case s: Scala2State =>
+      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""// no-op; the implementation is B1 specific
-                            |//        and cannot be expressed in scala
+                         s"""// no-op; the implementation is B1-specific
+                            |//        and cannot be expressed in Scala
                             |""".stripMargin
                        )
                      )

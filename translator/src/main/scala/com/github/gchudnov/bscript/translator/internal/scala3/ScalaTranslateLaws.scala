@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.translator.internal.scala2
+package com.github.gchudnov.bscript.translator.internal.scala3
 
 import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.translator.laws.{ Initializer, TypeConverter }
-import com.github.gchudnov.bscript.translator.internal.scala2.laws.{ ScalaInitializer, ScalaTypeConverter }
+import com.github.gchudnov.bscript.translator.internal.scala3.laws.{ ScalaInitializer, ScalaTypeConverter }
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.state.Meta

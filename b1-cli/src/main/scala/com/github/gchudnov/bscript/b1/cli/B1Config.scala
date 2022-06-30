@@ -10,8 +10,8 @@ import scopt.{ OEffect, OParser, OParserSetup, Read }
 import java.io.File
 
 enum Lang:
-  case Scala2
-  case Scala2J
+  case Scala3
+  case Scala3J
 
 sealed trait Command:
   import Command.Run
@@ -66,7 +66,7 @@ object Command:
 
   object Export:
     val empty: Export =
-      Export(lang = Lang.Scala2, outFile = new File("."), prelude = true)
+      Export(lang = Lang.Scala3, outFile = new File("."), prelude = true)
 
 /**
  * A config built from the command line arguments.
@@ -104,17 +104,17 @@ object B1Config:
   private val OEffectHelpKey    = s"$OEffectPrefix:HELP"
   private val OEffectVersionKey = s"$OEffectPrefix:VERSION"
 
-  private val scala2Key                      = "scala2"
-  private val scala2JKey                     = "scala2j"
-  private val allowedLanguages: List[String] = List(scala2Key, scala2JKey)
+  private val scala3Key                      = Lang.Scala3.toString.toLowerCase
+  private val scala3JKey                     = Lang.Scala3J.toString.toLowerCase
+  private val allowedLanguages: List[String] = List(scala3Key, scala3JKey)
   private val allowedLanguagesStr: String    = allowedLanguages.mkString(",")
 
   private implicit val langRead: Read[Lang] =
     Read.stringRead.map {
-      case `scala2Key` =>
-        Lang.Scala2
-      case `scala2JKey` =>
-        Lang.Scala2J
+      case `scala3Key` =>
+        Lang.Scala3
+      case `scala3JKey` =>
+        Lang.Scala3J
       case _ =>
         throw new IllegalArgumentException(s"lang must be one of [${allowedLanguagesStr}]")
     }

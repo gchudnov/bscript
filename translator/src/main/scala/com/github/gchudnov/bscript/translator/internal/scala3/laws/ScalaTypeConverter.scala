@@ -1,18 +1,18 @@
-package com.github.gchudnov.bscript.translator.internal.scala2j.laws
+package com.github.gchudnov.bscript.translator.internal.scala3.laws
 
 import com.github.gchudnov.bscript.translator.laws.TypeConverter
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }
 import com.github.gchudnov.bscript.lang.types.TypeNames
 
 /**
- * Java Type Names NOTE: it is possible that not all types might be expressed in Java
+ * Scala Type Names NOTE: It is possible that not all types be expressed in Scala
  */
-private[translator] class JavaTypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
+final class ScalaTypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
   override val autoType: String     = "T"
-  override val nothingType: String  = "???"
-  override val voidType: String     = "Void"
+  override val nothingType: String  = "Nothing"
+  override val voidType: String     = "Unit"
   override val boolType: String     = "Boolean"
-  override val i32Type: String      = "Integer"
+  override val i32Type: String      = "Int"
   override val i64Type: String      = "Long"
   override val f32Type: String      = "Float"
   override val f64Type: String      = "Double"

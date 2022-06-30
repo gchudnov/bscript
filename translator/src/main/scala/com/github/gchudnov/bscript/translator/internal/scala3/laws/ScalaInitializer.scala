@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.internal.scala2.laws
+package com.github.gchudnov.bscript.translator.internal.scala3.laws
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.*

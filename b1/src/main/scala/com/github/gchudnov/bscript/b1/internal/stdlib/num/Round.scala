@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib.num
 
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala2.Scala2State
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.interpreter.memory.*
@@ -60,7 +60,7 @@ private[internal] object Round:
                         Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case s: Scala2State =>
+      case s: Scala3State =>
         for lines <- Right(
                        split(
                          s"""// NOTE: Add [T: Fractional] to the method

@@ -1,9 +1,9 @@
-package com.github.gchudnov.bscript.translator.internal.scala2j
+package com.github.gchudnov.bscript.translator.internal.scala3j
 
 import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.translator.laws.{ Initializer, TypeConverter }
-import com.github.gchudnov.bscript.translator.internal.scala2j.laws.JavaTypeConverter
-import com.github.gchudnov.bscript.translator.internal.scala2.laws.ScalaInitializer
+import com.github.gchudnov.bscript.translator.internal.scala3j.laws.JavaTypeConverter
+import com.github.gchudnov.bscript.translator.internal.scala3.laws.ScalaInitializer
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.state.Meta
