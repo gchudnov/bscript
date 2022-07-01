@@ -502,4 +502,58 @@ final class LineOpsSpec extends TestSpec:
         actual mustBe expected
       }
     }
+
+    /**
+     * {{{
+     *   xs = Seq("abc")
+     *   ys = Seq("def")
+     *
+     *   actual = LineOps.joinNL(xs, ys)
+     *
+     *   abc
+     *       | <- Note NL
+     *   def
+     * }}}
+     */
+    "NL" should {
+      "add NL between blocks of lines" in {
+        val xs = Seq("abc", "def")
+        val ys = Seq("ghi", "jkl")
+
+        val actual   = LineOps.joinNL(xs, ys)
+        val expected = List("abc", "def", "", "ghi", "jkl")
+
+        actual mustBe expected
+      }
+
+      "do not add NL if xs is empty" in {
+        val xs = Seq.empty[String]
+        val ys = Seq("ghi", "jkl")
+
+        val actual   = LineOps.joinNL(xs, ys)
+        val expected = List("ghi", "jkl")
+
+        actual mustBe expected
+      }
+
+      "do not add NL if ys is empty" in {
+        val xs = Seq("abc", "def")
+        val ys = Seq.empty[String]
+
+        val actual   = LineOps.joinNL(xs, ys)
+        val expected = List("abc", "def")
+
+        actual mustBe expected
+      }
+
+      "do not add NL if both xs and ys are empty" in {
+        val xs = Seq.empty[String]
+        val ys = Seq.empty[String]
+
+        val actual   = LineOps.joinNL(xs, ys)
+        val expected = Seq.empty[String]
+
+        actual mustBe expected
+      }
+    }
   }

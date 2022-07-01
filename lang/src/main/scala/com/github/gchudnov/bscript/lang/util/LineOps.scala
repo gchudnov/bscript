@@ -356,6 +356,22 @@ object LineOps:
       }
 
   /**
+   * {{{
+   * example:
+   *   xs = abc
+   *   ys = def
+   *
+   * output:
+   *   abc
+   *        | <-- note an extra line here
+   *   def
+   * }}}
+   */
+  def joinNL(xs: Seq[String], ys: Seq[String]): Seq[String] =
+    if xs.nonEmpty && ys.nonEmpty then xs ++ Seq("") ++ ys
+    else xs ++ ys
+
+  /**
    * Puts a string in quotes
    */
   def quote(s: String): String =
