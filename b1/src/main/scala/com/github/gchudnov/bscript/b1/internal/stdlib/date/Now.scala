@@ -42,7 +42,7 @@ private[internal] object Now:
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.OffsetDateTime", "java.time.ZoneId"))
+        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.OffsetDateTime", "java.time.ZoneId", "java.time.format.DateTimeFormatter"))
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))
