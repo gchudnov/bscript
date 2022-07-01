@@ -3,8 +3,10 @@ package com.github.gchudnov.bscript.b1.internal.stdlib.date
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
+import com.github.gchudnov.bscript.b1.internal.stdlib.Inits
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.interpreter.memory.*
+
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -42,7 +44,7 @@ private[internal] object Today:
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"))
+        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"), inits = s.inits ++ Inits.code)
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

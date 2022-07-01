@@ -1,5 +1,4 @@
-- TODO: change to scala 3, but with brackets and `then` in IF-conditions.
-
+- TODO: fix date / date-time comparison
 - TODO: check if it is possible to generate  scala code for date comparison < | > | <= | >\ | ==
 
 - TODO: add code that checks for dead conditions: (xxx == false) --- add an option 'check' ?? or do we want to check during building / running phase ??
