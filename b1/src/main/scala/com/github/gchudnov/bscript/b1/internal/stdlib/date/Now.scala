@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib.date
 
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.ScalaState
 import com.github.gchudnov.bscript.b1.B1Exception
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.interpreter.memory.*
@@ -35,7 +35,7 @@ private[internal] object Now:
         for retVal <- Right(DateTimeCell(OffsetDateTime.now(utcZone)))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""OffsetDateTime.now(ZoneId.of("Z"))

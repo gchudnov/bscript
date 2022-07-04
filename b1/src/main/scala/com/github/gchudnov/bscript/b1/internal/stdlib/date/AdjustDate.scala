@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.ScalaState
 
 import java.time.LocalDate
 import scala.util.control.Exception.allCatch
@@ -67,14 +67,16 @@ private[internal] object AdjustDate:
                         Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""val unitDays: String    = "${unitDays}"
                             |
+                            |val longOffset = ${argOffset}.toLong
+                            |
                             |${argUnit}.trim.toLowerCase match {
                             |  case `unitDays` =>
-                            |    ${argValue}.plusDays(${argOffset}.toLong)
+                            |    ${argValue}.plusDays(longOffset)
                             |  case _ =>
                             |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: '$${${argUnit}}'")
                             |}

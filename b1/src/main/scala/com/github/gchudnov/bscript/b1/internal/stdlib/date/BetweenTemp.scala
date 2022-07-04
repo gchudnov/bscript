@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.ScalaState
 
 import scala.util.control.Exception.allCatch
 import java.time.temporal.{ ChronoUnit, Temporal }
@@ -87,7 +87,7 @@ private[internal] object BetweenTemp:
                         Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""// NOTE: Add [T <: Temporal] to the method

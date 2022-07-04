@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.ScalaState
 
 import java.time.OffsetDateTime
 import scala.util.control.Exception.allCatch
@@ -82,7 +82,7 @@ private[internal] object AdjustDateTime:
                         Left(new B1Exception(s"Unexpected type of arguments passed to ${fnName}: ${other}"))
         yield s.copy(memSpace = ms, retValue = retVal)
 
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""val unitDays: String    = "${unitDays}"
@@ -90,15 +90,17 @@ private[internal] object AdjustDateTime:
                             |val unitMinutes: String = "${unitMinutes}"
                             |val unitSeconds: String = "${unitSeconds}"
                             |
+                            |val longOffset = ${argOffset}.toLong
+                            |
                             |${argUnit}.trim.toLowerCase match {
                             |  case `unitDays` =>
-                            |    ${argValue}.plusDays(${argOffset}.toLong)
+                            |    ${argValue}.plusDays(longOffset)
                             |  case `unitHours` =>
-                            |    ${argValue}.plusHours(${argOffset}.toLong)
+                            |    ${argValue}.plusHours(longOffset)
                             |  case `unitMinutes` =>
-                            |    ${argValue}.plusMinutes(${argOffset}.toLong)
+                            |    ${argValue}.plusMinutes(longOffset)
                             |  case `unitSeconds` =>
-                            |    ${argValue}.plusSeconds(${argOffset}.toLong)
+                            |    ${argValue}.plusSeconds(longOffset)
                             |  case _ =>
                             |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
                             |}

@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.translator
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.ScalaState
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -206,7 +206,7 @@ object TGlobals:
     val arg0 = "s"
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${arg0}.length
@@ -233,7 +233,7 @@ object TGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${argUnit}.trim.toLowerCase match {
@@ -271,7 +271,7 @@ object TGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${argUnit}.trim.toLowerCase match {
@@ -308,7 +308,7 @@ object TGlobals:
     val argUnit  = "unit"  // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${argUnit}.trim.toLowerCase match {
@@ -346,7 +346,7 @@ object TGlobals:
     val argX = "x" // auto
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${argX} match {
@@ -377,7 +377,7 @@ object TGlobals:
     val argY = "y" // auto
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""(${argX}, ${argY}) match {
@@ -398,7 +398,7 @@ object TGlobals:
    */
   private def today(s: Any): Either[Throwable, Any] =
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""LocalDate.now(ZoneId.of("Z"))
@@ -415,7 +415,7 @@ object TGlobals:
    */
   private def now(s: Any): Either[Throwable, Any] =
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""OffsetDateTime.now(ZoneId.of("Z"))
@@ -445,7 +445,7 @@ object TGlobals:
       n.setScale(p, BigDecimal.RoundingMode.HALF_UP)
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.HALF_UP)
@@ -476,7 +476,7 @@ object TGlobals:
       n.setScale(p, BigDecimal.RoundingMode.DOWN)
 
     s match
-      case s: Scala3State =>
+      case s: ScalaState =>
         for lines <- Right(
                        split(
                          s"""${argValue}.setScale(${argPrecision}, BigDecimal.RoundingMode.DOWN)
