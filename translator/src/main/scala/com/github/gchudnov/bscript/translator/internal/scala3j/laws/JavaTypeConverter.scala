@@ -9,15 +9,15 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
  */
 private[translator] class JavaTypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
   override val autoType: String     = "T"
-  override val nothingType: String  = "null"
-  override val voidType: String     = "Unit" // NOTE: this type is from Scala
-  override val boolType: String     = "JBoolean"
-  override val i32Type: String      = "JInteger"
-  override val i64Type: String      = "JLong"
-  override val f32Type: String      = "JFloat"
-  override val f64Type: String      = "JDouble"
-  override val decType: String      = "JBigDecimal"
-  override val strType: String      = "JString"
+  override val nothingType: String  = "???"
+  override val voidType: String     = "Void"
+  override val boolType: String     = "Boolean"
+  override val i32Type: String      = "Integer"
+  override val i64Type: String      = "Long"
+  override val f32Type: String      = "Float"
+  override val f64Type: String      = "Double"
+  override val decType: String      = "BigDecimal"
+  override val strType: String      = "String"
   override val dateType: String     = "LocalDate"
   override val datetimeType: String = "OffsetDateTime"
 
@@ -42,7 +42,7 @@ private[translator] class JavaTypeConverter(typeNames: TypeNames) extends TypeNa
   override def toTypeName(t: Type): Either[Throwable, String] =
     t match
       case VectorType(elementType) =>
-        toTypeName(elementType).map(typeName => s"List[${typeName}]") // NOTE: List is from Scala as-well
+        toTypeName(elementType).map(typeName => s"List[${typeName}]")
       case DeclType(expr) =>
         toTypeName(expr.evalType)
       case _ =>

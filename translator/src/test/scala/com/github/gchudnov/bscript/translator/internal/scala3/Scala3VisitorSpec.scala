@@ -10,7 +10,6 @@ import com.github.gchudnov.bscript.translator.TTypeCheckLaws
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.builder.Builder
-import com.github.gchudnov.bscript.translator.internal.ScalaState
 
 import java.time.LocalDate
 
@@ -866,7 +865,7 @@ final class Scala3VisitorSpec extends TestSpec:
     }
   }
 
-  private def eval(ast0: AST): Either[Throwable, ScalaState] =
+  private def eval(ast0: AST): Either[Throwable, Scala3State] =
     val types         = Types.make(typeNames)
     val typeCheckLaws = TTypeCheckLaws.make(types)
 
@@ -877,7 +876,7 @@ final class Scala3VisitorSpec extends TestSpec:
         val laws = ScalaTranslateLaws.make(typeNames, astMeta.meta)
 
         val scalaVisitor = Scala3Visitor.make(laws)
-        val scalaState   = ScalaState.make(astMeta.meta)
+        val scalaState   = Scala3State.make(astMeta.meta)
 
         astMeta.ast.visit(scalaState, scalaVisitor)
       })
