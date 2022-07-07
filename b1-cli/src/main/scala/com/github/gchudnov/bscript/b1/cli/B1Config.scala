@@ -4,14 +4,11 @@ import com.github.gchudnov.bscript.b1.cli.BuildInfo as AppBuildInfo
 import com.github.gchudnov.bscript.b1.cli.eopt.SuccessExitException
 import com.github.gchudnov.bscript.b1.cli.eopt.oeeffectsetup.OEEffectSetup
 import com.github.gchudnov.bscript.interpreter.memory.CellPath
+import com.github.gchudnov.bscript.translator.Lang
 import scopt.OEffect.ReportError
 import scopt.{ OEffect, OParser, OParserSetup, Read }
 
 import java.io.File
-
-enum Lang:
-  case Scala3
-  case Scala3J
 
 sealed trait Command:
   import Command.Run

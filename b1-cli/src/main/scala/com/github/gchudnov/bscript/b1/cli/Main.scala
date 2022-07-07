@@ -56,7 +56,7 @@ object Main:
                yield ()
              case Command.Export(lang, outFile, prelude) =>
                for
-                 res <- B1.translate(ast0, B1Options.default.withPrelude(prelude))
+                 res <- B1.translate(ast0, B1Options.default.withPrelude(prelude).withLang(lang))
                  _   <- FileOps.saveString(outFile.toPath, res)
                yield ()
     yield ()
