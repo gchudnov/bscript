@@ -6,6 +6,8 @@ import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.translator.TGlobals
 import com.github.gchudnov.bscript.translator.TTypeCheckLaws
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TypeInit
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JTypeInit
 
 final class TranslatorSpec extends TestSpec:
   "Translator" when {
@@ -17,10 +19,12 @@ final class TranslatorSpec extends TestSpec:
     val typeCheckLaws = TTypeCheckLaws.make(types)
 
     "translated to Scala" should {
+      val typeInit = Scala3TypeInit
+
       "produce code" in {
         val errOrRes = Builder
           .build(ast0, types, typeCheckLaws)
-          .flatMap(astMeta => Translator.translateScala(astMeta.ast, astMeta.meta, typeNames))
+          .flatMap(astMeta => Translator.translateScala3(astMeta.ast, astMeta.meta, typeNames, typeInit))
 
         val expected =
           """final case class X(
@@ -37,10 +41,12 @@ final class TranslatorSpec extends TestSpec:
     }
 
     "translated to Scala with Java Types" should {
+      val typeInit = Scala3JTypeInit
+
       "produce code" in {
         val errOrRes = Builder
           .build(ast0, types, typeCheckLaws)
-          .flatMap(astMeta => Translator.translateScalaJ(astMeta.ast, astMeta.meta, typeNames))
+          .flatMap(astMeta => Translator.translateScala3J(astMeta.ast, astMeta.meta, typeNames, typeInit))
 
         val expected =
           """final case class X(

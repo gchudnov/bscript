@@ -6,11 +6,12 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
 import com.github.gchudnov.bscript.translator.laws.Initializer
 import com.github.gchudnov.bscript.translator.TranslateException
+import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 /**
  * Initializes types for Scala
  */
-final class ScalaInitializer(typeNames: TypeNames, meta: Meta) extends Initializer:
+final class ScalaInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta) extends Initializer:
 
   private val voidTypeName: String = typeNames.voidType
   private val boolTypeName: String = typeNames.boolType
@@ -31,14 +32,14 @@ final class ScalaInitializer(typeNames: TypeNames, meta: Meta) extends Initializ
     case other => Left(new TranslateException(s"Cannot initialize Type '${other}'"))
 
   private def initBuiltInType(bs: SBuiltInType): Either[Throwable, Seq[String]] = bs.name match
-    case `voidTypeName` => Right(Seq("()"))
-    case `boolTypeName` => Right(Seq("false"))
-    case `i32TypeName`  => Right(Seq("0"))
-    case `i64TypeName`  => Right(Seq("0L"))
-    case `f32TypeName`  => Right(Seq("0.0f"))
-    case `f64TypeName`  => Right(Seq("0.0"))
-    case `decTypeName`  => Right(Seq("BigDecimal.valueOf(0)"))
-    case `strTypeName`  => Right(Seq("\"\""))
+    case `voidTypeName` => Right(Seq(typeInit.voidType))
+    case `boolTypeName` => Right(Seq(typeInit.boolType))
+    case `i32TypeName`  => Right(Seq(typeInit.i32Type))
+    case `i64TypeName`  => Right(Seq(typeInit.i64Type))
+    case `f32TypeName`  => Right(Seq(typeInit.f32Type))
+    case `f64TypeName`  => Right(Seq(typeInit.f64Type))
+    case `decTypeName`  => Right(Seq(typeInit.decType))
+    case `strTypeName`  => Right(Seq(typeInit.strType))
     case other          => Left(new TranslateException(s"Cannot initialize BuiltInType '${other}'"))
 
   private def initCollection(cs: VectorType): Either[Throwable, Seq[String]] =

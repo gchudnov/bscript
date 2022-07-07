@@ -3,7 +3,7 @@ import sbt._
 object Dependencies {
 
   object versions {
-    val scopt              = "4.0.1"
+    val scopt              = "4.1.0"
     val scalatest          = "3.2.12"
     val json4sNative       = "4.0.5"
     val swearwolf          = "2.1.0"

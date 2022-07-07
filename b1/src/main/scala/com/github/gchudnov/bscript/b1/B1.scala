@@ -1,25 +1,30 @@
 package com.github.gchudnov.bscript.b1
 
 import com.github.gchudnov.bscript.b1.internal.*
-import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.ast.Block
-import com.github.gchudnov.bscript.interpreter.memory.Cell
-import com.github.gchudnov.bscript.interpreter.memory.CellPath
-import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
-import com.github.gchudnov.bscript.serde.JSONSerde
-import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.builder.AstMeta
+import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.inspector.Inspector
+import com.github.gchudnov.bscript.inspector.internal.dbglib.MemWatchDiff
+import com.github.gchudnov.bscript.inspector.internal.dbglib.MemWatchStashEntry
 import com.github.gchudnov.bscript.interpreter.Interpreter
 import com.github.gchudnov.bscript.interpreter.InterpreterLaws
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
+import com.github.gchudnov.bscript.interpreter.memory.Cell
+import com.github.gchudnov.bscript.interpreter.memory.CellPath
+import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.lang.ast.Block
+import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.types.Types
+import com.github.gchudnov.bscript.serde.JSONSerde
 import com.github.gchudnov.bscript.translator.Translator
-import com.github.gchudnov.bscript.inspector.Inspector
-import com.github.gchudnov.bscript.inspector.internal.dbglib.{ MemWatchDiff, MemWatchStashEntry }
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TypeInit
+import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 sealed trait B1:
 
   val typeNames: TypeNames = B1TypeNames.make()
+  val typeInit3: TypeInit = Scala3TypeInit
   val types: Types         = Types.make(typeNames)
 
   private val typeCheckLaws = B1TypeCheckLaws.make(types)
@@ -87,6 +92,6 @@ sealed trait B1:
    * Translate AST to Scala
    */
   def translate(ast0: AST, opts: B1Options = B1Options.default): Either[Throwable, String] =
-    build(ast0, opts).flatMap(astMeta => Translator.translateScala(astMeta.ast, astMeta.meta, typeNames))
+    build(ast0, opts).flatMap(astMeta => Translator.translateScala3(astMeta.ast, astMeta.meta, typeNames, typeInit3))
 
 object B1 extends B1

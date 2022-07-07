@@ -12,10 +12,12 @@ import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.builder.Builder
 
 import java.time.LocalDate
+import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 final class Scala3VisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = TGlobals.typeNames
+  private val typeInit: TypeInit = Scala3TypeInit
 
   "Scala3Visitor" when {
 
@@ -873,7 +875,7 @@ final class Scala3VisitorSpec extends TestSpec:
       .build(ast0, types, typeCheckLaws)
       .flatMap({ astMeta =>
 
-        val laws = ScalaTranslateLaws.make(typeNames, astMeta.meta)
+        val laws = Scala3TranslateLaws.make(typeNames, typeInit, astMeta.meta)
 
         val scalaVisitor = Scala3Visitor.make(laws)
         val scalaState   = Scala3State.make(astMeta.meta)

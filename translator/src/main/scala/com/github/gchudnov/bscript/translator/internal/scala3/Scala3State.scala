@@ -1,29 +1,12 @@
 package com.github.gchudnov.bscript.translator.internal.scala3
 
 import com.github.gchudnov.bscript.builder.state.Meta
-import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.translator.internal.ScalaState
 
 /**
- * {{{
- *   The code after converting to Scala, will be structured like this:
- *
- *   {{{
- *     import ...
- *     import ...
- *
- *     init
- *     init
- *
- *     line
- *     line
- * }}}
- *
- * Here 'init' are the additional code lines, e.g. implicits and 'line' are the application-lines.
+ * A state for Scala 3
  */
-final case class Scala3State(meta: Meta, lines: Seq[String], imports: Set[String], inits: Seq[String]):
-  def show(): String =
-    val fmtImports = imports.toSeq.sorted.map(i => s"import $i")
-    LineOps.join(LineOps.joinNL(LineOps.joinNL(fmtImports, inits), lines))
+final case class Scala3State(meta: Meta, lines: Seq[String], imports: Set[String], inits: Seq[String]) extends ScalaState
 
 object Scala3State:
   def make(meta: Meta): Scala3State =
