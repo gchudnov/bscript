@@ -17,7 +17,7 @@ import com.github.gchudnov.bscript.translator.laws.TypeInit
 final class Scala3VisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = TGlobals.typeNames
-  private val typeInit: TypeInit = Scala3TypeInit
+  private val typeInit: TypeInit   = Scala3TypeInit
 
   "Scala3Visitor" when {
 

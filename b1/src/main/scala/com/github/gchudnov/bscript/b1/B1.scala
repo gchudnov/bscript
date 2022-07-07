@@ -24,7 +24,7 @@ import com.github.gchudnov.bscript.translator.laws.TypeInit
 sealed trait B1:
 
   val typeNames: TypeNames = B1TypeNames.make()
-  val typeInit3: TypeInit = Scala3TypeInit
+  val typeInit3: TypeInit  = Scala3TypeInit
   val types: Types         = Types.make(typeNames)
 
   private val typeCheckLaws = B1TypeCheckLaws.make(types)
