@@ -8,6 +8,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
 import scala.util.control.Exception.allCatch
 
@@ -70,6 +71,31 @@ private[internal] object SetDateTime:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala3State =>
+        for lines <- Right(
+                       split(
+                         s"""val unitDays: String    = "${unitDays}"
+                            |val unitHours: String   = "${unitHours}"
+                            |val unitMinutes: String = "${unitMinutes}"
+                            |val unitSeconds: String = "${unitSeconds}"
+                            |
+                            |${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.withDayOfMonth(${argOffset})
+                            |  case `unitHours` =>
+                            |    ${argValue}.withHour(${argOffset})
+                            |  case `unitMinutes` =>
+                            |    ${argValue}.withMinute(${argOffset})
+                            |  case `unitSeconds` =>
+                            |    ${argValue}.withSecond(${argOffset})
+                            |  case _ =>
+                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
+
+      case s: Scala3JState =>
         for lines <- Right(
                        split(
                          s"""val unitDays: JString    = "${unitDays}"

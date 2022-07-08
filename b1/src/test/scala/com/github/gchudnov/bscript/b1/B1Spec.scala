@@ -133,6 +133,7 @@ final class B1Spec extends TestSpec:
           case Right(code) =>
             code.contains("var y: Integer = 20") mustBe true
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }
