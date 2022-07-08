@@ -1,7 +1,6 @@
 package com.github.gchudnov.bscript.translator.internal.scala3
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Visitor.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
 import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef, VectorType }
 import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
@@ -13,13 +12,23 @@ import com.github.gchudnov.bscript.builder.Builder
 
 import java.time.LocalDate
 import com.github.gchudnov.bscript.translator.laws.TypeInit
+import com.github.gchudnov.bscript.translator.internal.ScalaState
+import com.github.gchudnov.bscript.builder.state.Meta
 
-final class Scala3VisitorSpec extends TestSpec:
+final class ScalaVisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = TGlobals.typeNames
   private val typeInit: TypeInit   = Scala3TypeInit
 
-  "Scala3Visitor" when {
+  "ScalaVisitor" when {
+
+    "scala 3" should {
+
+    }
+
+    "scala 3 with java types" should {
+
+    }
 
     "unary minus" should {
 
@@ -867,7 +876,10 @@ final class Scala3VisitorSpec extends TestSpec:
     }
   }
 
-  private def eval(ast0: AST): Either[Throwable, Scala3State] =
+  private def eval(ast0: AST): Either[Throwable, ScalaState] =
+    evalWith(ast0, Scala3State.make)
+
+  private def evalWith(ast0: AST, stateFactory: (meta: Meta) => ScalaState): Either[Throwable, ScalaState] =
     val types         = Types.make(typeNames)
     val typeCheckLaws = TTypeCheckLaws.make(types)
 
@@ -877,8 +889,8 @@ final class Scala3VisitorSpec extends TestSpec:
 
         val laws = Scala3TranslateLaws.make(typeNames, typeInit, astMeta.meta)
 
-        val scalaVisitor = Scala3Visitor.make(laws)
-        val scalaState   = Scala3State.make(astMeta.meta)
+        val scalaVisitor: ScalaVisitor = ScalaVisitor.make(laws)
+        val scalaState: ScalaState   =  stateFactory(astMeta.meta)
 
         astMeta.ast.visit(scalaState, scalaVisitor)
       })

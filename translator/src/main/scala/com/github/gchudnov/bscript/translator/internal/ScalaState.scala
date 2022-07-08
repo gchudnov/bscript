@@ -19,6 +19,9 @@ import com.github.gchudnov.bscript.lang.util.LineOps
  * }}}
  *
  * Here 'init' are the additional code lines, e.g. implicits and 'line' are the application-lines.
+ * 
+ * NOTE: it is important to have a dedicated types for Scala3 and Scala3J since using these case classes
+ *       we differentiate between these cases in `prelude` generation.
  */
 trait ScalaState:
   def meta: Meta
@@ -29,3 +32,8 @@ trait ScalaState:
   def show(): String =
     val fmtImports = imports.toSeq.sorted.map(i => s"import $i")
     LineOps.join(LineOps.joinNL(LineOps.joinNL(fmtImports, inits), lines))
+
+  def withLines(lines: Seq[String]): ScalaState
+  def withMeta(meta: Meta): ScalaState
+  def withImports(imports: Set[String]): ScalaState
+  def withInits(inits: Seq[String]): ScalaState
