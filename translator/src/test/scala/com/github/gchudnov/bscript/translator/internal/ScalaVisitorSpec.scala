@@ -1,34 +1,31 @@
-package com.github.gchudnov.bscript.translator.internal.scala3
+package com.github.gchudnov.bscript.translator.internal
 
+import com.github.gchudnov.bscript.builder.Builder
+import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
-import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, TypeRef, VectorType }
-import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
+import com.github.gchudnov.bscript.lang.symbols.TypeRef
+import com.github.gchudnov.bscript.lang.symbols.VectorType
+import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.translator.TGlobals
 import com.github.gchudnov.bscript.translator.TTypeCheckLaws
-import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.translator.TestSpec
-import com.github.gchudnov.bscript.builder.Builder
+import com.github.gchudnov.bscript.translator.internal.ScalaState
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TranslateLaws
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TypeInit
+import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 import java.time.LocalDate
-import com.github.gchudnov.bscript.translator.laws.TypeInit
-import com.github.gchudnov.bscript.translator.internal.ScalaState
-import com.github.gchudnov.bscript.builder.state.Meta
 
 final class ScalaVisitorSpec extends TestSpec:
 
   private val typeNames: TypeNames = TGlobals.typeNames
-  private val typeInit: TypeInit   = Scala3TypeInit
 
   "ScalaVisitor" when {
-
-    "scala 3" should {
-
-    }
-
-    "scala 3 with java types" should {
-
-    }
 
     "unary minus" should {
 
@@ -37,7 +34,7 @@ final class ScalaVisitorSpec extends TestSpec:
        *  -10;
        * }}}
        */
-      "translate to code" in {
+      "translate to scala3" in {
         val t = UnaryMinus(IntVal(10))
 
         val errOrRes = eval(t)
@@ -62,7 +59,7 @@ final class ScalaVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to code" in {
+      "translate to scala3" in {
         val t = StructDecl("X", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.f64Type), "y")))
 
         val errOrRes = eval(t)
@@ -81,7 +78,7 @@ final class ScalaVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "should translate to code with values" in {
+      "should translate to scala3 with values" in {
         val t = Block(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
@@ -240,7 +237,7 @@ final class ScalaVisitorSpec extends TestSpec:
     }
 
     "block" should {
-      "translate to code" in {
+      "translate to scala3" in {
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
           Assign(Var(SymbolRef("x")), IntVal(3))
@@ -262,7 +259,7 @@ final class ScalaVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to code if empty" in {
+      "translate to scala3 if empty" in {
         val t        = Block()
         val errOrRes = eval(t)
         errOrRes match
@@ -279,7 +276,7 @@ final class ScalaVisitorSpec extends TestSpec:
     }
 
     "method" should {
-      "translate to code" in {
+      "translate to scala3" in {
         val t = MethodDecl(
           TypeRef(typeNames.i32Type),
           "g",
@@ -316,7 +313,7 @@ final class ScalaVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to code call without arguments" in {
+      "translate to scala3 call without arguments" in {
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
           MethodDecl(
@@ -376,7 +373,7 @@ final class ScalaVisitorSpec extends TestSpec:
     }
 
     "if" should {
-      "translate to code without blocks" in {
+      "translate to scala3 without blocks" in {
         val t = If(Less(IntVal(7), IntVal(5)), Add(IntVal(2), IntVal(5)), Some(If(Greater(LongVal(1L), IntVal(2)), Block())))
 
         val errOrRes = eval(t)
@@ -392,7 +389,7 @@ final class ScalaVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to code with blocks" in {
+      "translate to scala3 with blocks" in {
         val t = If(Less(IntVal(7), IntVal(5)), Block(Add(IntVal(2), IntVal(5))), Some(Block(If(Greater(LongVal(1L), IntVal(2)), Block()))))
 
         val errOrRes = eval(t)
@@ -564,7 +561,7 @@ final class ScalaVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to code" in {
+      "translate to scala3" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.i32Type),
@@ -602,7 +599,7 @@ final class ScalaVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to code with blocks" in {
+      "translate to scala3 with blocks" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.i32Type),
@@ -648,7 +645,7 @@ final class ScalaVisitorSpec extends TestSpec:
     }
 
     "collection" should {
-      "translate to code" in {
+      "translate to scala3" in {
         val t = Block(
           VarDecl(VectorType(TypeRef(typeNames.i32Type)), "a", Vec(Seq(IntVal(1), IntVal(2), IntVal(3))))
         )
@@ -670,7 +667,7 @@ final class ScalaVisitorSpec extends TestSpec:
     }
 
     "access" should {
-      "translate to code" in {
+      "translate to scala3" in {
         val t = Block(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("C", List(FieldDecl(TypeRef(typeNames.i32Type), "z"))),
@@ -736,7 +733,7 @@ final class ScalaVisitorSpec extends TestSpec:
     }
 
     "compiled expressions" should {
-      "translate to code" in {
+      "translate to scala3" in {
         val t = TGlobals.prelude ++ Block(
           VarDecl(TypeRef(typeNames.strType), "s", StrVal("str")),
           Call(SymbolRef("strLen"), List(Var(SymbolRef("s"))))
@@ -877,20 +874,17 @@ final class ScalaVisitorSpec extends TestSpec:
   }
 
   private def eval(ast0: AST): Either[Throwable, ScalaState] =
-    evalWith(ast0, Scala3State.make)
-
-  private def evalWith(ast0: AST, stateFactory: (meta: Meta) => ScalaState): Either[Throwable, ScalaState] =
     val types         = Types.make(typeNames)
     val typeCheckLaws = TTypeCheckLaws.make(types)
 
     Builder
       .build(ast0, types, typeCheckLaws)
-      .flatMap({ astMeta =>
-
-        val laws = Scala3TranslateLaws.make(typeNames, typeInit, astMeta.meta)
+      .flatMap(astMeta =>
+        val typeInit = Scala3TypeInit
+        val laws     = Scala3TranslateLaws.make(typeNames, typeInit, astMeta.meta)
 
         val scalaVisitor: ScalaVisitor = ScalaVisitor.make(laws)
-        val scalaState: ScalaState   =  stateFactory(astMeta.meta)
+        val scalaState: ScalaState     = Scala3State.make(astMeta.meta)
 
         astMeta.ast.visit(scalaState, scalaVisitor)
-      })
+      )

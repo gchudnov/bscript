@@ -19,9 +19,8 @@ import com.github.gchudnov.bscript.lang.util.LineOps
  * }}}
  *
  * Here 'init' are the additional code lines, e.g. implicits and 'line' are the application-lines.
- * 
- * NOTE: it is important to have a dedicated types for Scala3 and Scala3J since using these case classes
- *       we differentiate between these cases in `prelude` generation.
+ *
+ * NOTE: it is important to have a dedicated types for Scala3 and Scala3J since using these case classes we differentiate between these cases in `prelude` generation.
  */
 trait ScalaState:
   def meta: Meta

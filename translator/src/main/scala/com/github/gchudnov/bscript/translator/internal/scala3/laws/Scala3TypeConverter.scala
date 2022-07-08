@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 /**
  * Scala Type Names NOTE: It is possible that not all types be expressed in Scala
  */
-final class Scala3TypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
+private[internal] final class Scala3TypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
   override val autoType: String     = "T"
   override val nothingType: String  = "Nothing"
   override val voidType: String     = "Unit"

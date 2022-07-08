@@ -18,13 +18,14 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.serde.JSONSerde
 import com.github.gchudnov.bscript.translator.Translator
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TypeInit
 import com.github.gchudnov.bscript.translator.laws.TypeInit
+import com.github.gchudnov.bscript.translator.Lang
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Translator
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JTranslator
 
 sealed trait B1:
 
   val typeNames: TypeNames = B1TypeNames.make()
-  val typeInit3: TypeInit  = Scala3TypeInit
   val types: Types         = Types.make(typeNames)
 
   private val typeCheckLaws = B1TypeCheckLaws.make(types)
@@ -92,6 +93,14 @@ sealed trait B1:
    * Translate AST to Scala
    */
   def translate(ast0: AST, opts: B1Options = B1Options.default): Either[Throwable, String] =
-    build(ast0, opts).flatMap(astMeta => Translator.translateScala3(astMeta.ast, astMeta.meta, typeNames, typeInit3))
+    for
+      astMeta <- build(ast0, opts)
+      translator <- opts.lang match
+                      case Lang.Scala3 =>
+                        Right(Scala3Translator.make(astMeta.meta, typeNames))
+                      case Lang.Scala3J =>
+                        Right(Scala3JTranslator.make(astMeta.meta, typeNames))
+      res <- translator.translate(astMeta.ast)
+    yield res
 
 object B1 extends B1

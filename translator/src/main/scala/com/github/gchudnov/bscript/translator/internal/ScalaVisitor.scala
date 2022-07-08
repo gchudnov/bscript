@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.internal.scala3
+package com.github.gchudnov.bscript.translator.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.translator.internal.ScalaState
