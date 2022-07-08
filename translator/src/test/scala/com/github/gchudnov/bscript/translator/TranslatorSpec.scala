@@ -53,8 +53,8 @@ final class TranslatorSpec extends TestSpec:
 
         val expected =
           """final case class X(
-            |  var x: Integer,
-            |  var y: Double
+            |  var x: JInteger,
+            |  var y: JDouble
             |)""".stripMargin
 
         errOrRes match
