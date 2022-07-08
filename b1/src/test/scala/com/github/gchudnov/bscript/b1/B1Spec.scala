@@ -131,9 +131,8 @@ final class B1Spec extends TestSpec:
         val errOrRes = B1.translate(ast0, B1Options.default.withLang(Lang.Scala3J).withPrelude(true))
         errOrRes match
           case Right(code) =>
-            code.contains("var y: Integer = 20") mustBe true
+            code.contains("var y: JInteger = 20") mustBe true
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
