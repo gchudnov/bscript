@@ -8,9 +8,11 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
+import java.time.temporal.ChronoUnit
+import java.time.temporal.Temporal
 import scala.util.control.Exception.allCatch
-import java.time.temporal.{ ChronoUnit, Temporal }
 
 private[internal] object BetweenTemp:
   import DateTime.*
@@ -115,6 +117,35 @@ private[internal] object BetweenTemp:
                        )
                      )
         yield s.copy(lines = lines, imports = s.imports + "java.time.temporal.{ ChronoUnit, Temporal }")
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""// NOTE: Add [T <: Temporal] to the method
+                            |
+                            |val unitDays: JString    = "${unitDays}"
+                            |val unitHours: JString   = "${unitHours}"
+                            |val unitMinutes: JString = "${unitMinutes}"
+                            |val unitSeconds: JString = "${unitSeconds}"
+                            |
+                            |val chronoUnit = ${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ChronoUnit.DAYS
+                            |  case `unitHours` =>
+                            |    ChronoUnit.HOURS
+                            |  case `unitMinutes` =>
+                            |    ChronoUnit.MINUTES
+                            |  case `unitSeconds` =>
+                            |    ChronoUnit.SECONDS
+                            |  case _ =>
+                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                            |}
+                            |
+                            |chronoUnit.between(${argFirst}, ${argLast}).intValue()
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines, imports = s.imports ++ Set("java.time.temporal.{ ChronoUnit, Temporal }", "java.lang.String as JString"))
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))
