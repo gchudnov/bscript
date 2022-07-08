@@ -79,7 +79,12 @@ private[internal] object IsDefined:
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines)
+        yield s.copy(
+          lines = lines,
+          imports = s.imports ++ Set(
+            "java.lang.Boolean as JBoolean"
+          )
+        )
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

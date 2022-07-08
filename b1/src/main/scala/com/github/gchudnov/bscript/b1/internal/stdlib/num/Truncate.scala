@@ -136,6 +136,7 @@ private[internal] object Truncate:
             "java.lang.Integer as JInteger",
             "java.lang.Long as JLong",
             "java.math.BigDecimal as JBigDecimal",
+            "java.math.RoundingMode as JRoundingMode",
             "java.lang.Float as JFloat",
             "java.lang.Double as JDouble"
           ),
