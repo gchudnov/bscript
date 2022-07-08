@@ -1,13 +1,15 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib.num
 
-import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
-import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.b1.internal.stdlib.Inits
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
 private[internal] object Truncate:
 
@@ -94,6 +96,53 @@ private[internal] object Truncate:
                        )
                      )
         yield s.copy(lines = lines)
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""// NOTE: Add [T: JFractional] to the method
+                            |
+                            |def truncateF64(n: JDouble, p: JInteger): JDouble = {
+                            |  val s: JDouble = Math.pow(10.0, p.doubleValue())
+                            |  if (n < 0.0) then
+                            |    Math.ceil(n * s) / s
+                            |  else
+                            |    Math.round(n * s) / s
+                            |}
+                            |
+                            |def truncateF32(n: JFloat, p: JInteger): JFloat =
+                            |  truncateF64(n.toDouble, p).floatValue()
+                            |
+                            |def truncateDec(n: JBigDecimal, p: JInteger): JBigDecimal =
+                            |  n.setScale(p, JRoundingMode.DOWN)
+                            |    
+                            |${argValue} match {
+                            |  case x: JDouble =>
+                            |    truncateF64(x, ${argPrecision}).asInstanceOf[T]
+                            |  case x: JFloat =>
+                            |    truncateF32(x, ${argPrecision}).asInstanceOf[T]
+                            |  case x: JBigDecimal =>
+                            |    truncateDec(x, ${argPrecision}).asInstanceOf[T]
+                            |  case other =>
+                            |    throw new RuntimeException(s"Cannot truncate the provided value: $${other}, the type is not supported")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(
+          lines = lines,
+          imports = s.imports ++ Set(
+            "java.lang.Math",
+            "java.lang.Integer as JInteger",
+            "java.lang.Long as JLong",
+            "java.math.BigDecimal as JBigDecimal",
+            "java.lang.Float as JFloat",
+            "java.lang.Double as JDouble"
+          ),
+          inits = s.inits ++ Inits.codeBlocks(Seq(
+            Inits.Keys.JFractional
+          ))
+        )
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

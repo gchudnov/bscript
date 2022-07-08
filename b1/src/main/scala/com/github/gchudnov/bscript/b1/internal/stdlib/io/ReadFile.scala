@@ -1,17 +1,19 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib.io
 
-import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
-import scala.util.control.Exception.allCatch
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
-import java.nio.file.Paths
-import java.nio.file.Files
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
+
 import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Paths
+import scala.util.control.Exception.allCatch
 
 private[internal] object ReadFile:
 
@@ -55,6 +57,23 @@ private[internal] object ReadFile:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala3State =>
+        for
+          lines <- Right(
+                     split(
+                       s"""val errOrContents = for {
+                          |  filePath <- allCatch.either(Paths.get(path))
+                          |  contents <- allCatch.either(Files.readString(filePath, StandardCharsets.UTF_8))
+                          |} yield contents
+                          |
+                          |errOrContents.toTry.get
+                          |""".stripMargin
+                     )
+                   )
+          imports <-
+            Right(Seq("scala.util.control.Exception.allCatch", "java.nio.file.Paths", "java.nio.file.Files", "java.nio.charset.StandardCharsets"))
+        yield s.copy(lines = lines, imports = s.imports ++ imports)
+
+      case s: Scala3JState =>
         for
           lines <- Right(
                      split(

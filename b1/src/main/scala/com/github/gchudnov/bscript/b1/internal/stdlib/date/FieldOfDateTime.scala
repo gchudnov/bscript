@@ -1,14 +1,16 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib.date
 
-import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
-import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
-import scala.util.control.Exception.allCatch
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
+
+import scala.util.control.Exception.allCatch
 
 private[internal] object FieldOfDateTime:
   import DateTime.*
@@ -89,6 +91,31 @@ private[internal] object FieldOfDateTime:
                        )
                      )
         yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""val unitDays: JString    = "${unitDays}"
+                            |val unitHours: JString   = "${unitHours}"
+                            |val unitMinutes: JString = "${unitMinutes}"
+                            |val unitSeconds: JString = "${unitSeconds}"
+                            |
+                            |${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.getDayOfMonth
+                            |  case `unitHours` =>
+                            |    ${argValue}.getHour
+                            |  case `unitMinutes` =>
+                            |    ${argValue}.getMinute
+                            |  case `unitSeconds` =>
+                            |    ${argValue}.getSecond
+                            |  case _ =>
+                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines, imports = s.imports ++ Set("java.time.OffsetDateTime", "java.lang.String as JString"))
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

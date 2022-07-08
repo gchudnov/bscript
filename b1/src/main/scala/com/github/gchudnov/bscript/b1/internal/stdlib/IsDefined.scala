@@ -1,13 +1,14 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib
 
-import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
-import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
 private[internal] object IsDefined:
 
@@ -53,6 +54,20 @@ private[internal] object IsDefined:
         yield s.copy(memSpace = ms, retValue = retVal)
 
       case s: Scala3State =>
+        for lines <- Right(
+                       split(
+                         s"""// NOTE: Add [T] to the method
+                            |${argX} match {
+                            |  case null => false
+                            |  case None => false
+                            |  case _ => true
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines)
+
+      case s: Scala3JState =>
         for lines <- Right(
                        split(
                          s"""// NOTE: Add [T] to the method

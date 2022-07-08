@@ -1,16 +1,19 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib.date
 
-import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.b1.B1Exception
 import com.github.gchudnov.bscript.b1.internal.stdlib.Inits
-import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 import com.github.gchudnov.bscript.interpreter.memory.*
-
-import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
+
+import java.time.LocalDate
+import java.time.OffsetDateTime
+import java.time.ZoneId
 
 private[internal] object Today:
   import DateTime.*
@@ -44,7 +47,24 @@ private[internal] object Today:
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"), inits = s.inits ++ Inits.code)
+        yield s.copy(
+          lines = lines,
+          imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"),
+          inits = s.inits ++ Inits.codeBlocks(Seq(Inits.Keys.ToOrderedLocalDate, Inits.Keys.ToOrderedOffsetDateTime))
+        )
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""LocalDate.now(ZoneId.of("Z"))
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(
+          lines = lines,
+          imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"),
+          inits = s.inits ++ Inits.codeBlocks(Seq(Inits.Keys.ToOrderedLocalDate, Inits.Keys.ToOrderedOffsetDateTime))
+        )
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

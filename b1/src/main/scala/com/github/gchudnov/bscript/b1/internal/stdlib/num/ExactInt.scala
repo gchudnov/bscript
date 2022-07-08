@@ -8,11 +8,12 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
 import java.lang.Math
 import scala.util.control.Exception.allCatch
 
-private[internal] object CastInt:
+private[internal] object ExactInt:
 
   private val fnName = "exactInt"
 
@@ -24,7 +25,7 @@ private[internal] object CastInt:
         ArgDecl(TypeRef(typeNames.autoType), "value")
       ),
       Block(
-        CompiledExpr(callback = CastInt.exactToInt, retType = TypeRef(typeNames.i32Type))
+        CompiledExpr(callback = ExactInt.exactToInt, retType = TypeRef(typeNames.i32Type))
       ),
       Seq(ComAnn(s"Safely casts a number to ${typeNames.i32Type} or returns an error on runtime"), StdAnn())
     )
@@ -92,6 +93,40 @@ private[internal] object CastInt:
                        )
                      )
         yield s.copy(lines = lines, imports = s.imports + "java.lang.Math")
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""// NOTE: Add [T <: Number] to the method
+                            |
+                            |${argValue} match {
+                            |  case x: JInteger =>
+                            |    x
+                            |  case x: JLong =>
+                            |    Math.toIntExact(x)
+                            |  case x: JFloat =>
+                            |    JBigDecimal.valueOf(x.doubleValue()).intValueExact()
+                            |  case x: JDouble =>
+                            |    JBigDecimal.valueOf(x).intValueExact()
+                            |  case x: JBigDecimal =>
+                            |    x.intValueExact()
+                            |  case other =>
+                            |    throw new RuntimeException(s"Cannot safely cast the provided value: $${other}, the type is not supported")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(
+          lines = lines,
+          imports = s.imports ++ Set(
+            "java.lang.Math",
+            "java.lang.Integer as JInteger",
+            "java.lang.Long as JLong",
+            "java.math.BigDecimal as JBigDecimal",
+            "java.lang.Float as JFloat",
+            "java.lang.Double as JDouble"
+          )
+        )
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))
