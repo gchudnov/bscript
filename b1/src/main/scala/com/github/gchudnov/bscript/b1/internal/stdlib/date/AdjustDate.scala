@@ -8,6 +8,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
 import java.time.LocalDate
 import scala.util.control.Exception.allCatch
@@ -82,6 +83,27 @@ private[internal] object AdjustDate:
                        )
                      )
         yield s.copy(lines = lines, imports = s.imports + "java.time.LocalDate")
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""val unitDays: JString    = "${unitDays}"
+                            |
+                            |def toJLong(x: JInteger): JLong =
+                            |  if (x == null) then null else x.longValue()
+                            |
+                            |val longOffset = toJLong(${argOffset})
+                            |
+                            |${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.plusDays(longOffset)
+                            |  case _ =>
+                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: '$${${argUnit}}'")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines, imports = s.imports ++ Set("java.time.LocalDate", "java.lang.String as JString", "java.lang.Integer as JInteger", "java.lang.Long as JLong"))
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

@@ -8,6 +8,7 @@ import com.github.gchudnov.bscript.builder.AstMeta
 import com.github.gchudnov.bscript.interpreter.memory.{ IntCell, StructCell }
 import com.github.gchudnov.bscript.interpreter.memory.{ CellPath, Diff }
 import com.github.gchudnov.bscript.inspector.internal.dbglib.{ MemWatchDiff, MemWatchStashEntry }
+import com.github.gchudnov.bscript.translator.Lang
 
 final class B1Spec extends TestSpec:
   private val typeNames = B1.typeNames
@@ -101,7 +102,7 @@ final class B1Spec extends TestSpec:
       "produce Scala code without prelude" in {
         val ast0 = astB
 
-        val errOrRes = B1.translate(ast0, B1Options.default.withPrelude(false))
+        val errOrRes = B1.translate(ast0, B1Options.default.withLang(Lang.Scala3).withPrelude(false))
         errOrRes match
           case Right(code) =>
             code mustBe """{
@@ -116,11 +117,23 @@ final class B1Spec extends TestSpec:
       "produce Scala code with prelude" in {
         val ast0 = astB
 
-        val errOrRes = B1.translate(ast0)
+        val errOrRes = B1.translate(ast0, B1Options.default.withLang(Lang.Scala3).withPrelude(true))
         errOrRes match
           case Right(code) =>
             code.contains("var y: Int = 20") mustBe true
           case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "produce Scala code with Java Types with prelude" in {
+        val ast0 = astB
+
+        val errOrRes = B1.translate(ast0, B1Options.default.withLang(Lang.Scala3J).withPrelude(true))
+        errOrRes match
+          case Right(code) =>
+            code.contains("var y: Integer = 20") mustBe true
+          case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }

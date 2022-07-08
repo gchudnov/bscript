@@ -8,6 +8,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
 
 import java.time.OffsetDateTime
 import scala.util.control.Exception.allCatch
@@ -106,6 +107,39 @@ private[internal] object AdjustDateTime:
                        )
                      )
         yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
+
+      case s: Scala3JState =>
+        for lines <- Right(
+                       split(
+                         s"""val unitDays: JString    = "${unitDays}"
+                            |val unitHours: JString   = "${unitHours}"
+                            |val unitMinutes: JString = "${unitMinutes}"
+                            |val unitSeconds: JString = "${unitSeconds}"
+                            |
+                            |def toJLong(x: JInteger): JLong =
+                            |  if (x == null) then null else x.longValue()
+                            |
+                            |val longOffset = toJLong(${argOffset})
+                            |
+                            |${argUnit}.trim.toLowerCase match {
+                            |  case `unitDays` =>
+                            |    ${argValue}.plusDays(longOffset)
+                            |  case `unitHours` =>
+                            |    ${argValue}.plusHours(longOffset)
+                            |  case `unitMinutes` =>
+                            |    ${argValue}.plusMinutes(longOffset)
+                            |  case `unitSeconds` =>
+                            |    ${argValue}.plusSeconds(longOffset)
+                            |  case _ =>
+                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                            |}
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(
+          lines = lines,
+          imports = s.imports ++ Set("java.time.OffsetDateTime", "java.lang.String as JString", "java.lang.Integer as JInteger", "java.lang.Long as JLong")
+        )
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))

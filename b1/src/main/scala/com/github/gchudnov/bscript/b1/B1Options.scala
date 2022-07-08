@@ -2,9 +2,12 @@ package com.github.gchudnov.bscript.b1
 
 import com.github.gchudnov.bscript.translator.Lang
 
+/**
+ * Options for B1
+ */
 final case class B1Options(
-  hasPrelude: Boolean = true,
-  lang: Lang = Lang.Scala3
+  hasPrelude: Boolean,
+  lang: Lang
 ):
   def withPrelude(hasPrelude: Boolean): B1Options = copy(hasPrelude = hasPrelude)
 
@@ -12,4 +15,7 @@ final case class B1Options(
 
 object B1Options:
   val default: B1Options =
-    B1Options()
+    B1Options(
+      hasPrelude = true,
+      lang = Lang.Scala3
+    )
