@@ -132,9 +132,11 @@ private[internal] object Round:
             "java.lang.Float as JFloat",
             "java.lang.Double as JDouble"
           ),
-          inits = s.inits ++ Inits.codeBlocks(Seq(
-            Inits.Keys.JFractional
-          ))
+          inits = s.inits ++ Inits.codeBlocks(
+            Seq(
+              Inits.Keys.JFractional
+            )
+          )
         )
 
       case other =>
