@@ -9,8 +9,8 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
  */
 private[internal] class Scala3JTypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
   override val autoType: String     = "T"
-  override val nothingType: String  = "???"
-  override val voidType: String     = "Unit"
+  override val nothingType: String  = "null"
+  override val voidType: String     = "Unit" // NOTE: we use a type from Scala3 here, `Void` is unusable here
   override val boolType: String     = "JBoolean"
   override val i32Type: String      = "JInteger"
   override val i64Type: String      = "JLong"

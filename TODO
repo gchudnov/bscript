@@ -1,6 +1,4 @@
-- TODO: implement scala3j -- java types for scala
-        b1-cli export --lang=scala3j --out=../examples/ast-example-1.scala ../examples/ast-example-1.json # NOTE: not implemented at the moment
-
+- TODO: allow operations on BigDecimal from java: + > < ...
 
 - TODO: add code that checks for dead conditions: (xxx == false) --- add an option 'check' ?? or do we want to check during building / running phase ??
         ^ comparison must be inside of IF
