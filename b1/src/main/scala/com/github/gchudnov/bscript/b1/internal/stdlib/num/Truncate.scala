@@ -142,7 +142,8 @@ private[internal] object Truncate:
           ),
           inits = s.inits ++ Inits.codeBlocks(
             Seq(
-              Inits.Keys.JFractional
+              Inits.Keys.JFractional,
+              Inits.Keys.JBigDecimalOps
             )
           )
         )
