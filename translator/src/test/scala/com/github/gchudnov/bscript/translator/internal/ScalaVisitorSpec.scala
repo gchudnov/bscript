@@ -732,6 +732,33 @@ final class ScalaVisitorSpec extends TestSpec:
       }
     }
 
+    "call a method" should {
+      "translate if the collection-argument is empty" in {
+        val t = TGlobals.prelude ++ Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(IntVal(4), Vec()))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """
+                |var x: Boolean = contains(4, List.empty)
+                |""".stripMargin.trim
+
+            actual.contains(expected) mustBe true
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+    }
+
     "compiled expressions" should {
       "translate to scala3" in {
         val t = TGlobals.prelude ++ Block(
@@ -860,6 +887,14 @@ final class ScalaVisitorSpec extends TestSpec:
                 |   */
                 |  def truncate(value: T, precision: Int): T = {
                 |    value.setScale(precision, BigDecimal.RoundingMode.DOWN)
+                |  }
+                |  /**
+                |   * Tests whether the collection contains the given element
+                |   * [std]
+                |   */
+                |  def contains(x: T, xs: List[T]): Boolean = {
+                |    // NOTE: Add [T] to the method
+                |    xs.contains(x)
                 |  }
                 |  var s: String = "str"
                 |  strLen(s)
