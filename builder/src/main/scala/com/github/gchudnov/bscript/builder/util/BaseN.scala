@@ -28,10 +28,11 @@ trait BaseN:
 
     @tailrec
     def iterate(acc: Long, ds: List[Char]): Long =
-      if ds.isEmpty then acc
-      else
-        val d :: tail = ds
-        val n         = acc * base + reverseLookup(d)
-        iterate(n, tail)
+      ds match
+        case Nil =>
+          acc
+        case d :: tail =>
+          val n = acc * base + reverseLookup(d)
+          iterate(n, tail)
 
     iterate(0L, s.toList)

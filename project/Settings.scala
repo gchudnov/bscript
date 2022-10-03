@@ -22,7 +22,7 @@ object Settings {
     "-language:experimental.macros", // Allow macro definition (besides implementation and application)
     "-language:higherKinds",         // Allow higher-kinded types
     "-language:implicitConversions", // Allow definition of implicit functions called views
-    "-language:postfixOps"           // Enable postfixOps
+    "-language:postfixOps",          // Enable postfixOps
   )
 
   type MergeStrategySelector = String => MergeStrategy
