@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.serde.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.symbols.TypeRef
+import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SymbolRef, TypeRef }
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.serde.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.serde.{ SGlobals, TestSpec }
@@ -83,6 +83,59 @@ final class JSONDeserializerSpec extends TestSpec:
         val input = resourceToString("data/vec.json").toTry.get
 
         val expected = Vec(List(IntVal(1), IntVal(2), IntVal(3)))
+
+        val de       = new JSONDeserializer()
+        val errOrRes = de.deserialize(input)
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe (expected)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "should not throw deserialization exception if methods have no annotations" in {
+        // NOTE: it was a bug where methods without annotations were throwing exceptions on parsing
+
+        val input = resourceToString("data/ast-example-1.json").toTry.get
+
+        val expected = Block(
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"))),
+          StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "f",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Assign(
+                Access(Access(Var(SymbolRef("a")), Var(SymbolRef("b"))), Var(SymbolRef("y"))),
+                Var(SymbolRef("x"))
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "g",
+            List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+            Block(
+              Assign(
+                Access(Var(SymbolRef("a")), Var(SymbolRef("x"))),
+                Var(SymbolRef("x"))
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef(typeNames.voidType),
+            "h",
+            List.empty[ArgDecl],
+            Block(
+            )
+          ),
+          Call(SymbolRef("f"), List(IntVal(10))),
+          Call(SymbolRef("g"), List(IntVal(20))),
+          Call(SymbolRef("h"), List.empty[Expr]),
+          Var(SymbolRef("a"))
+        )
 
         val de       = new JSONDeserializer()
         val errOrRes = de.deserialize(input)

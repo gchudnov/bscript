@@ -239,7 +239,7 @@ private[internal] final class JSONDeserializeVisitor:
       params   <- Transform.sequence(jParams.arr.map(jEl => visitAST(jEl).flatMap(_.asArgDecl)))
       jBody    <- (s \ Keys.body).asJObject
       body     <- visitAST(jBody).flatMap(_.asBlock)
-      jAnns    <- (s \ Keys.annotations).asJArray
+      jAnns    <- (s \ Keys.annotations).asNullJArray
       anns     <- Transform.sequence(jAnns.arr.map(jEl => visitAnn(jEl)))
     yield MethodDecl(retType, name, params, body, anns)
 
@@ -453,6 +453,15 @@ private[internal] object JSONDeserializeVisitor:
 
     def asJArray: Either[Throwable, JArray] =
       value match
+        case a: JArray =>
+          Right(a)
+        case other =>
+          Left(new SerdeException(s"Cannot convert JValue '${other}' to JArray"))
+
+    def asNullJArray: Either[Throwable, JArray] =
+      value match
+        case JNothing | JNull =>
+          Right(JArray(List.empty[JValue]))
         case a: JArray =>
           Right(a)
         case other =>
