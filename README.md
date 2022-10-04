@@ -201,7 +201,7 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 Allows to run and debug AST.
 
 ```text
-b1-cli 1.3.0
+b1-cli 1.3.4
 Usage: b1-cli [run|debug|export] [options] <file>
 
   -h, --help               prints this usage text
@@ -239,7 +239,7 @@ To use the command line utility, assembly `b1-cli` first:
 sbt assembly
 ```
 
-Run:
+Usage:
 
 ```bash
 cd ./target
@@ -256,17 +256,107 @@ cd ./target
 ./b1-cli export --lang=scala3 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
 ```
 
-#### Example
+#### Run
 
-Command
+When running AST, for example [examples/ast-example-1.json](examples/ast-example-1.json) that can be represented as the following Scala code:
+
+```scala
+final case class A(
+  var x: Int,
+  var b: B
+)
+
+final case class B(
+  var y: Int
+)
+
+var a: A = A(
+  x = 0,
+  b = B(
+    y = 0
+  )
+)
+
+def f(x: Int): Unit =
+  a.b.y = x
+
+def g(x: Int): Unit =
+  a.x = x
+
+def h(): Unit = {}
+
+f(10)
+g(20)
+h()
+
+a
+```
+
+```bash
+./b1-cli run ../examples/ast-example-1.json
+```
+
+the last evaluated `a` value will be printed to stdout:
+
+```
+RETURN VALUE
+{
+  "x": "i32(20)",
+  "b": {
+    "y": "i32(10)"
+  }
+}
+```
+
+#### Debug
+
+This mode is useful to trace modification of a variable in AST.
+
+By running `b1-cli` in _debug_ mode and tracing changes of variable `a`:
 
 ```bash
 ./b1-cli debug --ref="a" ../examples/ast-example-1.json
 ```
 
-Output
+We can observe the follwing output:
 
 ![ast-example-1.png](examples/ast-example-1.png)
+
+```text
+RETURN VALUE
+{
+  "x": "i32(20)",
+  "b": {
+    "y": "i32(10)"
+  }
+}
+
+WATCH LOG
+method: f() | watch: 'a'
+  * 'a.b.y' | "i32(0)" -> "i32(10)"
+
+method: g() | watch: 'a'
+  * 'a.x' | "i32(0)" -> "i32(20)"
+
+method: h() | watch: 'a'
+```
+
+Here we can see the returned value and the watch log, that traces modification of varaibles in structure `a` across function calls.
+
+NOTE: it is possible to trace the member of a structure, e.g.: `a.x` or `a.b.y` in the example:
+
+```bash
+./b1-cli debug --ref="a.x" ../examples/ast-example-1.json
+./b1-cli debug --ref="a.b.y" ../examples/ast-example-1.json
+```
+
+#### Export
+
+The *export* command can be used to generate a representation of AST in the given programming language. At the moment only *Scala* `--lang=scala3` and *Scala with Java types* `--lang=scala3j` are supported.
+
+```bash
+./b1-cli export --lang=scala3 --out=../examples/ast-example-1.scala ../examples/ast-example-1.json
+```
 
 ## Contact
 
