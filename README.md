@@ -1,12 +1,18 @@
 # BScript Toolkit
 
+<img src="res/bscript-logo192.png" width="192px" height="192px" align="right" />
+
+[![Build](https://github.com/gchudnov/bscript/actions/workflows/ci.yml/badge.svg)](https://github.com/gchudnov/bscript/actions/workflows/ci.yml)
+
 AST Evaluation & Debugging
+
+<br clear="right" /><!-- Turn off the wrapping for the logo image. -->
 
 ## Modules
 
 ### Lang
 
-* [/lang](lang) - Basic Language primitives - AST, Symbols & Types.
+- [/lang](lang) - Basic Language primitives - AST, Symbols & Types.
 
 `TreeVisitor[S, R]` - trait that all AST-processors must implement.
 
@@ -58,11 +64,11 @@ CompiledExpr
 
 ### Rewriter
 
-* [/rewriter](rewriter) - Rewrites AST
+- [/rewriter](rewriter) - Rewrites AST
 
-* `FilterVisitor` - filter AST nodes.
-* `MapVisitor` - map AST nodes.
-* `FindVisitor` - find AST nodes.
+- `FilterVisitor` - filter AST nodes.
+- `MapVisitor` - map AST nodes.
+- `FindVisitor` - find AST nodes.
 
 ```scala
 val ast0: AST = ???
@@ -82,7 +88,7 @@ val errOrRes: Either[Throwable, Option[AST]] = Rewriter.find(ast0, pred)
 
 ### Serde
 
-* [/serde](serde) - A Serializer & Deserializer for AST.
+- [/serde](serde) - A Serializer & Deserializer for AST.
 
 ```scala
 import com.github.gchudnov.bscript.lang.ast.*
@@ -105,7 +111,7 @@ NOTE: nodes that contain `StdAnn` annotation are omitted from serialization.
 
 ### Builder
 
-* [/builder](builder) - Processes AST to define symbols, resolve scopes and assign types. After building, AST can be interpreted.
+- [/builder](builder) - Processes AST to define symbols, resolve scopes and assign types. After building, AST can be interpreted.
 
 ```scala
 val typeNames: TypeNames         = ???
@@ -123,7 +129,7 @@ val errOrRes: Either[Throwable, AstMeta] = Builder.build(ast0, types, typeCheckL
 
 ### Interpreter
 
-* [/interpreter](interpreter) - Interprets AST that has been built.
+- [/interpreter](interpreter) - Interprets AST that has been built.
 
 ```scala
 val astMeta: AstMeta             = ???
@@ -134,7 +140,7 @@ val errOrRes: Either[Throwable, Cell] = Interpreter.interpret(astMeta.ast, astMe
 
 ### Translator
 
-* [/translator](translator) - Translates AST to the given programming language. At the moment only translation to Scala is supported.
+- [/translator](translator) - Translates AST to the given programming language. At the moment only translation to Scala is supported.
 
 ```scala
 val ast1: AST              = ???
@@ -146,7 +152,7 @@ val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNa
 
 ### Inspector
 
-* [/inspector](inspector) - updates AST to trace memory changes between function calls.
+- [/inspector](inspector) - updates AST to trace memory changes between function calls.
 
 ```scala
 val ast0: AST              = ???
@@ -157,7 +163,7 @@ val errOrRes: Either[Throwable, AST] = Inspector.memWatch("a.b", ast0, typeNames
 
 ### B1
 
-* [/b1](b1) - Library that implements laws for B1 Language. Depends on `serde`, `builder`, `interpreter` and `translator` modules.
+- [/b1](b1) - Library that implements laws for B1 Language. Depends on `serde`, `builder`, `interpreter` and `translator` modules.
 
 Allows to load & save AST, build and interpret it, translate it to Scala.
 
@@ -190,7 +196,7 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 
 ### B1-CLI
 
-* [/b1-cli](b1-cli) - Command-Line Utility for B1 Language.
+- [/b1-cli](b1-cli) - Command-Line Utility for B1 Language.
 
 Allows to run and debug AST.
 

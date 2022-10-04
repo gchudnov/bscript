@@ -191,6 +191,18 @@ object TGlobals:
         CompiledExpr(callback = truncate, retType = DeclType(Var(SymbolRef("value"))))
       ),
       Seq(ComAnn("truncates the provided value with the given precision"), StdAnn())
+    ),
+    MethodDecl(
+      TypeRef(typeNames.boolType),
+      "contains",
+      List(
+        ArgDecl(TypeRef(typeNames.autoType), "x"),
+        ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
+      ),
+      Block(
+        CompiledExpr(callback = contains, retType = TypeRef(typeNames.boolType))
+      ),
+      Seq(ComAnn("Tests whether the collection contains the given element"), StdAnn())
     )
   )
 
@@ -487,3 +499,21 @@ object TGlobals:
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to truncate: ${other}"))
+
+  private def contains(s: Any): Either[Throwable, Any] =
+    val argX  = "x"  // auto
+    val argXS = "xs" // vec[decltype(x)]
+
+    s match
+      case s: Scala3State =>
+        for lines <- Right(
+                       split(
+                         s"""// NOTE: Add [T] to the method
+                            |xs.contains(x)
+                            |""".stripMargin
+                       )
+                     )
+        yield s.copy(lines = lines)
+
+      case other =>
+        Left(new TranslateException(s"Unexpected state passed to contains: ${other}"))
