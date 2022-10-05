@@ -198,6 +198,10 @@ val errOrScala: Either[Throwable, String] = B1.translateScala(ast0)
 
 - [/b1-cli](b1-cli) - Command-Line Utility for B1 Language.
 
+The current version can be downloaded from the [releases](https://github.com/gchudnov/bscript/releases) section.
+
+After downloading and extracting, run: `chmod +x b1-cli` to make the file executable. When running, the file required a java runtime to be present on the machine.
+
 Allows to run and debug AST.
 
 ```text
