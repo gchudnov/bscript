@@ -17,6 +17,7 @@ lazy val allSettings = Settings.shared ++ testSettings
 lazy val lang = (project in file("lang"))
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-lang",
     libraryDependencies ++= Dependencies.Lang
@@ -26,6 +27,7 @@ lazy val rewriter = (project in file("rewriter"))
   .dependsOn(lang)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-rewriter",
     libraryDependencies ++= Dependencies.Rewriter
@@ -35,6 +37,7 @@ lazy val serde = (project in file("serde"))
   .dependsOn(lang, rewriter)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-serde",
     libraryDependencies ++= Dependencies.Serde
@@ -44,6 +47,7 @@ lazy val builder = (project in file("builder"))
   .dependsOn(lang)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-builder",
     libraryDependencies ++= Dependencies.Builder
@@ -53,6 +57,7 @@ lazy val interpreter = (project in file("interpreter"))
   .dependsOn(lang, builder)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-interpreter",
     libraryDependencies ++= Dependencies.Interpreter
@@ -62,6 +67,7 @@ lazy val translator = (project in file("translator"))
   .dependsOn(lang, builder)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-translator",
     libraryDependencies ++= Dependencies.Translator
@@ -71,6 +77,7 @@ lazy val inspector = (project in file("inspector"))
   .dependsOn(lang, builder, interpreter, translator, rewriter)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-inspector",
     libraryDependencies ++= Dependencies.Inspector
@@ -80,6 +87,7 @@ lazy val b1 = (project in file("b1"))
   .dependsOn(lang, serde, builder, interpreter, translator, inspector)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.sonatype)
   .settings(
     name := "bscript-b1",
     libraryDependencies ++= Dependencies.B1
@@ -106,6 +114,7 @@ lazy val root = (project in file("."))
   .aggregate(lang, rewriter, serde, builder, interpreter, translator, inspector, b1, b1Cli)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
+  .settings(Settings.noPublish)
   .settings(
     name := "bscript"
   )
