@@ -10,7 +10,7 @@ on:
       - main
 jobs:
   build:
-    name: Test
+    name: Test & Build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
@@ -21,3 +21,28 @@ jobs:
           cache: 'sbt'
       - name: Run tests
         run: sbt test
+      - name: Assembly JAR
+        run: sbt assembly
+      - uses: actions/upload-artifact@v2
+        with:
+          path: target/b1-cli
+
+  release_nix:
+    name: Release Artifact
+    if: startsWith(github.ref, 'refs/tags/')
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/download-artifact@v2
+        with:
+          path: ./
+
+      - name: Create tarball
+        run: tar -zcvf "b1-cli.tar.gz" artifact/b1-cli
+
+      - name: Release artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: 'b1-cli.tar.gz'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
