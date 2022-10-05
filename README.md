@@ -8,6 +8,23 @@ AST Evaluation & Debugging
 
 <br clear="right" /><!-- Turn off the wrapping for the logo image. -->
 
+## Usage
+
+Add the following dependency to your `build.sbt`:
+
+```scala
+libraryDependencies += "com.github.gchudnov" %% "bscript-b1" % "1.3.5"
+
+// Optionally, include one or more of the more specific dependencies
+libraryDependencies += "com.github.gchudnov" %% "bscript-lang" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-builder" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-interpreter" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-inspector" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-serde" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-rewriter" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-translator" % "1.3.5"
+```
+
 ## Modules
 
 ### Lang
