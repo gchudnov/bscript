@@ -41,6 +41,13 @@ object Settings {
     assembly / assemblyMergeStrategy := defaultMergeStrategy((assembly / assemblyMergeStrategy).value)
   )
 
+  val noPublish: Seq[Setting[_]] = Seq(
+    publishArtifact := false,
+    publish         := {},
+    publishLocal    := {},
+    publish / skip  := true
+  )
+
   val sharedResolvers: Vector[MavenRepository] = (Seq(Resolver.mavenLocal) ++ Resolver.sonatypeOssRepos("releases")).toVector
 
   val shared: Seq[Setting[_]] = Seq(

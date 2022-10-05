@@ -90,6 +90,7 @@ lazy val b1Cli = (project in file("b1-cli"))
   .dependsOn(b1, interpreter, inspector)
   .settings(allSettings: _*)
   .settings(Settings.assemblySettings)
+  .settings(Settings.noPublish)
   .settings(
     name := "b1-cli",
     libraryDependencies ++= Dependencies.B1Cli,
