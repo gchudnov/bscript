@@ -38,7 +38,7 @@ jobs:
           path: ./
 
       - name: Create tarball
-        run: tar -zcvf "b1-cli.tar.gz" -C artifact b1-cli
+        run: tar -zpcvf "b1-cli.tar.gz" -C artifact b1-cli
 
       - name: Release artifact
         uses: softprops/action-gh-release@v1
