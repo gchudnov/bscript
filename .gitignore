@@ -6,3 +6,4 @@
 .idea
 target/
 metals.sbt
+publish.sbt
