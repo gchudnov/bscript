@@ -239,7 +239,7 @@ private[internal] final class JSONDeserializeVisitor:
       params   <- Transform.sequence(jParams.arr.map(jEl => visitAST(jEl).flatMap(_.asArgDecl)))
       jBody    <- (s \ Keys.body).asJObject
       body     <- visitAST(jBody).flatMap(_.asBlock)
-      jAnns    <- (s \ Keys.annotations).asJArray
+      jAnns    <- (s \ Keys.annotations).asNullJArray
       anns     <- Transform.sequence(jAnns.arr.map(jEl => visitAnn(jEl)))
     yield MethodDecl(retType, name, params, body, anns)
 
@@ -349,8 +349,8 @@ private[internal] final class JSONDeserializeVisitor:
     s match
       case JString(s) =>
         Right(SymbolRef(s))
-      case _ =>
-        Left(new SerdeException("Cannot convert JValue to a Symbol"))
+      case other =>
+        Left(new SerdeException(s"Cannot convert JValue '${other}' to a Symbol"))
 
   private def visitType(s: JValue): Either[Throwable, Type] =
     s match
@@ -367,8 +367,8 @@ private[internal] final class JSONDeserializeVisitor:
         yield t
       case JString(value) =>
         Right(TypeRef(value))
-      case _ =>
-        Left(new SerdeException("Cannot extract Type from JValue"))
+      case other =>
+        Left(new SerdeException(s"Cannot extract Type from JValue '${other}'"))
 
   private def visitAnn(s: JValue): Either[Throwable, Ann] =
     s match
@@ -382,8 +382,8 @@ private[internal] final class JSONDeserializeVisitor:
                  case `stdAnnName` =>
                    Right(StdAnn()) // NOTE: the value is not important, since we're not allowing to override it
         yield t
-      case _ =>
-        Left(new SerdeException("Cannot extract Annotation from JValue"))
+      case other =>
+        Left(new SerdeException(s"Cannot extract Annotation from JValue '${other}'"))
 
 private[internal] object JSONDeserializeVisitor:
 
@@ -441,22 +441,31 @@ private[internal] object JSONDeserializeVisitor:
       value match
         case s: JString =>
           Right(s)
-        case _ =>
-          Left(new SerdeException("Cannot convert JValue to JString"))
+        case other =>
+          Left(new SerdeException(s"Cannot convert JValue '${other}' to JString"))
 
     def asJObject: Either[Throwable, JObject] =
       value match
         case o: JObject =>
           Right(o)
-        case _ =>
-          Left(new SerdeException("Cannot convert JValue to JObject"))
+        case other =>
+          Left(new SerdeException(s"Cannot convert JValue '${other}' to JObject"))
 
     def asJArray: Either[Throwable, JArray] =
       value match
         case a: JArray =>
           Right(a)
-        case _ =>
-          Left(new SerdeException("Cannot convert JValue to JArray"))
+        case other =>
+          Left(new SerdeException(s"Cannot convert JValue '${other}' to JArray"))
+
+    def asNullJArray: Either[Throwable, JArray] =
+      value match
+        case JNothing | JNull =>
+          Right(JArray(List.empty[JValue]))
+        case a: JArray =>
+          Right(a)
+        case other =>
+          Left(new SerdeException(s"Cannot convert JValue '${other}' to JArray"))
 
   def parseBool(s: String): Either[Throwable, Boolean] =
     s match
@@ -464,47 +473,47 @@ private[internal] object JSONDeserializeVisitor:
         Right(true)
       case "false" =>
         Right(false)
-      case _ =>
-        Left(new SerdeException("Cannot parse Boolean"))
+      case other =>
+        Left(new SerdeException(s"Cannot parse Boolean from '${other}'"))
 
   def parseInt(s: String): Either[Throwable, Int] =
     allCatch
       .either(s.toInt)
       .left
-      .map(_ => new SerdeException("Cannot parse Int"))
+      .map(t => new SerdeException(s"Cannot parse Int from '${s}'", t))
 
   def parseLong(s: String): Either[Throwable, Long] =
     allCatch
       .either(s.toLong)
       .left
-      .map(_ => new SerdeException("Cannot parse Long"))
+      .map(t => new SerdeException(s"Cannot parse Long from '${s}'", t))
 
   def parseFloat(s: String): Either[Throwable, Float] =
     allCatch
       .either(s.toFloat)
       .left
-      .map(_ => new SerdeException("Cannot parse Float"))
+      .map(t => new SerdeException(s"Cannot parse Float from '${s}'", t))
 
   def parseDouble(s: String): Either[Throwable, Double] =
     allCatch
       .either(s.toDouble)
       .left
-      .map(_ => new SerdeException("Cannot parse Double"))
+      .map(t => new SerdeException(s"Cannot parse Double from '${s}'", t))
 
   def parseDecimal(s: String): Either[Throwable, BigDecimal] =
     allCatch
       .either(BigDecimal(s))
       .left
-      .map(_ => new SerdeException("Cannot parse BigDecimal"))
+      .map(t => new SerdeException(s"Cannot parse BigDecimal from '${s}'", t))
 
   def parseDate(s: String): Either[Throwable, LocalDate] =
     allCatch
       .either(LocalDate.parse(s))
       .left
-      .map(_ => new SerdeException("Cannot parse LocalDate"))
+      .map(t => new SerdeException(s"Cannot parse LocalDate from '${s}'", t))
 
   def parseDateTime(s: String): Either[Throwable, OffsetDateTime] =
     allCatch
       .either(OffsetDateTime.parse(s))
       .left
-      .map(_ => new SerdeException("Cannot parse OffsetDateTime"))
+      .map(t => new SerdeException(s"Cannot parse OffsetDateTime from '${s}'", t))

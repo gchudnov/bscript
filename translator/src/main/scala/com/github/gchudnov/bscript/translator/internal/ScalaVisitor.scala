@@ -349,7 +349,6 @@ private[translator] final class ScalaVisitor(laws: TranslateLaws) extends TreeVi
     yield ss.withLines(lines)
 
   override def visit(s: ScalaState, n: Call): Either[Throwable, ScalaState] =
-    println(("n.args", n.args))
     for
       as <- n.args.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, ScalaState]) { case (acc, e) =>
               acc match

@@ -754,7 +754,6 @@ final class ScalaVisitorSpec extends TestSpec:
 
             actual.contains(expected) mustBe true
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
