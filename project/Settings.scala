@@ -8,7 +8,7 @@ import com.jsuereth.sbtpgp.PgpKeys
 import com.jsuereth.sbtpgp.SbtPgp.autoImport.usePgpKeyHex
 
 object Settings {
-  private val scalaV = "3.2.0"
+  private val scalaV = "3.2.1"
 
   private val sharedScalacOptions = Seq(
     "-deprecation",                  // emit warning and location for usages of deprecated APIs
