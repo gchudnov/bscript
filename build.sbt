@@ -73,6 +73,16 @@ lazy val translator = (project in file("translator"))
     libraryDependencies ++= Dependencies.Translator
   )
 
+lazy val transpiler = (project in file("transpiler"))
+  .dependsOn(lang, builder)
+  .disablePlugins(AssemblyPlugin)
+  .settings(allSettings: _*)
+  .settings(Settings.sonatype)
+  .settings(
+    name := "bscript-transpiler",
+    libraryDependencies ++= Dependencies.Transpiler
+  )
+
 lazy val inspector = (project in file("inspector"))
   .dependsOn(lang, builder, interpreter, translator, rewriter)
   .disablePlugins(AssemblyPlugin)
@@ -111,7 +121,7 @@ lazy val b1Cli = (project in file("b1-cli"))
   )
 
 lazy val root = (project in file("."))
-  .aggregate(lang, rewriter, serde, builder, interpreter, translator, inspector, b1, b1Cli)
+  .aggregate(lang, rewriter, serde, builder, interpreter, translator, transpiler, inspector, b1, b1Cli)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(Settings.noPublish)

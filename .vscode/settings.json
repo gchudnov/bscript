@@ -17,5 +17,6 @@
     "Serde",
     "struct",
     "Subtractor"
-  ]
+  ],
+  "editor.tabSize": 2
 }
