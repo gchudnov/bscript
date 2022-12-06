@@ -1,11 +1,16 @@
 - TODO: ast gen from scala
 
+https://github.com/lampepfl/dotty/blob/5cf8a582c9915ff08f04790a04de5df3e5838287/library/src/scala/quoted/Quotes.scala#L4646
+
+https://medium.com/codex/scala-3-macros-without-pain-ce54d116880a
+
 https://blog.softwaremill.com/starting-with-scala-3-macros-a-short-tutorial-88e9d2b2584c
 https://softwaremill.com/scala-3-macros-tips-and-tricks/
 
 https://docs.scala-lang.org/scala3/guides/macros/reflection.html
 https://docs.scala-lang.org/scala3/reference/metaprogramming/reflection.html
 
+https://scala-lang.org/api/3.2.1/scala/quoted/Quotes$reflectModule$TreeAccumulator.html#
 
 - TODO: allow operations on BigDecimal from java: + > < ...
 

@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.translator.Translator
  * Translates AST to Scala
  */
 private[translator] final class ScalaTranslator(laws: TranslateLaws, state: ScalaState) extends Translator:
-  override def translate(ast1: AST): Either[Throwable, String] =
+  override def fromAST(ast1: AST): Either[Throwable, String] =
     val scalaVisitor = ScalaVisitor.make(laws)
 
     ast1

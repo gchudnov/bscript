@@ -25,7 +25,7 @@ final class TranslatorSpec extends TestSpec:
           .build(ast0, types, typeCheckLaws)
           .flatMap(astMeta =>
             val translator = Scala3Translator.make(astMeta.meta, typeNames)
-            translator.translate(astMeta.ast)
+            translator.fromAST(astMeta.ast)
           )
 
         val expected =
@@ -48,7 +48,7 @@ final class TranslatorSpec extends TestSpec:
           .build(ast0, types, typeCheckLaws)
           .flatMap(astMeta =>
             val translator = Scala3JTranslator.make(astMeta.meta, typeNames)
-            translator.translate(astMeta.ast)
+            translator.fromAST(astMeta.ast)
           )
 
         val expected =
@@ -65,4 +65,8 @@ final class TranslatorSpec extends TestSpec:
       }
     }
 
+    "translated from Scala3" should {
+
+
+    }
   }
