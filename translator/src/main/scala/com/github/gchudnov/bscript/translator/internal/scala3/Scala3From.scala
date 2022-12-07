@@ -1,20 +1,50 @@
 package com.github.gchudnov.bscript.translator.internal.scala3
 
 import scala.quoted.*
-import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.ast.NothingVal
+import com.github.gchudnov.bscript.lang.ast.AST as BAST
+import com.github.gchudnov.bscript.lang.ast.Expr as BExpr
+import com.github.gchudnov.bscript.lang.ast.NothingVal as BNothingVal
+import com.github.gchudnov.bscript.lang.ast.Block as BBlock
+import com.github.gchudnov.bscript.lang.ast.BoolVal as BBoolVal
+import com.github.gchudnov.bscript.lang.ast.UnaryMinus as BUnaryMinus
 
-object Scala3From {
+object Scala3From:
 
-  inline def make[T](inline x: T): AST =
-    ${makeImpl('x)}
+  given ToExpr[BAST] with {
+    def apply(x: BAST)(using Quotes): Expr[BAST] =
+      import quotes.reflect.*
 
-  private def makeImpl[T: Type](expr: Expr[T])(using qctx: Quotes): Expr[AST] = 
+      x match {
+        case BUnaryMinus(xs, _, _) =>
+          '{BUnaryMinus(${})}
+        case _ =>
+          '{BNothingVal()}
+      }
+      // '{x} // HOWTO???
+      // ???
+  }
+
+  inline def make[T](inline x: T): BAST =
+    ${ makeImpl('x) }
+
+  private def makeImpl[T: Type](expr: Expr[T])(using qctx: Quotes): Expr[BAST] =
     import qctx.reflect.*
 
-    '{NothingVal()}
+    // val tb = summon[Type[BAST]]
 
-}
+    val treeAccumulator = new TreeAccumulator[BAST]:
+      def foldTree(x: BAST, tree: Tree)(owner: Symbol): BAST = tree match
+        case Literal(BooleanConstant(value)) =>
+          BBoolVal(value)
+        case other =>
+          println("OTHER: " + other)
+          BNothingVal()
+
+    val bast = treeAccumulator.foldOverTree(BBlock.empty, expr.asTerm)(Symbol.noSymbol)
+
+    Expr(bast)
+    // '{BBoolVal(xx)}
+
 
 /*
 import scala.quoted.*
@@ -28,7 +58,7 @@ object Transpiler:
   inline def trace[T](inline x: T): Unit =
     ${traceImpl('x)}
 
-  private def traceImpl[T: Type](expr: Expr[T])(using qctx: Quotes): Expr[Unit] = 
+  private def traceImpl[T: Type](expr: Expr[T])(using qctx: Quotes): Expr[Unit] =
     import qctx.reflect.*
 
     def collectAST(tree: Tree): MyState =
@@ -36,7 +66,7 @@ object Transpiler:
         override def foldTree(x: MyState, tree: Tree)(owner: Symbol): MyState = tree match
           case Literal(c) =>
             c match {
-              case y: BooleanConstant(value) => 
+              case y: BooleanConstant(value) =>
                 BoolVal(value)
               case _ =>
                 NothingVal()
@@ -69,17 +99,17 @@ object Transpiler:
 
   /// DEBUG
 
-  inline def debug(inline exprs: Any*): Unit = 
+  inline def debug(inline exprs: Any*): Unit =
     ${debugImpl('exprs)}
 
-  private def debugImpl(exprs: Expr[Seq[Any]])(using Quotes): Expr[Unit] = 
+  private def debugImpl(exprs: Expr[Seq[Any]])(using Quotes): Expr[Unit] =
     import quotes.reflect.*
 
-    def showWithValue(e: Expr[_]): Expr[String] = 
+    def showWithValue(e: Expr[_]): Expr[String] =
       '{${Expr(e.show)} + " = " + $e}
 
-    val stringExps: Seq[Expr[String]] = exprs match 
-      case Varargs(es) => 
+    val stringExps: Seq[Expr[String]] = exprs match
+      case Varargs(es) =>
         es.map { e =>
           e.asTerm match {
             case Literal(c: Constant) => Expr(c.value.toString)
@@ -123,4 +153,4 @@ Inlined(None, Nil, Block(Nil, Block(List(DefDef("$anonfun", List(TermParamClause
 // after a while the above representation becomes semi-readable
 
 
-*/
+ */

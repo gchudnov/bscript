@@ -1,5 +1,14 @@
 - TODO: ast gen from scala
 
+https://github.com/deusaquilus/miniquill/blob/master/src/main/scala/org/stuff/MiniQuill.scala#L221
+
+https://docs.scala-lang.org/scala3/guides/macros/macros.html
+
+https://github.com/lampepfl/dotty-macro-examples
+
+https://github.com/gzoller/scala-reflection/blob/b85f8e9cf2a432c71796ea6487c6485e90c54f96/src/main/scala/co.blocke.scala_reflection/impl/TastyReflection.scala#L4
+
+
 https://github.com/lampepfl/dotty/blob/5cf8a582c9915ff08f04790a04de5df3e5838287/library/src/scala/quoted/Quotes.scala#L4646
 
 https://medium.com/codex/scala-3-macros-without-pain-ce54d116880a
@@ -11,6 +20,9 @@ https://docs.scala-lang.org/scala3/guides/macros/reflection.html
 https://docs.scala-lang.org/scala3/reference/metaprogramming/reflection.html
 
 https://scala-lang.org/api/3.2.1/scala/quoted/Quotes$reflectModule$TreeAccumulator.html#
+
+
+
 
 - TODO: allow operations on BigDecimal from java: + > < ...
 
