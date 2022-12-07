@@ -10,13 +10,13 @@ import com.github.gchudnov.bscript.lang.ast.UnaryMinus as BUnaryMinus
 
 object Scala3From:
 
-  given ToExpr[BAST] with {
-    def apply(x: BAST)(using Quotes): Expr[BAST] =
+  given ToExpr[BExpr] with {
+    def apply(x: BExpr)(using Quotes): Expr[BExpr] =
       import quotes.reflect.*
 
       x match {
-        case BUnaryMinus(xs, _, _) =>
-          '{BUnaryMinus(${})}
+        case BUnaryMinus(y, _, _) =>
+          '{BUnaryMinus(${Expr(y)})}
         case _ =>
           '{BNothingVal()}
       }
@@ -30,10 +30,8 @@ object Scala3From:
   private def makeImpl[T: Type](expr: Expr[T])(using qctx: Quotes): Expr[BAST] =
     import qctx.reflect.*
 
-    // val tb = summon[Type[BAST]]
-
-    val treeAccumulator = new TreeAccumulator[BAST]:
-      def foldTree(x: BAST, tree: Tree)(owner: Symbol): BAST = tree match
+    val treeAccumulator = new TreeAccumulator[BExpr]:
+      def foldTree(x: BExpr, tree: Tree)(owner: Symbol): BExpr = tree match
         case Literal(BooleanConstant(value)) =>
           BBoolVal(value)
         case other =>
@@ -43,7 +41,17 @@ object Scala3From:
     val bast = treeAccumulator.foldOverTree(BBlock.empty, expr.asTerm)(Symbol.noSymbol)
 
     Expr(bast)
-    // '{BBoolVal(xx)}
+
+    // val treeAccumulator = new TreeAccumulator[Expr[BAST]]:
+    //   def foldTree(x: Expr[BAST], tree: Tree)(owner: Symbol): Expr[BAST] = tree match
+    //     case Literal(BooleanConstant(value)) =>
+    //       '{BBoolVal(${value})}
+    //     case other =>
+    //       println("OTHER: " + other)
+    //       '{BNothingVal()}
+
+    // val bast = treeAccumulator.foldOverTree('{BBlock.empty}, expr.asTerm)(Symbol.noSymbol)
+    // bast
 
 
 /*
