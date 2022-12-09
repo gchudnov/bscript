@@ -16,6 +16,27 @@ object Scala3Import:
         case other =>
           throw new MatchError(s"Unsupported S.Type: ${other}")
 
+  given ToExpr[S.Symbol] with
+    def apply(x: S.Symbol)(using Quotes): Expr[S.Symbol] =
+      import quotes.reflect.*
+
+      x match
+        case S.SymbolRef(name) =>
+          '{ S.SymbolRef(${ Expr(name) }) }
+        case other =>
+          throw new MatchError(s"Unsupported S.Symbol: ${other}")
+
+  given ToExpr[B.LValue] with
+    def apply(x: B.LValue)(using Quotes): Expr[B.LValue] =
+      import quotes.reflect.*
+
+      x match
+        case B.Var(symRef, _, _) =>
+          '{ B.Var(${ Expr(symRef) }) }
+
+        case other =>
+          throw new MatchError(s"Unsupported B.LValue: ${other}")
+
   given ToExpr[B.Expr] with
     def apply(x: B.Expr)(using Quotes): Expr[B.Expr] =
       import quotes.reflect.*
@@ -44,12 +65,14 @@ object Scala3Import:
         case B.Block(statements, _, _, _) =>
           '{ B.Block.ofSeq(${ Expr.ofSeq(statements.map(Expr(_))) }) }
 
+        case B.Assign(id, expr, _, _) =>
+          '{ B.Assign(${ Expr(id) }, ${ Expr(expr) }) }
+
         case B.UnaryMinus(y, _, _) =>
           '{ B.UnaryMinus(${ Expr(y) }) }
 
         case other =>
-          println(s"TO_EXPR, OTHER: ${other}")
-          '{ B.NothingVal() }
+          throw new MatchError(s"Unsupported B.Expr: ${other}")
 
   inline def make[T](inline x: T): B.AST =
     ${ makeImpl('x) }
@@ -95,7 +118,16 @@ object Scala3Import:
         val retVal = iterate(term)
         B.Block((ss :+ retVal)*)
 
-      case Inlined(_, _, term) => 
+      case Assign(lhsTerm, rhsTerm) =>
+        val bLhs: B.LValue = lhsTerm match
+          case Ident(name) =>
+            B.Var(S.SymbolRef(name))
+          case other =>
+            throw new MatchError(s"Unsupported Assign ${other.show(using Printer.TreeStructure)}")
+        val bRhs = iterate(rhsTerm)
+        B.Assign(bLhs, bRhs)
+
+      case Inlined(_, _, term) =>
         iterate(term)
 
       case other =>
@@ -108,6 +140,15 @@ object Scala3Import:
     Expr(bast)
 
 /*
+// Assign(Ident("c"), Literal(IntConstant(30)))
+
+Assign(Var(SymbolRef("x")), IntVal(3))
+
+              Assign(
+                Access(Var(SymbolRef("d")), Var(SymbolRef("i"))),
+                Access(Access(Var(SymbolRef("a")), Var(SymbolRef("b"))), Var(SymbolRef("y")))
+              )
+
     // // Block(List(ValDef("a", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant()))
 
         // VarDecl(TypeRef("A"), "a", Init(TypeRef("A")))

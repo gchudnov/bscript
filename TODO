@@ -27,7 +27,7 @@ https://docs.scala-lang.org/scala3/reference/metaprogramming/reflection.html
 https://scala-lang.org/api/3.2.1/scala/quoted/Quotes$reflectModule$TreeAccumulator.html#
 
 
-
+- TODO: it is not possible distinguish between TypeRef("auto") and type-ref that references variable (see scala ast)
 
 - TODO: allow operations on BigDecimal from java: + > < ...
 

@@ -75,7 +75,7 @@ final class Scala3ImportSpec extends TestSpec:
 
         val expected = Block(
           VarDecl(TypeRef("auto"), "c", IntVal(10)),
-          VoidVal()
+          Assign(Var(SymbolRef("c")), IntVal(30))
         )
         actual mustBe expected            
       }
