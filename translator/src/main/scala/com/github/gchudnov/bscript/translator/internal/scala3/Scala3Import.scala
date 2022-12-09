@@ -95,7 +95,8 @@ object Scala3Import:
         val retVal = iterate(term)
         B.Block((ss :+ retVal)*)
 
-      case Inlined(_, _, term) => iterate(term)
+      case Inlined(_, _, term) => 
+        iterate(term)
 
       case other =>
         println("TREE_ACC, OTHER TREE:")
