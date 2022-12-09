@@ -79,6 +79,19 @@ final class Scala3ImportSpec extends TestSpec:
         )
         actual mustBe expected            
       }
+
+      "assign var defined in the outer scope" in {
+        // Assign(Ident("c"), Literal(IntConstant(30)))
+        var d = 1
+        val actual = Scala3Import.make({
+          d = 2
+        })
+
+        val expected = Block(
+          Assign(Var(SymbolRef("d")), IntVal(2))
+        )
+        actual mustBe expected            
+      }      
     }
   }
 
