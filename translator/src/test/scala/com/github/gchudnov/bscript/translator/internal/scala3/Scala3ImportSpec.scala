@@ -111,7 +111,7 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
-      "compare eq" in {
+      "eq" in {
         // Apply(Select(Ident("a"), "=="), List(Ident("b")))
         val a = 10
         val b = 20
@@ -126,6 +126,70 @@ final class Scala3ImportSpec extends TestSpec:
 
         actual mustBe expected        
       }
+
+      "neq" in {
+        // Apply(Select(Ident("a"), "!="), List(Ident("b")))
+        val a = 10
+        val b = 20
+        
+        val actual = Scala3Import.make({
+          a != b
+        })
+
+        val expected = Block(
+          Call(SymbolRef("!="), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
+        )
+
+        actual mustBe expected        
+      }
+
+      "gt" in {
+        // Apply(Select(Ident("a"), ">"), List(Ident("b")))
+        val a = 10
+        val b = 20
+        
+        val actual = Scala3Import.make({
+          a > b
+        })
+
+        val expected = Block(
+          Call(SymbolRef(">"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
+        )
+
+        actual mustBe expected        
+      }   
+
+      "lt" in {
+        // Apply(Select(Ident("a"), "<"), List(Ident("b")))
+        val a = 10
+        val b = 20
+        
+        val actual = Scala3Import.make({
+          a < b
+        })
+
+        val expected = Block(
+          Call(SymbolRef("<"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
+        )
+
+        actual mustBe expected        
+      }        
+
+      "plus" in {
+        // Apply(Select(Ident("a"), "+"), List(Ident("b")))
+        val a = 10
+        val b = 20
+        
+        val actual = Scala3Import.make({
+          a + b
+        })
+
+        val expected = Block(
+          Call(SymbolRef("+"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
+        )
+
+        actual mustBe expected        
+      }          
 
       // "if" in {
       //   // If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))), Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
