@@ -17,6 +17,7 @@ final class Scala3ImportSpec extends TestSpec:
     "importing scala-code" should {
       
       "int constant" in {
+        // IntConstant(10)
         val actual = Scala3Import.make({
           10
         })
@@ -26,10 +27,21 @@ final class Scala3ImportSpec extends TestSpec:
       }
 
       "bool constant" in {
+        // BooleanConstant(true)
         val actual = Scala3Import.make({
           true
         })
         val expected = BoolVal(true)
+
+        actual mustBe expected
+      }
+
+      "int val decl" in {
+        // Block(List(ValDef("a", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant()))
+        val actual = Scala3Import.make({
+          val a = 10
+        })
+        val expected = IntVal(10)
 
         actual mustBe expected
       }
