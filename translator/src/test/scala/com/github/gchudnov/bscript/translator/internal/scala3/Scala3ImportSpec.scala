@@ -110,6 +110,37 @@ final class Scala3ImportSpec extends TestSpec:
 
         actual mustBe expected
       }
+
+      "compare eq" in {
+        // Apply(Select(Ident("a"), "=="), List(Ident("b")))
+        val a = 10
+        val b = 20
+        
+        val actual = Scala3Import.make({
+          a == b
+        })
+
+        val expected = Block(
+          Call(SymbolRef("=="), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
+        )
+
+        actual mustBe expected        
+      }
+
+      // "if" in {
+      //   // If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))), Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
+      //   val x = 10
+
+      //   val actual = Scala3Import.make({
+      //     if (x == 10) then {
+      //       true
+      //     }
+      //   })
+
+      //   val expected = NothingVal()
+
+      //   actual mustBe expected     
+      // }
     }
   }
 

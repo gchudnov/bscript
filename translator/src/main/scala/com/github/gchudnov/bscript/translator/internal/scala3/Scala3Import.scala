@@ -33,7 +33,7 @@ object Scala3Import:
       x match
         case B.Var(symRef, _, _) =>
           '{ B.Var(${ Expr(symRef) }) }
-        
+
         case B.Access(bLhs, bRhs, _, _) =>
           '{ B.Access(${ Expr(bLhs) }, ${ Expr(bRhs) }) }
 
@@ -62,6 +62,11 @@ object Scala3Import:
         case B.NothingVal(_, _) =>
           '{ B.NothingVal() }
 
+        case B.Var(symRef, _, _) =>
+          '{ B.Var(${ Expr(symRef) }) }
+        case B.Access(bLhs, bRhs, _, _) =>
+          '{ B.Access(${ Expr(bLhs) }, ${ Expr(bRhs) }) }
+
         case B.VarDecl(t, name, valueExpr, _, _, _) =>
           '{ B.VarDecl(${ Expr(t) }, ${ Expr(name) }, ${ Expr(valueExpr) }) }
 
@@ -70,6 +75,9 @@ object Scala3Import:
 
         case B.Assign(id, expr, _, _) =>
           '{ B.Assign(${ Expr(id) }, ${ Expr(expr) }) }
+
+        case B.Call(id, args, _, _) =>
+          '{ B.Call(${ Expr(id) }, ${ Expr.ofSeq(args.map(Expr(_))) }) }
 
         case B.UnaryMinus(y, _, _) =>
           '{ B.UnaryMinus(${ Expr(y) }) }
@@ -134,6 +142,21 @@ object Scala3Import:
         val bRhs           = iterate(rhsTerm)
         B.Assign(bLhs, bRhs)
 
+      // Apply(Select(Ident("a"), "=="), List(Ident("b")))
+      case Apply(fun, args) =>
+        val (bId, bArg): (S.Symbol, B.Expr) = fun match
+          case Select(qualifier, sym) =>
+            val bArg = iterate(qualifier)
+            (S.SymbolRef(sym), bArg)
+          case other =>
+            throw new MatchError(s"Unsupported 'fun' of Apply: ${other.show(using Printer.TreeStructure)}")
+        val bArgs = args.map(t => iterate(t))
+        B.Call(bId, bArg +: bArgs)
+
+      // Select(Ident("a"), "==")
+
+      // id: Symbol, exprs: Seq[Expr]
+
       case Inlined(_, _, term) =>
         iterate(term)
 
@@ -147,6 +170,9 @@ object Scala3Import:
     Expr(bast)
 
 /*
+If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))),
+
+Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
 
 // Assign(Ident("c"), Literal(IntConstant(30)))
 
