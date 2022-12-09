@@ -1,5 +1,10 @@
 - TODO: ast gen from scala
 
+https://github.com/lampepfl/dotty-macro-examples/blob/main/buildingCustomASTs/src/macro.scala
+https://github.com/deusaquilus/miniquill/blob/master/src/main/scala/org/stuff/MiniQuill.scala#L215
+
+
+
 https://github.com/deusaquilus/miniquill/blob/master/src/main/scala/org/stuff/MiniQuill.scala#L221
 
 https://docs.scala-lang.org/scala3/guides/macros/macros.html
