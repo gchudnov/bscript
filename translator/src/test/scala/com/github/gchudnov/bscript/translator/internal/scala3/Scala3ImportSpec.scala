@@ -63,7 +63,7 @@ final class Scala3ImportSpec extends TestSpec:
           VarDecl(TypeRef("auto"), "b", IntVal(10)),
           VoidVal()
         )
-        actual mustBe expected        
+        actual mustBe expected
       }
 
       "assign var" in {
@@ -77,7 +77,7 @@ final class Scala3ImportSpec extends TestSpec:
           VarDecl(TypeRef("auto"), "c", IntVal(10)),
           Assign(Var(SymbolRef("c")), IntVal(30))
         )
-        actual mustBe expected            
+        actual mustBe expected
       }
 
       "assign var defined in the outer scope" in {
@@ -90,8 +90,24 @@ final class Scala3ImportSpec extends TestSpec:
         val expected = Block(
           Assign(Var(SymbolRef("d")), IntVal(2))
         )
-        actual mustBe expected            
-      }      
+
+        actual mustBe expected
+      }
+
+      "assign member of an outer struct" in {
+        case class Data(var x: Int)
+        val d = Data(10)
+
+        val actual = Scala3Import.make({
+          d.x = 100
+        })
+
+        val expected = Block(
+          Assign(Access(Var(SymbolRef("d")), Var(SymbolRef("x"))), IntVal(100))
+        )
+
+        actual mustBe expected
+      }
     }
   }
 

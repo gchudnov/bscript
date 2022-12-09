@@ -33,6 +33,9 @@ object Scala3Import:
       x match
         case B.Var(symRef, _, _) =>
           '{ B.Var(${ Expr(symRef) }) }
+        
+        case B.Access(bLhs, bRhs, _, _) =>
+          '{ B.Access(${ Expr(bLhs) }, ${ Expr(bRhs) }) }
 
         case other =>
           throw new MatchError(s"Unsupported B.LValue: ${other}")
@@ -118,28 +121,31 @@ object Scala3Import:
         val retVal = iterate(term)
         B.Block((ss :+ retVal)*)
 
+      case Ident(name) =>
+        B.Var(S.SymbolRef(name))
+
+      case Select(qualifier, sym) =>
+        val bLhs: B.LValue = iterate(qualifier).asInstanceOf[B.LValue]
+        val bRhs: B.LValue = B.Var(S.SymbolRef(sym))
+        B.Access(bLhs, bRhs)
+
       case Assign(lhsTerm, rhsTerm) =>
-        val bLhs: B.LValue = lhsTerm match
-          case Ident(name) =>
-            B.Var(S.SymbolRef(name))
-          case other =>
-            throw new MatchError(s"Unsupported Assign ${other.show(using Printer.TreeStructure)}")
-        val bRhs = iterate(rhsTerm)
+        val bLhs: B.LValue = iterate(lhsTerm).asInstanceOf[B.LValue]
+        val bRhs           = iterate(rhsTerm)
         B.Assign(bLhs, bRhs)
 
       case Inlined(_, _, term) =>
         iterate(term)
 
       case other =>
-        println("TREE_ACC, OTHER TREE:")
-        println(other.show(using Printer.TreeStructure))
-        B.NothingVal()
+        throw new MatchError(s"Unsupported Tree: ${other.show(using Printer.TreeStructure)}")
 
     val bast = iterate(expr.asTerm)
 
     Expr(bast)
 
 /*
+
 // Assign(Ident("c"), Literal(IntConstant(30)))
 
 Assign(Var(SymbolRef("x")), IntVal(3))
