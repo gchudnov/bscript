@@ -2,25 +2,27 @@ package com.github.gchudnov.bscript.translator.internal.scala3
 
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.symbols.*
 
 final class Scala3ImportSpec extends TestSpec:
 
   final case class DataModel(
     var a: Int,
     var b: String,
-    var c: String,
+    var c: String
   )
 
   val r = DataModel(1, "", "EUR")
 
   "Scala3Import" when {
     "importing scala-code" should {
-      
+
       "int constant" in {
         // IntConstant(10)
         val actual = Scala3Import.make({
           10
         })
+
         val expected = IntVal(10)
 
         actual mustBe expected
@@ -31,6 +33,7 @@ final class Scala3ImportSpec extends TestSpec:
         val actual = Scala3Import.make({
           true
         })
+
         val expected = BoolVal(true)
 
         actual mustBe expected
@@ -41,9 +44,17 @@ final class Scala3ImportSpec extends TestSpec:
         val actual = Scala3Import.make({
           val a = 10
         })
-        val expected = IntVal(10)
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "a", IntVal(10)),
+          VoidVal()
+        )
 
         actual mustBe expected
+      }
+
+      "assign variable" in {
+        // TODO: IMPL
       }
     }
   }
@@ -51,7 +62,7 @@ final class Scala3ImportSpec extends TestSpec:
 /*
 {
   r.a = 10
-  r.b = "Test"          
+  r.b = "Test"
 }
 
 Block(List(Assign(Select(Select(This(Ident(TranspilerSpec)),r),a),Literal(Constant(10)))),Assign(Select(Select(This(Ident(TranspilerSpec)),r),b),Literal(Constant(Test))))
@@ -66,14 +77,14 @@ Block(List(Assign(Select(Select(This(Ident(TranspilerSpec)),r),a),Literal(Consta
         // inline def code = myRule _
 
           // r.a = 10
-          // r.b = "Test"          
+          // r.b = "Test"
           // if (r.c == "HRK") then {
           //   r.a = 20
           // }
 
 {
           r.a = 10
-          r.b = "Test"          
+          r.b = "Test"
           if (r.c == "HRK") then {
             r.a = 20
           }
@@ -90,4 +101,4 @@ HERE!Assign(Select(Select(This(Ident(TranspilerSpec)),r),b),Literal(Constant(Tes
 
 we need to convert B1 AST to RE AST, then use this code
 
-*/
+ */

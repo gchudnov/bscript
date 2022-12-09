@@ -1,48 +1,66 @@
 package com.github.gchudnov.bscript.translator.internal.scala3
 
 import scala.quoted.*
-import com.github.gchudnov.bscript.lang.{ast as B}
+import com.github.gchudnov.bscript.lang.ast as B
+import com.github.gchudnov.bscript.lang.symbols as S
 
 object Scala3Import:
 
-  given ToExpr[B.Expr] with {
+  given ToExpr[S.Type] with
+    def apply(x: S.Type)(using Quotes): Expr[S.Type] =
+      import quotes.reflect.*
+
+      x match
+        case S.TypeRef(name) =>
+          '{ S.TypeRef(${ Expr(name) }) }
+        case other =>
+          throw new MatchError(s"Unsupported S.Type: ${other}")
+
+  given ToExpr[B.Expr] with
     def apply(x: B.Expr)(using Quotes): Expr[B.Expr] =
       import quotes.reflect.*
 
-      x match {
+      x match
         case B.BoolVal(value, _, _) =>
-          '{B.BoolVal(${Expr(value)})}
+          '{ B.BoolVal(${ Expr(value) }) }
         case B.IntVal(value, _, _) =>
-          '{B.IntVal(${Expr(value)})}
+          '{ B.IntVal(${ Expr(value) }) }
         case B.LongVal(value, _, _) =>
-          '{B.LongVal(${Expr(value)})}
+          '{ B.LongVal(${ Expr(value) }) }
         case B.FloatVal(value, _, _) =>
-          '{B.FloatVal(${Expr(value)})}
+          '{ B.FloatVal(${ Expr(value) }) }
         case B.DoubleVal(value, _, _) =>
-          '{B.DoubleVal(${Expr(value)})}
+          '{ B.DoubleVal(${ Expr(value) }) }
         case B.StrVal(value, _, _) =>
-          '{B.StrVal(${Expr(value)})}
-        case B.VoidVal( _, _) =>
-          '{B.VoidVal()}
-        case B.NothingVal( _, _) =>
-          '{B.NothingVal()}
+          '{ B.StrVal(${ Expr(value) }) }
+        case B.VoidVal(_, _) =>
+          '{ B.VoidVal() }
+        case B.NothingVal(_, _) =>
+          '{ B.NothingVal() }
+
+        case B.VarDecl(t, name, valueExpr, _, _, _) =>
+          '{ B.VarDecl(${ Expr(t) }, ${ Expr(name) }, ${ Expr(valueExpr) }) }
+
+        case B.Block(statements, _, _, _) =>
+          '{ B.Block.ofSeq(${ Expr.ofSeq(statements.map(Expr(_))) }) }
+
         case B.UnaryMinus(y, _, _) =>
-          '{B.UnaryMinus(${Expr(y)})}
+          '{ B.UnaryMinus(${ Expr(y) }) }
+
         case other =>
           println(s"TO_EXPR, OTHER: ${other}")
-          '{B.NothingVal()}
-      }
-  }
+          '{ B.NothingVal() }
 
   inline def make[T](inline x: T): B.AST =
-    ${makeImpl('x)}
+    ${ makeImpl('x) }
 
   private def makeImpl[T: Type](expr: Expr[T])(using qctx: Quotes): Expr[B.AST] =
     import qctx.reflect.*
 
-    val treeAccumulator = new TreeAccumulator[B.Expr]:
-      def foldTree(x: B.Expr, tree: Tree)(owner: Symbol): B.Expr = tree match
-        case Literal(c) =>  c match {
+    def iterate(tree: Tree): B.Expr = tree match
+
+      case Literal(c) =>
+        c match
           case BooleanConstant(value) =>
             B.BoolVal(value)
           case ByteConstant(value) =>
@@ -61,34 +79,41 @@ object Scala3Import:
             B.StrVal(value.toString())
           case StringConstant(value) =>
             B.StrVal(value)
-          case UnitConstant =>
+          case UnitConstant() =>
             B.VoidVal()
-          case NullConstant =>
+          case NullConstant() =>
             B.NothingVal()
-        }
-        
-        case other =>
-          println("TREE_ACC, OTHER:")
-          println(other.show(using Printer.TreeStructure))
-          B.NothingVal()
+          case other =>
+            throw new MatchError(s"Unsupported Constant: ${other}")
 
-    val bast = treeAccumulator.foldOverTree(B.Block.empty, expr.asTerm)(Symbol.noSymbol)
+      case ValDef(name, typ, maybeTerm) =>
+        val valueExpr = maybeTerm.map(t => iterate(t)).getOrElse(B.NothingVal())
+        B.VarDecl(S.TypeRef("auto"), name, valueExpr)
+
+      case Block(statements, term) =>
+        val ss     = statements.map(s => iterate(s))
+        val retVal = iterate(term)
+        B.Block((ss :+ retVal)*)
+
+      case Inlined(_, _, term) => iterate(term)
+
+      case other =>
+        println("TREE_ACC, OTHER TREE:")
+        println(other.show(using Printer.TreeStructure))
+        B.NothingVal()
+
+    val bast = iterate(expr.asTerm)
 
     Expr(bast)
 
-    // val treeAccumulator = new TreeAccumulator[Expr[BAST]]:
-    //   def foldTree(x: Expr[BAST], tree: Tree)(owner: Symbol): Expr[BAST] = tree match
-    //     case Literal(BooleanConstant(value)) =>
-    //       '{BBoolVal(${value})}
-    //     case other =>
-    //       println("OTHER: " + other)
-    //       '{BNothingVal()}
-
-    // val bast = treeAccumulator.foldOverTree('{BBlock.empty}, expr.asTerm)(Symbol.noSymbol)
-    // bast
-
-
 /*
+    // // Block(List(ValDef("a", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant()))
+
+        // VarDecl(TypeRef("A"), "a", Init(TypeRef("A")))
+        // VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
+        // VarDecl(TypeRef(typeNames.autoType), "x", IntVal(10)),
+
+
 import scala.quoted.*
 
 object Transpiler:
