@@ -54,6 +54,7 @@ final class Scala3ImportSpec extends TestSpec:
       }
 
       "decl int var" in {
+        // NOTE: Scala AST looks exactly the same as we create a `val`
         val actual = Scala3Import.make({
           var b = 10
         })
@@ -63,6 +64,20 @@ final class Scala3ImportSpec extends TestSpec:
           VoidVal()
         )
         actual mustBe expected        
+      }
+
+      "assign var" in {
+        // Assign(Ident("c"), Literal(IntConstant(30)))
+        val actual = Scala3Import.make({
+          var c = 10
+          c = 30
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "c", IntVal(10)),
+          VoidVal()
+        )
+        actual mustBe expected            
       }
     }
   }
