@@ -1,5 +1,8 @@
 - TODO: ast gen from scala
 
+- TODO: IF/ELSE
+- TODO: METHOD CALLS
+
 https://github.com/lampepfl/dotty-macro-examples/blob/main/buildingCustomASTs/src/macro.scala
 https://github.com/deusaquilus/miniquill/blob/master/src/main/scala/org/stuff/MiniQuill.scala#L215
 

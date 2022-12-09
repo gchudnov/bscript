@@ -54,6 +54,7 @@ final class Scala3ImportSpec extends TestSpec:
       }
 
       "decl int var" in {
+        // Block(List(ValDef("b", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant())))
         // NOTE: Scala AST looks exactly the same as we create a `val`
         val actual = Scala3Import.make({
           var b = 10
@@ -67,7 +68,7 @@ final class Scala3ImportSpec extends TestSpec:
       }
 
       "assign var" in {
-        // Assign(Ident("c"), Literal(IntConstant(30)))
+        // Block(List(ValDef("c", Inferred(), Some(Literal(IntConstant(10))))), Assign(Ident("c"), Literal(IntConstant(30))))
         val actual = Scala3Import.make({
           var c = 10
           c = 30
@@ -81,7 +82,7 @@ final class Scala3ImportSpec extends TestSpec:
       }
 
       "assign var defined in the outer scope" in {
-        // Assign(Ident("c"), Literal(IntConstant(30)))
+        // Assign(Ident("d"), Literal(IntConstant(2))))
         var d = 1
         val actual = Scala3Import.make({
           d = 2
@@ -95,6 +96,7 @@ final class Scala3ImportSpec extends TestSpec:
       }
 
       "assign member of an outer struct" in {
+        // Assign(Select(Ident("d"), "x"), Literal(IntConstant(100))))
         case class Data(var x: Int)
         val d = Data(10)
 

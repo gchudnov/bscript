@@ -140,6 +140,8 @@ object Scala3Import:
       case other =>
         throw new MatchError(s"Unsupported Tree: ${other.show(using Printer.TreeStructure)}")
 
+    println(expr.asTerm.show(using Printer.TreeStructure))
+
     val bast = iterate(expr.asTerm)
 
     Expr(bast)
