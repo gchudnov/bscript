@@ -341,7 +341,7 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
-      "if" in {
+      "if-then" in {
         // If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))), Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
         val x = 10
 
@@ -356,6 +356,26 @@ final class Scala3ImportSpec extends TestSpec:
             Call(SymbolRef("=="), List(Var(SymbolRef("x")), IntVal(10))),
             Block(Assign(Var(SymbolRef("a")), IntVal(2))),
             Some(VoidVal())
+          )
+        )
+
+        actual mustBe expected
+      }
+
+      "if-then-else" in {
+        val x = 10
+
+        val actual = Scala3Import.make({
+          var a = 1
+          if (x == 10) then a = 2 else a = 3
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "a", IntVal(1)),
+          If(
+            Call(SymbolRef("=="), List(Var(SymbolRef("x")), IntVal(10))),
+            Assign(Var(SymbolRef("a")), IntVal(2)),
+            Some(Assign(Var(SymbolRef("a")), IntVal(3)))
           )
         )
 

@@ -126,8 +126,7 @@ object Scala3Import:
           case other =>
             throw new MatchError(s"Unsupported Constant: ${other}")
 
-      case ValDef(name, typ, maybeTerm) =>
-        // TODO: typ is not used at the moment
+      case ValDef(name, _, maybeTerm) =>
         val valueExpr = maybeTerm.map(t => iterate(t)).getOrElse(B.NothingVal())
         B.VarDecl(S.TypeRef("auto"), name, valueExpr)
 
