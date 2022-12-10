@@ -164,7 +164,15 @@ val ast1: AST              = ???
 val typeNames: TypeNames   = ???
 val meta: Meta             = ???
 
-val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNames, meta)
+// from AST to Scala
+val errOrRes: Either[Throwable, String] = Translator.fromAST(ast1, typeNames, meta)
+
+// from Scala to AST
+val errOrRes: Either[Throwable, AST] = Translator.toAST({
+  val a = 1
+  val b = 2
+  List(a, b)
+})
 ```
 
 ### Inspector
