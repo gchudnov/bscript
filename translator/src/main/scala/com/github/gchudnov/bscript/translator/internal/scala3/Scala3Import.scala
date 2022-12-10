@@ -173,6 +173,10 @@ object Scala3Import:
               case other =>
                 throw new MatchError(s"Unsupported 'tFun' of TypeApply: ${other.show(using Printer.TreeStructure)}")
             }
+          case Ident(name) =>
+            val bId = S.SymbolRef(name)
+            val bArgs = args.map(t => iterate(t))
+            B.Call(bId, bArgs)
 
           case other =>
             throw new MatchError(s"Unsupported 'fun' of Apply: ${other.show(using Printer.TreeStructure)}")

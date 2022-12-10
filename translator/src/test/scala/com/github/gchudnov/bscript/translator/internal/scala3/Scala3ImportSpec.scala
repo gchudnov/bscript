@@ -313,6 +313,34 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
+      "call method without args" in {
+        def funcA(): Unit = {}
+
+        val actual = Scala3Import.make({
+          funcA()
+        })
+
+        val expected = Block(
+          Call(SymbolRef("funcA"), List.empty[Expr])
+        )
+
+        actual mustBe expected
+      }
+
+      "call method with one arg" in {
+        def funcA(x: Int): Unit = {}
+
+        val actual = Scala3Import.make({
+          funcA(12)
+        })
+
+        val expected = Block(
+          Call(SymbolRef("funcA"), List(IntVal(12)))
+        )
+
+        actual mustBe expected
+      }
+
       // "if" in {
       //   // If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))), Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
       //   val x = 10
