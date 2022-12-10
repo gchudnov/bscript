@@ -149,6 +149,12 @@ object Scala3Import:
         val bRhs           = iterate(rhsTerm)
         B.Assign(bLhs, bRhs)
 
+      case If(cond, thenp, elsep) =>
+        val bCond: B.Expr = iterate(cond)
+        val bThen: B.Expr = iterate(thenp)
+        val bElse: Option[B.Expr] = Some(iterate(elsep))
+        B.If(bCond, bThen, bElse)
+
       // Apply(Select(Ident("a"), "=="), List(Ident("b")))
       case Apply(fun, args) =>
         fun match
