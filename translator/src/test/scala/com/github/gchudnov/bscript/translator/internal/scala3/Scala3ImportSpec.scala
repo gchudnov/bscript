@@ -67,6 +67,19 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
+      "decl list of constants" in {
+        // Block(List(ValDef("x", Inferred(), Some(Apply(TypeApply(Select(Ident("List"), "apply"), List(Inferred())), List(Typed(Repeated(List(Literal(IntConstant(10)), Literal(IntConstant(20))), Inferred()), Inferred())))))), Literal(UnitConstant()))
+        val actual = Scala3Import.make({
+          var x = List(10, 20)
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "x", Vec(List(IntVal(10), IntVal(20)))),
+          VoidVal()
+        )
+        actual mustBe expected        
+      }
+
       "assign var" in {
         // Block(List(ValDef("c", Inferred(), Some(Literal(IntConstant(10))))), Assign(Ident("c"), Literal(IntConstant(30))))
         val actual = Scala3Import.make({
@@ -195,7 +208,7 @@ final class Scala3ImportSpec extends TestSpec:
         // Apply(Select(Ident("a"), "-"), List(Ident("b")))
         val a = 10
         val b = 20
-        
+
         val actual = Scala3Import.make({
           a - b
         })
@@ -204,14 +217,14 @@ final class Scala3ImportSpec extends TestSpec:
           Call(SymbolRef("-"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
         )
 
-        actual mustBe expected        
-      }  
+        actual mustBe expected
+      }
 
       "mul" in {
         // Apply(Select(Ident("a"), "*"), List(Ident("b")))
         val a = 10
         val b = 20
-        
+
         val actual = Scala3Import.make({
           a * b
         })
@@ -220,14 +233,14 @@ final class Scala3ImportSpec extends TestSpec:
           Call(SymbolRef("*"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
         )
 
-        actual mustBe expected        
-      }  
+        actual mustBe expected
+      }
 
       "div" in {
         // Apply(Select(Ident("a"), "/"), List(Ident("b")))
         val a = 10
         val b = 20
-        
+
         val actual = Scala3Import.make({
           a / b
         })
@@ -236,14 +249,14 @@ final class Scala3ImportSpec extends TestSpec:
           Call(SymbolRef("/"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
         )
 
-        actual mustBe expected        
-      }  
+        actual mustBe expected
+      }
 
       "mod" in {
         // Apply(Select(Ident("a"), "%"), List(Ident("b")))
         val a = 10
         val b = 20
-        
+
         val actual = Scala3Import.make({
           a % b
         })
@@ -252,8 +265,25 @@ final class Scala3ImportSpec extends TestSpec:
           Call(SymbolRef("%"), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
         )
 
-        actual mustBe expected        
-      }  
+        actual mustBe expected
+      }
+
+      "assignment to comparison" in {
+        // Block(List(ValDef("c", Inferred(), Some(Apply(Select(Ident("a"), "=="), List(Ident("b")))))), Literal(UnitConstant()))
+        val a = 10
+        val b = 20
+
+        val actual = Scala3Import.make({
+          val c = a == b
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "c", Call(SymbolRef("=="), List(Var(SymbolRef("a")), Var(SymbolRef("b"))))),
+          VoidVal()
+        )
+
+        actual mustBe expected
+      }
 
       // "if" in {
       //   // If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))), Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
@@ -273,6 +303,8 @@ final class Scala3ImportSpec extends TestSpec:
   }
 
 /*
+* Scala3Import when importing scala-code should assignment to comparison - Block(List(VarDecl(ref auto, "c", Call(ref ==, ArraySeq(Var(ref a, type:UNDEFINED, None), Var(ref b, type:UNDEFINED, None)), type:UNDEFINED, None), symbol:UNDEFINED, type:UNDEFINED, None), VoidVal(type:UNDEFINED, None)), symbol:UNDEFINED, type:UNDEFINED, None) was not equal to Block(List(VarDecl(ref auto, "c", Call(ref ==, List(Var(ref a, type:UNDEFINED, None), Var(ref b, type:UNDEFINED, None)), type:UNDEFINED, None), symbol:UNDEFINED, type:UNDEFINED, None)), symbol:UNDEFINED, type:UNDEFINED, None)
+
 {
   r.a = 10
   r.b = "Test"

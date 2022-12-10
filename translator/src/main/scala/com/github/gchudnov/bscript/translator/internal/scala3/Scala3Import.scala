@@ -82,6 +82,9 @@ object Scala3Import:
         case B.UnaryMinus(y, _, _) =>
           '{ B.UnaryMinus(${ Expr(y) }) }
 
+        case B.Vec(elems, _, _, _) =>
+          '{ B.Vec(${ Expr.ofSeq(elems.map(Expr(_))) }) }
+
         case other =>
           throw new MatchError(s"Unsupported B.Expr: ${other}")
 
@@ -121,8 +124,12 @@ object Scala3Import:
             throw new MatchError(s"Unsupported Constant: ${other}")
 
       case ValDef(name, typ, maybeTerm) =>
+        // TODO: typ is not used at the moment
         val valueExpr = maybeTerm.map(t => iterate(t)).getOrElse(B.NothingVal())
         B.VarDecl(S.TypeRef("auto"), name, valueExpr)
+
+      case Typed(expr, tpt) =>
+        iterate(expr)
 
       case Block(statements, term) =>
         val ss     = statements.map(s => iterate(s))
@@ -144,18 +151,31 @@ object Scala3Import:
 
       // Apply(Select(Ident("a"), "=="), List(Ident("b")))
       case Apply(fun, args) =>
-        val (bId, bArg): (S.Symbol, B.Expr) = fun match
+        fun match
           case Select(qualifier, sym) =>
             val bArg = iterate(qualifier)
-            (S.SymbolRef(sym), bArg)
+            val bArgs = args.map(t => iterate(t))
+            val bId = S.SymbolRef(sym)
+            B.Call(bId, bArg +: bArgs)
+          case TypeApply(tFun, tArgs) =>
+            // TODO: not, now BScript supports Vector out of the box and this is different for scala, where it is constructed
+            tFun match {
+              case Select(Ident("List"), "apply") =>
+                val vs = args.flatMap(a => {
+                  a match {
+                    case Typed(Repeated(elems, _), _) =>
+                      elems.map(e => iterate(e))
+                    case other =>
+                      List(iterate(other))
+                  }
+                })
+                B.Vec(vs)
+              case other =>
+                throw new MatchError(s"Unsupported 'tFun' of TypeApply: ${other.show(using Printer.TreeStructure)}")
+            }
+
           case other =>
             throw new MatchError(s"Unsupported 'fun' of Apply: ${other.show(using Printer.TreeStructure)}")
-        val bArgs = args.map(t => iterate(t))
-        B.Call(bId, bArg +: bArgs)
-
-      // Select(Ident("a"), "==")
-
-      // id: Symbol, exprs: Seq[Expr]
 
       case Inlined(_, _, term) =>
         iterate(term)
@@ -170,6 +190,34 @@ object Scala3Import:
     Expr(bast)
 
 /*
+[{
+	"resource": "/home/gchudnov/Projects/bscript/translator/src/test/scala/com/github/gchudnov/bscript/translator/internal/scala3/Scala3ImportSpec.scala",
+	"owner": "_generated_diagnostic_collection_name_#3",
+	"severity": 8,
+	"message": "Exception occurred while executing macro expansion.\nscala.MatchError: Unsupported Tree: 
+    
+    Repeated(List(Literal(IntConstant(10)), Literal(IntConstant(20))), Inferred()) (of class java.lang.String)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.iterate$1(Scala3Import.scala:179)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.$anonfun$5(Scala3Import.scala:161)\n\tat scala.collection.immutable.List.map(List.scala:246)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.iterate$1(Scala3Import.scala:161)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.$anonfun$1(Scala3Import.scala:125)\n\tat scala.Option.map(Option.scala:242)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.iterate$1(Scala3Import.scala:125)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.$anonfun$3(Scala3Import.scala:132)\n\tat scala.collection.immutable.List.map(List.scala:246)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.iterate$1(Scala3Import.scala:132)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.makeImpl(Scala3Import.scala:183)\n\tat com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import$.inline$makeImpl(Scala3Import.scala:91)\n\n",
+	"source": "bloop",
+	"startLineNumber": 72,
+	"startColumn": 22,
+	"endLineNumber": 74,
+	"endColumn": 11
+}]
+
+        val t = Block(
+          VarDecl(VectorType(TypeRef(typeNames.i32Type)), "a", Vec(Seq(IntVal(1), IntVal(2), IntVal(3))))
+        )
+
+        equalTo:  var a: List[Int] = List(1, 2, 3)
+
+
+
+Block(List(ValDef("x", Inferred(), Some(Apply(
+    TypeApply(Select(Ident("List"), "apply"), List(Inferred())), 
+    List(Typed(Repeated(List(Literal(IntConstant(10)), Literal(IntConstant(20))), Inferred()), Inferred())))))
+  ), 
+  Literal(UnitConstant()))
+
 If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))),
 
 Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
