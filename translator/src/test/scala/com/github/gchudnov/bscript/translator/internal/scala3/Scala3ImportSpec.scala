@@ -92,6 +92,22 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
+      "list of variables" in {
+        val actual = Scala3Import.make({
+          val a = 1
+          val b = 2
+          List(a, b)
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "a", IntVal(1)),
+          VarDecl(TypeRef("auto"), "b", IntVal(2)),
+          Vec(List(Var(SymbolRef("a")), Var(SymbolRef("b"))))
+        )
+
+        actual mustBe expected
+      }
+
       "assign var" in {
         // Block(List(ValDef("c", Inferred(), Some(Literal(IntConstant(10))))), Assign(Ident("c"), Literal(IntConstant(30))))
         val actual = Scala3Import.make({
