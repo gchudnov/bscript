@@ -77,7 +77,19 @@ final class Scala3ImportSpec extends TestSpec:
           VarDecl(TypeRef("auto"), "x", Vec(List(IntVal(10), IntVal(20)))),
           VoidVal()
         )
-        actual mustBe expected        
+        actual mustBe expected
+      }
+
+      "list of strings" in {
+        val actual = Scala3Import.make({
+          List("a", "b")
+        })
+
+        val expected = Block(
+          Vec(List(StrVal("a"), StrVal("b")))
+        )
+
+        actual mustBe expected
       }
 
       "assign var" in {
@@ -303,7 +315,7 @@ final class Scala3ImportSpec extends TestSpec:
   }
 
 /*
-* Scala3Import when importing scala-code should assignment to comparison - Block(List(VarDecl(ref auto, "c", Call(ref ==, ArraySeq(Var(ref a, type:UNDEFINED, None), Var(ref b, type:UNDEFINED, None)), type:UNDEFINED, None), symbol:UNDEFINED, type:UNDEFINED, None), VoidVal(type:UNDEFINED, None)), symbol:UNDEFINED, type:UNDEFINED, None) was not equal to Block(List(VarDecl(ref auto, "c", Call(ref ==, List(Var(ref a, type:UNDEFINED, None), Var(ref b, type:UNDEFINED, None)), type:UNDEFINED, None), symbol:UNDEFINED, type:UNDEFINED, None)), symbol:UNDEFINED, type:UNDEFINED, None)
+ * Scala3Import when importing scala-code should assignment to comparison - Block(List(VarDecl(ref auto, "c", Call(ref ==, ArraySeq(Var(ref a, type:UNDEFINED, None), Var(ref b, type:UNDEFINED, None)), type:UNDEFINED, None), symbol:UNDEFINED, type:UNDEFINED, None), VoidVal(type:UNDEFINED, None)), symbol:UNDEFINED, type:UNDEFINED, None) was not equal to Block(List(VarDecl(ref auto, "c", Call(ref ==, List(Var(ref a, type:UNDEFINED, None), Var(ref b, type:UNDEFINED, None)), type:UNDEFINED, None), symbol:UNDEFINED, type:UNDEFINED, None)), symbol:UNDEFINED, type:UNDEFINED, None)
 
 {
   r.a = 10
