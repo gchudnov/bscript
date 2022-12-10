@@ -341,6 +341,20 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
+      "call with string and collection" in {
+        def contains(s: String, ss: List[String]) = {}
+
+        val actual = Scala3Import.make({
+          contains("a", List("b"))
+        })
+
+        val expected = Block(
+          Call(SymbolRef("contains"), List(StrVal("a"), Vec(List(StrVal("b"))))),
+        )
+
+        actual mustBe expected
+      }
+
       "if-then" in {
         // If(Apply(Select(Ident("x"), "=="), List(Literal(IntConstant(10)))), Block(Nil, Block(List(Literal(BooleanConstant(true))), Literal(UnitConstant()))), Literal(UnitConstant()))
         val x = 10
