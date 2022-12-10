@@ -346,12 +346,20 @@ final class Scala3ImportSpec extends TestSpec:
         val x = 10
 
         val actual = Scala3Import.make({
+          var a = 1
           if (x == 10) then {
-            true
+            a = 2
           }
         })
 
-        val expected = NothingVal()
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "a", IntVal(1)),
+          If(
+            Call(SymbolRef("=="), List(Var(SymbolRef("x")), IntVal(10))),
+            Assign(Var(SymbolRef("a")), IntVal(2)),
+            Some(VoidVal())
+          )
+        )
 
         actual mustBe expected
       }

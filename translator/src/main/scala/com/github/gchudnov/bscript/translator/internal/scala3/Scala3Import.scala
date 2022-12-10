@@ -85,6 +85,9 @@ object Scala3Import:
         case B.Vec(elems, _, _, _) =>
           '{ B.Vec(${ Expr.ofSeq(elems.map(Expr(_))) }) }
 
+        case B.If(cond, then1, else1, _, _) =>
+          '{ B.If(${ Expr(cond) }, ${ Expr(then1) }, ${ Expr(else1) }) }
+
         case other =>
           throw new MatchError(s"Unsupported B.Expr: ${other}")
 
