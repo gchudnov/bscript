@@ -65,8 +65,5 @@ final class TranslatorSpec extends TestSpec:
       }
     }
 
-    "translated from Scala3" should {
-
-
-    }
+    "translated from Scala3" should {}
   }
