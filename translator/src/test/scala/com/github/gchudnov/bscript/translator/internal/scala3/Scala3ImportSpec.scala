@@ -354,7 +354,7 @@ final class Scala3ImportSpec extends TestSpec:
           VarDecl(TypeRef("auto"), "a", IntVal(1)),
           If(
             Call(SymbolRef("=="), List(Var(SymbolRef("x")), IntVal(10))),
-            Block(Assign(Var(SymbolRef("a")), IntVal(2))),
+            Assign(Var(SymbolRef("a")), IntVal(2)),
             Some(VoidVal())
           )
         )
