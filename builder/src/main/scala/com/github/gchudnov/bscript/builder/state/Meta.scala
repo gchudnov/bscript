@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.state
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SBuiltInType, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef }
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Show
@@ -36,13 +36,13 @@ import scala.collection.mutable.StringBuilder as MStringBuilder
  */
 final case class Meta(
   scopeTree: ScopeTree,
-  scopeSymbols: Map[EqWrap[Scope], List[Symbol]], // Pass #1
-  symbolScopes: Map[EqWrap[Symbol], Scope],       // Pass #1
-  methodArgs: Map[EqWrap[SMethod], List[SVar]],   // Pass #1
-  methodRetTypes: Map[EqWrap[SMethod], Type],     // Pass   #2
-  methodAsts: Map[EqWrap[SMethod], AST],          // Pass   #2
-  astScopes: Map[EqWrap[AST], Scope],             // Pass #1
-  varTypes: Map[EqWrap[SVar], Type]               // Pass   #2
+  scopeSymbols: Map[Ptr[Scope], List[Symbol]], // Pass #1
+  symbolScopes: Map[Ptr[Symbol], Scope],       // Pass #1
+  methodArgs: Map[Ptr[SMethod], List[SVar]],   // Pass #1
+  methodRetTypes: Map[Ptr[SMethod], Type],     // Pass   #2
+  methodAsts: Map[Ptr[SMethod], AST],          // Pass   #2
+  astScopes: Map[Ptr[AST], Scope],             // Pass #1
+  varTypes: Map[Ptr[SVar], Type]               // Pass   #2
 ):
 
   /**
@@ -54,7 +54,7 @@ final case class Meta(
 
   private def maybeResolve(name: String, in: Scope): Option[Symbol] =
     scopeSymbols
-      .get(EqWrap(in))
+      .get(Ptr(in))
       .flatMap(_.find(_.name == name))
       .orElse(scopeTree.parent(in).flatMap(parentScope => maybeResolve(name, parentScope)))
 
@@ -67,7 +67,7 @@ final case class Meta(
 
   private def maybeResolveMember(name: String, in: Scope): Option[Symbol] =
     scopeSymbols
-      .get(EqWrap(in))
+      .get(Ptr(in))
       .flatMap(_.find(_.name == name))
 
   /**
@@ -167,14 +167,14 @@ final case class Meta(
    * Gets the identifier of the symbol
    */
   def id(symbol: Symbol): Either[ScopeStateException, String] =
-    Right(EqWrap(symbol).hashCode().toString)
+    Right(Ptr(symbol).hashCode().toString)
 
   /**
    * Get a Scope for the given AST
    */
   def scopeFor(ast: AST): Either[ScopeStateException, Scope] =
     astScopes
-      .get(EqWrap(ast))
+      .get(Ptr(ast))
       .toRight(new ScopeStateException(s"Scope for AST '${ast}' is not found."))
 
   /**
@@ -182,7 +182,7 @@ final case class Meta(
    */
   def scopeFor(symbol: Symbol): Either[ScopeStateException, Scope] =
     symbolScopes
-      .get(EqWrap(symbol))
+      .get(Ptr(symbol))
       .toRight(new ScopeStateException(s"Scope for Symbol '${symbol.name}' is not found."))
 
   /**
@@ -190,7 +190,7 @@ final case class Meta(
    */
   def typeFor(v: SVar): Either[ScopeStateException, Type] =
     varTypes
-      .get(EqWrap(v))
+      .get(Ptr(v))
       .toRight(new ScopeStateException(s"Type for SVar '${v.name}' is not found."))
 
   /**
@@ -198,14 +198,14 @@ final case class Meta(
    */
   def retTypeFor(m: SMethod): Either[ScopeStateException, Type] =
     methodRetTypes
-      .get(EqWrap(m))
+      .get(Ptr(m))
       .toRight(new ScopeStateException(s"Type for SMethod '${m.name}' is not found."))
 
   /**
    * Gets all symbols in the given scope
    */
   def symbolsFor(s: Scope): List[Symbol] =
-    scopeSymbols.getOrElse(EqWrap(s), List.empty[Symbol])
+    scopeSymbols.getOrElse(Ptr(s), List.empty[Symbol])
 
   /**
    * Get Method Arguments Symbols
@@ -213,11 +213,11 @@ final case class Meta(
   def methodArgSVars(m: SMethod): Either[Throwable, List[SVar]] =
     for
       _ <- Either.cond(
-             symbolScopes.contains(EqWrap(m.asInstanceOf[Symbol])),
+             symbolScopes.contains(Ptr(m.asInstanceOf[Symbol])),
              (),
              new ScopeStateException(s"Cannot get argument symbols for SMethod: '${m.name}', method not found")
            )
-      sVars = methodArgs.getOrElse(EqWrap(m), List.empty[SVar])
+      sVars = methodArgs.getOrElse(Ptr(m), List.empty[SVar])
     yield sVars
 
   /**
@@ -226,7 +226,7 @@ final case class Meta(
   def methodArgTypes(m: SMethod): Either[Throwable, List[Type]] =
     for
       sVars <- methodArgSVars(m)
-      types <- Transform.sequence(sVars.map(sVar => varTypes.get(EqWrap(sVar)).toRight(new ScopeStateException(s"Type for SVar ${sVar.name} is not found")))).map(_.toList)
+      types <- Transform.sequence(sVars.map(sVar => varTypes.get(Ptr(sVar)).toRight(new ScopeStateException(s"Type for SVar ${sVar.name} is not found")))).map(_.toList)
     yield types
 
   /**
@@ -239,7 +239,7 @@ final case class Meta(
                  .sequence(
                    sVars.map { sVar =>
                      varTypes
-                       .get(EqWrap(sVar))
+                       .get(Ptr(sVar))
                        .map(t => (sVar, t))
                        .toRight(new ScopeStateException(s"Type for SVar ${sVar.name} is not found"))
                    }
@@ -251,7 +251,7 @@ final case class Meta(
    * Gets AST for the given method
    */
   def methodAst(m: SMethod): Either[Throwable, AST] =
-    methodAsts.get(EqWrap(m)).toRight(new ScopeStateException(s"AST for the SMethod ${m.name} is not found"))
+    methodAsts.get(Ptr(m)).toRight(new ScopeStateException(s"AST for the SMethod ${m.name} is not found"))
 
   /**
    * Returns types for the fields of the given struct.
@@ -283,8 +283,8 @@ final case class Meta(
   /**
    * Adds a Symbol to the provided Scope
    */
-  private def addScopeSymbol(symbol: Symbol, scope: Scope): (Map[EqWrap[Scope], List[Symbol]], Map[EqWrap[Symbol], Scope]) =
-    val ss = scopeSymbols.getOrElse(EqWrap(scope), List.empty[Symbol])
+  private def addScopeSymbol(symbol: Symbol, scope: Scope): (Map[Ptr[Scope], List[Symbol]], Map[Ptr[Symbol], Scope]) =
+    val ss = scopeSymbols.getOrElse(Ptr(scope), List.empty[Symbol])
 
     assert(!ss.contains(symbol), s"Symbol ${symbol.name} already exists in the collection of Scope Symbols ${scopeSymbols}.")
 
@@ -297,8 +297,8 @@ final case class Meta(
     //      case n =>
     //        ss.updated(n, symbol)
 
-    val newScopeSymbols = scopeSymbols + (EqWrap(scope)  -> (ss :+ symbol))
-    val newSymbolScopes = symbolScopes + (EqWrap(symbol) -> scope)
+    val newScopeSymbols = scopeSymbols + (Ptr(scope)  -> (ss :+ symbol))
+    val newSymbolScopes = symbolScopes + (Ptr(symbol) -> scope)
 
     (newScopeSymbols, newSymbolScopes)
 
@@ -306,50 +306,50 @@ final case class Meta(
    * Add a Var to the provided Method
    */
   private def addMethodArg(sMethod: SMethod, arg: SVar) =
-    val args = methodArgs.getOrElse(EqWrap(sMethod), List.empty[SVar])
+    val args = methodArgs.getOrElse(Ptr(sMethod), List.empty[SVar])
 
     assert(!args.contains(arg), s"Argument ${arg.name} already exists in the collection of Method Arguments ${methodArgs}.")
 
-    val newMethodArgs = methodArgs + (EqWrap(sMethod) -> (args :+ arg))
+    val newMethodArgs = methodArgs + (Ptr(sMethod) -> (args :+ arg))
     newMethodArgs
 
   /**
    * Add a Type to the provided Method to specify the return type.
    */
   private def addMethodRetType(sMethod: SMethod, t: Type) =
-    val newMethodRetType = methodRetTypes + (EqWrap(sMethod) -> t)
+    val newMethodRetType = methodRetTypes + (Ptr(sMethod) -> t)
     newMethodRetType
 
   /**
    * Binds an AST to a Method. If a binding already exists, it will be overwritten
    */
   private def addMethodAST(sMethod: SMethod, ast: AST) =
-    val newSymbolAsts = methodAsts + (EqWrap(sMethod) -> ast)
+    val newSymbolAsts = methodAsts + (Ptr(sMethod) -> ast)
     newSymbolAsts
 
   /**
    * Binds a Scope to an AST
    */
-  private def addASTScope(ast: AST, scope: Scope): Map[EqWrap[AST], Scope] =
-    val newAstScopes = astScopes + (EqWrap(ast) -> scope)
+  private def addASTScope(ast: AST, scope: Scope): Map[Ptr[AST], Scope] =
+    val newAstScopes = astScopes + (Ptr(ast) -> scope)
     newAstScopes
 
   /**
    * Replace AST in { AST -> Scope } binding
    */
-  private def replaceASTScope(oldAst: AST, newAst: AST): Map[EqWrap[AST], Scope] =
-    val maybeScope = astScopes.get(EqWrap(oldAst))
+  private def replaceASTScope(oldAst: AST, newAst: AST): Map[Ptr[AST], Scope] =
+    val maybeScope = astScopes.get(Ptr(oldAst))
     assert(maybeScope.isDefined, "Cannot replace AST in { AST -> Scope } binding. AST to replace is not found.")
     maybeScope.fold(astScopes) { scope =>
-      val newAstScopes = astScopes - EqWrap(oldAst) + (EqWrap(newAst) -> scope)
+      val newAstScopes = astScopes - Ptr(oldAst) + (Ptr(newAst) -> scope)
       newAstScopes
     }
 
   /**
    * Bind Type to a variable
    */
-  private def addVarType(t: Type, v: SVar): Map[EqWrap[SVar], Type] =
-    val newVarTypes = varTypes + (EqWrap(v) -> t)
+  private def addVarType(t: Type, v: SVar): Map[Ptr[SVar], Type] =
+    val newVarTypes = varTypes + (Ptr(v) -> t)
     newVarTypes
 
 object Meta:
@@ -357,13 +357,13 @@ object Meta:
   val empty: Meta =
     Meta(
       scopeTree = ScopeTree.empty,
-      scopeSymbols = Map.empty[EqWrap[Scope], List[Symbol]],
-      symbolScopes = Map.empty[EqWrap[Symbol], Scope],
-      methodArgs = Map.empty[EqWrap[SMethod], List[SVar]],
-      methodRetTypes = Map.empty[EqWrap[SMethod], Type],
-      methodAsts = Map.empty[EqWrap[SMethod], AST],
-      astScopes = Map.empty[EqWrap[AST], Scope],
-      varTypes = Map.empty[EqWrap[SVar], Type]
+      scopeSymbols = Map.empty[Ptr[Scope], List[Symbol]],
+      symbolScopes = Map.empty[Ptr[Symbol], Scope],
+      methodArgs = Map.empty[Ptr[SMethod], List[SVar]],
+      methodRetTypes = Map.empty[Ptr[SMethod], Type],
+      methodAsts = Map.empty[Ptr[SMethod], AST],
+      astScopes = Map.empty[Ptr[AST], Scope],
+      varTypes = Map.empty[Ptr[SVar], Type]
     )
 
   def init(types: Types): Meta =
@@ -415,42 +415,42 @@ object Meta:
         sb.toString()
 
       def showMethod(sMethod: SMethod): String =
-        val m          = EqWrap(sMethod)
+        val m          = Ptr(sMethod)
         val retTypeStr = a.methodRetTypes.get(m).map(_.name).getOrElse("?")
         val args       = a.methodArgs.getOrElse(m, List.empty[SVar])
         val argsWithTypes = args.map { arg =>
-          val retType = a.varTypes.getOrElse(EqWrap(arg), TypeRef("?"))
+          val retType = a.varTypes.getOrElse(Ptr(arg), TypeRef("?"))
           s"${arg.name}: ${retType.name}"
         }
 
         s"""fn ${m.value.name}(${argsWithTypes.mkString(", ")}) -> ${retTypeStr}"""
 
-      private def scopeSymbolsToMapStr(depth: Int)(m: Map[EqWrap[Scope], List[Symbol]]): String =
+      private def scopeSymbolsToMapStr(depth: Int)(m: Map[Ptr[Scope], List[Symbol]]): String =
         namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
           (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
         })
 
-      private def methodArgsToMapStr(depth: Int)(m: Map[EqWrap[SMethod], List[SVar]]): String =
+      private def methodArgsToMapStr(depth: Int)(m: Map[Ptr[SMethod], List[SVar]]): String =
         namedTuplesToMapStr(depth)(m.toList.map { case (k, vs) =>
           (k.value.asInstanceOf[Named], vs.map(_.asInstanceOf[Named]))
         })
 
-      private def symbolScopesToMapStr(depth: Int)(m: Map[EqWrap[Symbol], Scope]): String =
+      private def symbolScopesToMapStr(depth: Int)(m: Map[Ptr[Symbol], Scope]): String =
         namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
           (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
         })
 
-      private def methodRetTypesToMapStr(depth: Int)(m: Map[EqWrap[SMethod], Type]): String =
+      private def methodRetTypesToMapStr(depth: Int)(m: Map[Ptr[SMethod], Type]): String =
         namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
           (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
         })
 
-      private def varTypesToMapStr(depth: Int)(m: Map[EqWrap[SVar], Type]): String =
+      private def varTypesToMapStr(depth: Int)(m: Map[Ptr[SVar], Type]): String =
         namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
           (k.value.asInstanceOf[Named], v.asInstanceOf[Named])
         })
 
-      private def methodAstsToMapStr(depth: Int)(m: Map[EqWrap[SMethod], AST]): String =
+      private def methodAstsToMapStr(depth: Int)(m: Map[Ptr[SMethod], AST]): String =
         namedTuples1ToMapStr(depth)(m.toList.map { case (k, v) =>
           (
             k.value.asInstanceOf[Named],

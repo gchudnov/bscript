@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.symbols.Scope
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 
 import scala.annotation.tailrec
 import scala.collection.mutable.StringBuilder as MStringBuilder
@@ -15,35 +15,35 @@ import scala.collection.mutable.StringBuilder as MStringBuilder
  * @param edges
  *   child -> parent links. Allows to traverse the tree from leaves up to the root.
  */
-final case class ScopeTree(vertices: Set[EqWrap[Scope]], edges: Map[EqWrap[Scope], Scope]):
+final case class ScopeTree(vertices: Set[Ptr[Scope]], edges: Map[Ptr[Scope], Scope]):
 
   /**
    * Gets a parent for the given scope
    */
   def parent(n: Scope): Option[Scope] =
-    edges.get(EqWrap(n))
+    edges.get(Ptr(n))
 
   /**
    * Adds a new scope to the tree without linking (e.g. to create a root)
    */
   def add(n: Scope): ScopeTree =
-    this.copy(vertices = vertices + EqWrap(n))
+    this.copy(vertices = vertices + Ptr(n))
 
   /**
    * Adds a new scope and links it to a parent
    */
   def link(n: Scope, parent: Scope): ScopeTree =
-    val newVertices = vertices + EqWrap(n) + EqWrap(parent)
-    val newEdges    = edges + (EqWrap(n) -> parent)
+    val newVertices = vertices + Ptr(n) + Ptr(parent)
+    val newEdges    = edges + (Ptr(n) -> parent)
     this.copy(vertices = newVertices, edges = newEdges)
 
   /**
    * Replaces a Scope. If the replaced scope is linked to the parent, that link will be updated
    */
   def replace(from: Scope, to: Scope): ScopeTree =
-    assert(vertices.contains(EqWrap(from)), s"Scope ${from} cannot be not found in vertices to replace it with ${to}")
-    val newVertices = vertices - EqWrap(from) + EqWrap(to)
-    val newEdges    = edges - EqWrap(from) ++ edges.get(EqWrap(from)).fold(Map.empty[EqWrap[Scope], Scope])(parent => Map(EqWrap(to) -> parent))
+    assert(vertices.contains(Ptr(from)), s"Scope ${from} cannot be not found in vertices to replace it with ${to}")
+    val newVertices = vertices - Ptr(from) + Ptr(to)
+    val newEdges    = edges - Ptr(from) ++ edges.get(Ptr(from)).fold(Map.empty[Ptr[Scope], Scope])(parent => Map(Ptr(to) -> parent))
     this.copy(vertices = newVertices, edges = newEdges)
 
   /**
@@ -77,8 +77,8 @@ object ScopeTree:
 
   val empty: ScopeTree =
     ScopeTree(
-      vertices = Set.empty[EqWrap[Scope]],
-      edges = Map.empty[EqWrap[Scope], Scope]
+      vertices = Set.empty[Ptr[Scope]],
+      edges = Map.empty[Ptr[Scope], Scope]
     )
 
   given Show[ScopeTree] with

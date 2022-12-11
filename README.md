@@ -13,16 +13,16 @@ AST Evaluation & Debugging
 Add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.github.gchudnov" %% "bscript-b1" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-b1" % "2.0.0"
 
 // Optionally, include one or more of the more specific dependencies
-libraryDependencies += "com.github.gchudnov" %% "bscript-lang" % "1.4.0"
-libraryDependencies += "com.github.gchudnov" %% "bscript-builder" % "1.4.0"
-libraryDependencies += "com.github.gchudnov" %% "bscript-interpreter" % "1.4.0"
-libraryDependencies += "com.github.gchudnov" %% "bscript-inspector" % "1.4.0"
-libraryDependencies += "com.github.gchudnov" %% "bscript-serde" % "1.4.0"
-libraryDependencies += "com.github.gchudnov" %% "bscript-rewriter" % "1.4.0"
-libraryDependencies += "com.github.gchudnov" %% "bscript-translator" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-lang" % "2.0.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-builder" % "2.0.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-interpreter" % "2.0.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-inspector" % "2.0.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-serde" % "2.0.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-rewriter" % "2.0.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-translator" % "2.0.0"
 ```
 
 ## Modules

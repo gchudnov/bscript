@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.lang.symbols.{ SBlock, SMethod, SStruct }
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 
 final class ScopeTreeSpec extends TestSpec:
 
@@ -34,7 +34,7 @@ final class ScopeTreeSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.vertices must contain allElementsOf List(Ptr(b0))
         t1.edges.size mustBe (0)
       }
 
@@ -56,7 +56,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2))
+        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
         t1.edges.size mustBe (2)
       }
 
@@ -82,7 +82,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b3, b2)
 
         t1.vertices.size mustBe (4)
-        t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2), EqWrap(b3))
+        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2), Ptr(b3))
         t1.edges.size mustBe (3)
 
         val p1 = t1.parent(b3)
@@ -117,7 +117,7 @@ final class ScopeTreeSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.vertices must contain allElementsOf List(Ptr(b0))
         t1.edges.size mustBe (0)
 
         val t2 = t1
@@ -127,7 +127,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b2, b0)
 
         t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2))
+        t2.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
         t2.edges.size mustBe (2)
       }
 
@@ -151,14 +151,14 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2))
+        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
         t1.edges.size mustBe (2)
         t1.parent(b1) mustBe (Some(b0))
 
         val t2 = t1.link(b1, b2)
 
         t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2))
+        t2.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
         t2.edges.size mustBe (2)
         t2.parent(b1) mustBe (Some(b2))
       }
@@ -182,13 +182,13 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2))
+        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
         t1.edges.size mustBe (2)
 
         val t2 = t1.replace(b1, b3)
 
         t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b3), EqWrap(b2))
+        t2.vertices must contain allElementsOf List(Ptr(b0), Ptr(b3), Ptr(b2))
         t2.edges.size mustBe (2)
       }
 
@@ -205,13 +205,13 @@ final class ScopeTreeSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.vertices must contain allElementsOf List(Ptr(b0))
         t1.edges.size mustBe (0)
 
         val t2 = t1.replace(b0, b1)
 
         t2.vertices.size mustBe (1)
-        t2.vertices must contain allElementsOf List(EqWrap(b1))
+        t2.vertices must contain allElementsOf List(Ptr(b1))
         t2.edges.size mustBe (0)
       }
 
@@ -233,7 +233,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1), EqWrap(b2))
+        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
         t1.edges.size mustBe (2)
       }
 
@@ -248,7 +248,7 @@ final class ScopeTreeSpec extends TestSpec:
           .link(s0, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(m0), EqWrap(s0))
+        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(m0), Ptr(s0))
         t1.edges.size mustBe (2)
       }
 

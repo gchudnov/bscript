@@ -11,7 +11,7 @@ import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
@@ -1315,12 +1315,12 @@ object ScopeResolveVisitorSpec:
     private def checkSMethod(ms: SMethod, msg: String): Either[Throwable, Unit] =
       for
         _ <- Either.cond(findRetType(t.meta, ms).isDefined, (), new AstException(s"[SMethod] '${ms.name}' Type for SMethod is not found: [${msg}]."))
-        _ <- Transform.sequence(t.meta.methodArgs.getOrElse(EqWrap(ms), List.empty[SVar]).map(s => checkSymbol(s, s"[${msg}] -> SMethod(arg=${s}")))
+        _ <- Transform.sequence(t.meta.methodArgs.getOrElse(Ptr(ms), List.empty[SVar]).map(s => checkSymbol(s, s"[${msg}] -> SMethod(arg=${s}")))
       yield ()
 
     private def checkSStruct(ss: SStruct, msg: String): Either[Throwable, Unit] =
       for _ <- Either.cond(
-                 t.meta.symbolScopes.contains(EqWrap(ss.asInstanceOf[Symbol])),
+                 t.meta.symbolScopes.contains(Ptr(ss.asInstanceOf[Symbol])),
                  (),
                  new AstException(s"[SStruct] Scope for SStruct '${ss.name}' is not found: [${msg}].")
                )

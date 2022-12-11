@@ -12,11 +12,11 @@ final class EqWrapSpec extends TestSpec:
         val x = A(1)
         val y = A(1)
 
-        val m = Map(EqWrap(x) -> "10", EqWrap(y) -> "20")
+        val m = Map(Ptr(x) -> "10", Ptr(y) -> "20")
 
         m.size mustBe (2)
-        m.get(EqWrap(x)) mustBe Some("10")
-        m.get(EqWrap(y)) mustBe Some("20")
+        m.get(Ptr(x)) mustBe Some("10")
+        m.get(Ptr(y)) mustBe Some("20")
       }
     }
   }

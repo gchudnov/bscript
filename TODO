@@ -1,3 +1,6 @@
+- TODO: reduce size of AST by extracting extra params to meta
+- TODO: move some operations to functions
+
 - TODO: it is not possible distinguish between TypeRef("auto") and type-ref that references variable (see scala ast)
 
 - TODO: allow operations on BigDecimal from java: + > < ...

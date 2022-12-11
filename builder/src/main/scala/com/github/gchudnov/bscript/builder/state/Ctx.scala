@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.state
 
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.ast.AST
 

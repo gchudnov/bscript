@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.util
 
 /**
- * Wrapper to allow the same case class to be put twice in a Map
+ * Wrapper to distinguish case classes by instance, e.g. to allow the case classes be be keys of a Map
  * {{{
  *   case class A(x: Int)
  *
@@ -12,15 +12,16 @@ package com.github.gchudnov.bscript.builder.util
  *   // at the end there should be several elements in Map, since we have two separate A instances
  * }}}
  */
-class EqWrap[T <: AnyRef](val value: T):
+class Ptr[T <: AnyRef](val value: T):
   override def hashCode(): Int =
     if value == null then 0 else value.hashCode
 
   override def equals(a: Any): Boolean = a match
-    case ref: EqWrap[?] => ref.value eq value
+    case ref: Ptr[?] => ref.value eq value
     case _              => false
 
   override def toString: String =
     s"EqWrap(${value.toString})"
-object EqWrap:
-  def apply[T <: AnyRef](t: T) = new EqWrap(t)
+
+object Ptr:
+  def apply[T <: AnyRef](t: T) = new Ptr(t)

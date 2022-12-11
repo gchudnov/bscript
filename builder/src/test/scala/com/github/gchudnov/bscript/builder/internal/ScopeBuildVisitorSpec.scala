@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitorSpec.dehydrate
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
@@ -377,7 +377,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
             val blockStatements = ast.asInstanceOf[Block].statements
             val callExpr        = blockStatements.last.asInstanceOf[Call]
             val zArg            = callExpr.args.last
-            val zScope          = meta.astScopes(EqWrap(zArg))
+            val zScope          = meta.astScopes(Ptr(zArg))
 
             zScope.name mustBe ("#a")
           case Left(t) => fail("Should be 'right", t)
@@ -831,5 +831,5 @@ object ScopeBuildVisitorSpec:
     yield ()
 
     private def checkDefined(n: AST, msg: String): Either[Throwable, Unit] =
-      for _ <- Either.cond(t.meta.astScopes.contains(EqWrap(n)), (), new AstException(s"AST [${msg}] was not assigned to the Scope"))
+      for _ <- Either.cond(t.meta.astScopes.contains(Ptr(n)), (), new AstException(s"AST [${msg}] was not assigned to the Scope"))
       yield ()

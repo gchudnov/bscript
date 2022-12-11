@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.internal
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.{ SMethod, SVar, Scope, Symbol, Type }
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 
 object MetaOps:
 
@@ -11,9 +11,9 @@ object MetaOps:
     for
       scope <- meta.scopeTree.vertices.find(_.value.name == scopeName).map(_.value).toRight(new RuntimeException(s"Scope '${scopeName}' not found."))
       symbol <-
-        meta.scopeSymbols.get(EqWrap(scope)).flatMap(_.find(_.name == varName)).toRight(new RuntimeException(s"Symbol '${varName}' not found in Scope '${scopeName}'."))
+        meta.scopeSymbols.get(Ptr(scope)).flatMap(_.find(_.name == varName)).toRight(new RuntimeException(s"Symbol '${varName}' not found in Scope '${scopeName}'."))
       sVar  <- Either.cond(symbol.isInstanceOf[SVar], symbol.asInstanceOf[SVar], new RuntimeException(s"Symbol '${varName}' in scope '${scopeName}' is not an SVar."))
-      sType <- meta.varTypes.get(EqWrap(sVar)).toRight(new RuntimeException(s"Type is not found for SVar '${varName}'."))
+      sType <- meta.varTypes.get(Ptr(sVar)).toRight(new RuntimeException(s"Type is not found for SVar '${varName}'."))
     yield sType.name
 
   def findSymbolScope(meta: Meta, sym: Symbol): Option[Scope] =

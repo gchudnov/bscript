@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.internal.MetaOps.findMember
 import com.github.gchudnov.bscript.lang.ast.{ ArgDecl, Block as AstBlock, MethodDecl }
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.builder.util.EqWrap
+import com.github.gchudnov.bscript.builder.util.Ptr
 
 final class ScopeStateSpec extends TestSpec:
 
@@ -16,7 +16,7 @@ final class ScopeStateSpec extends TestSpec:
         val t1 = Meta.empty.defineBlock(b0)
 
         t1.scopeTree.vertices.size mustBe (1)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0))
         t1.scopeTree.edges.size mustBe (0)
       }
 
@@ -29,7 +29,7 @@ final class ScopeStateSpec extends TestSpec:
           .defineBlock(b1, b0)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(b1))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1))
         t1.scopeTree.edges.size mustBe (1)
         t1.scopeTree.parent(b1) mustBe (Some(b0))
       }
@@ -43,15 +43,15 @@ final class ScopeStateSpec extends TestSpec:
           .defineMethod(m0, b0)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(m0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(m0))
         t1.scopeTree.edges.size mustBe (1)
         t1.scopeTree.parent(m0) mustBe (Some(b0))
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(m0)))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(m0)))
 
         t1.symbolScopes.size mustBe (1)
-        t1.symbolScopes.get(EqWrap(m0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(m0)) mustBe (Some(b0))
 
         t1.methodAsts.size mustBe (0)
       }
@@ -65,15 +65,15 @@ final class ScopeStateSpec extends TestSpec:
           .defineStruct(k0, b0)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(k0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(k0))
         t1.scopeTree.edges.size mustBe (1)
         t1.scopeTree.parent(k0) mustBe (Some(b0))
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(k0)))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(k0)))
 
         t1.symbolScopes.size mustBe (1)
-        t1.symbolScopes.get(EqWrap(k0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(k0)) mustBe (Some(b0))
 
         t1.methodAsts.size mustBe (0)
       }
@@ -91,16 +91,16 @@ final class ScopeStateSpec extends TestSpec:
           .defineBuiltInType(i2, b0)
 
         t1.scopeTree.vertices.size mustBe (1)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0))
         t1.scopeTree.edges.size mustBe (0)
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(i0, i1, i2)))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(i0, i1, i2)))
 
         t1.symbolScopes.size mustBe (3)
-        t1.symbolScopes.get(EqWrap(i0)) mustBe (Some(b0))
-        t1.symbolScopes.get(EqWrap(i1)) mustBe (Some(b0))
-        t1.symbolScopes.get(EqWrap(i2)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(i0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(i1)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(i2)) mustBe (Some(b0))
       }
 
       "define field in a Struct" in {
@@ -114,16 +114,16 @@ final class ScopeStateSpec extends TestSpec:
           .defineStructField(k0, f0)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(k0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(k0))
         t1.scopeTree.edges.size mustBe (1)
 
         t1.scopeSymbols.size mustBe (2)
-        t1.scopeSymbols.get(EqWrap(k0)) mustBe (Some(List(f0)))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(k0)))
+        t1.scopeSymbols.get(Ptr(k0)) mustBe (Some(List(f0)))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(k0)))
 
         t1.symbolScopes.size mustBe (2)
-        t1.symbolScopes.get(EqWrap(f0)) mustBe (Some(k0))
-        t1.symbolScopes.get(EqWrap(k0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(f0)) mustBe (Some(k0))
+        t1.symbolScopes.get(Ptr(k0)) mustBe (Some(b0))
       }
 
       "define a method argument" in {
@@ -137,19 +137,19 @@ final class ScopeStateSpec extends TestSpec:
           .defineMethodArg(m0, a0)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(m0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(m0))
         t1.scopeTree.edges.size mustBe (1)
 
         t1.scopeSymbols.size mustBe (2)
-        t1.scopeSymbols.get(EqWrap(m0)) mustBe (Some(List(a0)))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(m0)))
+        t1.scopeSymbols.get(Ptr(m0)) mustBe (Some(List(a0)))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(m0)))
 
         t1.symbolScopes.size mustBe (2)
-        t1.symbolScopes.get(EqWrap(a0)) mustBe (Some(m0))
-        t1.symbolScopes.get(EqWrap(m0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(a0)) mustBe (Some(m0))
+        t1.symbolScopes.get(Ptr(m0)) mustBe (Some(b0))
 
         t1.methodArgs.size mustBe (1)
-        t1.methodArgs.get(EqWrap(m0)) mustBe (Some(List(a0)))
+        t1.methodArgs.get(Ptr(m0)) mustBe (Some(List(a0)))
       }
 
       "define the method return type" in {
@@ -164,18 +164,18 @@ final class ScopeStateSpec extends TestSpec:
           .defineMethodRetType(m0, i0)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(m0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(m0))
         t1.scopeTree.edges.size mustBe (1)
 
         t1.scopeSymbols.size mustBe (1)
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(i0, m0))) // NOTE: the order is important
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(i0, m0))) // NOTE: the order is important
 
         t1.symbolScopes.size mustBe (2)
-        t1.symbolScopes.get(EqWrap(i0)) mustBe (Some(b0))
-        t1.symbolScopes.get(EqWrap(m0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(i0)) mustBe (Some(b0))
+        t1.symbolScopes.get(Ptr(m0)) mustBe (Some(b0))
 
         t1.methodRetTypes.size mustBe (1)
-        t1.methodRetTypes.get(EqWrap(m0)) mustBe (Some(i0))
+        t1.methodRetTypes.get(Ptr(m0)) mustBe (Some(i0))
       }
 
       "define the method AST" in {
@@ -190,11 +190,11 @@ final class ScopeStateSpec extends TestSpec:
           .defineMethodAST(m0, astM)
 
         t1.scopeTree.vertices.size mustBe (2)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0), EqWrap(m0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0), Ptr(m0))
         t1.scopeTree.edges.size mustBe (1)
 
         t1.methodAsts.size mustBe (1)
-        t1.methodAsts.get(EqWrap(m0)) mustBe (Some(astM))
+        t1.methodAsts.get(Ptr(m0)) mustBe (Some(astM))
       }
 
       "define variable in a block" in {
@@ -206,12 +206,12 @@ final class ScopeStateSpec extends TestSpec:
           .defineVar(v0, b0)
 
         t1.scopeTree.vertices.size mustBe (1)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0))
         t1.scopeTree.edges.size mustBe (0)
 
         t1.symbolScopes.size mustBe (1)
-        t1.symbolScopes.get(EqWrap(v0)) mustBe (Some(b0))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(v0)))
+        t1.symbolScopes.get(Ptr(v0)) mustBe (Some(b0))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(v0)))
       }
 
       "define variable type" in {
@@ -225,15 +225,15 @@ final class ScopeStateSpec extends TestSpec:
           .defineVarType(v0, p0)
 
         t1.scopeTree.vertices.size mustBe (1)
-        t1.scopeTree.vertices must contain allElementsOf List(EqWrap(b0))
+        t1.scopeTree.vertices must contain allElementsOf List(Ptr(b0))
         t1.scopeTree.edges.size mustBe (0)
 
         t1.symbolScopes.size mustBe (1)
-        t1.symbolScopes.get(EqWrap(v0)) mustBe (Some(b0))
-        t1.scopeSymbols.get(EqWrap(b0)) mustBe (Some(List(v0)))
+        t1.symbolScopes.get(Ptr(v0)) mustBe (Some(b0))
+        t1.scopeSymbols.get(Ptr(b0)) mustBe (Some(List(v0)))
 
         t1.varTypes.size mustBe (1)
-        t1.varTypes.get(EqWrap(v0)) mustBe (Some(p0))
+        t1.varTypes.get(Ptr(v0)) mustBe (Some(p0))
       }
 
       "resolve a member in a scope (no parent lookup)" in {
