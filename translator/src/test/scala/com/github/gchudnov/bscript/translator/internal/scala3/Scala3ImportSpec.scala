@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.translator.internal.scala3
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
+import java.lang.Boolean as JBoolean
 
 final class Scala3ImportSpec extends TestSpec:
 
@@ -38,6 +39,20 @@ final class Scala3ImportSpec extends TestSpec:
 
         actual mustBe expected
       }
+
+      "jbool constant" in {
+        // BooleanConstant(true)
+        val actual = Scala3Import.make({
+          val x: JBoolean = true
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "x", Call(SymbolRef("boolean2Boolean"), List(BoolVal(true)))),
+          VoidVal()
+        )
+
+        actual mustBe expected
+      }      
 
       "int constant with comments" in {
         // IntConstant(10)
