@@ -42,7 +42,9 @@ final case class Meta(
   methodRetTypes: Map[Ptr[SMethod], Type],     // Pass   #2
   methodAsts: Map[Ptr[SMethod], AST],          // Pass   #2
   astScopes: Map[Ptr[AST], Scope],             // Pass #1
-  varTypes: Map[Ptr[SVar], Type]               // Pass   #2
+  varTypes: Map[Ptr[SVar], Type],              // Pass   #2
+  evalTypes: Map[Ptr[AST], Type],              //
+  promoteToTypes: Map[AST, Type],              //
 ):
 
   /**
@@ -363,7 +365,9 @@ object Meta:
       methodRetTypes = Map.empty[Ptr[SMethod], Type],
       methodAsts = Map.empty[Ptr[SMethod], AST],
       astScopes = Map.empty[Ptr[AST], Scope],
-      varTypes = Map.empty[Ptr[SVar], Type]
+      varTypes = Map.empty[Ptr[SVar], Type],
+      evalTypes = Map.empty[Ptr[AST], Type],
+      promoteToTypes = Map.empty[AST, Type],
     )
 
   def init(types: Types): Meta =
