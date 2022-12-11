@@ -13,16 +13,16 @@ AST Evaluation & Debugging
 Add the following dependency to your `build.sbt`:
 
 ```scala
-libraryDependencies += "com.github.gchudnov" %% "bscript-b1" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-b1" % "1.4.0"
 
 // Optionally, include one or more of the more specific dependencies
-libraryDependencies += "com.github.gchudnov" %% "bscript-lang" % "1.3.5"
-libraryDependencies += "com.github.gchudnov" %% "bscript-builder" % "1.3.5"
-libraryDependencies += "com.github.gchudnov" %% "bscript-interpreter" % "1.3.5"
-libraryDependencies += "com.github.gchudnov" %% "bscript-inspector" % "1.3.5"
-libraryDependencies += "com.github.gchudnov" %% "bscript-serde" % "1.3.5"
-libraryDependencies += "com.github.gchudnov" %% "bscript-rewriter" % "1.3.5"
-libraryDependencies += "com.github.gchudnov" %% "bscript-translator" % "1.3.5"
+libraryDependencies += "com.github.gchudnov" %% "bscript-lang" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-builder" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-interpreter" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-inspector" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-serde" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-rewriter" % "1.4.0"
+libraryDependencies += "com.github.gchudnov" %% "bscript-translator" % "1.4.0"
 ```
 
 ## Modules
@@ -164,7 +164,15 @@ val ast1: AST              = ???
 val typeNames: TypeNames   = ???
 val meta: Meta             = ???
 
-val errOrRes: Either[Throwable, String] = Translator.translateScala(ast1, typeNames, meta)
+// from AST to Scala
+val errOrRes: Either[Throwable, String] = Translator.fromAST(ast1, typeNames, meta)
+
+// from Scala to AST
+val errOrRes: Either[Throwable, AST] = Translator.toAST({
+  val a = 1
+  val b = 2
+  List(a, b)
+})
 ```
 
 ### Inspector

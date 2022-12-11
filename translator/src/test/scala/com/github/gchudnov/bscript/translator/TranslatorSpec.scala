@@ -25,7 +25,7 @@ final class TranslatorSpec extends TestSpec:
           .build(ast0, types, typeCheckLaws)
           .flatMap(astMeta =>
             val translator = Scala3Translator.make(astMeta.meta, typeNames)
-            translator.translate(astMeta.ast)
+            translator.fromAST(astMeta.ast)
           )
 
         val expected =
@@ -48,7 +48,7 @@ final class TranslatorSpec extends TestSpec:
           .build(ast0, types, typeCheckLaws)
           .flatMap(astMeta =>
             val translator = Scala3JTranslator.make(astMeta.meta, typeNames)
-            translator.translate(astMeta.ast)
+            translator.fromAST(astMeta.ast)
           )
 
         val expected =
@@ -65,4 +65,37 @@ final class TranslatorSpec extends TestSpec:
       }
     }
 
+    "translated from Scala3" should {}
+
+    "translated from Scala3 AST" should {
+      "produce AST" in {
+        val errOrRes = Builder
+          .build(ast0, types, typeCheckLaws)
+          .flatMap(astMeta =>
+            val translator = Scala3JTranslator.make(astMeta.meta, typeNames)
+
+            val x = 10
+
+            Right(translator.toAST({
+              var a = 1
+              if (x == 10) then a = 2 else a = 3
+            }))
+          )
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "a", IntVal(1)),
+          If(
+            Call(SymbolRef("=="), List(Var(SymbolRef("x")), IntVal(10))),
+            Assign(Var(SymbolRef("a")), IntVal(2)),
+            Some(Assign(Var(SymbolRef("a")), IntVal(3)))
+          )
+        )
+
+        errOrRes match
+          case Right(actual) =>
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
   }

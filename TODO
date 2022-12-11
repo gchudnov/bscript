@@ -1,3 +1,5 @@
+- TODO: it is not possible distinguish between TypeRef("auto") and type-ref that references variable (see scala ast)
+
 - TODO: allow operations on BigDecimal from java: + > < ...
 
 - TODO: add code that checks for dead conditions: (xxx == false) --- add an option 'check' ?? or do we want to check during building / running phase ??

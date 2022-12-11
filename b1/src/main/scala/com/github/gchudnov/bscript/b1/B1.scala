@@ -100,7 +100,7 @@ sealed trait B1:
                         Right(Scala3Translator.make(astMeta.meta, typeNames))
                       case Lang.Scala3J =>
                         Right(Scala3JTranslator.make(astMeta.meta, typeNames))
-      res <- translator.translate(astMeta.ast)
+      res <- translator.fromAST(astMeta.ast)
     yield res
 
 object B1 extends B1

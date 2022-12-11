@@ -77,7 +77,7 @@ object Dependencies {
     ) map (_ % "test")
     compile ++ test
   }
-  
+
   val B1: Seq[ModuleID] = {
     val compile = Seq(
     )

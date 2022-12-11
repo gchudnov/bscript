@@ -31,10 +31,13 @@ object Block:
     new Block(statements = List.empty[Expr], symbol = Symbol.Undefined, evalType = Type.Undefined, promoteToType = None)
 
   def apply(statements: Expr*): Block =
-    new Block(statements = statements.toList, symbol = Symbol.Undefined, evalType = Type.Undefined, promoteToType = None)
+    ofSeq(statements.toList)
 
   def apply(statements: Seq[Expr], symbol: Symbol, evalType: Type): Block =
     new Block(statements = statements.toList, symbol = symbol, evalType = evalType, promoteToType = None)
+
+  def ofSeq(statements: Seq[Expr]): Block =
+    new Block(statements = statements.toList, symbol = Symbol.Undefined, evalType = Type.Undefined, promoteToType = None)
 
   extension (block: Block)
     def ++(other: Block): Block =
