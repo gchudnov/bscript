@@ -4,16 +4,10 @@ import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import java.lang.Boolean as JBoolean
+import java.lang.Double as JDouble
+import java.lang.Integer as JInteger
 
 final class Scala3ImportSpec extends TestSpec:
-
-  final case class DataModel(
-    var a: Int,
-    var b: String,
-    var c: String
-  )
-
-  val r = DataModel(1, "", "EUR")
 
   "Scala3Import" when {
     "importing scala-code" should {
@@ -40,7 +34,7 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
-      "jbool constant" in {
+      "jBool constant" in {
         // BooleanConstant(true)
         val actual = Scala3Import.make({
           val x: JBoolean = true
@@ -52,7 +46,35 @@ final class Scala3ImportSpec extends TestSpec:
         )
 
         actual mustBe expected
-      }      
+      }
+
+      "jInt constant" in {
+        // BooleanConstant(true)
+        val actual = Scala3Import.make({
+          val x: JInteger = 23
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "x", Call(SymbolRef("int2Integer"), List(IntVal(23)))),
+          VoidVal()
+        )
+
+        actual mustBe expected
+      }
+
+      "jDouble constant" in {
+        // BooleanConstant(true)
+        val actual = Scala3Import.make({
+          val x: JDouble = 10.0
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "x", Call(SymbolRef("double2Double"), List(DoubleVal(10.0)))),
+          VoidVal()
+        )
+
+        actual mustBe expected
+      }
 
       "int constant with comments" in {
         // IntConstant(10)
@@ -64,7 +86,7 @@ final class Scala3ImportSpec extends TestSpec:
         val expected = IntVal(10)
 
         actual mustBe expected
-      }      
+      }
 
       "decl int val" in {
         // Block(List(ValDef("a", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant()))

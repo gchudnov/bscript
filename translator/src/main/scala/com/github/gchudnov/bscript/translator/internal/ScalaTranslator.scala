@@ -16,5 +16,5 @@ private[translator] final class ScalaTranslator(laws: TranslateLaws, state: Scal
       .visit(state, scalaVisitor)
       .map(ss => ss.show())
 
-  override inline def toAST[T](inline x: T): AST = 
+  override inline def toAST[T](inline x: T): AST =
     Scala3Import.make(x)
