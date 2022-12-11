@@ -39,6 +39,18 @@ final class Scala3ImportSpec extends TestSpec:
         actual mustBe expected
       }
 
+      "int constant with comments" in {
+        // IntConstant(10)
+        val actual = Scala3Import.make({
+          // some comments
+          10
+        })
+
+        val expected = IntVal(10)
+
+        actual mustBe expected
+      }      
+
       "decl int val" in {
         // Block(List(ValDef("a", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant()))
         val actual = Scala3Import.make({
@@ -64,6 +76,20 @@ final class Scala3ImportSpec extends TestSpec:
           VarDecl(TypeRef("auto"), "b", IntVal(10)),
           VoidVal()
         )
+        actual mustBe expected
+      }
+
+      "decl long val explicitly" in {
+        // Block(List(ValDef("a", Inferred(), Some(Literal(IntConstant(10))))), Literal(UnitConstant()))
+        val actual = Scala3Import.make({
+          val a: Long = 10
+        })
+
+        val expected = Block(
+          VarDecl(TypeRef("auto"), "a", LongVal(10)),
+          VoidVal()
+        )
+
         actual mustBe expected
       }
 
