@@ -5,7 +5,4 @@ package com.github.gchudnov.bscript.lang.symbols
  * @param name
  *   name of the symbol
  */
-final case class SymbolRef(name: String) extends Symbol:
-
-  override def toString: String =
-    s"ref ${name}"
+final case class SymbolRef(name: String) extends Symbol

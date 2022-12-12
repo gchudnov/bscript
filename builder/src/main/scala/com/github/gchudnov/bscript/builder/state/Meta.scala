@@ -1,14 +1,14 @@
 package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SBuiltInType, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef }
+import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef, SymbolRef }
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.Show
 
 import scala.collection.mutable.StringBuilder as MStringBuilder
+import com.github.gchudnov.bscript.lang.symbols.SymbolRefs
 
 /**
  * Metadata - Scope & Symbol State
@@ -47,6 +47,7 @@ final case class Meta(
   promoteToTypes: Map[Ptr[AST], Type],         //
   astSymbols: Map[Ptr[AST], Symbol]            //
 ):
+  import Meta.*
 
   /**
    * Resolve a symbol in the scope recursively up to the root
@@ -110,9 +111,9 @@ final case class Meta(
    *
    * NOTE: a BuiltInType might be defined *only* in Block-scope.
    */
-  def defineBuiltInType(t: SBuiltInType, in: SBlock): Meta =
+  def defineBuiltInType(sym: Symbol, in: SBlock): Meta =
     assert(scopeTree.parent(in).isEmpty, "A Built-in Symbols should be defined in The root scope (without parent scope)")
-    defineSymbolInScope(t, in)
+    defineSymbolInScope(sym, in)
 
   /**
    * Defines a field in the Struct
@@ -124,9 +125,13 @@ final case class Meta(
    * Defines a method argument (used to have an ordered list of arguments)
    */
   def defineMethodArg(ms: SMethod, arg: SVar): Meta =
-    val (newScopeSymbols, newSymbolScopes) = addScopeSymbol(arg, ms)
+    val scopeSymbols = addScopeSymbol(arg, ms)
     val newMethodArgs                      = addMethodArg(ms, arg)
-    this.copy(scopeSymbols = newScopeSymbols, symbolScopes = newSymbolScopes, methodArgs = newMethodArgs)
+    this.copy(
+      scopeSymbols = scopeSymbols.scopeSymbolsMap, 
+      symbolScopes = scopeSymbols.symbolScopeMap, 
+      methodArgs = newMethodArgs
+      )
 
   /**
    * Defines a method type
@@ -310,17 +315,24 @@ final case class Meta(
    * Defines a Symbol in the given Scope
    */
   private def defineSymbolInScope(symbol: Symbol, scope: Scope): Meta =
-    val (newScopeSymbols, newSymbolScopes) = addScopeSymbol(symbol, scope)
-    this.copy(scopeSymbols = newScopeSymbols, symbolScopes = newSymbolScopes)
+    val scopeSymbols = addScopeSymbol(symbol, scope)
+    this.copy(
+      scopeSymbols = scopeSymbols.scopeSymbolsMap, 
+      symbolScopes = scopeSymbols.symbolScopeMap
+      )
 
   private def defineSymbolScopeInScope(symbolWithScope: Symbol with Scope, scope: Scope): Meta =
-    val (newScopeSymbols, newSymbolScopes) = addScopeSymbol(symbolWithScope, scope)
-    this.copy(scopeTree = scopeTree.link(symbolWithScope, scope), scopeSymbols = newScopeSymbols, symbolScopes = newSymbolScopes)
+    val scopeSymbols = addScopeSymbol(symbolWithScope, scope)
+    this.copy(
+      scopeTree = scopeTree.link(symbolWithScope, scope), 
+      scopeSymbols = scopeSymbols.scopeSymbolsMap, 
+      symbolScopes = scopeSymbols.symbolScopeMap
+      )
 
   /**
    * Adds a Symbol to the provided Scope
    */
-  private def addScopeSymbol(symbol: Symbol, scope: Scope): (Map[Ptr[Scope], List[Symbol]], Map[Ptr[Symbol], Scope]) =
+  private def addScopeSymbol(symbol: Symbol, scope: Scope): ScopeSymbols =
     val ss = scopeSymbols.getOrElse(Ptr(scope), List.empty[Symbol])
 
     assert(!ss.contains(symbol), s"Symbol ${symbol.name} already exists in the collection of Scope Symbols ${scopeSymbols}.")
@@ -337,7 +349,7 @@ final case class Meta(
     val newScopeSymbols = scopeSymbols + (Ptr(scope)  -> (ss :+ symbol))
     val newSymbolScopes = symbolScopes + (Ptr(symbol) -> scope)
 
-    (newScopeSymbols, newSymbolScopes)
+    ScopeSymbols(newScopeSymbols, newSymbolScopes)
 
   /**
    * Add a Var to the provided Method
@@ -403,6 +415,14 @@ final case class Meta(
 
 object Meta:
 
+  type ScopeSymbolsMap = Map[Ptr[Scope], List[Symbol]]
+  type SymbolScopeMap = Map[Ptr[Symbol], Scope]
+
+  final case class ScopeSymbols(
+    scopeSymbolsMap: ScopeSymbolsMap,
+    symbolScopeMap: SymbolScopeMap
+  )
+
   val empty: Meta =
     Meta(
       scopeTree = ScopeTree.empty,
@@ -418,22 +438,22 @@ object Meta:
       astSymbols = Map.empty[Ptr[AST], Symbol]
     )
 
-  def init(types: Types): Meta =
+  def init(): Meta =
     val g = SBlock("#global")
     val m = Meta.empty
       .defineBlock(g)
-      .defineBuiltInType(types.autoType, g)
-      .defineBuiltInType(types.nothingType, g)
-      .defineBuiltInType(types.voidType, g)
-      .defineBuiltInType(types.boolType, g)
-      .defineBuiltInType(types.i32Type, g)
-      .defineBuiltInType(types.i64Type, g)
-      .defineBuiltInType(types.f32Type, g)
-      .defineBuiltInType(types.f64Type, g)
-      .defineBuiltInType(types.decType, g)
-      .defineBuiltInType(types.strType, g)
-      .defineBuiltInType(types.dateType, g)
-      .defineBuiltInType(types.datetimeType, g)
+      .defineBuiltInType(SymbolRefs.auto, g)
+      .defineBuiltInType(SymbolRefs.nothing, g)
+      .defineBuiltInType(SymbolRefs.void, g)
+      .defineBuiltInType(SymbolRefs.bool, g)
+      .defineBuiltInType(SymbolRefs.i32, g)
+      .defineBuiltInType(SymbolRefs.i64, g)
+      .defineBuiltInType(SymbolRefs.f32, g)
+      .defineBuiltInType(SymbolRefs.f64, g)
+      .defineBuiltInType(SymbolRefs.dec, g)
+      .defineBuiltInType(SymbolRefs.str, g)
+      .defineBuiltInType(SymbolRefs.date, g)
+      .defineBuiltInType(SymbolRefs.datetime, g)
     m
 
   given Show[Meta] with

@@ -3,7 +3,6 @@ package com.github.gchudnov.bscript.lang.symbols
 import com.github.gchudnov.bscript.lang.types.TypeNames
 
 object TypeRefs:
-
   val auto: TypeRef     = TypeRef(TypeNames.auto)
   val nothing: TypeRef  = TypeRef(TypeNames.nothing)
   val void: TypeRef     = TypeRef(TypeNames.void)

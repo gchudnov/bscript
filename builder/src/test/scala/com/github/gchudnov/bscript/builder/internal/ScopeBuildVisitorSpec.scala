@@ -39,7 +39,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
       "put it in a scope" in {
         val t = VarDecl(TypeRefs.i32, "x", IntVal(0))
 
-        // val errOrRes = eval(t)
+        val errOrRes = eval(t)
         // errOrRes match
         //   case Right(ScopeBuildVisitorState(ast, meta)) =>
         //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
@@ -618,7 +618,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
-  // private def eval(ast0: AST): Either[Throwable, ScopeBuildVisitorState] =
+  private def eval(ast0: AST): Either[Throwable, ScopeBuildVisitorState] =
   //   val (initMeta, rootScope) = BGlobals.make()
   //   val v1                    = ScopeBuildVisitor.make()
   //   val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
@@ -635,6 +635,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
   //         .visit(".", verifyDefined(t))
   //         .map(_ => t)
   //     }
+    ???
 
 // object ScopeBuildVisitorSpec:
 

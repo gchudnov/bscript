@@ -13,8 +13,3 @@ package com.github.gchudnov.bscript.lang.symbols
  * typed languages like C++ and Java track type information at compile time.
  */
 trait Symbol extends Named
-
-object Symbol:
-  val Undefined: Symbol = new Symbol:
-    override val name: String     = "symbol:UNDEFINED"
-    override def toString: String = s"${name}"

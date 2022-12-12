@@ -8,12 +8,12 @@ import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuild
 import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
 import com.github.gchudnov.bscript.builder.util.Gen
-import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
+import com.github.gchudnov.bscript.lang.types.{ TypeNames }
 import com.github.gchudnov.bscript.builder.state.Meta
 
 sealed trait Builder:
 
-  def build(ast0: AST, types: Types, typeCheckLaws: TypeCheckLaws): Either[Throwable, AstMeta] =
+  def build(ast0: AST, typeCheckLaws: TypeCheckLaws): Either[Throwable, AstMeta] =
     val meta0 = Meta.init(types)
     for
       scope0             <- meta0.scopeTree.root.toRight(new Exception(s"Root scope not found"))
