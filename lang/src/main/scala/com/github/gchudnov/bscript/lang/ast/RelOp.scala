@@ -12,5 +12,3 @@ import com.github.gchudnov.bscript.lang.symbols.Type
 abstract class RelOp extends Expr:
   val lhs: Expr
   val rhs: Expr
-  val evalType: Type
-  val promoteToType: Option[Type]

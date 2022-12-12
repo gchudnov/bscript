@@ -72,7 +72,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       st                  <- visitType(s, scope, n.iType)
       StateType(s1, iType) = st
       n1                   = n.copy(iType = iType)
-      ss1                  = s1.meta.redefineASTScope(n, n1)
+      ss1                  = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: UnaryMinus): Either[Throwable, ScopeResolveState] =
@@ -80,43 +80,40 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       s1   <- n.expr.visit(s, this)
       expr <- s1.ast.asExpr
       n1    = n.copy(expr = expr)
-      ss1   = s1.meta.redefineASTScope(n, n1)
+      ss1   = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: ArgDecl): Either[Throwable, ScopeResolveState] =
     for
       scope               <- s.meta.scopeFor(n).flatMap(_.asSMethod)
       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-      _                    = assert(sVar == n.symbol, "The SVar resolved is not equal to ehe Symbol stored in AST")
       st                  <- visitType(s, scope, n.aType)
       StateType(s1, aType) = st
-      n1                   = n.copy(aType = aType, symbol = sVar)
-      ss1                  = s1.meta.defineVarType(sVar, aType).redefineASTScope(n, n1)
+      n1                   = n.copy(aType = aType)
+      ss1                  = s1.meta.defineVarType(sVar, aType).redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: FieldDecl): Either[Throwable, ScopeResolveState] =
     for
       scope               <- s.meta.scopeFor(n).flatMap(_.asSStruct)
       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-      _                    = assert(sVar == n.symbol, "The SVar resolved is not equal to ehe Symbol stored in AST")
       st                  <- visitType(s, scope, n.fType)
       StateType(s1, fType) = st
-      n1                   = n.copy(fType = fType, symbol = sVar)
-      ss1                  = s1.meta.defineVarType(sVar, st.xType).redefineASTScope(n, n1)
+      n1                   = n.copy(fType = fType)
+      ss1                  = s1.meta.defineVarType(sVar, st.xType).redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
     for
       scope               <- s.meta.scopeFor(n).flatMap(_.asSBlock)
       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-      _                    = assert(sVar == n.symbol, "The SVar resolved is not equal to ehe Symbol stored in AST")
       st                  <- visitType(s, scope, n.vType)
       StateType(s1, vType) = st
       ss1                  = s1.meta.defineVarType(sVar, vType)
       s2                  <- n.expr.visit(s1.copy(meta = ss1), this)
       expr                <- s2.ast.asExpr
-      n1                   = n.copy(vType = vType, expr = expr, symbol = sVar)
-      ss2                  = s2.meta.redefineASTScope(n, n1)
+      n1                   = n.copy(vType = vType, expr = expr)
+      ss2                  = s2.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s2.copy(ast = n1, meta = ss2)
 
   override def visit(s: ScopeResolveState, n: MethodDecl): Either[Throwable, ScopeResolveState] =
@@ -133,15 +130,14 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
             }
       (s1, params)           = sa
       sMethod               <- s1.meta.resolveMember(n.name, scope).flatMap(_.asSMethod)
-      _                      = assert(sMethod == n.symbol, "The SMethod resolved is not equal to ehe Symbol stored in AST")
       st                    <- visitType(s1, scope, n.retType)
       StateType(s2, retType) = st
       ss1                    = s2.meta.defineMethodRetType(sMethod, retType)
       s3                     = s2.copy(meta = ss1)
       s4                    <- n.body.visit(s3, this)
       body                  <- s4.ast.asBlock
-      n1                     = n.copy(retType = retType, body = body, params = params, symbol = sMethod)
-      ss2                    = s4.meta.defineMethodAST(sMethod, n1).redefineASTScope(n, n1)
+      n1                     = n.copy(retType = retType, body = body, params = params)
+      ss2                    = s4.meta.defineMethodAST(sMethod, n1).redefineASTScope(n, n1).ensureNoAST(n)
     yield s3.copy(ast = n1, meta = ss2)
 
   override def visit(s: ScopeResolveState, n: StructDecl): Either[Throwable, ScopeResolveState] =
@@ -149,7 +145,6 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       scope   <- s.meta.scopeFor(n).flatMap(_.asSBlock)
       _       <- s.meta.resolve(n.name, scope).flatMap(_.asType) // NOTE: Struct is a Type as well; this line is used to assert this fact here.
       sStruct <- s.meta.resolve(n.name, scope).flatMap(_.asSStruct)
-      _        = assert(sStruct == n.symbol, "The SStruct resolved is not equal to ehe Symbol stored in AST")
       sf <- n.fields.foldLeft(Right((s, List.empty[FieldDecl])): Either[Throwable, (ScopeResolveState, List[FieldDecl])]) { case (acc, fieldDecl) =>
               acc match
                 case Left(ex) => Left(ex)
@@ -160,8 +155,8 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
                   yield (sy, fields :+ fieldN)
             }
       (s1, fields) = sf
-      n1           = n.copy(symbol = sStruct, fields = fields)
-      ss1          = s1.meta.redefineASTScope(n, n1)
+      n1           = n.copy(fields = fields)
+      ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Block): Either[Throwable, ScopeResolveState] =
@@ -177,7 +172,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
             }
       (s1, exprs) = bs
       n1          = n.copy(statements = exprs)
-      ss1         = s1.meta.redefineASTScope(n, n1)
+      ss1         = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Var): Either[Throwable, ScopeResolveState] =
@@ -185,7 +180,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       scope <- s.meta.scopeFor(n)
       sVar  <- s.meta.resolve(n.symbol.name, scope).flatMap(_.asSVar)
       n1     = n.copy(symbol = sVar)
-      ss1    = s.meta.redefineASTScope(n, n1)
+      ss1    = s.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Assign): Either[Throwable, ScopeResolveState] =
@@ -195,7 +190,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       id1   <- ls.ast.asLValue
       expr1 <- rs.ast.asExpr
       n1     = n.copy(id = id1, expr = expr1)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: NothingVal): Either[Throwable, ScopeResolveState] =
@@ -247,7 +242,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
             }
       (s2, value1) = sv
       n1           = n.copy(sType = sType, value = value1)
-      ss1          = s2.meta.redefineASTScope(n, n1)
+      ss1          = s2.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s2.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Vec): Either[Throwable, ScopeResolveState] =
@@ -263,7 +258,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
             }
       (s1, exprs) = se
       n1          = n.copy(elements = exprs) // NOTE: element type is deduced in Phase #3
-      ss1         = s1.meta.redefineASTScope(n, n1)
+      ss1         = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Add): Either[Throwable, ScopeResolveState] =
@@ -273,7 +268,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Sub): Either[Throwable, ScopeResolveState] =
@@ -283,7 +278,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Mul): Either[Throwable, ScopeResolveState] =
@@ -293,7 +288,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Div): Either[Throwable, ScopeResolveState] =
@@ -303,7 +298,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Mod): Either[Throwable, ScopeResolveState] =
@@ -313,7 +308,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Less): Either[Throwable, ScopeResolveState] =
@@ -323,7 +318,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: LessEqual): Either[Throwable, ScopeResolveState] =
@@ -333,7 +328,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Greater): Either[Throwable, ScopeResolveState] =
@@ -343,7 +338,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: GreaterEqual): Either[Throwable, ScopeResolveState] =
@@ -353,7 +348,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Equal): Either[Throwable, ScopeResolveState] =
@@ -363,7 +358,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: NotEqual): Either[Throwable, ScopeResolveState] =
@@ -373,7 +368,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Not): Either[Throwable, ScopeResolveState] =
@@ -381,7 +376,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       s1   <- n.expr.visit(s, this)
       expr <- s1.ast.asExpr
       n1    = n.copy(expr = expr)
-      ss1   = s1.meta.redefineASTScope(n, n1)
+      ss1   = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: And): Either[Throwable, ScopeResolveState] =
@@ -391,7 +386,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Or): Either[Throwable, ScopeResolveState] =
@@ -401,7 +396,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.redefineASTScope(n, n1)
+      ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Call): Either[Throwable, ScopeResolveState] =
@@ -419,7 +414,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
             }
       (s1, args) = sa
       n1         = n.copy(id = sMethod, args = args)
-      ss1        = s1.meta.redefineASTScope(n, n1)
+      ss1        = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: If): Either[Throwable, ScopeResolveState] =
@@ -432,7 +427,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       optElseExpr <- Transform.sequence(es.map(_.ast.asExpr))
       s1           = es.getOrElse(ts)
       n1           = n.copy(cond = condExpr, then1 = thenExpr, else1 = optElseExpr)
-      ss1          = s1.meta.redefineASTScope(n, n1)
+      ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeResolveState, n: Access): Either[Throwable, ScopeResolveState] =
@@ -455,7 +450,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
             nx      = x.copy(symbol = xVar)
             ny      = y.copy(symbol = yVar)
             n2      = n1.copy(a = nx, b = ny)
-            sy      = sx.redefineASTScope(n1, n2).redefineASTScope(x, nx).redefineASTScope(y, ny)
+            sy      = sx.redefineASTScope(n1, n2).redefineASTScope(x, nx).redefineASTScope(y, ny).ensureNoAST(n)
           yield (sy, (yVar, n2))
 
         case (xx: Access, y: Var) =>
@@ -464,7 +459,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
               yVar <- member(xVar, y)
               ny    = y.copy(symbol = yVar)
               n2    = n1.copy(a = xAcc, b = ny)
-              sz    = sy.redefineASTScope(n1, n2).redefineASTScope(y, ny)
+              sz    = sy.redefineASTScope(n1, n2).redefineASTScope(y, ny).ensureNoAST(n)
             yield (sz, (yVar, n2))
           }
 
@@ -482,7 +477,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       st                    <- visitType(s, scope, n.retType)
       StateType(s1, retType) = st
       n1                     = n.copy(retType = retType)
-      ss1                    = s1.meta.redefineASTScope(n, n1)
+      ss1                    = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   private def visitType(s: ScopeResolveState, scope: Scope, t: Type): Either[Throwable, StateType] =

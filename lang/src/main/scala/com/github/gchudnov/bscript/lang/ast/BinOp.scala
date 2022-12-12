@@ -10,7 +10,5 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  * }}}
  */
 abstract class BinOp extends Expr:
-  val lhs: Expr
-  val rhs: Expr
-  val evalType: Type
-  val promoteToType: Option[Type]
+  def lhs: Expr
+  def rhs: Expr

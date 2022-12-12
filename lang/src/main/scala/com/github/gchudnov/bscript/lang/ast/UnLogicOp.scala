@@ -7,5 +7,3 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  */
 abstract class UnLogicOp extends Expr:
   val expr: Expr
-  val evalType: Type
-  val promoteToType: Option[Type]

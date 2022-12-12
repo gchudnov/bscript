@@ -20,4 +20,6 @@ import com.github.gchudnov.bscript.lang.ast.Expr
  * }}}
  */
 final case class DeclType(expr: Expr) extends Type:
-  override def name: String = expr.evalType.name
+  override def name: String = 
+    //expr.evalType.name
+    ???

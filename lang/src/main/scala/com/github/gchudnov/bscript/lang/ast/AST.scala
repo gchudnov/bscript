@@ -12,5 +12,5 @@ object AST:
         case x: Block =>
           x ++ block
         case x: Expr =>
-          Block(statements = x +: block.statements, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
+          Block(statements = x +: block.statements)
         case _ => sys.error("Cannot prepend non-Expr to Block")

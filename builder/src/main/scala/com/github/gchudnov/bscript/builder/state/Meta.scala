@@ -44,7 +44,8 @@ final case class Meta(
   astScopes: Map[Ptr[AST], Scope],             // Pass #1
   varTypes: Map[Ptr[SVar], Type],              // Pass   #2
   evalTypes: Map[Ptr[AST], Type],              //
-  promoteToTypes: Map[AST, Type],              //
+  promoteToTypes: Map[Ptr[AST], Type],         //
+  astSymbols: Map[Ptr[AST], Symbol]            //
 ):
 
   /**
@@ -159,6 +160,35 @@ final case class Meta(
     defineSymbolInScope(v, in)
 
   /**
+   * Add Eval Type to AST
+   */
+  def withEvalType(n: AST, t: Type): Meta =
+    val newEvalTypes =  addEvalType(n, t)
+    this.copy(evalTypes = newEvalTypes)
+
+  def withPromoteToType(n: AST, t: Type): Meta =
+    val newPromoteToTypes =  addPromoteToType(n, t)
+    this.copy(evalTypes = newPromoteToTypes)    
+
+  def withPromoteToType(n: AST, t: Option[Type]): Meta =
+    t.fold(this)(t => withPromoteToType(n, t))
+
+  /**
+    * Add Symbol to AST
+    */
+  def withASTSymbol(n: AST, s: Symbol): Meta = 
+    val newAstSymbols = addSymbol(n, s)
+    this.copy(astSymbols = newAstSymbols)
+
+  def ensureNoAST(n: AST): Meta =
+    require(!astSymbols.contains(Ptr(n)), s"astSymbols should not contain AST: ${n}")
+    require(!promoteToTypes.contains(Ptr(n)), s"promoteToTypes should not contain AST: ${n}")
+    require(!evalTypes.contains(Ptr(n)), s"evalTypes should not contain AST: ${n}")
+    require(!astScopes.contains(Ptr(n)), s"astScopes should not contain AST: ${n}")
+    require(!methodAsts.values.toList.contains(n), s"methodAsts should not contain AST: ${n}")
+    this
+
+  /**
    * Defines a Variable Symbol with the given Type. If the variable is already exists, redefines it.
    */
   def defineVarType(v: SVar, t: Type): Meta =
@@ -208,6 +238,11 @@ final case class Meta(
    */
   def symbolsFor(s: Scope): List[Symbol] =
     scopeSymbols.getOrElse(Ptr(s), List.empty[Symbol])
+
+  def evalTypeFor(n: AST): Either[ScopeStateException, Type] =
+    evalTypes
+      .get(Ptr(n))
+      .toRight(new ScopeStateException(s"EvalType for AST '${n}' is not found."))
 
   /**
    * Get Method Arguments Symbols
@@ -354,6 +389,18 @@ final case class Meta(
     val newVarTypes = varTypes + (Ptr(v) -> t)
     newVarTypes
 
+  private def addEvalType(n: AST, t: Type): Map[Ptr[AST], Type] =
+    val newEvalTypes = evalTypes + (Ptr(n) -> t)
+    newEvalTypes
+
+  private def addPromoteToType(n: AST, t: Type): Map[Ptr[AST], Type] =
+    val newPromoteToTypes = promoteToTypes + (Ptr(n) -> t)
+    newPromoteToTypes
+
+  private def addSymbol(n: AST, s: Symbol): Map[Ptr[AST], Symbol] =
+    val newAstSymbols = astSymbols + (Ptr(n) -> s)
+    newAstSymbols
+
 object Meta:
 
   val empty: Meta =
@@ -367,7 +414,8 @@ object Meta:
       astScopes = Map.empty[Ptr[AST], Scope],
       varTypes = Map.empty[Ptr[SVar], Type],
       evalTypes = Map.empty[Ptr[AST], Type],
-      promoteToTypes = Map.empty[AST, Type],
+      promoteToTypes = Map.empty[Ptr[AST], Type],
+      astSymbols = Map.empty[Ptr[AST], Symbol]
     )
 
   def init(types: Types): Meta =

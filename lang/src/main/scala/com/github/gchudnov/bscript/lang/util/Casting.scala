@@ -105,6 +105,7 @@ object Casting:
     def declType: Type =
       t match
         case DeclType(expr) =>
-          expr.evalType
+          //expr.evalType
+          ???
         case _ =>
           t

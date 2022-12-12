@@ -73,7 +73,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       st                  <- visitType(s, n.iType)
       StateType(s1, iType) = st
       n1                   = n.copy(iType = iType)
-      ss1                  = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1                  = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: UnaryMinus): Either[Throwable, ScopeBuildState] =
@@ -81,7 +81,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       s1   <- n.expr.visit(s, this)
       expr <- s1.ast.asExpr
       n1    = n.copy(expr = expr)
-      ss1   = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1   = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: ArgDecl): Either[Throwable, ScopeBuildState] =
@@ -90,8 +90,8 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       st                  <- visitType(s, n.aType)
       StateType(s1, aType) = st
       sArg                 = SVar(n.name)
-      n1                   = n.copy(aType = aType, symbol = sArg)
-      ss1                  = s1.meta.defineASTScope(n1, s1.curScope).defineMethodArg(sMethod, sArg)
+      n1                   = n.copy(aType = aType)
+      ss1                  = s1.meta.defineASTScope(n1, s1.curScope).defineMethodArg(sMethod, sArg).withASTSymbol(n1, sArg).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: FieldDecl): Either[Throwable, ScopeBuildState] =
@@ -100,8 +100,8 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       st                  <- visitType(s, n.fType)
       StateType(s1, fType) = st
       sField               = SVar(n.name)
-      n1                   = n.copy(fType = fType, symbol = sField)
-      ss1                  = s1.meta.defineASTScope(n1, s1.curScope).defineStructField(sStruct, sField)
+      n1                   = n.copy(fType = fType)
+      ss1                  = s1.meta.defineASTScope(n1, s1.curScope).defineStructField(sStruct, sField).withASTSymbol(n1, sField).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: VarDecl): Either[Throwable, ScopeBuildState] =
@@ -112,8 +112,8 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       s2                  <- n.expr.visit(s1, this)
       expr                <- s2.ast.asExpr
       sVar                 = SVar(n.name)
-      n1                   = n.copy(vType = vType, expr = expr, symbol = sVar)
-      ss1                  = s2.meta.defineASTScope(n1, s2.curScope).defineVar(sVar, sBlock)
+      n1                   = n.copy(vType = vType, expr = expr)
+      ss1                  = s2.meta.defineASTScope(n1, s2.curScope).defineVar(sVar, sBlock).withASTSymbol(n1, sVar).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: MethodDecl): Either[Throwable, ScopeBuildState] =
@@ -136,8 +136,8 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       StateType(s3, retType) = st
       s4                    <- n.body.visit(s3, this)
       body                  <- s4.ast.asBlock
-      n1                     = n.copy(retType = retType, body = body, symbol = sMethod, params = args)
-      ss2                    = s4.meta.defineASTScope(n1, s.curScope)
+      n1                     = n.copy(retType = retType, body = body, params = args)
+      ss2                    = s4.meta.defineASTScope(n1, s.curScope).withASTSymbol(n1, sMethod).ensureNoAST(n)
     yield s4.copy(ast = n1, meta = ss2, curScope = s.curScope)
 
   override def visit(s: ScopeBuildState, n: StructDecl): Either[Throwable, ScopeBuildState] =
@@ -156,8 +156,8 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
                   yield (sy, fields :+ fieldN)
             }
       (s2, fields) = sf
-      n1           = n.copy(symbol = sStruct, fields = fields)
-      ss2          = s2.meta.defineASTScope(n1, s.curScope)
+      n1           = n.copy(fields = fields)
+      ss2          = s2.meta.defineASTScope(n1, s.curScope).withASTSymbol(n1, sStruct).ensureNoAST(n)
     yield s2.copy(ast = n1, meta = ss2, curScope = s.curScope)
 
   override def visit(s: ScopeBuildState, n: Block): Either[Throwable, ScopeBuildState] =
@@ -177,12 +177,12 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
 
             }
       (s2, exprs) = ss
-      n1          = n.copy(statements = exprs, symbol = sBlock)
-      ss2         = s2.meta.defineASTScope(n1, s.curScope)
+      n1          = n.copy(statements = exprs)
+      ss2         = s2.meta.defineASTScope(n1, s.curScope).withASTSymbol(n1, sBlock).ensureNoAST(n)
     yield s2.copy(ast = n1, meta = ss2, curScope = s.curScope)
 
   override def visit(s: ScopeBuildState, n: Var): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Assign): Either[Throwable, ScopeBuildState] =
@@ -192,51 +192,51 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       id1   <- ls.ast.asLValue
       expr1 <- rs.ast.asExpr
       n1     = n.copy(id = id1, expr = expr1)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: NothingVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: VoidVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: BoolVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: IntVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: LongVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: FloatVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: DoubleVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: DecimalVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: StrVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: DateVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: DateTimeVal): Either[Throwable, ScopeBuildState] =
-    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
+    for ss1 <- Right(s.meta.defineASTScope(n, s.curScope).ensureNoAST(n))
     yield s.copy(ast = n, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: StructVal): Either[Throwable, ScopeBuildState] =
@@ -257,8 +257,8 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
                   yield (sy, map + (name -> exprN))
             }
       (s3, value1) = sv
-      n1           = n.copy(sType = sType, value = value1, symbol = sStruct)
-      ss2          = s3.meta.defineASTScope(n1, s.curScope)
+      n1           = n.copy(sType = sType, value = value1)
+      ss2          = s3.meta.defineASTScope(n1, s.curScope).withASTSymbol(n1, sStruct).ensureNoAST(n)
     yield s3.copy(ast = n1, meta = ss2, curScope = s.curScope, gen = gen1)
 
   override def visit(s: ScopeBuildState, n: Vec): Either[Throwable, ScopeBuildState] =
@@ -274,7 +274,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
             }
       (s1, exprs) = se
       n1          = n.copy(elements = exprs)
-      ss1         = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1         = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Add): Either[Throwable, ScopeBuildState] =
@@ -284,7 +284,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Sub): Either[Throwable, ScopeBuildState] =
@@ -294,7 +294,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Mul): Either[Throwable, ScopeBuildState] =
@@ -304,7 +304,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Div): Either[Throwable, ScopeBuildState] =
@@ -314,7 +314,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Mod): Either[Throwable, ScopeBuildState] =
@@ -324,7 +324,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Less): Either[Throwable, ScopeBuildState] =
@@ -334,7 +334,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: LessEqual): Either[Throwable, ScopeBuildState] =
@@ -344,7 +344,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Greater): Either[Throwable, ScopeBuildState] =
@@ -354,7 +354,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: GreaterEqual): Either[Throwable, ScopeBuildState] =
@@ -364,7 +364,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Equal): Either[Throwable, ScopeBuildState] =
@@ -374,7 +374,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: NotEqual): Either[Throwable, ScopeBuildState] =
@@ -384,7 +384,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Not): Either[Throwable, ScopeBuildState] =
@@ -392,7 +392,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       s1   <- n.expr.visit(s, this)
       expr <- s1.ast.asExpr
       n1    = n.copy(expr = expr)
-      ss1   = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1   = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: And): Either[Throwable, ScopeBuildState] =
@@ -402,7 +402,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Or): Either[Throwable, ScopeBuildState] =
@@ -412,7 +412,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       lExpr <- ls.ast.asExpr
       rExpr <- rs.ast.asExpr
       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-      ss1    = rs.meta.defineASTScope(n1, rs.curScope)
+      ss1    = rs.meta.defineASTScope(n1, rs.curScope).ensureNoAST(n)
     yield rs.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Call): Either[Throwable, ScopeBuildState] =
@@ -428,7 +428,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
             }
       (s1, exprs) = sa
       n1          = n.copy(args = exprs)
-      ss1         = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1         = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: If): Either[Throwable, ScopeBuildState] =
@@ -441,7 +441,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       optElseExpr <- Transform.sequence(es.map(_.ast.asExpr))
       s1           = es.getOrElse(ts)
       n1           = n.copy(cond = condExpr, then1 = thenExpr, else1 = optElseExpr)
-      ss1          = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1          = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: Access): Either[Throwable, ScopeBuildState] =
@@ -451,7 +451,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       aExpr <- sa.ast.asLValue
       bExpr <- sb.ast.asLValue
       n1     = n.copy(a = aExpr, b = bExpr)
-      ss1    = sb.meta.defineASTScope(n1, sb.curScope)
+      ss1    = sb.meta.defineASTScope(n1, sb.curScope).ensureNoAST(n)
     yield sb.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: CompiledExpr): Either[Throwable, ScopeBuildState] =
@@ -459,7 +459,7 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       st                    <- visitType(s, n.retType)
       StateType(s1, retType) = st
       n1                     = n.copy(retType = retType)
-      ss1                    = s1.meta.defineASTScope(n1, s1.curScope)
+      ss1                    = s1.meta.defineASTScope(n1, s1.curScope).ensureNoAST(n)
     yield s1.copy(ast = n1, meta = ss1)
 
   private def visitType(s: ScopeBuildState, t: Type): Either[Throwable, StateType] =
