@@ -20,7 +20,7 @@ import com.github.gchudnov.bscript.builder.TestSpec
  * ScopeBuildVisitor tests
  */
 final class ScopeBuildVisitorSpec extends TestSpec:
-  // import ScopeBuildVisitorSpec.*
+  import ScopeBuildVisitorSpec.*
   import Meta.*
   import MetaOps.*
 
@@ -637,9 +637,9 @@ final class ScopeBuildVisitorSpec extends TestSpec:
   //     }
     ???
 
-// object ScopeBuildVisitorSpec:
+object ScopeBuildVisitorSpec:
 
-//   final case class ScopeBuildVisitorState(ast: AST, meta: Meta)
+  final case class ScopeBuildVisitorState(ast: AST, meta: Meta)
 
 //   def dehydrate(s: String): String =
 //     s.replaceAll("\\s", "")
