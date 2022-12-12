@@ -5,7 +5,4 @@ package com.github.gchudnov.bscript.lang.symbols
  * @param name
  *   Name of the type that is defined in one of the scopes
  */
-final case class TypeRef(name: String) extends Type:
-
-  override def toString: String =
-    s"ref ${name}"
+final case class TypeRef(name: String) extends Type

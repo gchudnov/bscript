@@ -7,9 +7,3 @@ package com.github.gchudnov.bscript.lang.symbols
  */
 trait Type extends Named:
   def name: String
-
-object Type:
-
-  val Undefined: Type = new Type:
-    override def name: String     = "type:UNDEFINED"
-    override def toString: String = s"${name}"

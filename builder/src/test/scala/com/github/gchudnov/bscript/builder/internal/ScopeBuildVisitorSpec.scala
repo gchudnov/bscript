@@ -28,26 +28,26 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
   "ScopeBuildVisitor" when {
 
-    // "var is defined" should {
+    "var is defined" should {
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   int x = 0;
-    //    * }}}
-    //    */
-    //   "put it in a scope" in {
-    //     val t = VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0))
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "put it in a scope" in {
+        val t = VarDecl(TypeRefs.i32, "x", IntVal(0))
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
-    //         meta.show.contains("x") mustBe (true)
+        // val errOrRes = eval(t)
+        // errOrRes match
+        //   case Right(ScopeBuildVisitorState(ast, meta)) =>
+        //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
+        //     meta.show.contains("x") mustBe (true)
 
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
-    // }
+        //   case Left(t) => fail("Should be 'right", t)
+      }
+    }
 
     // "functions" should {
 
