@@ -7,7 +7,6 @@ import com.github.gchudnov.bscript.builder.state.{ Ctx, Meta }
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 
 import scala.annotation.tailrec
@@ -30,7 +29,6 @@ import scala.annotation.tailrec
  * 3) I the he third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
  */
 private[internal] final class TypeCheckVisitor(
-  types: Types,
   typeCheckLaws: TypeCheckLaws
 ) extends TreeVisitor[TypeCheckState, TypeCheckState]:
   import Casting.*
@@ -224,115 +222,128 @@ private[internal] final class TypeCheckVisitor(
     yield rs.copy(meta = ss1)
 
   override def visit(s: TypeCheckState, n: Assign): Either[Throwable, TypeCheckState] =
-    for
-      ls                 <- n.id.visit(s, this)
-      rs                 <- n.expr.visit(ls, this)
-      lValue             <- ls.ast.asLValue
-      rValue             <- rs.ast.asExpr
-      lValueEvalType <- ls.meta.evalTypeFor(lValue)
-      rValueEvalType <- rs.meta.evalTypeFor(rValue)
-      rValuePromoteToType = promoteFromTo(rValueEvalType, lValueEvalType)
-      promotedRType <- Either.cond(
-                          canAssignTo(rValueEvalType, rValuePromoteToType, lValueEvalType),
-                          rValuePromoteToType,
-                          new AstException(s"Cannot convert type '${rValueEvalType.name}' to '${lValueEvalType.name}' in the assignment (${Ctx.str(rs.meta, n)})")
-                        )
-      evalType = types.voidType
-      ss1      = rs.meta.withPromoteToType(rValue, promotedRType).withEvalType(n, evalType)
-    yield rs.copy(meta = ss1)
+    // for
+    //   ls                 <- n.id.visit(s, this)
+    //   rs                 <- n.expr.visit(ls, this)
+    //   lValue             <- ls.ast.asLValue
+    //   rValue             <- rs.ast.asExpr
+    //   lValueEvalType <- ls.meta.evalTypeFor(lValue)
+    //   rValueEvalType <- rs.meta.evalTypeFor(rValue)
+    //   rValuePromoteToType = promoteFromTo(rValueEvalType, lValueEvalType)
+    //   promotedRType <- Either.cond(
+    //                       canAssignTo(rValueEvalType, rValuePromoteToType, lValueEvalType),
+    //                       rValuePromoteToType,
+    //                       new AstException(s"Cannot convert type '${rValueEvalType.name}' to '${lValueEvalType.name}' in the assignment (${Ctx.str(rs.meta, n)})")
+    //                     )
+    //   evalType = types.voidType
+    //   ss1      = rs.meta.withPromoteToType(rValue, promotedRType).withEvalType(n, evalType)
+    // yield rs.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: NothingVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.nothingType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.nothingType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: VoidVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.voidType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.voidType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: BoolVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.boolType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.boolType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: IntVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.i32Type)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.i32Type)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: LongVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.i64Type)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.i64Type)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: FloatVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.f32Type)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.f32Type)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: DoubleVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.f64Type)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.f64Type)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: DecimalVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.decType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.decType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: StrVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.strType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.strType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: DateVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.dateType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.dateType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: DateTimeVal): Either[Throwable, TypeCheckState] =
-    for
-      evalType <- Right(types.datetimeType)
-      ss1       = s.meta.withEvalType(n, evalType)
-    yield s.copy(meta = ss1)
+    // for
+    //   evalType <- Right(types.datetimeType)
+    //   ss1       = s.meta.withEvalType(n, evalType)
+    // yield s.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: StructVal): Either[Throwable, TypeCheckState] =
-    for
-      sStruct <- n.sType.asSStruct
-      sTypes  <- s.meta.structTypes(sStruct)
-      s1 <- n.value.foldLeft(Right(s): Either[Throwable, TypeCheckState]) { case (acc, (name, expr)) =>
-              acc match
-                case Left(ex) => Left(ex)
-                case Right(sx) =>
-                  for
-                    lValueType         <- sTypes.get(name).toRight(new AstException(s"Field '${name}' doesn't belong to the struct '${sStruct.name}'"))
-                    sy                 <- expr.visit(sx, this)
-                    exprN              <- sy.ast.asExpr
-                    rValueType         <- sy.meta.evalTypeFor(exprN)
-                    rValuePromoteToType = promoteFromTo(rValueType, lValueType)
-                    promotedRType <- Either.cond(
-                                        canAssignTo(rValueType, rValuePromoteToType, lValueType),
-                                        rValuePromoteToType,
-                                        new AstException(
-                                          s"Cannot convert type '${rValueType.name}' to '${lValueType.name}' in the struct '${sStruct.name}' assignment (${Ctx.str(sy.meta, n)})"
-                                        )
-                                      )
-                    sz = sy.meta.withPromoteToType(exprN, promotedRType)
-                  yield (sy)
-            }
-      ss1          = s1.meta.withEvalType(n, n.sType)
-    yield s1.copy(meta = ss1)
+    // for
+    //   sStruct <- n.sType.asSStruct
+    //   sTypes  <- s.meta.structTypes(sStruct)
+    //   s1 <- n.value.foldLeft(Right(s): Either[Throwable, TypeCheckState]) { case (acc, (name, expr)) =>
+    //           acc match
+    //             case Left(ex) => Left(ex)
+    //             case Right(sx) =>
+    //               for
+    //                 lValueType         <- sTypes.get(name).toRight(new AstException(s"Field '${name}' doesn't belong to the struct '${sStruct.name}'"))
+    //                 sy                 <- expr.visit(sx, this)
+    //                 exprN              <- sy.ast.asExpr
+    //                 rValueType         <- sy.meta.evalTypeFor(exprN)
+    //                 rValuePromoteToType = promoteFromTo(rValueType, lValueType)
+    //                 promotedRType <- Either.cond(
+    //                                     canAssignTo(rValueType, rValuePromoteToType, lValueType),
+    //                                     rValuePromoteToType,
+    //                                     new AstException(
+    //                                       s"Cannot convert type '${rValueType.name}' to '${lValueType.name}' in the struct '${sStruct.name}' assignment (${Ctx.str(sy.meta, n)})"
+    //                                     )
+    //                                   )
+    //                 sz = sy.meta.withPromoteToType(exprN, promotedRType)
+    //               yield (sy)
+    //         }
+    //   ss1          = s1.meta.withEvalType(n, n.sType)
+    // yield s1.copy(meta = ss1)
+    ???
 
   override def visit(s: TypeCheckState, n: Vec): Either[Throwable, TypeCheckState] =
     // for
@@ -675,8 +686,8 @@ private[internal] final class TypeCheckVisitor(
 
 private[builder] object TypeCheckVisitor:
 
-  def make(types: Types, typeCheckLaws: TypeCheckLaws): TypeCheckVisitor =
-    new TypeCheckVisitor(types, typeCheckLaws)
+  def make(typeCheckLaws: TypeCheckLaws): TypeCheckVisitor =
+    new TypeCheckVisitor(typeCheckLaws)
 
   final case class TypeCheckState(
     ast: AST,
