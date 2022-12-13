@@ -1,5 +1,6 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.lang.const
 
+import com.github.gchudnov.bscript.lang.ast.Expr
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 
 /**

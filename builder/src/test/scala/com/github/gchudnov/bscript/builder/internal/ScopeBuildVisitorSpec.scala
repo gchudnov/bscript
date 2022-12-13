@@ -36,9 +36,9 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        val t = VarDecl(TypeRef.i32, "x", IntVal(0))
+        // val t = VarDecl(TypeRef.i32, "x", IntVal(0))
 
-        val errOrRes = eval(t)
+        // val errOrRes = eval(t)
         // errOrRes match
         //   case Right(ScopeBuildVisitorState(ast, meta)) =>
         //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))

@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
+import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type, Ann }
 
 /**
  * Method Declaration

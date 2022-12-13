@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.lang.symbols
 
 /**
  * Annotation to apply to an AST element

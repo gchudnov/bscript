@@ -1,6 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast
-
-import com.github.gchudnov.bscript.lang.symbols.Type
+package com.github.gchudnov.bscript.lang.const
 
 /**
  * Decimal Literal

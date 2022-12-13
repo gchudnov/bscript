@@ -13,7 +13,7 @@ import com.github.gchudnov.bscript.lang.symbols.TypeRef
  * @param elements
  *   Elements of the collection
  */
-final case class Vec(elements: Seq[Expr], elementType: Type) extends Expr with HasElementType
+final case class Vec(elements: Seq[Expr], elementType: Type) extends Expr
 
 object Vec:
   def apply(): Vec =

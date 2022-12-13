@@ -1,3 +1,3 @@
 package com.github.gchudnov.bscript.lang.ast
 
-abstract class Decl extends Expr with HasName
+abstract class Decl extends Expr
