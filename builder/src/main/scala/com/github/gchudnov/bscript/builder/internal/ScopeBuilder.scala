@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.builder.util.Forest
 import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.builder.internal.BasicScopeBuilder
 
 /**
  * Scope
@@ -48,4 +49,5 @@ trait ScopeBuilder:
  */
 object ScopeBuilder:
 
-  type ScopeTree = Forest[Scope]
+  def make(meta: Meta): ScopeBuilder =
+    new BasicScopeBuilder(meta)

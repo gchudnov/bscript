@@ -9,8 +9,8 @@ import com.github.gchudnov.bscript.builder.Meta
 /**
  * BasicScopeBuilder
  */
-final class BasicScopeBuilder() extends ScopeBuilder:
-  import ScopeBuilder.*
+final class BasicScopeBuilder(meta: Meta) extends ScopeBuilder:
+  import Meta.*
 
   private var scopeTree: ScopeTree = Forest.empty[Scope]
 

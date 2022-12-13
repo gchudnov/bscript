@@ -47,8 +47,13 @@ final case class Meta(
   evalTypes: Map[Ptr[AST], Type],              //
   promoteToTypes: Map[Ptr[AST], Type],         //
   astSymbols: Map[Ptr[AST], Symbol]            //
-):
-  import Meta.*
+)
+
+object Meta:
+  
+  type ScopeTree = Forest[Scope]
+
+
 
 //   /**
 //    * Resolve a symbol in the scope recursively up to the root
