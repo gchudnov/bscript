@@ -8,7 +8,6 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Show
 
 import scala.collection.mutable.StringBuilder as MStringBuilder
-import com.github.gchudnov.bscript.lang.symbols.SymbolRefs
 
 /**
  * Metadata - Scope & Symbol State
@@ -79,7 +78,7 @@ final case class Meta(
    *
    * NOTE: it could be multiple Scopes, not connected to the parent, but the use-case for that is not clear.
    */
-  def defineBlock(block: SBlock): Meta =
+  def defineBlock(block: Scope): Meta =
     this.copy(scopeTree = scopeTree.add(block))
 
   /**
@@ -87,7 +86,7 @@ final case class Meta(
    *
    * NOTE: Block is not a symbol
    */
-  def defineBlock(block: SBlock, in: Scope): Meta =
+  def defineBlock(block: Scope, in: Scope): Meta =
     this.copy(scopeTree = scopeTree.link(block, in))
 
   /**
@@ -440,21 +439,20 @@ object Meta:
 
   def init(): Meta =
     val g = SBlock("#global")
-    val m = Meta.empty
+    Meta.empty
       .defineBlock(g)
-      .defineBuiltInType(SymbolRefs.auto, g)
-      .defineBuiltInType(SymbolRefs.nothing, g)
-      .defineBuiltInType(SymbolRefs.void, g)
-      .defineBuiltInType(SymbolRefs.bool, g)
-      .defineBuiltInType(SymbolRefs.i32, g)
-      .defineBuiltInType(SymbolRefs.i64, g)
-      .defineBuiltInType(SymbolRefs.f32, g)
-      .defineBuiltInType(SymbolRefs.f64, g)
-      .defineBuiltInType(SymbolRefs.dec, g)
-      .defineBuiltInType(SymbolRefs.str, g)
-      .defineBuiltInType(SymbolRefs.date, g)
-      .defineBuiltInType(SymbolRefs.datetime, g)
-    m
+      .defineBuiltInType(SymbolRef.auto, g)
+      .defineBuiltInType(SymbolRef.nothing, g)
+      .defineBuiltInType(SymbolRef.void, g)
+      .defineBuiltInType(SymbolRef.bool, g)
+      .defineBuiltInType(SymbolRef.i32, g)
+      .defineBuiltInType(SymbolRef.i64, g)
+      .defineBuiltInType(SymbolRef.f32, g)
+      .defineBuiltInType(SymbolRef.f64, g)
+      .defineBuiltInType(SymbolRef.dec, g)
+      .defineBuiltInType(SymbolRef.str, g)
+      .defineBuiltInType(SymbolRef.date, g)
+      .defineBuiltInType(SymbolRef.datetime, g)
 
   given Show[Meta] with
     import ScopeTree.{ *, given }

@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.lang.symbols.TypeRefs
+import com.github.gchudnov.bscript.lang.symbols.TypeRef
 
 /**
  * Initialization Node
@@ -19,4 +19,4 @@ final case class Init(iType: Type) extends Expr:
 
 object Init:
   def apply(): Init =
-    new Init(iType = TypeRefs.auto)
+    new Init(iType = TypeRef.auto)

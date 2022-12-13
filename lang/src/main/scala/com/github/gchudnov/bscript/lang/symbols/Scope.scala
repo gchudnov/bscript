@@ -29,8 +29,3 @@ package com.github.gchudnov.bscript.lang.symbols
  * the enclosing scope if it can find the symbol. resolve() recursively walks toward the root of the scope tree until it finds the symbol or runs out of scopes.
  */
 trait Scope extends Named
-
-object Scope:
-  val Undefined: Scope = new Scope:
-    override val name: String     = "scope:UNDEFINED"
-    override def toString: String = s"${name}"

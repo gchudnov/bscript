@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.lang.symbols.TypeRefs
+import com.github.gchudnov.bscript.lang.symbols.TypeRef
 
 /**
  * Collection (Vector)
@@ -20,7 +20,7 @@ final case class Vec(elements: Seq[Expr], elementType: Type) extends Expr with H
 
 object Vec:
   def apply(): Vec =
-    new Vec(elements = Seq.empty[Expr], elementType = TypeRefs.auto)
+    new Vec(elements = Seq.empty[Expr], elementType = TypeRef.auto)
 
   def apply(elements: Seq[Expr]): Vec =
-    new Vec(elements = elements, elementType = TypeRefs.auto)
+    new Vec(elements = elements, elementType = TypeRef.auto)
