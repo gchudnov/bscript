@@ -4,17 +4,6 @@ import com.github.gchudnov.bscript.builder.TestSpec
 
 final class BaseNSpec extends TestSpec:
 
-  object Base2 extends BaseN:
-    override def base: Long = 2
-
-    override def lookup(x: Long): Char = x match
-      case 0 => 'f';
-      case _ => 't'
-
-    override def reverseLookup(c: Char): Long = c match
-      case 'f' => 0L;
-      case _   => 1L
-
   "BaseN" when {
 
     "base2" should {

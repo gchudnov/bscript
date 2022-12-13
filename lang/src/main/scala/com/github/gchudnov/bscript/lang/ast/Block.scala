@@ -1,6 +1,5 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 
 /**
@@ -19,10 +18,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  * @param statements
  *   Statements included in the block
  */
-final case class Block(statements: List[Expr]) extends Expr:
-  override def visit[S, R](s: S, v: TreeVisitor[S, R]): Either[Throwable, R] =
-    v.visit(s, this)
-
+final case class Block(statements: List[Expr]) extends Expr
 
 object Block:
 

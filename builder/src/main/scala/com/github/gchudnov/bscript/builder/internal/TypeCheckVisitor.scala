@@ -5,7 +5,6 @@ import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
 // import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.*
 import com.github.gchudnov.bscript.builder.state.{ Ctx, Meta }
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 

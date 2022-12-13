@@ -1,6 +1,5 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.Type
 
 /**
@@ -15,16 +14,17 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  *
  * Given «expr».x, member need’s «expr»’s type because it must look up x with the scope of «expr».
  */
-final case class Access(a: LValue, b: LValue) extends LValue:
-  override def visit[S, R](s: S, v: TreeVisitor[S, R]): Either[Throwable, R] =
-    v.visit(s, this)
+final case class Access(a: LValue, b: LValue) extends LValue
 
+
+object Access:
+  private val sep: String = "."
+
+/*
   def path: String =
     def iterate(value: LValue): String = value match
       case x: Var    => x.symbol.name
       case x: Access => List(iterate(x.a), iterate(x.b)).mkString(Access.sep)
       case x         => sys.error(s"Unsupported Type to get a Path: '${x}'")
     iterate(this)
-
-object Access:
-  private val sep: String = "."
+*/

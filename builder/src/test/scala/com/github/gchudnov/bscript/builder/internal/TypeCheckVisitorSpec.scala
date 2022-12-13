@@ -7,7 +7,6 @@ import com.github.gchudnov.bscript.lang.ast.*
 // import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.{ TypeNames }

@@ -1,6 +1,5 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.Type
 
 /**
@@ -10,6 +9,4 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  *   ==
  * }}}
  */
-final case class Equal(lhs: Expr, rhs: Expr) extends EqOp:
-  override def visit[S, R](s: S, v: TreeVisitor[S, R]): Either[Throwable, R] =
-    v.visit(s, this)
+final case class Equal(lhs: Expr, rhs: Expr) extends EqOp
