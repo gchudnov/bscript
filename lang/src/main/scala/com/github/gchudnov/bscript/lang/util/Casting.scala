@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.lang.util
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SBlock, SMethod, SStruct, SVar, Scope, Symbol, Type }
+import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SBlock, SMethod, SStruct, SVar, Symbol, Type }
 
 object Casting:
 
@@ -39,28 +39,28 @@ object Casting:
       case x: StructVal => Right(x)
       case _            => Left(new AstException(s"Cannot cast AST to StructVal"))
 
-  // Scope
-  extension (scope: Scope)
-    def asSMethod: Either[AstException, SMethod] =
-      scope match
-        case m: SMethod => Right(m)
-        case _          => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SMethod"))
+  // // Scope
+  // extension (scope: Scope)
+  //   def asSMethod: Either[AstException, SMethod] =
+  //     scope match
+  //       case m: SMethod => Right(m)
+  //       case _          => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SMethod"))
 
-    def asSStruct: Either[AstException, SStruct] =
-      scope match
-        case s: SStruct => Right(s)
-        case _          => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SStruct"))
+  //   def asSStruct: Either[AstException, SStruct] =
+  //     scope match
+  //       case s: SStruct => Right(s)
+  //       case _          => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SStruct"))
 
-    def asSBlock: Either[AstException, SBlock] =
-      scope match
-        case b: SBlock => Right(b)
-        case _         => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SBlock"))
+  //   def asSBlock: Either[AstException, SBlock] =
+  //     scope match
+  //       case b: SBlock => Right(b)
+  //       case _         => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SBlock"))
 
-    def scopeKind: String = scope match
-      case _: SMethod => "Method"
-      case _: SStruct => "Struct"
-      case _: SBlock  => "Block"
-      case _          => "?"
+  //   def scopeKind: String = scope match
+  //     case _: SMethod => "Method"
+  //     case _: SStruct => "Struct"
+  //     case _: SBlock  => "Block"
+  //     case _          => "?"
 
   // Symbol
   extension (sym: Symbol)

@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
+// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 import com.github.gchudnov.bscript.builder.internal.MetaOps
 // import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
@@ -37,7 +37,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        val t = VarDecl(TypeRefs.i32, "x", IntVal(0))
+        val t = VarDecl(TypeRef.i32, "x", IntVal(0))
 
         val errOrRes = eval(t)
         // errOrRes match

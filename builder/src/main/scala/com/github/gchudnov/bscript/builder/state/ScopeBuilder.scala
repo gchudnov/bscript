@@ -1,4 +1,6 @@
-package com.github.gchudnov.bscript.lang.symbols
+package com.github.gchudnov.bscript.builder.state
+
+import com.github.gchudnov.bscript.builder.util.Forest
 
 /**
  * Scope
@@ -28,4 +30,36 @@ package com.github.gchudnov.bscript.lang.symbols
  * So, to resolve a symbol reference, we look for it in its semantic context, starting with the current scope. If resolve() doesn’t find the symbol in the current scope, it asks
  * the enclosing scope if it can find the symbol. resolve() recursively walks toward the root of the scope tree until it finds the symbol or runs out of scopes.
  */
-trait Scope extends Named
+
+/**
+ * ScopeBuilder
+ */
+trait ScopeBuilder:
+  def push(): Unit
+  def pop(): Unit
+
+  def define(s: Symbol): Unit
+
+/**
+ * ScopeBuilder
+ */
+object ScopeBuilder:
+
+  type ScopeTree = Forest[Scope]
+
+/**
+ * BasicScopeBuilder
+ */
+final class BasicScopeBuilder() extends ScopeBuilder:
+  import ScopeBuilder.*
+
+  private var scopeTree: ScopeTree = Forest.empty[Scope]
+
+  override def push(): Unit =
+    ???
+
+  override def pop(): Unit =
+    ???
+
+  override def define(s: Symbol): Unit =
+    ???

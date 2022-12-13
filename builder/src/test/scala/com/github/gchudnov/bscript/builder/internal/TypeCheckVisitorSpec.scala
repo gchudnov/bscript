@@ -1,9 +1,9 @@
 package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
-import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
+// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
+// import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
+// import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
 // import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 import com.github.gchudnov.bscript.lang.ast.CompiledExpr
