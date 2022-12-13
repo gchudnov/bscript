@@ -1,5 +1,6 @@
-package com.github.gchudnov.bscript.builder.state
+package com.github.gchudnov.bscript.builder
 
+import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, ScopeStateException, Symbol, Type, TypeRef, SymbolRef }
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }

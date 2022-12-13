@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.internal
 
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.{ ScopeBuildState, StateType }
-import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*

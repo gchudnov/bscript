@@ -9,7 +9,6 @@ import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor
 // import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.types.{ TypeNames }
-import com.github.gchudnov.bscript.builder.state.Meta
 
 sealed trait Builder:
 

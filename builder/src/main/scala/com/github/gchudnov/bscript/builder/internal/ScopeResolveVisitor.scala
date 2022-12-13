@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.internal
 
 // import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }

@@ -3,9 +3,9 @@ package com.github.gchudnov.bscript.lang.mirror
 import com.github.gchudnov.bscript.lang.ast.*
 
 /**
- * Visit AST
+ * Folds AST
  */
-trait ASTVisitor[A]:
+trait AstFolder[A]:
 
   def foldAST(a: A, ast: AST): A
 

@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.symbols.{ SMethod, SVar, Symbol, Type }
 import com.github.gchudnov.bscript.builder.util.Ptr
 
