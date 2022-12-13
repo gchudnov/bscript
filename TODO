@@ -5,6 +5,12 @@
 - TODO: move some operations to functions
 
 
+https://docs.scala-lang.org/scala3/guides/macros/index.html
+https://eed3si9n.com/intro-to-scala-3-macros/
+https://softwaremill.com/scala-3-macros-tips-and-tricks/
+https://dotty.epfl.ch/docs/reference/metaprogramming/reflection.html
+
+https://github.com/biboudis/dotty/blob/613a4193b3c705a21209f7d63ef79ad77be02d7e/library/src/scala/tasty/reflect/TreeAccumulator.scala#L15
 
 - TODO: it is not possible distinguish between TypeRef("auto") and type-ref that references variable (see scala ast)
 
