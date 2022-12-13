@@ -26,7 +26,7 @@ trait ASTVisitor[A]:
         a
       case Call(_, args) =>
         foldASTs(a, args)
-      case CompiledExpr(_, _) =>
+      case Compiled(_, _) =>
         a
       case FieldDecl(_, _) =>
         a
