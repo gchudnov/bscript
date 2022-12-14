@@ -20,13 +20,12 @@ final class ForestCursorSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *    a
+     * }}}
+     */
     "push" should {
-
-      /**
-       * {{{
-       *    a
-       * }}}
-       */
       "add a node at layer 0" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -41,13 +40,12 @@ final class ForestCursorSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *   a
+     * }}}
+     */
     "push, pop" should {
-
-      /**
-       * {{{
-       *   a
-       * }}}
-       */
       "add a node at layer 0" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -62,15 +60,14 @@ final class ForestCursorSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *    a
+     *    |
+     *   a.a
+     * }}}
+     */
     "push, push" should {
-
-      /**
-       * {{{
-       *    a
-       *    |
-       *   a.a
-       * }}}
-       */
       "add node at layers 0, 1" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -85,17 +82,16 @@ final class ForestCursorSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *    a
+     *    |
+     *   a.a
+     *    |
+     *  a.a.a
+     * }}}
+     */
     "push, push, push" should {
-
-      /**
-       * {{{
-       *    a
-       *    |
-       *   a.a
-       *    |
-       *  a.a.a
-       * }}}
-       */
       "add nodes at layers 0, 1, 2" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -110,13 +106,12 @@ final class ForestCursorSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *   a  b  c
+     * }}}
+     */
     "push, pop, push, pop, push, pop" should {
-
-      /**
-       * {{{
-       *   a  b  c
-       * }}}
-       */
       "add nodes at layer 0 only" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -131,16 +126,15 @@ final class ForestCursorSpec extends TestSpec:
       }
     }
 
+    /**
+     * {{{
+     *      a
+     *    / | \
+     *   /  |  \
+     * a.a a.b a.c
+     * }}}
+     */
     "push, push, pop, push, pop, push, pop" should {
-
-      /**
-       * {{{
-       *      a
-       *    / | \
-       *   /  |  \
-       * a.a a.b a.c
-       * }}}
-       */
       "add nodes at layers 0, 1" in {
         val c = ForestCursor.empty(a => Node(a))
 
