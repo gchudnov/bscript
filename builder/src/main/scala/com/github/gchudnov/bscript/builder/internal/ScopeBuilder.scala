@@ -2,6 +2,10 @@ package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.builder.util.Forest
 import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.builder.ScopeRef
+import com.github.gchudnov.bscript.builder.Scope
+import com.github.gchudnov.bscript.builder.util.ForestCursor
+
 
 /**
  * Scope
@@ -48,5 +52,5 @@ trait ScopeBuilder:
  */
 object ScopeBuilder:
 
-  def make(meta: Meta): ScopeBuilder =
-    new BasicScopeBuilder(meta)
+  def make(): ScopeBuilder =
+    new BasicScopeBuilder(ForestCursor.empty[Scope](a => ScopeRef(a)))
