@@ -51,7 +51,7 @@ final case class Forest[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A], A
   /**
    * Returns the complete path to root
    */
-  def pathToRoot(x: A): List[A] =
+  def path(x: A): List[A] =
     @tailrec
     def iterate(acc: List[A], y: A): List[A] =
       parentOf(y) match
