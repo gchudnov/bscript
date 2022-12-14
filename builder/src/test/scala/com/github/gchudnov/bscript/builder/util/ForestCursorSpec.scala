@@ -27,7 +27,8 @@ final class ForestCursorSpec extends TestSpec:
         val actual = c.push()
 
         actual.forest.size mustBe (1)
-        actual.forest.vertices must contain theSameElementsAs(Set(Node("a")))
+        actual.forest.vertices must contain theSameElementsAs (Set(Node("a")))
+        actual.forest.edges must contain theSameElementsAs (Map.empty[Node, Node])
         actual.current mustBe Some(Node("a"))
         actual.counter mustBe Vector(0)
         actual.level mustBe (1)
@@ -41,7 +42,8 @@ final class ForestCursorSpec extends TestSpec:
         val actual = c.push().pop()
 
         actual.forest.size mustBe (1)
-        actual.forest.vertices must contain theSameElementsAs(Set(Node("a")))
+        actual.forest.vertices must contain theSameElementsAs (Set(Node("a")))
+        actual.forest.edges must contain theSameElementsAs (Map.empty[Node, Node])
         actual.current mustBe None
         actual.counter mustBe Vector(0)
         actual.level mustBe (0)
@@ -55,7 +57,8 @@ final class ForestCursorSpec extends TestSpec:
         val actual = c.push().push()
 
         actual.forest.size mustBe (2)
-        actual.forest.vertices must contain theSameElementsAs(Set(Node("a"), Node("a.a")))
+        actual.forest.vertices must contain theSameElementsAs (Set(Node("a"), Node("a.a")))
+        actual.forest.edges must contain theSameElementsAs (Map(Node("a.a") -> Node("a")))
         actual.current mustBe Some(Node("a.a"))
         actual.counter mustBe Vector(0, 0)
         actual.level mustBe (2)
@@ -69,7 +72,8 @@ final class ForestCursorSpec extends TestSpec:
         val actual = c.push().push().push()
 
         actual.forest.size mustBe (3)
-        actual.forest.vertices must contain theSameElementsAs(Set(Node("a"), Node("a.a"), Node("a.a.a")))
+        actual.forest.vertices must contain theSameElementsAs (Set(Node("a"), Node("a.a"), Node("a.a.a")))
+        actual.forest.edges must contain theSameElementsAs (Map(Node("a.a") -> Node("a"), Node("a.a.a") -> Node("a.a")))
         actual.current mustBe Some(Node("a.a.a"))
         actual.counter mustBe Vector(0, 0, 0)
         actual.level mustBe (3)
@@ -83,7 +87,8 @@ final class ForestCursorSpec extends TestSpec:
         val actual = c.push().pop().push().pop().push().pop()
 
         actual.forest.size mustBe (3)
-        actual.forest.vertices must contain theSameElementsAs(Set(Node("a"), Node("b"), Node("c")))
+        actual.forest.vertices must contain theSameElementsAs (Set(Node("a"), Node("b"), Node("c")))
+        actual.forest.edges must contain theSameElementsAs (Map.empty[Node, Node])
         actual.current mustBe None
         actual.counter mustBe Vector(2)
         actual.level mustBe (0)
