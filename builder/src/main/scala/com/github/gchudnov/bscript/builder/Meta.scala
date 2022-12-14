@@ -53,7 +53,20 @@ object Meta:
   
   type ScopeTree = Forest[Scope]
 
-
+  val empty: Meta =
+    Meta(
+      scopeTree = Forest.empty[Scope],
+      scopeSymbols = Map.empty[Ptr[Scope], List[Symbol]],
+      symbolScopes = Map.empty[Ptr[Symbol], Scope],
+      methodArgs = Map.empty[Ptr[SMethod], List[SVar]],
+      methodRetTypes = Map.empty[Ptr[SMethod], Type],
+      methodAsts = Map.empty[Ptr[SMethod], AST],
+      astScopes = Map.empty[Ptr[AST], Scope],
+      varTypes = Map.empty[Ptr[SVar], Type],
+      evalTypes = Map.empty[Ptr[AST], Type],
+      promoteToTypes = Map.empty[Ptr[AST], Type],
+      astSymbols = Map.empty[Ptr[AST], Symbol]
+    )
 
 //   /**
 //    * Resolve a symbol in the scope recursively up to the root
@@ -429,20 +442,7 @@ object Meta:
 //     symbolScopeMap: SymbolScopeMap
 //   )
 
-//   val empty: Meta =
-//     Meta(
-//       scopeTree = Forest.empty[Scope],
-//       scopeSymbols = Map.empty[Ptr[Scope], List[Symbol]],
-//       symbolScopes = Map.empty[Ptr[Symbol], Scope],
-//       methodArgs = Map.empty[Ptr[SMethod], List[SVar]],
-//       methodRetTypes = Map.empty[Ptr[SMethod], Type],
-//       methodAsts = Map.empty[Ptr[SMethod], AST],
-//       astScopes = Map.empty[Ptr[AST], Scope],
-//       varTypes = Map.empty[Ptr[SVar], Type],
-//       evalTypes = Map.empty[Ptr[AST], Type],
-//       promoteToTypes = Map.empty[Ptr[AST], Type],
-//       astSymbols = Map.empty[Ptr[AST], Symbol]
-//     )
+
 
 //   def init(): Meta =
 //     val g = SBlock("#global")

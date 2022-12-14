@@ -1,8 +1,7 @@
-package com.github.gchudnov.bscript.builder
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.builder.util.Forest
 import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.builder.internal.BasicScopeBuilder
 
 /**
  * Scope
