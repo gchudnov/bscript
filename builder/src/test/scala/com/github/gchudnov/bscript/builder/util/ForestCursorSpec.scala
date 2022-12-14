@@ -21,6 +21,12 @@ final class ForestCursorSpec extends TestSpec:
     }
 
     "push" should {
+
+      /**
+       * {{{
+       *    a
+       * }}}
+       */
       "add a node at layer 0" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -36,6 +42,12 @@ final class ForestCursorSpec extends TestSpec:
     }
 
     "push, pop" should {
+
+      /**
+       * {{{
+       *   a
+       * }}}
+       */
       "add a node at layer 0" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -51,6 +63,14 @@ final class ForestCursorSpec extends TestSpec:
     }
 
     "push, push" should {
+
+      /**
+       * {{{
+       *    a
+       *    |
+       *   a.a
+       * }}}
+       */
       "add node at layers 0, 1" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -66,6 +86,16 @@ final class ForestCursorSpec extends TestSpec:
     }
 
     "push, push, push" should {
+
+      /**
+       * {{{
+       *    a
+       *    |
+       *   a.a
+       *    |
+       *  a.a.a
+       * }}}
+       */
       "add nodes at layers 0, 1, 2" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -81,6 +111,12 @@ final class ForestCursorSpec extends TestSpec:
     }
 
     "push, pop, push, pop, push, pop" should {
+
+      /**
+       * {{{
+       *   a  b  c
+       * }}}
+       */
       "add nodes at layer 0 only" in {
         val c = ForestCursor.empty(a => Node(a))
 
@@ -92,6 +128,30 @@ final class ForestCursorSpec extends TestSpec:
         actual.current mustBe None
         actual.counter mustBe Vector(2)
         actual.level mustBe (0)
+      }
+    }
+
+    "push, push, pop, push, pop, push, pop" should {
+
+      /**
+       * {{{
+       *      a
+       *    / | \
+       *   /  |  \
+       * a.a a.b a.c
+       * }}}
+       */
+      "add nodes at layers 0, 1" in {
+        val c = ForestCursor.empty(a => Node(a))
+
+        val actual = c.push().push().pop().push().pop().push().pop()
+
+        actual.forest.size mustBe (4)
+        actual.forest.vertices must contain theSameElementsAs (Set(Node("a"), Node("a.a"), Node("a.b"), Node("a.c")))
+        actual.forest.edges must contain theSameElementsAs (Map(Node("a.a") -> Node("a"), Node("a.b") -> Node("a"), Node("a.c") -> Node("a")))
+        actual.current mustBe Some(Node("a"))
+        actual.counter mustBe Vector(0, 2)
+        actual.level mustBe (1)
       }
     }
   }
