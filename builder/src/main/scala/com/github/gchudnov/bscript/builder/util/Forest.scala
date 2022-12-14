@@ -12,7 +12,7 @@ import scala.annotation.tailrec
  * @param edges
  *   (child -> parent) links.
  */
-final case class Forest[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A], A]):
+final case class Forest[A <: AnyRef](vertices: Set[A], edges: Map[A, A]):
 
   def size: Int =
     vertices.size
@@ -24,30 +24,30 @@ final case class Forest[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A], A
    * Gets a parent for the given node
    */
   def parentOf(x: A): Option[A] =
-    edges.get(Ptr(x))
+    edges.get(x)
 
   /**
    * Adds a new node to the tree
    */
   def add(x: A): Forest[A] =
-    this.copy(vertices = vertices + Ptr(x))
+    this.copy(vertices = vertices + x)
 
   /**
    * Adds link from node `from` to the node `to`
    */
   def link(from: A, to: A): Forest[A] =
-    assert(vertices.contains(Ptr(from)) && vertices.contains(Ptr(from)), "Cannot link nodes that are not added to the forest")
+    assert(vertices.contains(from) && vertices.contains(from), "Cannot link nodes that are not added to the forest")
 
-    this.copy(edges = edges + (Ptr(from) -> to))
+    this.copy(edges = edges + (from -> to))
 
   /**
    * Replaces a node
    */
   def replace(prev: A, next: A): Forest[A] =
-    assert(vertices.contains(Ptr(prev)), s"Cannot replace ${prev} with ${next}: node not found.")
+    assert(vertices.contains(prev), s"Cannot replace ${prev} with ${next}: node not found.")
 
-    val newVertices = vertices - Ptr(prev) + Ptr(next)
-    val newEdges    = edges - Ptr(prev) ++ edges.get(Ptr(prev)).fold(Map.empty[Ptr[A], A])(other => Map(Ptr(next) -> other))
+    val newVertices = vertices - prev + next
+    val newEdges    = edges - prev ++ edges.get(prev).fold(Map.empty[A, A])(other => Map(next -> other))
 
     this.copy(vertices = newVertices, edges = newEdges)
 
@@ -69,6 +69,6 @@ object Forest:
 
   def empty[A <: AnyRef]: Forest[A] =
     Forest[A](
-      vertices = Set.empty[Ptr[A]],
-      edges = Map.empty[Ptr[A], A]
+      vertices = Set.empty[A],
+      edges = Map.empty[A, A]
     )

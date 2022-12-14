@@ -36,7 +36,7 @@ final class ForestSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(Ptr(b0))
+        t1.vertices must contain allElementsOf List(b0)
         t1.edges.size mustBe (0)
       }
     }
@@ -50,7 +50,7 @@ final class ForestSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(Ptr(b0))
+        t1.vertices must contain allElementsOf List(b0)
         t1.edges.size mustBe (0)
       }
 
@@ -64,7 +64,7 @@ final class ForestSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(Ptr(b0))
+        t1.vertices must contain allElementsOf List(b0)
         t1.edges.size mustBe (0)
 
         val t2 = t1
@@ -76,7 +76,7 @@ final class ForestSpec extends TestSpec:
           .link(b2, b0)
 
         t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
+        t2.vertices must contain allElementsOf List(b0, b1, b2)
         t2.edges.size mustBe (2)
       }
     }
@@ -102,7 +102,7 @@ final class ForestSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
+        t1.vertices must contain allElementsOf List(b0, b1, b2)
         t1.edges.size mustBe (2)
       }
     }
@@ -133,7 +133,7 @@ final class ForestSpec extends TestSpec:
           .link(b3, b2)
 
         t1.vertices.size mustBe (4)
-        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2), Ptr(b3))
+        t1.vertices must contain allElementsOf List(b0, b1, b2, b3)
         t1.edges.size mustBe (3)
 
         val p1 = t1.parentOf(b3)
@@ -175,14 +175,14 @@ final class ForestSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
+        t1.vertices must contain allElementsOf List(b0, b1, b2)
         t1.edges.size mustBe (2)
         t1.parentOf(b1) mustBe (Some(b0))
 
         val t2 = t1.link(b1, b2)
 
         t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
+        t2.vertices must contain allElementsOf List(b0, b1, b2)
         t2.edges.size mustBe (2)
         t2.parentOf(b1) mustBe (Some(b2))
       }
@@ -211,7 +211,7 @@ final class ForestSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
+        t1.vertices must contain allElementsOf List(b0, b1, b2)
         t1.edges.size mustBe (2)
 
         val t2 = t1
@@ -219,7 +219,7 @@ final class ForestSpec extends TestSpec:
           .replace(b1, b3)
 
         t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(Ptr(b0), Ptr(b3), Ptr(b2))
+        t2.vertices must contain allElementsOf List(b0, b3, b2)
         t2.edges.size mustBe (2)
       }
 
@@ -236,13 +236,13 @@ final class ForestSpec extends TestSpec:
           .add(b0)
 
         t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(Ptr(b0))
+        t1.vertices must contain allElementsOf List(b0)
         t1.edges.size mustBe (0)
 
         val t2 = t1.replace(b0, b1)
 
         t2.vertices.size mustBe (1)
-        t2.vertices must contain allElementsOf List(Ptr(b1))
+        t2.vertices must contain allElementsOf List(b1)
         t2.edges.size mustBe (0)
       }
     }
@@ -251,15 +251,15 @@ final class ForestSpec extends TestSpec:
 
       /**
        * {{{
-       *        b0
-       *       /  \
-       *     b1'  b1''
+       *        b0                              b0
+       *       /  \                             |
+       *     b1'  b1''  <-- false, it will be:  b1
        * }}}
        */
-      "be allowed" in {
+      "is a duplicate and not allowed" in {
         val b0 = Node("b0")
         val b1 = Node("b1") // (1) |
-        val b2 = Node("b1") // (2) | (1), (2) are different scopes that share name, both should exist in the tree
+        val b2 = Node("b1") // (2) |
 
         val t1 = Forest.empty[Node]
           .add(b0)
@@ -268,9 +268,9 @@ final class ForestSpec extends TestSpec:
           .link(b1, b0)
           .link(b2, b0)
 
-        t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(Ptr(b0), Ptr(b1), Ptr(b2))
-        t1.edges.size mustBe (2)
+        t1.vertices.size mustBe (2)
+        t1.vertices must contain allElementsOf List(b0, b1)
+        t1.edges.size mustBe (1)
       }
     }
 

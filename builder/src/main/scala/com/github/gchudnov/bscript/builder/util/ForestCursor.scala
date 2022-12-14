@@ -8,12 +8,13 @@ final case class ForestCursor[A <: AnyRef](
   aFactory: (String) => A
 ):
   def push(): ForestCursor[A] =
-    val name = (counter.take(level + 1) :+ 0).map(k => Base26.encode(k)).mkString(".")
+    val c = updateCounter(this.level)
+    val name = c.take(level + 1).map(k => Base26.encode(k)).mkString(".")
     val a    = aFactory(name)
     this.copy(
       forest = forest.add(a),
       current = Some(a),
-      counter = incCounter(this.level + 1),
+      counter = c,
       level = this.level + 1
     )
 
@@ -23,8 +24,8 @@ final case class ForestCursor[A <: AnyRef](
       level = this.level - 1
     )
 
-  private def incCounter(n: Int): Vector[Int] =
-    assert(counter.size <= n, "the counter increment is too steep, this is a bug in code")
+  private def updateCounter(n: Int): Vector[Int] =
+    assert(counter.size >= n, s"counter = ${counter.toList}, n = ${n}: trying to increment counter out of bounds, this ia bug in code")
     if this.counter.size == n then counter.appended(0) else counter.updated(n, counter(n) + 1)
 
 object ForestCursor:
@@ -33,6 +34,6 @@ object ForestCursor:
       forest = Forest.empty[A],
       current = None,
       counter = Vector.empty[Int],
-      level = -1,
+      level = 0,
       aFactory = aFactory
     )
