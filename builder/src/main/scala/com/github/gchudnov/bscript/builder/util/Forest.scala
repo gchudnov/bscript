@@ -17,6 +17,9 @@ final case class Forest[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A], A
   def size: Int =
     vertices.size
 
+  def isEmpty: Boolean =
+    vertices.isEmpty
+
   /**
    * Gets a parent for the given node
    */
