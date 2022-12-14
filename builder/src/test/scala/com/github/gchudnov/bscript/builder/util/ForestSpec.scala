@@ -32,7 +32,8 @@ final class ForestSpec extends TestSpec:
       "be located in the forest" in {
         val b0 = Node("b0")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
 
         t1.vertices.size mustBe (1)
@@ -45,7 +46,8 @@ final class ForestSpec extends TestSpec:
       "results in one node" in {
         val b0 = Node("b0")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b0)
 
@@ -59,7 +61,8 @@ final class ForestSpec extends TestSpec:
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b0)
 
@@ -94,7 +97,8 @@ final class ForestSpec extends TestSpec:
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
@@ -123,7 +127,8 @@ final class ForestSpec extends TestSpec:
         val b2 = Node("b2")
         val b3 = Node("b3")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
@@ -167,7 +172,8 @@ final class ForestSpec extends TestSpec:
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
@@ -188,6 +194,40 @@ final class ForestSpec extends TestSpec:
       }
     }
 
+    "maybeLink" should {
+      "link if the destination is specified" in {
+        val b0 = Node("b0")
+        val b1 = Node("b1")
+
+        val t1 = Forest
+          .empty[Node]
+          .add(b0)
+          .add(b1)
+          .maybeLink(b1, Some(b0))
+
+        t1.vertices.size mustBe (2)
+        t1.vertices must contain allElementsOf List(b0, b1)
+        t1.edges.size mustBe (1)
+        t1.parentOf(b1) mustBe (Some(b0))
+      }
+
+      "do not link of the destination is not specified" in {
+        val b0 = Node("b0")
+        val b1 = Node("b1")
+
+        val t1 = Forest
+          .empty[Node]
+          .add(b0)
+          .add(b1)
+          .maybeLink(b1, None)
+
+        t1.vertices.size mustBe (2)
+        t1.vertices must contain allElementsOf List(b0, b1)
+        t1.edges.size mustBe (0)
+        t1.parentOf(b1) mustBe None
+      }
+    }
+
     "replace" should {
 
       /**
@@ -203,7 +243,8 @@ final class ForestSpec extends TestSpec:
         val b2 = Node("b2")
         val b3 = Node("b3")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
@@ -232,7 +273,8 @@ final class ForestSpec extends TestSpec:
         val b0 = Node("b0")
         val b1 = Node("b1")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
 
         t1.vertices.size mustBe (1)
@@ -261,7 +303,8 @@ final class ForestSpec extends TestSpec:
         val b1 = Node("b1") // (1) |
         val b2 = Node("b1") // (2) |
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
@@ -291,7 +334,8 @@ final class ForestSpec extends TestSpec:
         val b2 = Node("b2")
         val b3 = Node("b3")
 
-        val t1 = Forest.empty[Node]
+        val t1 = Forest
+          .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)

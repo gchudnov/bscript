@@ -12,7 +12,7 @@ final case class ForestCursor[A <: AnyRef](
     val name = c.take(level + 1).map(k => Base26.encode(k)).mkString(".")
     val a    = aFactory(name)
     this.copy(
-      forest = forest.add(a),
+      forest = forest.add(a).maybeLink(a, current),
       current = Some(a),
       counter = c,
       level = this.level + 1
