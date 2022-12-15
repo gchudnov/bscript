@@ -27,7 +27,7 @@ final class BasicScopeBuilder(cursor: ForestCursor[Scope], scopeSymbols: ScopeSy
       case Some(scope) =>
         new BasicScopeBuilder(cursor = cursor, scopeSymbols = scopeSymbols.addScope(scope).link(symbol, scope))
       case None =>
-        throw new BuilderException(s"Cannot define '${symbol}' symbol without any scope. Run .push() first to create a scope")
+        throw new BuilderException(s"Cannot define '${symbol}' symbol without any scope. Invoke .push() to create a scope first.")
     }
 
   override def result: Meta =
