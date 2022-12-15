@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.internal
+package com.github.gchudnov.bscript.builder.visitors
 
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.{ ScopeBuildState, StateType }
 import com.github.gchudnov.bscript.builder.Meta
@@ -6,6 +6,7 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
+import com.github.gchudnov.bscript.lang.mirror.AstFolder
 
 /**
  * (1-PASS)
@@ -65,7 +66,29 @@ import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
  *
  * NOTE: in the {{{ScopeBuildState]}}} it is *very* important that *different* instances of the same case class with the same value are different. It affects symbol resolution.
  */
-private[internal] final class ScopeBuildVisitor() // extends TreeVisitor[ScopeBuildState, ScopeBuildState]:
+private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder] {
+
+  override def foldAST(a: ScopeBuilder, ast: AST): ScopeBuilder =
+    ???
+    // ast match {
+
+    // }
+
+}
+
+//   override def visit(s: ScopeBuildState, n: Access): Either[Throwable, ScopeBuildState] =
+//     for
+//       sa    <- n.a.visit(s, this)
+//       sb    <- n.b.visit(sa, this)
+//       aExpr <- sa.ast.asLValue
+//       bExpr <- sb.ast.asLValue
+//       n1     = n.copy(a = aExpr, b = bExpr)
+//       ss1    = sb.meta.defineASTScope(n1, sb.curScope).ensureNoAST(n)
+//     yield sb.copy(ast = n1, meta = ss1)
+
+
+
+ // extends TreeVisitor[ScopeBuildState, ScopeBuildState]:
   // import Casting.*
 
 //   override def visit(s: ScopeBuildState, n: Init): Either[Throwable, ScopeBuildState] =

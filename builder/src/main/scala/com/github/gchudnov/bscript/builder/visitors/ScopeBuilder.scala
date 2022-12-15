@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.internal
+package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.Meta
@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.state.ForestCursor
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+import com.github.gchudnov.bscript.builder.internal.BasicScopeBuilder
 
 
 /**
@@ -57,4 +58,5 @@ object ScopeBuilder:
   def make(): ScopeBuilder =
     val cursor = ForestCursor.empty[Scope](a => ScopeRef(a))
     val scopeSymbols = ScopeSymbols.empty
+    
     new BasicScopeBuilder(cursor, scopeSymbols)

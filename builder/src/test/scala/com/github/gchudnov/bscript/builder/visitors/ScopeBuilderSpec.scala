@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.internal
+package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.Meta

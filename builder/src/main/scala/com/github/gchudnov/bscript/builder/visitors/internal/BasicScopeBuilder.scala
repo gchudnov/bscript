@@ -8,6 +8,7 @@ import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.builder.state.ForestCursor
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.symbols.Symbol
+import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
 
 
 /**
