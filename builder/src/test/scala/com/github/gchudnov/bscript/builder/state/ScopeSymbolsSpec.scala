@@ -5,6 +5,8 @@ import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.util.Ptr
 
+// TODO: RENAME TO ScopeDirectorySpec refactor tests
+
 final class ScopeSymbolsSpec extends TestSpec:
 
   "ScopeSymbolsSpec" when {

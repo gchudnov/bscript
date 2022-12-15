@@ -10,7 +10,7 @@ import com.github.gchudnov.bscript.builder.util.Ptr
  * @param scopeSymbols
  *   maps a scope to a collection of symbols
  * @param symbolScopes
- *   maps symbol to the scope it resides in
+ *   maps a symbol to the scope it resides in
  */
 case class ScopeSymbols(
   scopeSymbols: Map[Scope, Set[Symbol]],
