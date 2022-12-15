@@ -1,4 +1,6 @@
-package com.github.gchudnov.bscript.builder.util
+package com.github.gchudnov.bscript.builder.state
+
+import com.github.gchudnov.bscript.builder.util.Base26
 
 final case class ForestCursor[A <: AnyRef](
   forest: Forest[A],

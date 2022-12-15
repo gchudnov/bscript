@@ -1,10 +1,10 @@
 package com.github.gchudnov.bscript.builder.internal
 
-import com.github.gchudnov.bscript.builder.util.Forest
+import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.builder.util.ForestCursor
+import com.github.gchudnov.bscript.builder.state.ForestCursor
 
 
 /**
@@ -40,10 +40,10 @@ import com.github.gchudnov.bscript.builder.util.ForestCursor
  * ScopeBuilder
  */
 trait ScopeBuilder:
-  def push(): Unit
-  def pop(): Unit
+  def push(): ScopeBuilder
+  def pop(): ScopeBuilder
 
-  def define(s: Symbol): Unit
+  def define(s: Symbol): ScopeBuilder
 
   def result: Meta
 

@@ -9,7 +9,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Show
 
 import scala.collection.mutable.StringBuilder as MStringBuilder
-import com.github.gchudnov.bscript.builder.util.Forest
+import com.github.gchudnov.bscript.builder.state.Forest
 
 /**
  * Metadata - Scope & Symbol State

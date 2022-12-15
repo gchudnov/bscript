@@ -8,7 +8,7 @@ final class ScopeBuilderSpec extends TestSpec:
   "ScopeBuilderSpec" when {
     "no input was specified" should {
       "return an empty object" in {
-        val sb = ScopeBuilder.make(Meta.empty)
+        val sb = ScopeBuilder.make()
 
         val actual = sb.result
         val expected = Meta.empty
@@ -19,7 +19,7 @@ final class ScopeBuilderSpec extends TestSpec:
 
     "a scope was pushed" should {
       "return state with one scope" in {
-        val sb = ScopeBuilder.make(Meta.empty)
+        val sb = ScopeBuilder.make()
 
         
       }
