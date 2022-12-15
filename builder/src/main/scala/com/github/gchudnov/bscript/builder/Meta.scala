@@ -1,72 +1,91 @@
 package com.github.gchudnov.bscript.builder
 
-import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, ScopeStateException, Symbol, Type, TypeRef, SymbolRef }
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.Show
+import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.builder.Scope
+import com.github.gchudnov.bscript.builder.ScopeRef
+import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.builder.state.ForestCursor
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 import scala.collection.mutable.StringBuilder as MStringBuilder
-import com.github.gchudnov.bscript.builder.state.Forest
 
-/**
- * Metadata - Scope & Symbol State
- *
- * NOTE: we're not storing symbols in Block, Method, Struct explicitly, since it is causing huge AST-rewrites on updates.
- *
- * To avoid rewrites, it is possible to use mutable Block, Method, Struct, but we want to avoid it to enable better traceability of mutations.
- *
- * @param scopeTree
- *   Scope tree where a child Scope points to a parent Scope (child -> parent)
- * @param scopeSymbols
- *   All symbols that belong to a scope; { Scope -> List[Symbol] } NOTE: We use `List[Symbol]` and NOT a Set to maintain the order Symbols were added.
- * @param symbolScopes
- *   Scope a Symbol belongs to; { Symbol -> Scope }
- * @param methodArgs
- *   Arguments that belong to a method; { Method -> List[Var] } NOTE: We use `List[Var]` and NOT a Set to maintain the order Vars were added.
- * @param methodRetTypes
- *   Return Type, associated with a method; { Method -> Type }
- * @param methodAsts
- *   AST, a Symbol references; { Symbol -> AST }
- * @param astScopes
- *   Scope, AST refers to; { AST -> Scope } -- parent scope for AST
- * @param varTypes
- *   Type, assigned to a variable { Var -> Type }. A Type for the variable might be changed, e.g. `auto` -> `long`.
- */
+
+// /**
+//  * Metadata - Scope & Symbol State
+//  *
+//  * NOTE: we're not storing symbols in Block, Method, Struct explicitly, since it is causing huge AST-rewrites on updates.
+//  *
+//  * To avoid rewrites, it is possible to use mutable Block, Method, Struct, but we want to avoid it to enable better traceability of mutations.
+//  *
+//  * @param scopeTree
+//  *   Scope tree where a child Scope points to a parent Scope (child -> parent)
+//  * @param scopeSymbols
+//  *   All symbols that belong to a scope; { Scope -> List[Symbol] } NOTE: We use `List[Symbol]` and NOT a Set to maintain the order Symbols were added.
+//  * @param symbolScopes
+//  *   Scope a Symbol belongs to; { Symbol -> Scope }
+//  * @param methodArgs
+//  *   Arguments that belong to a method; { Method -> List[Var] } NOTE: We use `List[Var]` and NOT a Set to maintain the order Vars were added.
+//  * @param methodRetTypes
+//  *   Return Type, associated with a method; { Method -> Type }
+//  * @param methodAsts
+//  *   AST, a Symbol references; { Symbol -> AST }
+//  * @param astScopes
+//  *   Scope, AST refers to; { AST -> Scope } -- parent scope for AST
+//  * @param varTypes
+//  *   Type, assigned to a variable { Var -> Type }. A Type for the variable might be changed, e.g. `auto` -> `long`.
+//  */
+// final case class Meta(
+//   scopeTree: Forest[Scope],
+//   scopeSymbols: Map[Ptr[Scope], List[Symbol]], // Pass #1
+//   symbolScopes: Map[Ptr[Symbol], Scope],       // Pass #1
+//   methodArgs: Map[Ptr[SMethod], List[SVar]],   // Pass #1
+//   methodRetTypes: Map[Ptr[SMethod], Type],     // Pass   #2
+//   methodAsts: Map[Ptr[SMethod], AST],          // Pass   #2
+//   astScopes: Map[Ptr[AST], Scope],             // Pass #1
+//   varTypes: Map[Ptr[SVar], Type],              // Pass   #2
+//   evalTypes: Map[Ptr[AST], Type],              //
+//   promoteToTypes: Map[Ptr[AST], Type],         //
+//   astSymbols: Map[Ptr[AST], Symbol]            //
+// )
+
 final case class Meta(
-  scopeTree: Forest[Scope],
-  scopeSymbols: Map[Ptr[Scope], List[Symbol]], // Pass #1
-  symbolScopes: Map[Ptr[Symbol], Scope],       // Pass #1
-  methodArgs: Map[Ptr[SMethod], List[SVar]],   // Pass #1
-  methodRetTypes: Map[Ptr[SMethod], Type],     // Pass   #2
-  methodAsts: Map[Ptr[SMethod], AST],          // Pass   #2
-  astScopes: Map[Ptr[AST], Scope],             // Pass #1
-  varTypes: Map[Ptr[SVar], Type],              // Pass   #2
-  evalTypes: Map[Ptr[AST], Type],              //
-  promoteToTypes: Map[Ptr[AST], Type],         //
-  astSymbols: Map[Ptr[AST], Symbol]            //
+  forest: Forest[Scope],
+  scopeSymbols: ScopeSymbols
 )
 
 object Meta:
-  
-  type ScopeTree = Forest[Scope]
 
-  val empty: Meta =
+  val empty: Meta = 
     Meta(
-      scopeTree = Forest.empty[Scope],
-      scopeSymbols = Map.empty[Ptr[Scope], List[Symbol]],
-      symbolScopes = Map.empty[Ptr[Symbol], Scope],
-      methodArgs = Map.empty[Ptr[SMethod], List[SVar]],
-      methodRetTypes = Map.empty[Ptr[SMethod], Type],
-      methodAsts = Map.empty[Ptr[SMethod], AST],
-      astScopes = Map.empty[Ptr[AST], Scope],
-      varTypes = Map.empty[Ptr[SVar], Type],
-      evalTypes = Map.empty[Ptr[AST], Type],
-      promoteToTypes = Map.empty[Ptr[AST], Type],
-      astSymbols = Map.empty[Ptr[AST], Symbol]
+      forest = Forest.empty[Scope],
+      scopeSymbols = ScopeSymbols.empty
     )
+
+  
+  // type ScopeTree = Forest[Scope]
+
+  // val empty: Meta =
+  //   Meta(
+  //     scopeTree = Forest.empty[Scope],
+  //     scopeSymbols = Map.empty[Ptr[Scope], List[Symbol]],
+  //     symbolScopes = Map.empty[Ptr[Symbol], Scope],
+  //     methodArgs = Map.empty[Ptr[SMethod], List[SVar]],
+  //     methodRetTypes = Map.empty[Ptr[SMethod], Type],
+  //     methodAsts = Map.empty[Ptr[SMethod], AST],
+  //     astScopes = Map.empty[Ptr[AST], Scope],
+  //     varTypes = Map.empty[Ptr[SVar], Type],
+  //     evalTypes = Map.empty[Ptr[AST], Type],
+  //     promoteToTypes = Map.empty[Ptr[AST], Type],
+  //     astSymbols = Map.empty[Ptr[AST], Symbol]
+  //   )
 
 //   /**
 //    * Resolve a symbol in the scope recursively up to the root

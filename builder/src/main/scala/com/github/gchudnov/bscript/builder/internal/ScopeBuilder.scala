@@ -5,6 +5,8 @@ import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.state.ForestCursor
+import com.github.gchudnov.bscript.lang.symbols.Symbol
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 
 
 /**
@@ -43,7 +45,7 @@ trait ScopeBuilder:
   def push(): ScopeBuilder
   def pop(): ScopeBuilder
 
-  def define(s: Symbol): ScopeBuilder
+  def define(symbol: Symbol): ScopeBuilder
 
   def result: Meta
 
@@ -53,4 +55,6 @@ trait ScopeBuilder:
 object ScopeBuilder:
 
   def make(): ScopeBuilder =
-    new BasicScopeBuilder(ForestCursor.empty[Scope](a => ScopeRef(a)))
+    val cursor = ForestCursor.empty[Scope](a => ScopeRef(a))
+    val scopeSymbols = ScopeSymbols.empty
+    new BasicScopeBuilder(cursor, scopeSymbols)
