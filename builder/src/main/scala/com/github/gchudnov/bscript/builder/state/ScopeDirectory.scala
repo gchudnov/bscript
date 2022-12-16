@@ -23,7 +23,7 @@ case class ScopeDirectory[A <: AnyRef](
   def link(entry: A, scope: Scope): ScopeDirectory[A] =
     val ss = scopeEntries.getOrElse(scope, Set.empty[Ptr[A]])
 
-    assert(!ss.contains(Ptr(entry)), s"Entry ${entry} already exists in the Scope ${scope.name}.")
+    assert(!ss.contains(Ptr(entry)), s"Entry ${entry} is already linked to the Scope ${scope.name}, cannot link it twice.")
 
     val newScopeEntries = scopeEntries + (scope     -> (ss + Ptr(entry)))
     val newEntryScopes  = entryScopes + (Ptr(entry) -> scope)
