@@ -10,15 +10,17 @@ import com.github.gchudnov.bscript.builder.util.Ptr
  * @param valueKey
  *   maps an value to the related key
  */
-case class Directory[K, V <: AnyRef](
-  keyValues: Map[K, Set[Ptr[V]]],
-  valueKey: Map[Ptr[V], K]
-):
+abstract class Directory[K, V <: AnyRef, D <: Directory[K, V, D]]:
 
-  def addKey(key: K): Directory[K, V] =
-    this.copy(keyValues = this.keyValues + (key -> Set.empty[Ptr[V]]))
+  val keyValues: Map[K, Set[Ptr[V]]]
+  val valueKey: Map[Ptr[V], K]
 
-  def link(key: K, value: V): Directory[K, V] =
+  def clone(keyValues: Map[K, Set[Ptr[V]]], valueKey: Map[Ptr[V], K]): D
+
+  def addKey(key: K): D =
+    clone(keyValues = this.keyValues + (key -> Set.empty[Ptr[V]]), valueKey = valueKey)
+
+  def link(key: K, value: V): D =
     val vs = keyValues.getOrElse(key, Set.empty[Ptr[V]])
 
     assert(!vs.contains(Ptr(value)), s"Value ${value} is already linked to the Key ${key}, cannot link it twice.")
@@ -26,14 +28,7 @@ case class Directory[K, V <: AnyRef](
     val keyValues1 = keyValues + (key       -> (vs + Ptr(value)))
     val valueKey1  = valueKey + (Ptr(value) -> key)
 
-    this.copy(
+    clone(
       keyValues = keyValues1,
       valueKey = valueKey1
-    )
-
-object Directory:
-  def empty[K, V <: AnyRef]: Directory[K, V] =
-    Directory(
-      keyValues = Map.empty[K, Set[Ptr[V]]],
-      valueKey = Map.empty[Ptr[V], K]
     )

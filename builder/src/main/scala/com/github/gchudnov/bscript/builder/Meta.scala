@@ -15,7 +15,7 @@ import com.github.gchudnov.bscript.builder.state.ForestCursor
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 import scala.collection.mutable.StringBuilder as MStringBuilder
-import com.github.gchudnov.bscript.builder.state.ScopeDirectory
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 
 
 // /**
@@ -58,7 +58,7 @@ import com.github.gchudnov.bscript.builder.state.ScopeDirectory
 
 final case class Meta(
   forest: Forest[Scope],
-  scopeSymbols: ScopeDirectory[Symbol]
+  scopeSymbols: ScopeSymbols
 )
 
 object Meta:
@@ -66,7 +66,7 @@ object Meta:
   val empty: Meta = 
     Meta(
       forest = Forest.empty[Scope],
-      scopeSymbols = ScopeDirectory.empty[Symbol]
+      scopeSymbols = ScopeSymbols.empty
     )
 
   
