@@ -11,4 +11,4 @@ import com.github.gchudnov.bscript.lang.symbols.Type
 final case class Compiled(callback: Any => Either[Throwable, Any], retType: Type) extends Expr
 
 object Compiled:
-  val idCallback: Any => Either[Throwable, Any] = (s: Any) => Right(s)
+  val identity: Any => Either[Throwable, Any] = (s: Any) => Right(s)

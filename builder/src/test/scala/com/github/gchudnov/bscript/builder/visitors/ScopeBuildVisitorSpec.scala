@@ -66,72 +66,91 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 3 // root + main(args) + block inside
-
-        //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
-        //     findSymbolScope(meta, "main").map(_.name) mustBe (Some("#global"))
-
-          // TODO: finish test, continue working on other tests
+            meta.findSymbolsByName("x").size mustBe(1)
 
           case Left(t) => fail("Should be 'right", t)
       }
 
-      // TODO: ADD shadowing (arg x + x in main), check that there are 2 variables
+      /**
+       * {{{
+       *   // globals
+       *   int myFunc(long x) {
+       *     int x;
+       *     x = 3;
+       *   }
+       * }}}
+       */
+      "shadow variables" in {
+        val t = MethodDecl(
+          TypeRef.i32,
+          "myFunc",
+          List(ArgDecl(TypeRef.i64, "x")),
+          Block.of(
+            VarDecl(TypeRef.i32, "x", Literal(IntVal(0))),
+            Assign(Var(SymbolRef("x")), Literal(IntVal(3)))
+          )
+        )
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *       datetime offsetDateTime(value: datetime, offset: int, unit: str) {
-    //    *         // ...
-    //    *       }
-    //    *
-    //    *       int fieldOfDateTime(value: datetime, unit: str) {
-    //    *         // ...
-    //    *       }
-    //    *   }
-    //    * }}}
-    //    */
-    //   "produce several scopes if there are several method declarations" in {
-    //     val t = Block(
-    //       MethodDecl(
-    //         TypeRef(typeNames.datetimeType),
-    //         "offsetDateTime",
-    //         List(
-    //           ArgDecl(TypeRef(typeNames.datetimeType), "value"),
-    //           ArgDecl(TypeRef(typeNames.i32Type), "offset"),
-    //           ArgDecl(TypeRef(typeNames.strType), "unit")
-    //         ),
-    //         Block(
-    //           CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
-    //         )
-    //       ),
-    //       MethodDecl(
-    //         TypeRef(typeNames.i32Type),
-    //         "fieldOfDateTime",
-    //         List(
-    //           ArgDecl(TypeRef(typeNames.datetimeType), "value"),
-    //           ArgDecl(TypeRef(typeNames.strType), "unit")
-    //         ),
-    //         Block(
-    //           CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
-    //         )
-    //       )
-    //     )
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.forest.size mustBe 3 // root + main(args) + block inside
+            meta.findSymbolsByName("x").size mustBe(2)
 
-    //     val res      = resourceToString("data/scope-build-decl-2.json").toTry.get
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         // check that scope has the proper shape
-    //         val actual   = dehydrate(meta.show)
-    //         val expected = dehydrate(res)
-    //         actual mustBe expected
+          case Left(t) => fail("Should be 'right", t)
+      }
 
-    //         // check that ast -> scope map is correct
-    //         meta.astScopes.size mustBe (12)
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *       datetime offsetDateTime(value: datetime, offset: int, unit: str) {
+       *         // ...
+       *       }
+       *
+       *       int fieldOfDateTime(value: datetime, unit: str) {
+       *         // ...
+       *       }
+       *   }
+       * }}}
+       */
+      "produce several scopes if there are several method declarations" in {
+        val t = Block.of(
+          MethodDecl(
+            TypeRef.datetime,
+            "offsetDateTime",
+            List(
+              ArgDecl(TypeRef.datetime, "value"),
+              ArgDecl(TypeRef.i32, "offset"),
+              ArgDecl(TypeRef.str, "unit")
+            ),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeRef.datetime)
+            )
+          ),
+          MethodDecl(
+            TypeRef.i32,
+            "fieldOfDateTime",
+            List(
+              ArgDecl(TypeRef.datetime, "value"),
+              ArgDecl(TypeRef.str, "unit")
+            ),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeRef.i32)
+            )
+          )
+        )
 
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            // check that scope has the proper shape
+            meta.forest.size mustBe 6
+            meta.findSymbolsByName("offsetDateTime").size mustBe(1)
+            meta.findSymbolsByName("fieldOfDateTime").size mustBe(1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }
     }
 
     // "type-declarations" should {
