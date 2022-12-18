@@ -16,6 +16,7 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 import scala.collection.mutable.StringBuilder as MStringBuilder
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+import com.github.gchudnov.bscript.builder.state.ScopeAsts
 
 
 // /**
@@ -58,7 +59,8 @@ import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 
 final case class Meta(
   forest: Forest[Scope],
-  scopeSymbols: ScopeSymbols
+  scopeSymbols: ScopeSymbols,
+  scopeAsts: ScopeAsts
 )
 
 object Meta:
@@ -66,7 +68,8 @@ object Meta:
   val empty: Meta = 
     Meta(
       forest = Forest.empty[Scope],
-      scopeSymbols = ScopeSymbols.empty
+      scopeSymbols = ScopeSymbols.empty,
+      scopeAsts = ScopeAsts.empty
     )
 
   
