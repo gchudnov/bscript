@@ -144,7 +144,6 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            // check that scope has the proper shape
             meta.forest.size mustBe 6
             meta.findSymbolsByName("offsetDateTime").size mustBe(1)
             meta.findSymbolsByName("fieldOfDateTime").size mustBe(1)
@@ -153,7 +152,9 @@ final class ScopeBuildVisitorSpec extends TestSpec:
       }
     }
 
-    // "type-declarations" should {
+    "type-declarations" should {
+
+      // TODO: do we want to support them in 2.0? or is it worth to add generics, T instead
 
     //   /**
     //    * {{{
@@ -286,37 +287,38 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //       case Left(t) =>
     //         fail("Should be 'right", t)
     //   }
-    // }
 
-    // "variables" should {
+    }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     int i = 9;
-    //    *     float j;
-    //    *     int k = i+2;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "be set in a scope" in {
-    //     val t = Block(
-    //       VarDecl(TypeRef(typeNames.i32Type), "i", IntVal(9)),
-    //       VarDecl(TypeRef(typeNames.f32Type), "j", FloatVal(0.0f)),
-    //       VarDecl(TypeRef(typeNames.i32Type), "k", Add(Var(SymbolRef("i")), IntVal(2)))
-    //     )
+    "variables" should {
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         meta.astScopes.size mustBe (9)
-    //         findSymbolScope(meta, "i").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "j").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "k").map(_.name) mustBe (Some("#a"))
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int i = 9;
+       *     float j;
+       *     int k = i+2;
+       *   }
+       * }}}
+       */
+      "be set in a scope" in {
+        val t = Block.of(
+          VarDecl(TypeRef.i32, "i", Literal(IntVal(9))),
+          VarDecl(TypeRef.f32, "j", Literal(FloatVal(0.0f))),
+          VarDecl(TypeRef.i32, "k", Call(SymbolRef("+"), List(Var(SymbolRef("i")), Literal(IntVal(2)))))
+        )
 
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.forest.size mustBe 2
+            meta.findSymbolsByName("i").size mustBe(1)
+            meta.findSymbolsByName("j").size mustBe(1)
+            meta.findSymbolsByName("k").size mustBe(1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }
 
     //   /**
     //    * {{{
@@ -357,7 +359,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //         findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
     //       case Left(t) => fail("Should be 'right", t)
     //   }
-    // }
+    }
 
     // "scopes are defined" should {
 

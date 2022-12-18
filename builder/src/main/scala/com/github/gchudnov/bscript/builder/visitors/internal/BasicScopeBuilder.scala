@@ -29,10 +29,14 @@ final class BasicScopeBuilder(cursor: ForestCursor[Scope], scopeSymbols: ScopeSy
       case Some(scope) =>
         new BasicScopeBuilder(cursor = cursor, scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol), scopeAsts)
       case None =>
-        throw new BuilderException(s"Cannot define '${symbol}' symbol without any scope. Invoke .push() to create a scope first.")
+        throw new BuilderException(s"Cannot define '${symbol}' without any scope. Invoke .push() to create a scope first.")
 
   override def bind(ast: AST): ScopeBuilder =
-    ???
+    cursor.current match
+      case Some(scope) =>
+        new BasicScopeBuilder(cursor = cursor, scopeSymbols = scopeSymbols, scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
+      case None =>
+        throw new BuilderException(s"Cannot define '${ast}' without any scope. Invoke .push() to create a scope first.")
 
   override def result: Meta =
     Meta(

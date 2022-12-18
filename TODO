@@ -1,5 +1,5 @@
 
-- TODO: .redefineASTScope(n, n1) -- change to replace that replaces all AST references in the Meta
+- TODO: add generics? (a primitive ones)
 
 - TODO: reduce size of AST by extracting extra params to meta
 - TODO: move some operations to functions
