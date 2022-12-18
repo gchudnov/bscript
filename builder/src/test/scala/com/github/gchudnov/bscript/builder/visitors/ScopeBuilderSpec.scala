@@ -8,8 +8,9 @@ import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.builder.state.ScopeDirectory
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.symbols.Symbol
+import com.github.gchudnov.bscript.builder.state.ScopeAsts
 
 final class ScopeBuilderSpec extends TestSpec:
 
@@ -45,7 +46,8 @@ final class ScopeBuilderSpec extends TestSpec:
 
         val expected = Meta(
           forest = Forest(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
-          scopeSymbols = ScopeDirectory.empty[Symbol]
+          scopeSymbols = ScopeSymbols.empty,
+          scopeAsts = ScopeAsts.empty
         )
 
         actual mustBe expected
@@ -58,7 +60,8 @@ final class ScopeBuilderSpec extends TestSpec:
 
         val expected = Meta(
           forest = Forest(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
-          scopeSymbols = ScopeDirectory[Symbol](Map(ScopeRef("a") -> Set(Ptr(sym))), Map(Ptr(sym) -> ScopeRef("a")))
+          scopeSymbols = ScopeSymbols(Map(ScopeRef("a") -> Set(Ptr(sym))), Map(Ptr(sym) -> ScopeRef("a"))),
+          scopeAsts = ScopeAsts.empty
         )
 
         actual mustBe expected

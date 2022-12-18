@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.internal.BasicScopeBuilder
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
+import com.github.gchudnov.bscript.lang.ast.AST
 
 
 /**
@@ -48,6 +49,7 @@ trait ScopeBuilder:
   def pop(): ScopeBuilder
 
   def define(symbol: Symbol): ScopeBuilder
+  def bind(ast: AST): ScopeBuilder
 
   def result: Meta
 

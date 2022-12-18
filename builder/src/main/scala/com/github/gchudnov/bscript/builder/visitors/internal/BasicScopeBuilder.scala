@@ -10,6 +10,7 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
+import com.github.gchudnov.bscript.lang.ast.AST
 
 /**
  * BasicScopeBuilder
@@ -29,6 +30,9 @@ final class BasicScopeBuilder(cursor: ForestCursor[Scope], scopeSymbols: ScopeSy
         new BasicScopeBuilder(cursor = cursor, scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol), scopeAsts)
       case None =>
         throw new BuilderException(s"Cannot define '${symbol}' symbol without any scope. Invoke .push() to create a scope first.")
+
+  override def bind(ast: AST): ScopeBuilder =
+    ???
 
   override def result: Meta =
     Meta(

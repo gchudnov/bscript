@@ -1,14 +1,13 @@
 package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.lang.ast.*
-// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 import com.github.gchudnov.bscript.builder.internal.MetaOps
 // import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
-// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitorSpec.dehydrate
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
@@ -19,8 +18,6 @@ import com.github.gchudnov.bscript.builder.TestSpec
  */
 final class ScopeBuildVisitorSpec extends TestSpec:
   import ScopeBuildVisitorSpec.*
-  import Meta.*
-  import MetaOps.*
 
   // private val typeNames: TypeNames = BGlobals.typeNames
 
@@ -35,7 +32,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        // val t = VarDecl(TypeRef.i32, "x", IntVal(0))
+        val t = VarDecl(TypeRef.i32, "x", Literal(IntVal(0)))
 
         // val errOrRes = eval(t)
         // errOrRes match
@@ -616,7 +613,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
-  private def eval(ast0: AST): Either[Throwable, ScopeBuildVisitorState] =
+  private def eval(ast0: AST): Either[Throwable, Meta] =
   //   val (initMeta, rootScope) = BGlobals.make()
   //   val v1                    = ScopeBuildVisitor.make()
   //   val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
@@ -637,7 +634,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
 object ScopeBuildVisitorSpec:
 
-  final case class ScopeBuildVisitorState(ast: AST, meta: Meta)
+  // final case class ScopeBuildVisitorState(ast: AST, meta: Meta)
 
 //   def dehydrate(s: String): String =
 //     s.replaceAll("\\s", "")

@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type, Ann }
 /**
  * Method Declaration
  */
-final case class MethodDecl(retType: Type, name: String, params: Seq[ArgDecl], body: Block, annotations: Seq[Ann])
+final case class MethodDecl(retType: Type, name: String, params: Seq[ArgDecl], body: Block)
     extends Decl
 
 object MethodDecl:
@@ -14,6 +14,5 @@ object MethodDecl:
       retType = retType,
       name = name,
       params = params,
-      body = body,
-      annotations = Seq.empty[Ann]
+      body = body
     )
