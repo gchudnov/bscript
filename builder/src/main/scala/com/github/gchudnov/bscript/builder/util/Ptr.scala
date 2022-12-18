@@ -12,16 +12,20 @@ package com.github.gchudnov.bscript.builder.util
  *   // at the end there should be several elements in Map, since we have two separate A instances
  * }}}
  */
-class Ptr[T <: AnyRef](val value: T):
+final class Ptr[T <: AnyRef](val value: T):
   override def hashCode(): Int =
     if value == null then 0 else value.hashCode
 
   override def equals(a: Any): Boolean = a match
     case ref: Ptr[?] => ref.value eq value
-    case _              => false
+    case _           => false
 
   override def toString: String =
     s"EqWrap(${value.toString})"
 
 object Ptr:
-  def apply[T <: AnyRef](t: T) = new Ptr(t)
+  def apply[T <: AnyRef](t: T) =
+    new Ptr(t)
+
+  def unapply[T <: AnyRef](ptr: Ptr[T]): Option[T] =
+    Some(ptr.value)

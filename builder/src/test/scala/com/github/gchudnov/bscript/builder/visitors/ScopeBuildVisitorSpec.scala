@@ -34,43 +34,45 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 1
-            // findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
-            // meta.show.contains("x") mustBe (true)
+            meta.findSymbolsByName("x").size mustBe(1)
 
           case Left(t) => fail("Should be 'right", t)
       }
     }
 
-    // "functions" should {
+    "functions" should {
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   int main() {
-    //    *     int x;
-    //    *     x = 3;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "define nested scope" in {
-    //     val t = MethodDecl(
-    //       TypeRef(typeNames.i32Type),
-    //       "main",
-    //       List.empty[ArgDecl],
-    //       Block(
-    //         VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
-    //         Assign(Var(SymbolRef("x")), IntVal(3))
-    //       )
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   int main() {
+       *     int x;
+       *     x = 3;
+       *   }
+       * }}}
+       */
+      "define nested scope" in {
+        val t = MethodDecl(
+          TypeRef.i32,
+          "main",
+          List.empty[ArgDecl],
+          Block.of(
+            VarDecl(TypeRef.i32, "x", Literal(IntVal(0))),
+            Assign(Var(SymbolRef("x")), Literal(IntVal(3)))
+          )
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "main").map(_.name) mustBe (Some("#global"))
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.forest.size mustBe 3 // root + main + block inside
+        //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
+        //     findSymbolScope(meta, "main").map(_.name) mustBe (Some("#global"))
 
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+          // TODO: finish test
+
+          case Left(t) => fail("Should be 'right", t)
+      }
 
     //   /**
     //    * {{{
@@ -127,7 +129,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
     //       case Left(t) => fail("Should be 'right", t)
     //   }
-    // }
+    }
 
     // "type-declarations" should {
 
@@ -614,9 +616,13 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     val v1                    = ScopeBuildVisitor.make()
     val s1                    = ScopeBuilder.make().push() // add the root scope
 
-    val s2 = v1.foldOverTree(s1, ast0)
+    val s2 = v1.foldAST(s1, ast0)
 
-    Right(State(ast0, s2.result))
+    val meta = s2.result
+
+    println(meta)
+
+    Right(State(ast0, meta))
 
 
 object ScopeBuildVisitorSpec:
