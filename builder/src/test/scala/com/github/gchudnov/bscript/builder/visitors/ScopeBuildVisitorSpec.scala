@@ -1,8 +1,6 @@
 package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.builder.internal.MetaOps
-// import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.builder.Meta
@@ -19,8 +17,6 @@ import com.github.gchudnov.bscript.builder.TestSpec
 final class ScopeBuildVisitorSpec extends TestSpec:
   import ScopeBuildVisitorSpec.*
 
-  // private val typeNames: TypeNames = BGlobals.typeNames
-
   "ScopeBuildVisitor" when {
 
     "var is defined" should {
@@ -34,13 +30,14 @@ final class ScopeBuildVisitorSpec extends TestSpec:
       "put it in a scope" in {
         val t = VarDecl(TypeRef.i32, "x", Literal(IntVal(0)))
 
-        // val errOrRes = eval(t)
-        // errOrRes match
-        //   case Right(ScopeBuildVisitorState(ast, meta)) =>
-        //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
-        //     meta.show.contains("x") mustBe (true)
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.forest.size mustBe 1
+            // findSymbolScope(meta, "x").map(_.name) mustBe (Some("#global"))
+            // meta.show.contains("x") mustBe (true)
 
-        //   case Left(t) => fail("Should be 'right", t)
+          case Left(t) => fail("Should be 'right", t)
       }
     }
 
@@ -613,28 +610,18 @@ final class ScopeBuildVisitorSpec extends TestSpec:
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
-  private def eval(ast0: AST): Either[Throwable, Meta] =
-  //   val (initMeta, rootScope) = BGlobals.make()
-  //   val v1                    = ScopeBuildVisitor.make()
-  //   val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
+  private def eval(ast0: AST): Either[Throwable, State] =
+    val v1                    = ScopeBuildVisitor.make()
+    val s1                    = ScopeBuilder.make().push() // add the root scope
 
-  //   ast0
-  //     .visit(s1, v1)
-  //     .flatMap { s11 =>
-  //       val t    = ScopeBuildVisitorState(meta = s11.meta, ast = s11.ast)
-  //       val ast1 = s11.ast
+    val s2 = v1.foldOverTree(s1, ast0)
 
-  //       // println(t.meta.show())
+    Right(State(ast0, s2.result))
 
-  //       ast1
-  //         .visit(".", verifyDefined(t))
-  //         .map(_ => t)
-  //     }
-    ???
 
 object ScopeBuildVisitorSpec:
 
-  // final case class ScopeBuildVisitorState(ast: AST, meta: Meta)
+  final case class State(ast: AST, meta: Meta)
 
 //   def dehydrate(s: String): String =
 //     s.replaceAll("\\s", "")

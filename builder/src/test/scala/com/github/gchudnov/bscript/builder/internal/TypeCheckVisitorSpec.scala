@@ -11,7 +11,6 @@ import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.types.{ TypeNames }
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Gen
-import com.github.gchudnov.bscript.builder.internal.MetaOps
 import com.github.gchudnov.bscript.builder.TestSpec
 
 final class TypeCheckVisitorSpec {}
