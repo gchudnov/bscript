@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
 /**
- * ScopeBuildVisitor tests
+ * ScopeBuildVisitorSpec
  */
 final class ScopeBuildVisitorSpec extends TestSpec:
   import ScopeBuildVisitorSpec.*
@@ -51,7 +51,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "define nested scope" in {
+      "define nested scopes" in {
         val t = MethodDecl(
           TypeRef.i32,
           "main",
@@ -65,14 +65,17 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 3 // root + main + block inside
+            meta.forest.size mustBe 3 // root + main(args) + block inside
+
         //     findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
         //     findSymbolScope(meta, "main").map(_.name) mustBe (Some("#global"))
 
-          // TODO: finish test
+          // TODO: finish test, continue working on other tests
 
           case Left(t) => fail("Should be 'right", t)
       }
+
+      // TODO: ADD shadowing (arg x + x in main), check that there are 2 variables
 
     //   /**
     //    * {{{
