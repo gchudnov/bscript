@@ -2,9 +2,9 @@ package com.github.gchudnov.bscript.builder.util
 
 import com.github.gchudnov.bscript.builder.TestSpec
 
-final class EqWrapSpec extends TestSpec:
+final class PtrSpec extends TestSpec:
 
-  "EqWrap" when {
+  "PtrSpec" when {
     "two instances of case classes are wrapped" should {
       "produce two entries in a Map" in {
         case class A(x: Int)
