@@ -320,45 +320,47 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           case Left(t) => fail("Should be 'right", t)
       }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     int[] a = [1, 2, 3];
-    //    *   }
-    //    * }}}
-    //    */
-    //   "set in the scope for collections" in {
-    //     val t = Block(
-    //       VarDecl(VectorType(TypeRef(typeNames.i32Type)), "a", Vec(Seq(IntVal(1), IntVal(2), IntVal(3))))
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int[] a = [1, 2, 3];
+       *   }
+       * }}}
+       */
+      "set in the scope for collections" in {
+        val t = Block.of(
+          VarDecl(TypeRef.auto, "a", Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.forest.size mustBe 2
+            meta.findSymbolsByName("a").size mustBe(1)
+          case Left(t) => fail("Should be 'right", t)
+      }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     int x = nothing;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "allow nothing in declaration" in {
-    //     val t = Block(
-    //       VarDecl(TypeRef(typeNames.i32Type), "x", NothingVal())
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int x = nothing;
+       *   }
+       * }}}
+       */
+      "allow nothing in declaration" in {
+        val t = Block.of(
+          VarDecl(TypeRef.auto, "x", Literal(NothingVal()))
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.forest.size mustBe 2
+            meta.findSymbolsByName("x").size mustBe(1)
+          case Left(t) => fail("Should be 'right", t)
+      }
     }
 
     // "scopes are defined" should {
