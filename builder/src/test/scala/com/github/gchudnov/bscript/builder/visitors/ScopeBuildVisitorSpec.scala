@@ -363,45 +363,45 @@ final class ScopeBuildVisitorSpec extends TestSpec:
       }
     }
 
-    // "scopes are defined" should {
+    "scopes are defined" should {
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     { int z; }       // local scope nested within f's local scope
-    //    *     printf("%d", z); // z is no longer visible; static analysis ERROR!
-    //    *   }
-    //    * }}}
-    //    */
-    //   "assign scope to the Call Variable" in {
-    //     val t = Block(
-    //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
-    //         "printf",
-    //         List(
-    //           ArgDecl(TypeRef(typeNames.strType), "format"),
-    //           ArgDecl(TypeRef(typeNames.autoType), "value")
-    //         ),
-    //         Block.empty
-    //       ),
-    //       Block(
-    //         VarDecl(TypeRef(typeNames.i32Type), "z", IntVal(0))
-    //       ),
-    //       Call(SymbolRef("printf"), List(StrVal("%d"), Var(SymbolRef("z")))) // z is no longer visible; Will be an error in Phase #2
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     { int z; }       // local scope nested within f's local scope
+       *     printf("%d", z); // z is no longer visible; static analysis ERROR!
+       *   }
+       * }}}
+       */
+      "assign scope to the Call Variable" in {
+        val t = Block.of(
+          MethodDecl(
+            TypeRef.void,
+            "printf",
+            List(
+              ArgDecl(TypeRef.str, "format"),
+              ArgDecl(TypeRef.auto, "value")
+            ),
+            Block.empty
+          ),
+          Block.of(
+            VarDecl(TypeRef.i32, "z", Literal(IntVal(0)))
+          ),
+          Call(SymbolRef("printf"), List(Literal(StrVal("%d")), Var(SymbolRef("z")))) // z is no longer visible; Will be an error in Phase #2
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         val blockStatements = ast.asInstanceOf[Block].statements
-    //         val callExpr        = blockStatements.last.asInstanceOf[Call]
-    //         val zArg            = callExpr.args.last
-    //         val zScope          = meta.astScopes(Ptr(zArg))
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            
+            val blockStatements = ast.asInstanceOf[Block].statements
+            val callExpr        = blockStatements.last.asInstanceOf[Call]
+            val callScope       = meta.scopeAsts.valueKey(Ptr(callExpr))
 
-    //         zScope.name mustBe ("#a")
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+            callScope.name mustBe ("a.a")
+          case Left(t) => fail("Should be 'right", t)
+      }
 
     //   /**
     //    * {{{
@@ -457,7 +457,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
     //       case Left(t) => fail("Should be 'right", t)
     //   }
-    // }
+    }
 
     // "a struct is defined" should {
 
@@ -645,8 +645,6 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     val s2 = v1.foldAST(s1, ast0)
 
     val meta = s2.result
-
-    println(meta)
 
     Right(State(ast0, meta))
 
