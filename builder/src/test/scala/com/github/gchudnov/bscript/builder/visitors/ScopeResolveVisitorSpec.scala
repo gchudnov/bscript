@@ -14,7 +14,7 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
 /**
- * ScopeResolveVisitor tests
+ * ScopeResolveVisitorSpec
  */
 final class ScopeResolveVisitorSpec extends TestSpec:
   import ScopeResolveVisitorSpec.*
@@ -23,7 +23,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
   "ScopeResolveVisitor" when {
 
-    "var is defined" should {
+    "var is declared" should {
 
       /**
        * {{{
