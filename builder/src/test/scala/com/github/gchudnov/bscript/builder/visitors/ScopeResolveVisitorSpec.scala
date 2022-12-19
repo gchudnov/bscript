@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.const.*
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 // import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.builder.Meta
@@ -12,39 +13,36 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
-final class ScopeResolveVisitorSpec {}
-
-// /**
-//  * ScopeResolveVisitor tests
-//  */
-// final class ScopeResolveVisitorSpec extends TestSpec:
-//   import ScopeResolveVisitorSpec.*
-//   import Meta.*
-//   import MetaOps.*
+/**
+ * ScopeResolveVisitor tests
+ */
+final class ScopeResolveVisitorSpec extends TestSpec:
+  import ScopeResolveVisitorSpec.*
 
 //   private val typeNames: TypeNames = BGlobals.typeNames
 
-//   "ScopeResolveVisitor" when {
+  "ScopeResolveVisitor" when {
 
-//     "var is defined" should {
+    "var is defined" should {
 
-//       /**
-//        * {{{
-//        *   // globals
-//        *   int x;
-//        * }}}
-//        */
-//       "eval to build ast" in {
-//         val t = VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0))
+      /**
+       * {{{
+       *   // globals
+       *   int x;
+       * }}}
+       */
+      "eval to build ast" in {
+        val t = VarDecl(TypeRef.i32, "x", Literal(IntVal(0)))
 
-//         val errOrRes = eval(t)
-//         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
-//             typeNameForVarInScope(meta)("x", "#global") mustBe (Right(typeNames.i32Type))
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            // typeNameForVarInScope(meta)("x", "#global") mustBe (Right(typeNames.i32Type))
+            ???
 
-//           case Left(t) => fail("Should be 'right", t)
-//       }
-//     }
+          case Left(t) => fail("Should be 'right", t)
+      }
+    }
 
 //     "auto-var is defined" should {
 
@@ -1064,18 +1062,22 @@ final class ScopeResolveVisitorSpec {}
 //             fail("Should be 'right", t)
 //       }
 //     }
-//   }
+  }
 
-//   /**
-//    * To evaluate, we run Phase 1 and 2
-//    *
-//    *   - In Phase 1 we build scopes and define symbols in scopes.
-//    *   - In Phase 2 we resolve symbols that were populated in Phase-1
-//    */
-//   private def eval(ast0: AST): Either[Throwable, ScopeResolveVisitorState] =
+  /**
+   * To evaluate, we run Phase 1 and 2
+   *
+   *   - In Phase 1 we build scopes and define symbols in scopes.
+   *   - In Phase 2 we resolve symbols that were populated in Phase-1
+   */
+  private def eval(ast0: AST): Either[Throwable, State] =
 //     val (initMeta, rootScope) = BGlobals.make()
-//     val v1                    = ScopeBuildVisitor.make()
-//     val s1                    = ScopeBuildState.make(ast0, initMeta, rootScope, Gen.empty)
+    val v1                    = ScopeBuildVisitor.make()
+    val s1                    = ScopeBuilder.make().push()
+
+    val s2 = v1.foldAST(s1, ast0)
+
+    ???
 
 //     ast0
 //       .visit(s1, v1)
@@ -1101,10 +1103,9 @@ final class ScopeResolveVisitorSpec {}
 //           }
 //       }
 
-// object ScopeResolveVisitorSpec:
-//   import MetaOps.*
+object ScopeResolveVisitorSpec:
 
-//   final case class ScopeResolveVisitorState(ast: AST, meta: Meta)
+  final case class State(ast: AST, meta: Meta)
 
 //   def verifyResolved(t: ScopeResolveVisitorState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 

@@ -30,8 +30,8 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
         ???
       // case x: Assign =>
       //   foldOverTree(a, x)
-      // case x: Block =>
-      //   foldOverTree(a.push(), x).pop()
+      case x: Block =>
+        foldOverTree(a, x)
       // case x @ Literal(_) =>
       //   foldOverTree(a, x)
       // case x @ Call(id, args) =>
@@ -181,21 +181,6 @@ private[builder] object ScopeResolveVisitor:
 //       ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: Block): Either[Throwable, ScopeResolveState] =
-//     for
-//       bs <- n.statements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeResolveState, List[Expr])]) { case (acc, expr) =>
-//               acc match
-//                 case Left(ex) => Left(ex)
-//                 case Right((sx, exprs)) =>
-//                   for
-//                     sy    <- expr.visit(sx, this)
-//                     exprN <- sy.ast.asExpr
-//                   yield (sy, exprs :+ exprN)
-//             }
-//       (s1, exprs) = bs
-//       n1          = n.copy(statements = exprs)
-//       ss1         = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s1.copy(ast = n1, meta = ss1)
 
 //   override def visit(s: ScopeResolveState, n: Var): Either[Throwable, ScopeResolveState] =
 //     for
