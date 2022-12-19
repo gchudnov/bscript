@@ -25,13 +25,7 @@ import com.github.gchudnov.bscript.lang.mirror.AstFolder
  * 3) Pops Scopes;
  * }}}
  *
- * ScopeResolveVisitor:
- *
- * {{{
- * 3) Resolve Symbols (and verify that names can be referenced).
- * }}}
- *
- * ---
+ * For (2-PASS) -- see ScopeResolveVisitor
  *
  * Building a scope tree boils down to executing a sequence of these operations: push, pop, and def.
  *
@@ -57,10 +51,8 @@ import com.github.gchudnov.bscript.lang.mirror.AstFolder
  *   currentScope.define(s); // define s in current scope
  * }}}
  *
- * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or postorder position. We push as we descend and pop as we
+ * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. We push as we descend and pop as we
  * ascend. When we see a symbol, we define or resolve it in the current scope.
- *
- * NOTE: in the {{{ScopeBuildState]}}} it is *very* important that *different* instances of the same case class with the same value are different. It affects symbol resolution.
  */
 private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]:
 

@@ -1,30 +1,13 @@
-package com.github.gchudnov.bscript.builder.internal
+package com.github.gchudnov.bscript.builder.visitors
 
-// import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
+import com.github.gchudnov.bscript.lang.mirror.AstFolder
 
 /**
  * (2-PASS)
- *
- * The primary goal when building a symbol table is to construct a scope tree.
- *
- * We define symbols, group them into scopes, and organize those scopes into scope trees.
- *
- * Scope trees are crucial because their structure encodes the rules for looking up symbols.
- *
- * Resolving a symbol means looking for it in the current scope or any scope on the path to the root of the scope tree.
- *
- * NOTE: After this pass, there should be no Ref-symbols and Ref-types.
- *
- * ScopeBuildVisitor:
- *
- * {{{
- * 1) Pushes Scopes;
- * 2) Defines symbols in scopes;
- * }}}
+ * 
+ * Executed after ScopeBuildVisitor that created scopes and defined symbols in these scopes.
  *
  * ScopeResolveVisitor:
  *
@@ -32,36 +15,107 @@ import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
  * 3) Resolve Symbols (and verify that names can be referenced).
  * }}}
  *
- * Defines Actions
- *
- * Building a scope tree boils down to executing a sequence of these operations: push, pop, and def.
- *
- * [push]. At the start of a scope, push a new scope on the scope stack. This works even for complicated scopes like classes. Because we are building scope trees, push is more like
- * an “add child” tree construction operation than a conventional stack push. An implementation preview:
- *
- * {{{
- *   // create new scope whose enclosing scope is the current scope
- *   val currentScope = new LocalScope(currentScope); // push new scope
- * }}}
- *
- * [pop]. At the end of a scope, pop the current scope off the stack, revealing the previous scope as the current scope. pop moves the current scope pointer up one level in the
- * tree:
- *
- * {{{
- *   val currentScope = currentScope.getEnclosingScope(); // pop scope
- * }}}
- *
- * [def]. Define a symbol in the current scope. We’ll always define symbols like this:
- *
- * {{{
- *   val s: Symbol = «some-new-symbol»;
- *   currentScope.define(s); // define s in current scope
- * }}}
- *
- * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or postorder position. We push as we descend and pop as we
- * ascend. When we see a symbol, we define or resolve it in the current scope.
+ * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. 
+ * When we see a symbol, we resolve it in the current scope.
  */
-private[internal] final class ScopeResolveVisitor() // extends TreeVisitor[ScopeResolveState, ScopeResolveState] {}
+private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolver]:
+  
+  override def foldAST(a: ScopeResolver, ast: AST): ScopeResolver =
+    ast match
+      case x: Access =>
+        // foldOverTree(a, x)
+        ???
+      case x @ ArgDecl(aType, name) =>
+        ???
+      //   foldOverTree(a.define(SVar(name)), x)
+      // case x: Assign =>
+      //   foldOverTree(a, x)
+      // case x: Block =>
+      //   foldOverTree(a.push(), x).pop()
+      // case x @ Literal(_) =>
+      //   foldOverTree(a, x)
+      // case x @ Call(id, args) =>
+      //   foldOverTree(a.bind(x), x)
+      // case x @ Compiled(_, retType) =>
+      //   foldOverTree(a, x)
+      // case x @ FieldDecl(fType, name) =>
+      //   foldOverTree(a.define(SVar(name)), x)
+      // case x: If =>
+      //   foldOverTree(a, x)
+      // case x @ Init(iType) =>
+      //   foldOverTree(a, x)
+      // case x @ MethodDecl(retType, name, _, _) =>
+      //   foldOverTree(a.define(SMethod(name)).push(), x).pop()
+      // case x @ StructDecl(name, _) =>
+      //   foldOverTree(a.define(SStruct(name)).push(), x).pop()
+      // case x @ Var(sym) =>
+      //   foldOverTree(a, x)
+      // case x @ VarDecl(vType, name, _) =>
+      //   foldOverTree(a.define(SVar(name)), x)
+      // case x @ Vec(_, elementType) =>
+      //   foldOverTree(a, x)
+
+//   override def visit(s: ScopeResolveState, n: ArgDecl): Either[Throwable, ScopeResolveState] =
+//     for
+//       scope               <- s.meta.scopeFor(n).flatMap(_.asSMethod)
+//       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
+//       st                  <- visitType(s, scope, n.aType)
+//       StateType(s1, aType) = st
+//       n1                   = n.copy(aType = aType)
+//       ss1                  = s1.meta.defineVarType(sVar, aType).redefineASTScope(n, n1).ensureNoAST(n)
+//     yield s1.copy(ast = n1, meta = ss1)
+
+
+private[builder] object ScopeResolveVisitor:
+
+  def make(): ScopeResolveVisitor =
+    new ScopeResolveVisitor()
+
+
+//   override def visit(s: ScopeResolveState, n: Access): Either[Throwable, ScopeResolveState] =
+
+//     // Find 'y'-symbol in 'x'-struct
+//     def member(xVar: SVar, y: Var): Either[Throwable, SVar] =
+//       for
+//         xType <- s.meta.typeFor(xVar).flatMap(_.asSStruct)
+//         yVar  <- s.meta.resolveMember(y.symbol.name, xType).left.map(_ => new AstException(s"Symbol '${xVar.name}.${y.symbol.name}' cannot be resolved")).flatMap(_.asSVar)
+//       yield yVar
+
+//     def iterate(sx: Meta, n1: Access): Either[Throwable, (Meta, (SVar, Access))] =
+//       (n1.a, n1.b) match
+//         case (x: Var, y: Var) =>
+//           // 'x' must be a Struct Type, 'y' is a field of struct 'x'.
+//           for
+//             scopeX <- s.meta.scopeFor(x).flatMap(_.asSBlock)
+//             xVar   <- s.meta.resolve(x.symbol.name, scopeX).flatMap(_.asSVar)
+//             yVar   <- member(xVar, y)
+//             nx      = x.copy(symbol = xVar)
+//             ny      = y.copy(symbol = yVar)
+//             n2      = n1.copy(a = nx, b = ny)
+//             sy      = sx.redefineASTScope(n1, n2).redefineASTScope(x, nx).redefineASTScope(y, ny).ensureNoAST(n)
+//           yield (sy, (yVar, n2))
+
+//         case (xx: Access, y: Var) =>
+//           iterate(sx, xx).flatMap { case (sy, (xVar, xAcc)) =>
+//             for
+//               yVar <- member(xVar, y)
+//               ny    = y.copy(symbol = yVar)
+//               n2    = n1.copy(a = xAcc, b = ny)
+//               sz    = sy.redefineASTScope(n1, n2).redefineASTScope(y, ny).ensureNoAST(n)
+//             yield (sz, (yVar, n2))
+//           }
+
+//         case _ =>
+//           Left(new AstException(s"Cannot build scopes for Access('${n.a}', '${n.b}'); The expected Access structure is Access(Var, Var) or Access(Access, Var)."))
+
+//     for
+//       t             <- iterate(s.meta, n)
+//       (ss1, (_, n1)) = t
+//     yield s.copy(meta = ss1, ast = n1)
+
+
+  
+   // extends TreeVisitor[ScopeResolveState, ScopeResolveState] {}
 //   import Casting.*
 //   import ScopeResolveVisitor.*
 
@@ -80,16 +134,6 @@ private[internal] final class ScopeResolveVisitor() // extends TreeVisitor[Scope
 //       expr <- s1.ast.asExpr
 //       n1    = n.copy(expr = expr)
 //       ss1   = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s1.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: ArgDecl): Either[Throwable, ScopeResolveState] =
-//     for
-//       scope               <- s.meta.scopeFor(n).flatMap(_.asSMethod)
-//       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-//       st                  <- visitType(s, scope, n.aType)
-//       StateType(s1, aType) = st
-//       n1                   = n.copy(aType = aType)
-//       ss1                  = s1.meta.defineVarType(sVar, aType).redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
 //   override def visit(s: ScopeResolveState, n: FieldDecl): Either[Throwable, ScopeResolveState] =
@@ -428,47 +472,6 @@ private[internal] final class ScopeResolveVisitor() // extends TreeVisitor[Scope
 //       n1           = n.copy(cond = condExpr, then1 = thenExpr, else1 = optElseExpr)
 //       ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Access): Either[Throwable, ScopeResolveState] =
-
-//     // Find 'y'-symbol in 'x'-struct
-//     def member(xVar: SVar, y: Var): Either[Throwable, SVar] =
-//       for
-//         xType <- s.meta.typeFor(xVar).flatMap(_.asSStruct)
-//         yVar  <- s.meta.resolveMember(y.symbol.name, xType).left.map(_ => new AstException(s"Symbol '${xVar.name}.${y.symbol.name}' cannot be resolved")).flatMap(_.asSVar)
-//       yield yVar
-
-//     def iterate(sx: Meta, n1: Access): Either[Throwable, (Meta, (SVar, Access))] =
-//       (n1.a, n1.b) match
-//         case (x: Var, y: Var) =>
-//           // 'x' must be a Struct Type, 'y' is a field of struct 'x'.
-//           for
-//             scopeX <- s.meta.scopeFor(x).flatMap(_.asSBlock)
-//             xVar   <- s.meta.resolve(x.symbol.name, scopeX).flatMap(_.asSVar)
-//             yVar   <- member(xVar, y)
-//             nx      = x.copy(symbol = xVar)
-//             ny      = y.copy(symbol = yVar)
-//             n2      = n1.copy(a = nx, b = ny)
-//             sy      = sx.redefineASTScope(n1, n2).redefineASTScope(x, nx).redefineASTScope(y, ny).ensureNoAST(n)
-//           yield (sy, (yVar, n2))
-
-//         case (xx: Access, y: Var) =>
-//           iterate(sx, xx).flatMap { case (sy, (xVar, xAcc)) =>
-//             for
-//               yVar <- member(xVar, y)
-//               ny    = y.copy(symbol = yVar)
-//               n2    = n1.copy(a = xAcc, b = ny)
-//               sz    = sy.redefineASTScope(n1, n2).redefineASTScope(y, ny).ensureNoAST(n)
-//             yield (sz, (yVar, n2))
-//           }
-
-//         case _ =>
-//           Left(new AstException(s"Cannot build scopes for Access('${n.a}', '${n.b}'); The expected Access structure is Access(Var, Var) or Access(Access, Var)."))
-
-//     for
-//       t             <- iterate(s.meta, n)
-//       (ss1, (_, n1)) = t
-//     yield s.copy(meta = ss1, ast = n1)
 
 //   override def visit(s: ScopeResolveState, n: CompiledExpr): Either[Throwable, ScopeResolveState] =
 //     for
