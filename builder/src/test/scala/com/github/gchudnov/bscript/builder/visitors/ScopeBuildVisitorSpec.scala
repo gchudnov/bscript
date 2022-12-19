@@ -5,7 +5,6 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.builder.util.ResourceOps.resourceToString
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
@@ -528,110 +527,110 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           case Left(t) => fail("Should be 'right", t)
       }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     struct B { int y; };
-    //    *
-    //    *     struct A {
-    //    *       int x;
-    //    *       string s;
-    //    *       B b;
-    //    *     };
-    //    *
-    //    *     A a = { 1, "hello", { 2 } };
-    //    *     a
-    //    *   }
-    //    * }}}
-    //    */
-    //   "initialize with an anonymous struct" in {
-    //     val t = Block(
-    //       StructDecl("B", List(FieldDecl(TypeRef.i32, "y"))),
-    //       StructDecl("A", List(FieldDecl(TypeRef.i32, "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
-    //       VarDecl(
-    //         TypeRef("A"),
-    //         "a",
-    //         StructVal(
-    //           TypeRef("A"),
-    //           Map(
-    //             "x" -> IntVal(1),
-    //             "s" -> StrVal("alice"),
-    //             "b" -> StructVal(
-    //               TypeRef("B"),
-    //               Map(
-    //                 "y" -> IntVal(2)
-    //               )
-    //             )
-    //           )
-    //         )
-    //       ),
-    //       Var(SymbolRef("a"))
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct B { int y; };
+       *
+       *     struct A {
+       *       int x;
+       *       string s;
+       *       B b;
+       *     };
+       *
+       *     A a = { 1, "hello", { 2 } };
+       *     a
+       *   }
+       * }}}
+       */
+      "initialize with an anonymous struct" in {
+        val t = Block.of(
+          StructDecl("B", List(FieldDecl(TypeRef.i32, "y"))),
+          StructDecl("A", List(FieldDecl(TypeRef.i32, "x"), FieldDecl(TypeRef.str, "s"), FieldDecl(TypeRef("B"), "b"))),
+          VarDecl(
+            TypeRef("A"),
+            "a",
+            Literal(StructVal(
+              TypeRef("A"),
+              Map(
+                "x" -> Literal(IntVal(1)),
+                "s" -> Literal(StrVal("alice")),
+                "b" -> Literal(StructVal(
+                  TypeRef("B"),
+                  Map(
+                    "y" -> Literal(IntVal(2))
+                  )
+                ))
+              )
+            ))
+          ),
+          Var(SymbolRef("a"))
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.findSymbolsByName("a").size mustBe(1)
+          case Left(t) => fail("Should be 'right", t)
+      }
     }
 
-    // "a program is given" should {
+    "a program is given" should {
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     int x = 1;
-    //    *     void g(int x) { int z = 2; }
-    //    *     void f(int x) { int y = 1; g(2*x); }
-    //    *     int main() { f(3); }
-    //    *     main();
-    //    *   }
-    //    * }}}
-    //    */
-    //   "build scopes" in {
-    //     val t = Block(
-    //       VarDecl(TypeRef.i32, "x", IntVal(1)),
-    //       MethodDecl(
-    //         TypeRef.void,
-    //         "g",
-    //         List(ArgDecl(TypeRef.i32, "x")),
-    //         Block(
-    //           VarDecl(TypeRef.i32, "z", IntVal(2))
-    //         )
-    //       ),
-    //       MethodDecl(
-    //         TypeRef.void,
-    //         "f",
-    //         List(ArgDecl(TypeRef.i32, "x")),
-    //         Block(
-    //           VarDecl(TypeRef.i32, "y", IntVal(1)),
-    //           Call(SymbolRef("g"), List(Mul(IntVal(2), Var(SymbolRef("x")))))
-    //         )
-    //       ),
-    //       MethodDecl(
-    //         TypeRef.void,
-    //         "main",
-    //         List.empty[ArgDecl],
-    //         Block(
-    //           Call(SymbolRef("f"), List(IntVal(3)))
-    //         )
-    //       ),
-    //       Call(SymbolRef("main"), List.empty[Expr])
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int x = 1;
+       *     void g(int x) { int z = 2; }
+       *     void f(int x) { int y = 1; g(2*x); }
+       *     int main() { f(3); }
+       *     main();
+       *   }
+       * }}}
+       */
+      "build scopes" in {
+        val t = Block.of(
+          VarDecl(TypeRef.i32, "x", Literal(IntVal(1))),
+          MethodDecl(
+            TypeRef.void,
+            "g",
+            List(ArgDecl(TypeRef.i32, "x")),
+            Block.of(
+              VarDecl(TypeRef.i32, "z", Literal(IntVal(2)))
+            )
+          ),
+          MethodDecl(
+            TypeRef.void,
+            "f",
+            List(ArgDecl(TypeRef.i32, "x")),
+            Block.of(
+              VarDecl(TypeRef.i32, "y", Literal(IntVal(1))),
+              Call(SymbolRef("g"), List(Call(SymbolRef("*"), List(Literal(IntVal(2)), Var(SymbolRef("x"))))))
+            )
+          ),
+          MethodDecl(
+            TypeRef.void,
+            "main",
+            List.empty[ArgDecl],
+            Block.of(
+              Call(SymbolRef("f"), List(Literal(IntVal(3))))
+            )
+          ),
+          Call(SymbolRef("main"), List.empty[Expr])
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "f").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "g").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "main").map(_.name) mustBe (Some("#a"))
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.findSymbolsByName("f").size mustBe(1)
+            meta.findSymbolsByName("g").size mustBe(1)
+            meta.findSymbolsByName("main").size mustBe(1)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
   }
 
   /**
@@ -653,197 +652,3 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 object ScopeBuildVisitorSpec:
 
   final case class State(ast: AST, meta: Meta)
-
-//   def dehydrate(s: String): String =
-//     s.replaceAll("\\s", "")
-
-//   def verifyDefined(t: ScopeBuildVisitorState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
-
-//     override def visit(s: String, n: Init): Either[Throwable, Unit] = for _ <- checkDefined(n, s"${s} -> Init")
-//     yield ()
-
-//     override def visit(s: String, n: UnaryMinus): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "UnaryMinus")
-//       _ <- n.expr.visit(s"${s} -> UnaryMinus(expr", this)
-//     yield ()
-
-//     override def visit(s: String, n: Add): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Add")
-//       _ <- n.lhs.visit(s"${s} -> Add(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Add(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Sub): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Sub")
-//       _ <- n.lhs.visit(s"${s} -> Sub(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Sub(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Mul): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Mul")
-//       _ <- n.lhs.visit(s"${s} -> Mul(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Mul(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Div): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Div")
-//       _ <- n.lhs.visit(s"${s} -> Div(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Div(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Mod): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Mod")
-//       _ <- n.lhs.visit(s"${s} -> Mod(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Mod(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Less): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Less")
-//       _ <- n.lhs.visit(s"${s} -> Less(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Less(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: LessEqual): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "LessEqual")
-//       _ <- n.lhs.visit(s"${s} -> LessEqual(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> LessEqual(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Greater): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Greater")
-//       _ <- n.lhs.visit(s"${s} -> Greater(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Greater(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: GreaterEqual): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "GreaterEqual")
-//       _ <- n.lhs.visit(s"${s} -> GreaterEqual(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> GreaterEqual(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Equal): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Equal")
-//       _ <- n.lhs.visit(s"${s} -> Equal(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Equal(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: NotEqual): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "NotEqual")
-//       _ <- n.lhs.visit(s"${s} -> NotEqual(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> NotEqual(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Not): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Not")
-//       _ <- n.expr.visit(s"${s} -> Not(expr", this)
-//     yield ()
-
-//     override def visit(s: String, n: And): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "And")
-//       _ <- n.lhs.visit(s"${s} -> And(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> And(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Or): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Or")
-//       _ <- n.lhs.visit(s"${s} -> Or(lhs", this)
-//       _ <- n.rhs.visit(s"${s} -> Or(lhs, rhs", this)
-//     yield ()
-
-//     override def visit(s: String, n: Assign): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, "Assign")
-//       _ <- n.id.visit(s"${s} -> Assign(id", this)
-//       _ <- n.expr.visit(s"${s} -> Assign(id, expr", this)
-//     yield ()
-
-//     override def visit(s: String, n: NothingVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "NothingVal")
-//     yield ()
-
-//     override def visit(s: String, n: VoidVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "VoidVal")
-//     yield ()
-
-//     override def visit(s: String, n: BoolVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "BoolVal")
-//     yield ()
-
-//     override def visit(s: String, n: IntVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "IntVal")
-//     yield ()
-
-//     override def visit(s: String, n: LongVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "LongVal")
-//     yield ()
-
-//     override def visit(s: String, n: FloatVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "FloatVal")
-//     yield ()
-
-//     override def visit(s: String, n: DoubleVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "DoubleVal")
-//     yield ()
-
-//     override def visit(s: String, n: DecimalVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "DecimalVal")
-//     yield ()
-
-//     override def visit(s: String, n: StrVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "StrVal")
-//     yield ()
-
-//     override def visit(s: String, n: DateVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "DateVal")
-//     yield ()
-
-//     override def visit(s: String, n: DateTimeVal): Either[Throwable, Unit] = for _ <- checkDefined(n, "DateTimeVal")
-//     yield ()
-
-//     override def visit(s: String, n: StructVal): Either[Throwable, Unit] = for
-//       _ <- Transform.sequence(n.value.toList.map { case (initName, initValue) => initValue.visit(s"${s} -> StructVal(${n.symbol.name}){${initName}}", this) })
-//       _ <- checkDefined(n, s"${s} -> StructVal(${n.symbol.name})")
-//     yield ()
-
-//     override def visit(s: String, n: Vec): Either[Throwable, Unit] =
-//       Transform.sequence(n.elements.zipWithIndex.map { case (expr, i) => expr.visit(s"${s} -> Vec(${i})", this) }).map(_ => ())
-
-//     override def visit(s: String, n: Var): Either[Throwable, Unit] = for _ <- checkDefined(n, s"${s} -> Var")
-//     yield ()
-
-//     override def visit(s: String, n: ArgDecl): Either[Throwable, Unit] = for _ <- checkDefined(n, s"${s} -> ArgDecl(${n.symbol.name}")
-//     yield ()
-
-//     override def visit(s: String, n: VarDecl): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, s"${s} -> VarDecl(${n.symbol.name}")
-//       _ <- n.expr.visit(s"${s} -> VarDecl(${n.vType.name} ${n.name} = expr", this)
-//     yield ()
-
-//     override def visit(s: String, n: FieldDecl): Either[Throwable, Unit] = for _ <- checkDefined(n, s"${s} -> FieldDecl(${n.symbol.name}")
-//     yield ()
-
-//     override def visit(s: String, n: MethodDecl): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, s"${s} -> MethodDecl(${n.symbol.name}) -> retType")
-//       _ <- Transform.sequence(n.params.map(p => p.visit(s"${s} -> MethodDecl(${n.name})(${p.name})", this)))
-//       _ <- n.body.visit(s"${s} -> MethodDecl(${n.name})(...) {", this)
-//     yield ()
-
-//     override def visit(s: String, n: StructDecl): Either[Throwable, Unit] = for
-//       _ <- Transform.sequence(n.fields.map(p => p.visit(s"${s} -> StructDecl(${n.name}){${p.name}}", this)))
-//       _ <- checkDefined(n, s"${s} -> StructDecl(${n.symbol.name})")
-//     yield ()
-
-//     override def visit(s: String, n: Block): Either[Throwable, Unit] =
-//       Transform.sequence(n.statements.map(st => st.visit(s"${s} -> Block {", this))).map(_ => ())
-
-//     override def visit(s: String, n: Call): Either[Throwable, Unit] = for
-//       _ <- checkDefined(n, s"${s} -> Call(${n.id.name})")
-//       _ <- Transform.sequence(n.args.map(e => e.visit(s"${s} -> Call(${n.id.name})(...)", this)))
-//     yield ()
-
-//     override def visit(s: String, n: If): Either[Throwable, Unit] = for
-//       _ <- n.cond.visit(s"${s} -> If(...)", this)
-//       _ <- n.then1.visit(s"${s} -> If(...) Then { ", this)
-//       _ <- Transform.sequence(n.else1.map(_.visit(s"${s} -> If(...) Then { ... } Else {", this)))
-//     yield ()
-
-//     override def visit(s: String, n: Access): Either[Throwable, Unit] = for
-//       _ <- n.a.visit(s"${s} -> Access(a", this)
-//       _ <- n.b.visit(s"${s} -> Access(a, b)", this)
-//     yield ()
-
-//     override def visit(s: String, n: CompiledExpr): Either[Throwable, Unit] = for _ <- checkDefined(n, "CompiledExpr")
-//     yield ()
-
-//     private def checkDefined(n: AST, msg: String): Either[Throwable, Unit] =
-//       for _ <- Either.cond(t.meta.astScopes.contains(Ptr(n)), (), new AstException(s"AST [${msg}] was not assigned to the Scope"))
-//       yield ()
