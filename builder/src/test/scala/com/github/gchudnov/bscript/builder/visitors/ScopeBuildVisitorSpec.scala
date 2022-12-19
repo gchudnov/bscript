@@ -193,7 +193,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //    */
     //   "be allowed in variable declarations" in {
     //     val t = Block(
-    //       VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(10)),
+    //       VarDecl(TypeRef.i32, "x", IntVal(10)),
     //       VarDecl(DeclType(Var(SymbolRef("x"))), "y", IntVal(20)),
     //       Var(SymbolRef("y"))
     //     )
@@ -227,14 +227,14 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //         "round",
     //         List(
     //           ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
-    //           ArgDecl(TypeRef(typeNames.i32Type), "precision")
+    //           ArgDecl(TypeRef.i32, "precision")
     //         ),
     //         Block(
     //           CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
     //         )
     //       ),
     //       VarDecl(TypeRef(typeNames.f32Type), "x", FloatVal(12.3456f)),
-    //       VarDecl(TypeRef(typeNames.i32Type), "p", IntVal(2)),
+    //       VarDecl(TypeRef.i32, "p", IntVal(2)),
     //       VarDecl(TypeRef(typeNames.autoType), "z", Call(SymbolRef("round"), List(Var(SymbolRef("x")), Var(SymbolRef("p"))))),
     //       Var(SymbolRef("z"))
     //     )
@@ -403,129 +403,130 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           case Left(t) => fail("Should be 'right", t)
       }
 
-    //   /**
-    //    * {{{
-    //    * // globals
-    //    *   {
-    //    *     int x;        // define variable x in global scope
-    //    *     void f() {    // define function f in global scope
-    //    *       int y;      // define variable y in local scope of f
-    //    *       { int i; }  // define variable i in nested local scope
-    //    *       { int j; }  // define variable j in another nested local scope
-    //    *     }
-    //    *     void g() {    // define function g in global scope
-    //    *       int i;      // define variable i in local scope of g
-    //    *     }
-    //    *   }
-    //    * }}}
-    //    */
-    //   "retain scope information for several nested scopes" in {
-    //     val t = Block(
-    //       VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
-    //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
-    //         "f",
-    //         List.empty[ArgDecl],
-    //         Block(
-    //           VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(0)),
-    //           Block(
-    //             VarDecl(TypeRef(typeNames.i32Type), "i", IntVal(0))
-    //           ),
-    //           Block(
-    //             VarDecl(TypeRef(typeNames.i32Type), "j", IntVal(0))
-    //           )
-    //         )
-    //       ),
-    //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
-    //         "g",
-    //         List.empty[ArgDecl],
-    //         Block(
-    //           VarDecl(TypeRef(typeNames.i32Type), "i", IntVal(0))
-    //         )
-    //       )
-    //     )
+      /**
+       * {{{
+       * // globals
+       *   {
+       *     int x;        // define variable x in global scope
+       *     void f() {    // define function f in global scope
+       *       int y;      // define variable y in local scope of f
+       *       { int i; }  // define variable i in nested local scope
+       *       { int j; }  // define variable j in another nested local scope
+       *     }
+       *     void g() {    // define function g in global scope
+       *       int i;      // define variable i in local scope of g
+       *     }
+       *   }
+       * }}}
+       */
+      "retain scope information for several nested scopes" in {
+        val t = Block.of(
+          VarDecl(TypeRef.i32, "x", Literal(IntVal(0))),
+          MethodDecl(
+            TypeRef.void,
+            "f",
+            List.empty[ArgDecl],
+            Block.of(
+              VarDecl(TypeRef.i32, "y", Literal(IntVal(0))),
+              Block.of(
+                VarDecl(TypeRef.i32, "i", Literal(IntVal(0)))
+              ),
+              Block.of(
+                VarDecl(TypeRef.i32, "j", Literal(IntVal(0)))
+              )
+            )
+          ),
+          MethodDecl(
+            TypeRef.void,
+            "g",
+            List.empty[ArgDecl],
+            Block.of(
+              VarDecl(TypeRef.i32, "i", Literal(IntVal(0)))
+            )
+          )
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "x").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "y").map(_.name) mustBe (Some("#b"))
-    //         findSymbolScope(meta, "j").map(_.name) mustBe (Some("#d"))
-    //         // NOTE: `i` exists in 2 scopes, 'c' & 'e'
-    //         findSymbolScopes(meta, "i").map(_.name) must contain theSameElementsAs (List("#c", "#e"))
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.findSymbolsByName("x").size mustBe(1)
+            meta.findSymbolsByName("y").size mustBe(1)
+            meta.findSymbolsByName("j").size mustBe(1)
 
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+            // NOTE: `i` exists in 2 scopes
+            meta.findSymbolsByName("i").size mustBe(2)
+
+          case Left(t) => fail("Should be 'right", t)
+      }
     }
 
-    // "a struct is defined" should {
+    "a struct is defined" should {
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     struct B { int y; };
-    //    *     struct C { int z; };
-    //    *     struct A {
-    //    *       int x;
-    //    *       B b;
-    //    *       C c;
-    //    *     };
-    //    *
-    //    *     A a;
-    //    *
-    //    *     void f() {
-    //    *       struct D {
-    //    *         int i;
-    //    *       };
-    //    *
-    //    *       D d;
-    //    *       d.i = a.b.y;
-    //    *     }
-    //    *   }
-    //    * }}}
-    //    */
-    //   "define related symbols in scopes" in {
-    //     val t = Block(
-    //       StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
-    //       StructDecl("C", List(FieldDecl(TypeRef(typeNames.i32Type), "z"))),
-    //       StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"), FieldDecl(TypeRef("C"), "c"))),
-    //       VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
-    //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
-    //         "f",
-    //         List.empty[ArgDecl],
-    //         Block(
-    //           StructDecl("D", List(FieldDecl(TypeRef(typeNames.i32Type), "i"))),
-    //           VarDecl(TypeRef("D"), "d", Init(TypeRef("D"))),
-    //           Assign(
-    //             Access(Var(SymbolRef("d")), Var(SymbolRef("i"))),
-    //             Access(Access(Var(SymbolRef("a")), Var(SymbolRef("b"))), Var(SymbolRef("y")))
-    //           )
-    //         )
-    //       )
-    //     )
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct B { int y; };
+       *     struct C { int z; };
+       *     struct A {
+       *       int x;
+       *       B b;
+       *       C c;
+       *     };
+       *
+       *     A a;
+       *
+       *     void f() {
+       *       struct D {
+       *         int i;
+       *       };
+       *
+       *       D d;
+       *       d.i = a.b.y;
+       *     }
+       *   }
+       * }}}
+       */
+      "define related symbols in scopes" in {
+        val t = Block.of(
+          StructDecl("B", List(FieldDecl(TypeRef.i32, "y"))),
+          StructDecl("C", List(FieldDecl(TypeRef.i32, "z"))),
+          StructDecl("A", List(FieldDecl(TypeRef.i32, "x"), FieldDecl(TypeRef("B"), "b"), FieldDecl(TypeRef("C"), "c"))),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
+          MethodDecl(
+            TypeRef.void,
+            "f",
+            List.empty[ArgDecl],
+            Block.of(
+              StructDecl("D", List(FieldDecl(TypeRef.i32, "i"))),
+              VarDecl(TypeRef("D"), "d", Init(TypeRef("D"))),
+              Assign(
+                Access(Var(SymbolRef("d")), Var(SymbolRef("i"))),
+                Access(Access(Var(SymbolRef("a")), Var(SymbolRef("b"))), Var(SymbolRef("y")))
+              )
+            )
+          )
+        )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         findSymbolScope(meta, "b").map(_.name) mustBe (Some("A"))
-    //         findSymbolScope(meta, "c").map(_.name) mustBe (Some("A"))
-    //         findSymbolScope(meta, "x").map(_.name) mustBe (Some("A"))
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.findSymbolsByName("b").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.c"))
+            meta.findSymbolsByName("c").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.c"))
+            meta.findSymbolsByName("x").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.c"))
 
-    //         findSymbolScope(meta, "y").map(_.name) mustBe (Some("B"))
-    //         findSymbolScope(meta, "z").map(_.name) mustBe (Some("C"))
-    //         findSymbolScope(meta, "i").map(_.name) mustBe (Some("D"))
+            meta.findSymbolsByName("y").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.a"))
+            meta.findSymbolsByName("z").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.b"))
+            meta.findSymbolsByName("i").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.d.a.a"))
 
-    //         findSymbolScope(meta, "A").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "B").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "D").map(_.name) mustBe (Some("#b"))
-    //         findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
-    //         findSymbolScope(meta, "f").map(_.name) mustBe (Some("#a"))
+            meta.findSymbolsByName("A").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
+            meta.findSymbolsByName("B").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
+            meta.findSymbolsByName("D").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.d.a"))
+            meta.findSymbolsByName("a").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
+            meta.findSymbolsByName("f").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
 
-    //       case Left(t) => fail("Should be 'right", t)
-    //   }
+          case Left(t) => fail("Should be 'right", t)
+      }
 
     //   /**
     //    * {{{
@@ -546,8 +547,8 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //    */
     //   "initialize with an anonymous struct" in {
     //     val t = Block(
-    //       StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
-    //       StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
+    //       StructDecl("B", List(FieldDecl(TypeRef.i32, "y"))),
+    //       StructDecl("A", List(FieldDecl(TypeRef.i32, "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
     //       VarDecl(
     //         TypeRef("A"),
     //         "a",
@@ -574,7 +575,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //         findSymbolScope(meta, "a").map(_.name) mustBe (Some("#a"))
     //       case Left(t) => fail("Should be 'right", t)
     //   }
-    // }
+    }
 
     // "a program is given" should {
 
@@ -592,26 +593,26 @@ final class ScopeBuildVisitorSpec extends TestSpec:
     //    */
     //   "build scopes" in {
     //     val t = Block(
-    //       VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
+    //       VarDecl(TypeRef.i32, "x", IntVal(1)),
     //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
+    //         TypeRef.void,
     //         "g",
-    //         List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+    //         List(ArgDecl(TypeRef.i32, "x")),
     //         Block(
-    //           VarDecl(TypeRef(typeNames.i32Type), "z", IntVal(2))
+    //           VarDecl(TypeRef.i32, "z", IntVal(2))
     //         )
     //       ),
     //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
+    //         TypeRef.void,
     //         "f",
-    //         List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
+    //         List(ArgDecl(TypeRef.i32, "x")),
     //         Block(
-    //           VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(1)),
+    //           VarDecl(TypeRef.i32, "y", IntVal(1)),
     //           Call(SymbolRef("g"), List(Mul(IntVal(2), Var(SymbolRef("x")))))
     //         )
     //       ),
     //       MethodDecl(
-    //         TypeRef(typeNames.voidType),
+    //         TypeRef.void,
     //         "main",
     //         List.empty[ArgDecl],
     //         Block(
