@@ -26,8 +26,8 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
         // foldOverTree(a, x)
         ???
       case x @ ArgDecl(aType, name) =>
+        //foldOverTree(a.define(SVar(name)), x)
         ???
-      //   foldOverTree(a.define(SVar(name)), x)
       // case x: Assign =>
       //   foldOverTree(a, x)
       // case x: Block =>
@@ -42,8 +42,8 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       //   foldOverTree(a.define(SVar(name)), x)
       // case x: If =>
       //   foldOverTree(a, x)
-      // case x @ Init(iType) =>
-      //   foldOverTree(a, x)
+      case x @ Init(iType) =>
+        foldOverTree(a, x)
       // case x @ MethodDecl(retType, name, _, _) =>
       //   foldOverTree(a.define(SMethod(name)).push(), x).pop()
       // case x @ StructDecl(name, _) =>
@@ -54,6 +54,21 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       //   foldOverTree(a.define(SVar(name)), x)
       // case x @ Vec(_, elementType) =>
       //   foldOverTree(a, x)
+
+
+//   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
+//     for
+//       scope               <- s.meta.scopeFor(n).flatMap(_.asSBlock)
+//       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
+//       st                  <- visitType(s, scope, n.vType)
+//       StateType(s1, vType) = st
+//       ss1                  = s1.meta.defineVarType(sVar, vType)
+//       s2                  <- n.expr.visit(s1.copy(meta = ss1), this)
+//       expr                <- s2.ast.asExpr
+//       n1                   = n.copy(vType = vType, expr = expr)
+//       ss2                  = s2.meta.redefineASTScope(n, n1).ensureNoAST(n)
+//     yield s2.copy(ast = n1, meta = ss2)
+
 
 //   override def visit(s: ScopeResolveState, n: ArgDecl): Either[Throwable, ScopeResolveState] =
 //     for
@@ -113,29 +128,6 @@ private[builder] object ScopeResolveVisitor:
 //       (ss1, (_, n1)) = t
 //     yield s.copy(meta = ss1, ast = n1)
 
-
-  
-   // extends TreeVisitor[ScopeResolveState, ScopeResolveState] {}
-//   import Casting.*
-//   import ScopeResolveVisitor.*
-
-//   override def visit(s: ScopeResolveState, n: Init): Either[Throwable, ScopeResolveState] =
-//     for
-//       scope               <- s.meta.scopeFor(n)
-//       st                  <- visitType(s, scope, n.iType)
-//       StateType(s1, iType) = st
-//       n1                   = n.copy(iType = iType)
-//       ss1                  = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s1.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: UnaryMinus): Either[Throwable, ScopeResolveState] =
-//     for
-//       s1   <- n.expr.visit(s, this)
-//       expr <- s1.ast.asExpr
-//       n1    = n.copy(expr = expr)
-//       ss1   = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s1.copy(ast = n1, meta = ss1)
-
 //   override def visit(s: ScopeResolveState, n: FieldDecl): Either[Throwable, ScopeResolveState] =
 //     for
 //       scope               <- s.meta.scopeFor(n).flatMap(_.asSStruct)
@@ -145,19 +137,6 @@ private[builder] object ScopeResolveVisitor:
 //       n1                   = n.copy(fType = fType)
 //       ss1                  = s1.meta.defineVarType(sVar, st.xType).redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
-//     for
-//       scope               <- s.meta.scopeFor(n).flatMap(_.asSBlock)
-//       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-//       st                  <- visitType(s, scope, n.vType)
-//       StateType(s1, vType) = st
-//       ss1                  = s1.meta.defineVarType(sVar, vType)
-//       s2                  <- n.expr.visit(s1.copy(meta = ss1), this)
-//       expr                <- s2.ast.asExpr
-//       n1                   = n.copy(vType = vType, expr = expr)
-//       ss2                  = s2.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s2.copy(ast = n1, meta = ss2)
 
 //   override def visit(s: ScopeResolveState, n: MethodDecl): Either[Throwable, ScopeResolveState] =
 //     for
@@ -236,39 +215,6 @@ private[builder] object ScopeResolveVisitor:
 //       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield rs.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: NothingVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: VoidVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: BoolVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: IntVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: LongVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: FloatVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: DoubleVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: DecimalVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: StrVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: DateVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
-//   override def visit(s: ScopeResolveState, n: DateTimeVal): Either[Throwable, ScopeResolveState] =
-//     Right(s.copy(ast = n))
-
 //   override def visit(s: ScopeResolveState, n: StructVal): Either[Throwable, ScopeResolveState] =
 //     for
 //       scope               <- s.meta.scopeFor(n)
@@ -303,144 +249,6 @@ private[builder] object ScopeResolveVisitor:
 //       n1          = n.copy(elements = exprs) // NOTE: element type is deduced in Phase #3
 //       ss1         = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Add): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Sub): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Mul): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Div): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Mod): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Less): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: LessEqual): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Greater): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: GreaterEqual): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Equal): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: NotEqual): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Not): Either[Throwable, ScopeResolveState] =
-//     for
-//       s1   <- n.expr.visit(s, this)
-//       expr <- s1.ast.asExpr
-//       n1    = n.copy(expr = expr)
-//       ss1   = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s1.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: And): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
-
-//   override def visit(s: ScopeResolveState, n: Or): Either[Throwable, ScopeResolveState] =
-//     for
-//       ls    <- n.lhs.visit(s, this)
-//       rs    <- n.rhs.visit(ls, this)
-//       lExpr <- ls.ast.asExpr
-//       rExpr <- rs.ast.asExpr
-//       n1     = n.copy(lhs = lExpr, rhs = rExpr)
-//       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield rs.copy(ast = n1, meta = ss1)
 
 //   override def visit(s: ScopeResolveState, n: Call): Either[Throwable, ScopeResolveState] =
 //     for
@@ -495,25 +303,3 @@ private[builder] object ScopeResolveVisitor:
 //           }
 //       case _ =>
 //         s.meta.resolve(t.name, scope).flatMap(_.asType).map(t => StateType(s, t))
-
-// private[builder] object ScopeResolveVisitor:
-
-//   def make(): ScopeResolveVisitor =
-//     new ScopeResolveVisitor()
-
-//   final case class ScopeResolveState(
-//     ast: AST,
-//     meta: Meta
-//   )
-
-//   object ScopeResolveState:
-//     def make(ast: AST, meta: Meta): ScopeResolveState =
-//       ScopeResolveState(
-//         ast = ast,
-//         meta = meta
-//       )
-
-//   private final case class StateType(
-//     state: ScopeResolveState,
-//     xType: Type
-//   )
