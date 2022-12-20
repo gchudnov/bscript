@@ -32,3 +32,9 @@ abstract class Directory[K, V <: AnyRef, D <: Directory[K, V, D]]:
       keyValues = keyValues1,
       valueKey = valueKey1
     )
+
+  def values(key: K): List[V] =
+    keyValues.getOrElse(key, Set.empty[Ptr[V]]).toList.map(_.value)
+
+  def key(value: V): Option[K] =
+    valueKey.get(Ptr(value))

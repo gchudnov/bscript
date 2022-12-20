@@ -20,8 +20,6 @@ import com.github.gchudnov.bscript.builder.BGlobals
 final class ScopeResolveVisitorSpec extends TestSpec:
   import ScopeResolveVisitorSpec.*
 
-//   private val typeNames: TypeNames = BGlobals.typeNames
-
   "ScopeResolveVisitor" when {
 
     "var is declared" should {

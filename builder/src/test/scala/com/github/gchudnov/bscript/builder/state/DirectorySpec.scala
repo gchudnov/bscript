@@ -46,5 +46,37 @@ final class DirectorySpec extends TestSpec:
         ss1.keyValues must contain theSameElementsAs (List(Key("a") -> Set(Ptr(v1), Ptr(v2))))
         ss1.valueKey must contain theSameElementsAs (List(Ptr(v1) -> Key("a"), Ptr(v2) -> Key("a")))
       }
+
+      "values can be found" in {
+        val v1 = Value("myFunc1")
+        val v2 = Value("myFunc1")
+
+        val ss1 = ss.link(k, v1).link(k, v2)
+
+        val actual = ss1.values(k)
+        val expected = List(v1, v2)
+
+        actual must contain theSameElementsAs(expected)
+      }
+
+      "key can be found by value if the value was linked" in {
+        val v1 = Value("myFunc1")
+
+        val ss1 = ss.link(k, v1)
+
+        val actual = ss1.key(v1)
+        val expected = Some(k)
+
+        actual mustBe expected    
+      }
+
+      "key cannot be found by value if the value was not linked" in {
+        val v1 = Value("myFunc1")
+
+        val actual = ss.key(v1)
+        val expected = None
+
+        actual mustBe expected           
+      }
     }
   }
