@@ -57,11 +57,23 @@ import com.github.gchudnov.bscript.builder.state.ScopeAsts
 //   astSymbols: Map[Ptr[AST], Symbol]            //
 // )
 
-final case class Meta(
+final class Meta(
   forest: Forest[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts
-)
+):
+  /**
+    * Find all symbols that have the given name
+    */
+  def symbolsByName(name: String): List[Symbol] =
+    scopeSymbols.symbolsByName(name)
+
+  /**
+   * Find all scopes that contain symbols with the given name
+   */
+  def scopesBySymbol(sym: SymbolRef): List[Scope] =
+    scopeSymbols.symbolsByName(sym.name)
+      .flatMap(it => scopeSymbols.scope(it).map(List(_)).getOrElse(List.empty[Scope]))
 
 object Meta:
 
@@ -72,9 +84,6 @@ object Meta:
       scopeAsts = ScopeAsts.empty
     )
 
-  extension (m: Meta)
-    def symbolsByName(name: String): List[Symbol] =
-      m.scopeSymbols.symbolsByName(name)
 
 
   // def typeNameForVarInScope(meta: Meta)(varName: String, scopeName: String): Either[Throwable, String] =

@@ -27,6 +27,3 @@ trait ScopeResolver:
 object ScopeResolver:
   def make(scopeAsts: ScopeAsts): ScopeResolver =
     new BasicScopeResolver(scopeAsts)
-
-  def fromMeta(meta: Meta): ScopeResolver =
-    new BasicScopeResolver(meta.scopeAsts)

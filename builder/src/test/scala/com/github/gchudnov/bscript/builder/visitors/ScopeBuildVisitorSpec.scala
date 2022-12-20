@@ -3,10 +3,10 @@ package com.github.gchudnov.bscript.builder.visitors
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.const.*
+import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
@@ -33,7 +33,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 1
-            meta.findSymbolsByName("x").size mustBe(1)
+            meta.symbolsByName("x").size mustBe (1)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -65,7 +65,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 3 // root + main(args) + block inside
-            meta.findSymbolsByName("x").size mustBe(1)
+            meta.symbolsByName("x").size mustBe (1)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -94,7 +94,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 3 // root + main(args) + block inside
-            meta.findSymbolsByName("x").size mustBe(2)
+            meta.symbolsByName("x").size mustBe (2)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -144,8 +144,8 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 6
-            meta.findSymbolsByName("offsetDateTime").size mustBe(1)
-            meta.findSymbolsByName("fieldOfDateTime").size mustBe(1)
+            meta.symbolsByName("offsetDateTime").size mustBe (1)
+            meta.symbolsByName("fieldOfDateTime").size mustBe (1)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -155,137 +155,137 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
       // TODO: do we want to support them in 2.0? or is it worth to add generics, T instead
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     auto x = 10;  // int
-    //    *     decltype(x) y = 20;
-    //    *     y;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "be allowed in auto-variable declarations" in {
-    //     val t = Block(
-    //       VarDecl(TypeRef(typeNames.autoType), "x", IntVal(10)),
-    //       VarDecl(DeclType(Var(SymbolRef("x"))), "y", IntVal(20)),
-    //       Var(SymbolRef("y"))
-    //     )
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   {
+      //    *     auto x = 10;  // int
+      //    *     decltype(x) y = 20;
+      //    *     y;
+      //    *   }
+      //    * }}}
+      //    */
+      //   "be allowed in auto-variable declarations" in {
+      //     val t = Block(
+      //       VarDecl(TypeRef(typeNames.autoType), "x", IntVal(10)),
+      //       VarDecl(DeclType(Var(SymbolRef("x"))), "y", IntVal(20)),
+      //       Var(SymbolRef("y"))
+      //     )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         meta.astScopes.size mustBe (7)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t)
+      //     errOrRes match
+      //       case Right(ScopeBuildVisitorState(ast, meta)) =>
+      //         meta.astScopes.size mustBe (7)
+      //       case Left(t) =>
+      //         fail("Should be 'right", t)
+      //   }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     int x = 10;
-    //    *     decltype(x) y = 20;
-    //    *     y;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "be allowed in variable declarations" in {
-    //     val t = Block(
-    //       VarDecl(TypeRef.i32, "x", IntVal(10)),
-    //       VarDecl(DeclType(Var(SymbolRef("x"))), "y", IntVal(20)),
-    //       Var(SymbolRef("y"))
-    //     )
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   {
+      //    *     int x = 10;
+      //    *     decltype(x) y = 20;
+      //    *     y;
+      //    *   }
+      //    * }}}
+      //    */
+      //   "be allowed in variable declarations" in {
+      //     val t = Block(
+      //       VarDecl(TypeRef.i32, "x", IntVal(10)),
+      //       VarDecl(DeclType(Var(SymbolRef("x"))), "y", IntVal(20)),
+      //       Var(SymbolRef("y"))
+      //     )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         meta.astScopes.size mustBe (7)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t)
+      //     errOrRes match
+      //       case Right(ScopeBuildVisitorState(ast, meta)) =>
+      //         meta.astScopes.size mustBe (7)
+      //       case Left(t) =>
+      //         fail("Should be 'right", t)
+      //   }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     fn round(auto x, int32 n) -> decltype(x) { ... }
-    //    *
-    //    *     float x = 12.3456f;
-    //    *     int p = 2;
-    //    *
-    //    *     auto z = round(x, p);
-    //    *     z;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "be allowed in functions return types" in {
-    //     val t = Block(
-    //       MethodDecl(
-    //         DeclType(Var(SymbolRef("value"))),
-    //         "round",
-    //         List(
-    //           ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
-    //           ArgDecl(TypeRef.i32, "precision")
-    //         ),
-    //         Block(
-    //           CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
-    //         )
-    //       ),
-    //       VarDecl(TypeRef(typeNames.f32Type), "x", FloatVal(12.3456f)),
-    //       VarDecl(TypeRef.i32, "p", IntVal(2)),
-    //       VarDecl(TypeRef(typeNames.autoType), "z", Call(SymbolRef("round"), List(Var(SymbolRef("x")), Var(SymbolRef("p"))))),
-    //       Var(SymbolRef("z"))
-    //     )
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   {
+      //    *     fn round(auto x, int32 n) -> decltype(x) { ... }
+      //    *
+      //    *     float x = 12.3456f;
+      //    *     int p = 2;
+      //    *
+      //    *     auto z = round(x, p);
+      //    *     z;
+      //    *   }
+      //    * }}}
+      //    */
+      //   "be allowed in functions return types" in {
+      //     val t = Block(
+      //       MethodDecl(
+      //         DeclType(Var(SymbolRef("value"))),
+      //         "round",
+      //         List(
+      //           ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
+      //           ArgDecl(TypeRef.i32, "precision")
+      //         ),
+      //         Block(
+      //           CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
+      //         )
+      //       ),
+      //       VarDecl(TypeRef(typeNames.f32Type), "x", FloatVal(12.3456f)),
+      //       VarDecl(TypeRef.i32, "p", IntVal(2)),
+      //       VarDecl(TypeRef(typeNames.autoType), "z", Call(SymbolRef("round"), List(Var(SymbolRef("x")), Var(SymbolRef("p"))))),
+      //       Var(SymbolRef("z"))
+      //     )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         meta.astScopes.size mustBe (17)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t)
+      //     errOrRes match
+      //       case Right(ScopeBuildVisitorState(ast, meta)) =>
+      //         meta.astScopes.size mustBe (17)
+      //       case Left(t) =>
+      //         fail("Should be 'right", t)
+      //   }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   {
-    //    *     fn contains(auto x, decltype(x)[] xs) -> bool { ... }
-    //    *
-    //    *     bool x = contains(1, []int{ 1, 2, 3 });
-    //    *     x;
-    //    *   }
-    //    * }}}
-    //    */
-    //   "be allowed in function arguments" in {
-    //     val t = Block(
-    //       MethodDecl(
-    //         TypeRef(typeNames.boolType),
-    //         "contains",
-    //         List(
-    //           ArgDecl(TypeRef(typeNames.autoType), "x"),
-    //           ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
-    //         ),
-    //         Block(
-    //           CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.boolType))
-    //         ),
-    //         Seq(ComAnn("Tests whether the list contains the given element."), StdAnn())
-    //       ),
-    //       VarDecl(
-    //         TypeRef(typeNames.boolType),
-    //         "x",
-    //         Call(SymbolRef("contains"), List(IntVal(1), Vec(List(IntVal(1), IntVal(2), IntVal(3)))))
-    //       ),
-    //       Var(SymbolRef("x"))
-    //     )
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   {
+      //    *     fn contains(auto x, decltype(x)[] xs) -> bool { ... }
+      //    *
+      //    *     bool x = contains(1, []int{ 1, 2, 3 });
+      //    *     x;
+      //    *   }
+      //    * }}}
+      //    */
+      //   "be allowed in function arguments" in {
+      //     val t = Block(
+      //       MethodDecl(
+      //         TypeRef(typeNames.boolType),
+      //         "contains",
+      //         List(
+      //           ArgDecl(TypeRef(typeNames.autoType), "x"),
+      //           ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
+      //         ),
+      //         Block(
+      //           CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.boolType))
+      //         ),
+      //         Seq(ComAnn("Tests whether the list contains the given element."), StdAnn())
+      //       ),
+      //       VarDecl(
+      //         TypeRef(typeNames.boolType),
+      //         "x",
+      //         Call(SymbolRef("contains"), List(IntVal(1), Vec(List(IntVal(1), IntVal(2), IntVal(3)))))
+      //       ),
+      //       Var(SymbolRef("x"))
+      //     )
 
-    //     val errOrRes = eval(t)
-    //     errOrRes match
-    //       case Right(ScopeBuildVisitorState(ast, meta)) =>
-    //         meta.astScopes.size mustBe (15)
-    //       case Left(t) =>
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t)
+      //     errOrRes match
+      //       case Right(ScopeBuildVisitorState(ast, meta)) =>
+      //         meta.astScopes.size mustBe (15)
+      //       case Left(t) =>
+      //         fail("Should be 'right", t)
+      //   }
 
     }
 
@@ -312,9 +312,9 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 2
-            meta.findSymbolsByName("i").size mustBe(1)
-            meta.findSymbolsByName("j").size mustBe(1)
-            meta.findSymbolsByName("k").size mustBe(1)
+            meta.symbolsByName("i").size mustBe (1)
+            meta.symbolsByName("j").size mustBe (1)
+            meta.symbolsByName("k").size mustBe (1)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -336,7 +336,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 2
-            meta.findSymbolsByName("a").size mustBe(1)
+            meta.symbolsByName("a").size mustBe (1)
           case Left(t) => fail("Should be 'right", t)
       }
 
@@ -357,7 +357,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         errOrRes match
           case Right(State(ast, meta)) =>
             meta.forest.size mustBe 2
-            meta.findSymbolsByName("x").size mustBe(1)
+            meta.symbolsByName("x").size mustBe (1)
           case Left(t) => fail("Should be 'right", t)
       }
     }
@@ -393,12 +393,11 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            
             val blockStatements = ast.asInstanceOf[Block].statements
             val callExpr        = blockStatements.last.asInstanceOf[Call]
-            val callScope       = meta.scopeAsts.valueKey(Ptr(callExpr))
+            val callScope       = meta.scopeAsts.scope(callExpr)
 
-            callScope.name mustBe ("a.a")
+            callScope.map(_.name) mustBe Some("a.a")
           case Left(t) => fail("Should be 'right", t)
       }
 
@@ -448,12 +447,12 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.findSymbolsByName("x").size mustBe(1)
-            meta.findSymbolsByName("y").size mustBe(1)
-            meta.findSymbolsByName("j").size mustBe(1)
+            meta.symbolsByName("x").size mustBe (1)
+            meta.symbolsByName("y").size mustBe (1)
+            meta.symbolsByName("j").size mustBe (1)
 
             // NOTE: `i` exists in 2 scopes
-            meta.findSymbolsByName("i").size mustBe(2)
+            meta.symbolsByName("i").size mustBe (2)
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -510,19 +509,19 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.findSymbolsByName("b").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.c"))
-            meta.findSymbolsByName("c").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.c"))
-            meta.findSymbolsByName("x").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.c"))
+            meta.scopesBySymbol(SymbolRef("b")).map(_.name) must contain theSameElementsAs (List("a.a.c"))
+            meta.scopesBySymbol(SymbolRef("c")).map(_.name) must contain theSameElementsAs (List("a.a.c"))
+            meta.scopesBySymbol(SymbolRef("x")).map(_.name) must contain theSameElementsAs (List("a.a.c"))
 
-            meta.findSymbolsByName("y").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.a"))
-            meta.findSymbolsByName("z").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.b"))
-            meta.findSymbolsByName("i").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.d.a.a"))
+            meta.scopesBySymbol(SymbolRef("y")).map(_.name) must contain theSameElementsAs (List("a.a.a"))
+            meta.scopesBySymbol(SymbolRef("z")).map(_.name) must contain theSameElementsAs (List("a.a.b"))
+            meta.scopesBySymbol(SymbolRef("i")).map(_.name) must contain theSameElementsAs (List("a.a.d.a.a"))
 
-            meta.findSymbolsByName("A").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
-            meta.findSymbolsByName("B").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
-            meta.findSymbolsByName("D").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a.d.a"))
-            meta.findSymbolsByName("a").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
-            meta.findSymbolsByName("f").map(it => meta.scopeSymbols.valueKey(Ptr(it)).name) must contain theSameElementsAs(List("a.a"))
+            meta.scopesBySymbol(SymbolRef("A")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            meta.scopesBySymbol(SymbolRef("B")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            meta.scopesBySymbol(SymbolRef("D")).map(_.name) must contain theSameElementsAs (List("a.a.d.a"))
+            meta.scopesBySymbol(SymbolRef("a")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            meta.scopesBySymbol(SymbolRef("f")).map(_.name) must contain theSameElementsAs (List("a.a"))
 
           case Left(t) => fail("Should be 'right", t)
       }
@@ -551,19 +550,23 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           VarDecl(
             TypeRef("A"),
             "a",
-            Literal(StructVal(
-              TypeRef("A"),
-              Map(
-                "x" -> Literal(IntVal(1)),
-                "s" -> Literal(StrVal("alice")),
-                "b" -> Literal(StructVal(
-                  TypeRef("B"),
-                  Map(
-                    "y" -> Literal(IntVal(2))
+            Literal(
+              StructVal(
+                TypeRef("A"),
+                Map(
+                  "x" -> Literal(IntVal(1)),
+                  "s" -> Literal(StrVal("alice")),
+                  "b" -> Literal(
+                    StructVal(
+                      TypeRef("B"),
+                      Map(
+                        "y" -> Literal(IntVal(2))
+                      )
+                    )
                   )
-                ))
+                )
               )
-            ))
+            )
           ),
           Var(SymbolRef("a"))
         )
@@ -571,7 +574,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.findSymbolsByName("a").size mustBe(1)
+            meta.symbolsByName("a").size mustBe (1)
           case Left(t) => fail("Should be 'right", t)
       }
     }
@@ -624,9 +627,9 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.findSymbolsByName("f").size mustBe(1)
-            meta.findSymbolsByName("g").size mustBe(1)
-            meta.findSymbolsByName("main").size mustBe(1)
+            meta.symbolsByName("f").size mustBe (1)
+            meta.symbolsByName("g").size mustBe (1)
+            meta.symbolsByName("main").size mustBe (1)
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -639,15 +642,14 @@ final class ScopeBuildVisitorSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
   private def eval(ast0: AST): Either[Throwable, State] =
-    val v1                    = ScopeBuildVisitor.make()
-    val s1                    = ScopeBuilder.make().push() // add the root scope
+    val v1 = ScopeBuildVisitor.make()
+    val s1 = ScopeBuilder.make().push() // add the root scope
 
     val s2 = v1.foldAST(s1, ast0)
 
     val meta = s2.result
 
     Right(State(ast0, meta))
-
 
 object ScopeBuildVisitorSpec:
 
