@@ -7,17 +7,14 @@ import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.symbols.TypeRef
+import com.github.gchudnov.bscript.builder.ScopeRef
 
 /**
   * ScopeResolver
   */
 trait ScopeResolver:
-  def resolve(symbol: Symbol): Option[Symbol]
-  def resolveMember(symbol: Symbol): Option[Symbol]
-
-  def scope(ast: AST): Option[Scope]
-
-  def defineVar(scope: Scope, name: String, vType: Type): ScopeResolver
+  def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver
 
   def result: Meta
 
