@@ -1,10 +1,10 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, ScopeStateException, Symbol, Type, TypeRef, SymbolRef }
+import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, Type, TypeRef, SymbolRef }
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
 import com.github.gchudnov.bscript.builder.util.Ptr
-import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.builder.state.Forest

@@ -3,63 +3,44 @@ package com.github.gchudnov.bscript.builder
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.LineOps.split
+import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
+import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
 
-object BGlobals {}
+/**
+  * Globals for building
+  */
+object BGlobals:
 
-// object BGlobals:
+  def make(sb: ScopeBuilder): ScopeBuilder =
+    val sAuto     = SBuiltIn(TypeName.auto)
+    val sNothing  = SBuiltIn(TypeName.nothing)
+    val sVoid     = SBuiltIn(TypeName.void)
+    val sBool     = SBuiltIn(TypeName.bool)
+    val sI32      = SBuiltIn(TypeName.i32)
+    val sI64      = SBuiltIn(TypeName.i64)
+    val sF32      = SBuiltIn(TypeName.f32)
+    val sF64      = SBuiltIn(TypeName.f64)
+    val sDec      = SBuiltIn(TypeName.dec)
+    val sStr      = SBuiltIn(TypeName.str)
+    val sDate     = SBuiltIn(TypeName.date)
+    val sDatetime = SBuiltIn(TypeName.datetime)
 
-//   val typeNames: TypeNames = new TypeNames:
-//     override def autoType: String     = "auto"
-//     override def nothingType: String  = "nothing"
-//     override def voidType: String     = "void"
-//     override def boolType: String     = "boolean"
-//     override def i32Type: String      = "int"
-//     override def i64Type: String      = "long"
-//     override def f32Type: String      = "float"
-//     override def f64Type: String      = "double"
-//     override def decType: String      = "decimal"
-//     override def strType: String      = "string"
-//     override def dateType: String     = "date"
-//     override def datetimeType: String = "datetime"
-
-//   def make(): (Meta, SBlock) =
-//     val g = SBlock("#global")
-
-//     val autoType     = SBuiltInType(typeNames.autoType)
-//     val nothingType  = SBuiltInType(typeNames.nothingType)
-//     val voidType     = SBuiltInType(typeNames.voidType)
-//     val boolType     = SBuiltInType(typeNames.boolType)
-//     val i32Type      = SBuiltInType(typeNames.i32Type)
-//     val i64Type      = SBuiltInType(typeNames.i64Type)
-//     val f32Type      = SBuiltInType(typeNames.f32Type)
-//     val f64Type      = SBuiltInType(typeNames.f64Type)
-//     val decType      = SBuiltInType(typeNames.decType)
-//     val strType      = SBuiltInType(typeNames.strType)
-//     val dateType     = SBuiltInType(typeNames.dateType)
-//     val datetimeType = SBuiltInType(typeNames.datetimeType)
-
-//     val meta =
-//       Meta.empty
-//         .defineBlock(g)
-//         .defineBuiltInType(autoType, g)
-//         .defineBuiltInType(nothingType, g)
-//         .defineBuiltInType(voidType, g)
-//         .defineBuiltInType(boolType, g)
-//         .defineBuiltInType(i32Type, g)
-//         .defineBuiltInType(i64Type, g)
-//         .defineBuiltInType(f32Type, g)
-//         .defineBuiltInType(f64Type, g)
-//         .defineBuiltInType(decType, g)
-//         .defineBuiltInType(strType, g)
-//         .defineBuiltInType(dateType, g)
-//         .defineBuiltInType(datetimeType, g)
-
-//     (meta, g)
+    sb
+      .define(sAuto)
+      .define(sNothing)
+      .define(sVoid)
+      .define(sBool)
+      .define(sI32)
+      .define(sI64)
+      .define(sF32)
+      .define(sF64)
+      .define(sDec)
+      .define(sStr)
+      .define(sDate)
+      .define(sDatetime)
 
 //   def prelude: Block = Block(
 //     MethodDecl(

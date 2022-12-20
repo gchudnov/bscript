@@ -7,11 +7,12 @@ import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.builder.Meta
 // import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.types.TypeNames
+import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.BGlobals
 
 /**
  * ScopeResolveVisitorSpec
@@ -1071,9 +1072,8 @@ final class ScopeResolveVisitorSpec extends TestSpec:
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
   private def eval(ast0: AST): Either[Throwable, State] =
-//     val (initMeta, rootScope) = BGlobals.make()
     val v1                    = ScopeBuildVisitor.make()
-    val s1                    = ScopeBuilder.make().push()
+    val s1                    = BGlobals.make(ScopeBuilder.make().push())
 
     val s2 = v1.foldAST(s1, ast0)
 

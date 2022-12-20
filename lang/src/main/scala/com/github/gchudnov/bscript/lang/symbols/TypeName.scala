@@ -5,7 +5,7 @@ package com.github.gchudnov.bscript.lang.types
  *
  * Used to allow to specify different type names for a type. E.g. integer data type might be i32 or int.
  */
-object TypeNames:
+object TypeName:
   val auto: String     = "auto"
   val nothing: String  = "nothing"
   val void: String     = "void"
