@@ -73,9 +73,8 @@ object Meta:
     )
 
   extension (m: Meta)
-    def findSymbolsByName(name: String): List[Symbol] =
-      m.scopeSymbols.valueKey.keySet.toList
-        .collect({case Ptr[Symbol](sym) if sym.name == name => sym })
+    def symbolsByName(name: String): List[Symbol] =
+      m.scopeSymbols.symbolsByName(name)
 
 
   // def typeNameForVarInScope(meta: Meta)(varName: String, scopeName: String): Either[Throwable, String] =

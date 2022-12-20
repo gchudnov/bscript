@@ -12,8 +12,8 @@ import com.github.gchudnov.bscript.builder.util.Ptr
  */
 abstract class Directory[K, V <: AnyRef, D <: Directory[K, V, D]]:
 
-  val keyValues: Map[K, Set[Ptr[V]]]
-  val valueKey: Map[Ptr[V], K]
+  protected val keyValues: Map[K, Set[Ptr[V]]]
+  protected val valueKey: Map[Ptr[V], K]
 
   def clone(keyValues: Map[K, Set[Ptr[V]]], valueKey: Map[Ptr[V], K]): D
 
