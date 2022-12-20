@@ -12,6 +12,8 @@ trait ScopeResolver:
   def resolve(symbol: Symbol): Option[Symbol]
   def resolveMember(symbol: Symbol): Option[Symbol]
 
+  def result: Meta
+
 /**
  * ScopeResolver
  */

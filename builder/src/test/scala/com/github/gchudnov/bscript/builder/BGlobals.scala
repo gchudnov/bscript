@@ -28,6 +28,7 @@ object BGlobals:
     val sDate     = SBuiltIn(TypeName.date)
     val sDatetime = SBuiltIn(TypeName.datetime)
 
+    // NOTE: we're not defining any new scopes here, thus the scope should be defined before calling `.make()`
     sb
       .define(sAuto)
       .define(sNothing)

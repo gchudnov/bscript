@@ -55,7 +55,6 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       // case x @ Vec(_, elementType) =>
       //   foldOverTree(a, x)
 
-
 //   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
 //     for
 //       scope               <- s.meta.scopeFor(n).flatMap(_.asSBlock)

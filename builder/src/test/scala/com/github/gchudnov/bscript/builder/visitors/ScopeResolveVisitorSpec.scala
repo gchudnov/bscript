@@ -1073,35 +1073,17 @@ final class ScopeResolveVisitorSpec extends TestSpec:
    */
   private def eval(ast0: AST): Either[Throwable, State] =
     val v1                    = ScopeBuildVisitor.make()
-    val s1                    = BGlobals.make(ScopeBuilder.make().push())
+    val v2 = ScopeResolveVisitor.make()
 
+    val s1                    = BGlobals.make(ScopeBuilder.make().push())
     val s2 = v1.foldAST(s1, ast0)
 
-    ???
+    val s3 = ScopeResolver.fromMeta(s2.result)
+    val s4 = v2.foldAST(s3, ast0)
 
-//     ast0
-//       .visit(s1, v1)
-//       .flatMap { s11 =>
-//         val v2   = ScopeResolveVisitor.make()
-//         val s2   = ScopeResolveState.make(s11.ast, s11.meta)
-//         val ast1 = s11.ast
+    val meta = s4.result
 
-//         ast1
-//           .visit(s2, v2)
-//           .flatMap { s21 =>
-//             val t    = ScopeResolveVisitorState(meta = s21.meta, ast = s21.ast)
-//             val ast2 = s21.ast
-
-//             // println(t.meta.show())
-
-//             // { AST->Scope } size must be the same before and after Phase #2
-//             s11.meta.astScopes.size mustEqual (s21.meta.astScopes.size)
-
-//             ast2
-//               .visit(".", verifyResolved(t))
-//               .map(_ => t)
-//           }
-//       }
+    Right(State(ast0, meta))
 
 object ScopeResolveVisitorSpec:
 
