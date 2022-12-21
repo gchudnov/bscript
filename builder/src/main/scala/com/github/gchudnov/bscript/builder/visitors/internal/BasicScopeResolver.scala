@@ -9,16 +9,19 @@ import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.TypeRef
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 
-final class BasicScopeResolver(scopeAsts: ScopeAsts) extends ScopeResolver {
+final class BasicScopeResolver(scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts) extends ScopeResolver {
 
   override def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver =
     ???
 
-  private def resolve(symbol: Symbol): Option[Symbol] =
+  private def resolve(sym: SymbolRef): Option[Symbol] =
+    scopeSymbols
+      .scope(sym)
     ???
 
-  private def resolveMember(symbol: Symbol): Option[Symbol] =
+  private def resolveMember(sym: SymbolRef): Option[Symbol] =
     ???
 
 //    * Resolve a symbol in the scope recursively up to the root
@@ -55,7 +58,7 @@ final class BasicScopeResolver(scopeAsts: ScopeAsts) extends ScopeResolver {
   override def result: Meta =
     Meta(
       forest = ???,
-      scopeSymbols = ???,
+      scopeSymbols = scopeSymbols,
       scopeAsts = scopeAsts
     )
 
