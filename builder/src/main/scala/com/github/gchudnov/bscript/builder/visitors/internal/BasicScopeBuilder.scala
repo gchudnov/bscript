@@ -11,6 +11,7 @@ import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.visitors.ScopeResolver
 
 /**
  * BasicScopeBuilder
@@ -37,6 +38,9 @@ final class BasicScopeBuilder(cursor: ForestCursor[Scope], scopeSymbols: ScopeSy
         new BasicScopeBuilder(cursor = cursor, scopeSymbols = scopeSymbols, scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
       case None =>
         throw new BuilderException(s"Cannot define '${ast}' without any scope. Invoke .push() to create a scope first.")
+
+  override def toResolver: ScopeResolver =
+    ???
 
   override def result: Meta =
     Meta(

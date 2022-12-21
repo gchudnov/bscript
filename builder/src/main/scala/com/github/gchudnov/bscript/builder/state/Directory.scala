@@ -17,7 +17,7 @@ abstract class Directory[K, V <: AnyRef, D <: Directory[K, V, D]]:
 
   def clone(keyValues: Map[K, Set[Ptr[V]]], valueKey: Map[Ptr[V], K]): D
 
-  def addKey(key: K): D =
+  protected def addKey(key: K): D =
     clone(keyValues = this.keyValues + (key -> Set.empty[Ptr[V]]), valueKey = valueKey)
 
   def link(key: K, value: V): D =
@@ -33,8 +33,8 @@ abstract class Directory[K, V <: AnyRef, D <: Directory[K, V, D]]:
       valueKey = valueKey1
     )
 
-  def values(key: K): List[V] =
+  protected def values(key: K): List[V] =
     keyValues.getOrElse(key, Set.empty[Ptr[V]]).toList.map(_.value)
 
-  def key(value: V): Option[K] =
+  protected def key(value: V): Option[K] =
     valueKey.get(Ptr(value))

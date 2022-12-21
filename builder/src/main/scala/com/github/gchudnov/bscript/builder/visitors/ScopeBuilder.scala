@@ -53,6 +53,8 @@ trait ScopeBuilder:
 
   def result: Meta
 
+  def toResolver: ScopeResolver
+
 /**
  * ScopeBuilder
  */

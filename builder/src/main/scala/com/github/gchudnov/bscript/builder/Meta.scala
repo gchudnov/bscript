@@ -62,6 +62,13 @@ final class Meta(
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts
 ):
+
+  def forestSize: Int = 
+    forest.size
+
+  def scopeByAST(ast: AST): Option[Scope] =
+    scopeAsts.scope(ast)
+
   /**
     * Find all symbols that have the given name
     */

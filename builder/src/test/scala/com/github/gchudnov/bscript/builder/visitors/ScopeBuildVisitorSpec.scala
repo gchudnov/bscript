@@ -32,7 +32,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 1
+            meta.forestSize mustBe 1
             meta.symbolsByName("x").size mustBe (1)
 
           case Left(t) => fail("Should be 'right", t)
@@ -64,7 +64,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 3 // root + main(args) + block inside
+            meta.forestSize mustBe 3 // root + main(args) + block inside
             meta.symbolsByName("x").size mustBe (1)
 
           case Left(t) => fail("Should be 'right", t)
@@ -93,7 +93,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 3 // root + main(args) + block inside
+            meta.forestSize mustBe 3 // root + main(args) + block inside
             meta.symbolsByName("x").size mustBe (2)
 
           case Left(t) => fail("Should be 'right", t)
@@ -143,7 +143,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 6
+            meta.forestSize mustBe 6
             meta.symbolsByName("offsetDateTime").size mustBe (1)
             meta.symbolsByName("fieldOfDateTime").size mustBe (1)
 
@@ -311,7 +311,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 2
+            meta.forestSize mustBe 2
             meta.symbolsByName("i").size mustBe (1)
             meta.symbolsByName("j").size mustBe (1)
             meta.symbolsByName("k").size mustBe (1)
@@ -335,7 +335,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 2
+            meta.forestSize mustBe 2
             meta.symbolsByName("a").size mustBe (1)
           case Left(t) => fail("Should be 'right", t)
       }
@@ -356,7 +356,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right(State(ast, meta)) =>
-            meta.forest.size mustBe 2
+            meta.forestSize mustBe 2
             meta.symbolsByName("x").size mustBe (1)
           case Left(t) => fail("Should be 'right", t)
       }
@@ -395,7 +395,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           case Right(State(ast, meta)) =>
             val blockStatements = ast.asInstanceOf[Block].statements
             val callExpr        = blockStatements.last.asInstanceOf[Call]
-            val callScope       = meta.scopeAsts.scope(callExpr)
+            val callScope       = meta.scopeByAST(callExpr)
 
             callScope.map(_.name) mustBe Some("a.a")
           case Left(t) => fail("Should be 'right", t)

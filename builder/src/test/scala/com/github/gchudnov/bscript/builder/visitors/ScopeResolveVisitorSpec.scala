@@ -1076,7 +1076,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
     val s1                    = BGlobals.make(ScopeBuilder.make().push())
     val s2 = v1.foldAST(s1, ast0)
 
-    val s3 = ScopeResolver.fromMeta(s2.result)
+    val s3 = s2.toResolver
     val s4 = v2.foldAST(s3, ast0)
 
     val meta = s4.result

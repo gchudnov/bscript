@@ -12,6 +12,15 @@ final class DirectorySpec extends TestSpec:
     override def clone(keyValues: Map[Key, Set[Ptr[Value]]], valueKey: Map[Ptr[Value], Key]): KeyValueDirectory =
       KeyValueDirectory(keyValues = keyValues, valueKey = valueKey)
 
+    override def addKey(key: Key): KeyValueDirectory =
+      super.addKey(key)
+
+    override def values(key: Key): List[Value] =
+      super.values(key)
+
+    override def key(value: Value): Option[Key] =
+      super.key(value)
+
   object KeyValueDirectory:
     val empty: KeyValueDirectory = KeyValueDirectory(keyValues = Map.empty[Key, Set[Ptr[Value]]], valueKey = Map.empty[Ptr[Value], Key])
 
@@ -53,10 +62,10 @@ final class DirectorySpec extends TestSpec:
 
         val ss1 = ss.link(k, v1).link(k, v2)
 
-        val actual = ss1.values(k)
+        val actual   = ss1.values(k)
         val expected = List(v1, v2)
 
-        actual must contain theSameElementsAs(expected)
+        actual must contain theSameElementsAs (expected)
       }
 
       "key can be found by value if the value was linked" in {
@@ -64,19 +73,19 @@ final class DirectorySpec extends TestSpec:
 
         val ss1 = ss.link(k, v1)
 
-        val actual = ss1.key(v1)
+        val actual   = ss1.key(v1)
         val expected = Some(k)
 
-        actual mustBe expected    
+        actual mustBe expected
       }
 
       "key cannot be found by value if the value was not linked" in {
         val v1 = Value("myFunc1")
 
-        val actual = ss.key(v1)
+        val actual   = ss.key(v1)
         val expected = None
 
-        actual mustBe expected           
+        actual mustBe expected
       }
     }
   }
