@@ -18,20 +18,23 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
   override def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver =
     ???
 
+  override def scopeFor(ast: AST): Option[Scope] = 
+    scopeAsts.scope(ast)
+
   /**
     * Resolve the reference to a symbol.
     *
     * @param sym
     * @return
     */
-  private[visitors] def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
+  override def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
       .find(_.name == sym.name)
       .orElse(forest.parentOf(start).flatMap(parent => resolve(sym, parent)))
     
 
-  private def resolveMember(sym: SymbolRef): Option[Symbol] =
+  def resolveMember(sym: SymbolRef): Option[Symbol] =
     ???
 
 //    * Resolve a symbol in the scope recursively up to the root

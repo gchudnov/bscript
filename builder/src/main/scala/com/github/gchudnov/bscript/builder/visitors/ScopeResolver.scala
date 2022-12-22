@@ -10,12 +10,17 @@ import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
+import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 /**
   * ScopeResolver
   */
 trait ScopeResolver:
   def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver
+
+  def scopeFor(ast: AST): Option[Scope]
+  def resolve(sym: SymbolRef, start: Scope): Option[Symbol]
 
   def result: Meta
 
