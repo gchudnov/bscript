@@ -24,14 +24,29 @@ final class ScopeResolverSpec extends TestSpec:
       }
     }
 
-    "symbol can be resolved" in {
+    "defined symbol" should {
+      "be resolved" in {
         val ast = VarDecl(TypeRef.i32, "x", Literal(IntVal(12)))
 
         val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast)
         val sr = sb.toResolver
 
-        val sI32 = sr.resolve(SymbolRef(TypeName.i32), sr.scopeFor(ast).get)
+        val actual = sr.resolve(SymbolRef(TypeName.i32), sr.scopeFor(ast).get)
 
-        sI32.isDefined mustBe(true)
+        actual.isDefined mustBe(true)
+      }
+    }
+
+    "undefined symbol" should {
+      "not be resolved" in {
+        val ast = VarDecl(TypeRef.i32, "x", Literal(IntVal(12)))
+
+        val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast)
+        val sr = sb.toResolver
+
+        val actual = sr.resolve(SymbolRef("custom-type"), sr.scopeFor(ast).get)
+
+        actual.isDefined mustBe(false)
+      }
     }
   }
