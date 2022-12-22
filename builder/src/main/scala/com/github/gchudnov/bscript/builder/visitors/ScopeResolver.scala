@@ -20,9 +20,10 @@ trait ScopeResolver:
   def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver
 
   // TODO: need to hide methods from the publish API, the public API should work with ScopeResolver only
-  
+
   def scopeFor(ast: AST): Option[Scope]
   def resolve(sym: SymbolRef, start: Scope): Option[Symbol]
+  def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol]
 
   def result: Meta
 
