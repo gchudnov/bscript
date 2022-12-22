@@ -63,6 +63,8 @@ final class Meta(
   scopeAsts: ScopeAsts
 ):
 
+  // TODO: IS IT POSSIBLE TO EXTRACT THESE METHODS, SO THAT META IS ONLY A CASE CLASS?
+
   def forestSize: Int = 
     forest.size
 

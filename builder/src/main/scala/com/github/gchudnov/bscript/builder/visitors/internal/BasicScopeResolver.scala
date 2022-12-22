@@ -10,16 +10,26 @@ import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
+import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.lang.symbols.Symbol
 
-final class BasicScopeResolver(scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts) extends ScopeResolver {
+final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts) extends ScopeResolver {
 
   override def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver =
     ???
 
-  private def resolve(sym: SymbolRef): Option[Symbol] =
+  /**
+    * Resolve the reference to a symbol.
+    *
+    * @param sym
+    * @return
+    */
+  private def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
     scopeSymbols
-      .scope(sym)
-    ???
+      .symbols(start)
+      .find(_.name == sym.name)
+      .orElse(forest.parentOf(start).flatMap(parent => resolve(sym, parent)))
+    
 
   private def resolveMember(sym: SymbolRef): Option[Symbol] =
     ???
@@ -57,7 +67,7 @@ final class BasicScopeResolver(scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts)
 
   override def result: Meta =
     Meta(
-      forest = ???,
+      forest = forest,
       scopeSymbols = scopeSymbols,
       scopeAsts = scopeAsts
     )
