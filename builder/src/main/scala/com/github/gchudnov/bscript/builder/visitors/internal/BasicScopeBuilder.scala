@@ -40,7 +40,7 @@ final class BasicScopeBuilder(cursor: ForestCursor[Scope], scopeSymbols: ScopeSy
         throw new BuilderException(s"Cannot define '${ast}' without any scope. Invoke .push() to create a scope first.")
 
   override def toResolver: ScopeResolver =
-    ???
+    ScopeResolver.make(cursor.forest, scopeSymbols, scopeAsts)
 
   override def result: Meta =
     Meta(

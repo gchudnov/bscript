@@ -57,32 +57,12 @@ import com.github.gchudnov.bscript.builder.state.ScopeAsts
 //   astSymbols: Map[Ptr[AST], Symbol]            //
 // )
 
-final class Meta(
+final case class Meta(
   forest: Forest[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts
-):
+)
 
-  // TODO: IS IT POSSIBLE TO EXTRACT THESE METHODS, SO THAT META IS ONLY A CASE CLASS?
-
-  def forestSize: Int = 
-    forest.size
-
-  def scopeByAST(ast: AST): Option[Scope] =
-    scopeAsts.scope(ast)
-
-  /**
-    * Find all symbols that have the given name
-    */
-  def symbolsByName(name: String): List[Symbol] =
-    scopeSymbols.symbolsByName(name)
-
-  /**
-   * Find all scopes that contain symbols with the given name
-   */
-  def scopesBySymbol(sym: SymbolRef): List[Scope] =
-    scopeSymbols.symbolsByName(sym.name)
-      .flatMap(it => scopeSymbols.scope(it).map(List(_)).getOrElse(List.empty[Scope]))
 
 object Meta:
 

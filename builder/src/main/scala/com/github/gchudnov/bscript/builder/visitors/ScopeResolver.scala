@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.builder.ScopeRef
+import com.github.gchudnov.bscript.builder.state.Forest
 
 /**
   * ScopeResolver
@@ -22,5 +23,5 @@ trait ScopeResolver:
  * ScopeResolver
  */
 object ScopeResolver:
-  def make(scopeAsts: ScopeAsts): ScopeResolver =
-    new BasicScopeResolver(scopeAsts)
+  def make(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): ScopeResolver =
+    new BasicScopeResolver(forest, scopeSymbols, scopeAsts)

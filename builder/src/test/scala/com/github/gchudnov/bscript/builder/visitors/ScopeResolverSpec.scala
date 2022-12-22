@@ -5,8 +5,8 @@ import com.github.gchudnov.bscript.builder.TestSpec
 final class ScopeResolverSpec extends TestSpec:
 
   "ScopeResolverSpec" when {
-    "xxx" should {
-      "yyy" in {
+    "no input" should {
+      "return the initial object state" in {
         
       }
     }

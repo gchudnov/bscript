@@ -4,18 +4,21 @@ import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 
-final class ScopeAsts(protected val keyValues: Map[Scope, Set[Ptr[AST]]], protected val valueKey: Map[Ptr[AST], Scope]) extends Directory[Scope, AST, ScopeAsts]:
+final case class ScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], ScopeAsts]:
   override def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): ScopeAsts =
     ScopeAsts(keyValues = keyValues, valueKey = valueKey)
 
   def addScope(scope: Scope): ScopeAsts =
     addKey(scope)
 
+  def link(scope: Scope, ast: AST): ScopeAsts =
+    set(scope, Ptr(ast))
+
   def scope(ast: AST): Option[Scope] =
-    key(ast)
+    key(Ptr(ast))
 
   def asts(scope: Scope): List[AST] =
-    values(scope)
+    values(scope).map(_.value)
 
 object ScopeAsts:
   val empty: ScopeAsts =

@@ -654,3 +654,24 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 object ScopeBuildVisitorSpec:
 
   final case class State(ast: AST, meta: Meta)
+
+  extension (m: Meta)
+    def forestSize: Int = 
+      m.forest.size
+
+    def scopeByAST(ast: AST): Option[Scope] =
+      m.scopeAsts.scope(ast)
+
+    /**
+      * Find all symbols that have the given name
+      */
+    def symbolsByName(name: String): List[Symbol] =
+      m.scopeSymbols.symbolsByName(name)
+
+    /**
+     * Find all scopes that contain symbols with the given name
+     */
+    def scopesBySymbol(sym: SymbolRef): List[Scope] =
+      m.scopeSymbols.symbolsByName(sym.name)
+        .flatMap(it => m.scopeSymbols.scope(it).map(List(_)).getOrElse(List.empty[Scope]))
+
