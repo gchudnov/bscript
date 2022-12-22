@@ -24,7 +24,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
     * @param sym
     * @return
     */
-  private def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
+  private[visitors] def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
       .find(_.name == sym.name)

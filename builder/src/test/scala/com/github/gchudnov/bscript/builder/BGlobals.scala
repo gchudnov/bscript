@@ -15,33 +15,21 @@ import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
 object BGlobals:
 
   def make(sb: ScopeBuilder): ScopeBuilder =
-    val sAuto     = SBuiltIn(TypeName.auto)
-    val sNothing  = SBuiltIn(TypeName.nothing)
-    val sVoid     = SBuiltIn(TypeName.void)
-    val sBool     = SBuiltIn(TypeName.bool)
-    val sI32      = SBuiltIn(TypeName.i32)
-    val sI64      = SBuiltIn(TypeName.i64)
-    val sF32      = SBuiltIn(TypeName.f32)
-    val sF64      = SBuiltIn(TypeName.f64)
-    val sDec      = SBuiltIn(TypeName.dec)
-    val sStr      = SBuiltIn(TypeName.str)
-    val sDate     = SBuiltIn(TypeName.date)
-    val sDatetime = SBuiltIn(TypeName.datetime)
 
     // NOTE: we're not defining any new scopes here, thus the scope should be defined before calling `.make()`
     sb
-      .define(sAuto)
-      .define(sNothing)
-      .define(sVoid)
-      .define(sBool)
-      .define(sI32)
-      .define(sI64)
-      .define(sF32)
-      .define(sF64)
-      .define(sDec)
-      .define(sStr)
-      .define(sDate)
-      .define(sDatetime)
+      .define(SBuiltIn.auto)
+      .define(SBuiltIn.nothing)
+      .define(SBuiltIn.void)
+      .define(SBuiltIn.bool)
+      .define(SBuiltIn.i32)
+      .define(SBuiltIn.i64)
+      .define(SBuiltIn.f32)
+      .define(SBuiltIn.f64)
+      .define(SBuiltIn.dec)
+      .define(SBuiltIn.str)
+      .define(SBuiltIn.date)
+      .define(SBuiltIn.datetime)
 
 //   def prelude: Block = Block(
 //     MethodDecl(
