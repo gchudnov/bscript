@@ -24,7 +24,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
     * @param ast
     * @return
     */
-  override def scopeFor(ast: AST): Option[Scope] = 
+  private[visitors] override def scopeFor(ast: AST): Option[Scope] = 
     scopeAsts.scope(ast)
 
   /**
@@ -33,7 +33,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
     * @param sym symbol reference
     * @return resolved symbol
     */
-  override def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
+  private[visitors] override def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
       .find(_.name == sym.name)
@@ -45,7 +45,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
     * @param sym symbol reference
     * @return resolved symbol
     */
-  override def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol] =
+  private[visitors] override def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(in)
       .find(_.name == sym.name)

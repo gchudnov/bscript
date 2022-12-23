@@ -19,11 +19,9 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 trait ScopeResolver:
   def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver
 
-  // TODO: need to hide methods from the publish API, the public API should work with ScopeResolver only
-
-  def scopeFor(ast: AST): Option[Scope]
-  def resolve(sym: SymbolRef, start: Scope): Option[Symbol]
-  def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol]
+  private[visitors] def scopeFor(ast: AST): Option[Scope]
+  private[visitors] def resolve(sym: SymbolRef, start: Scope): Option[Symbol]
+  private[visitors] def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol]
 
   def result: Meta
 
