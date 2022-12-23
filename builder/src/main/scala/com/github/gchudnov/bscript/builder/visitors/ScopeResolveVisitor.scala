@@ -51,24 +51,9 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       // case x @ Var(sym) =>
       //   foldOverTree(a, x)
       case x @ VarDecl(vType, name, _) =>
-        // foldOverTree(a.defineVar(a.scope(x), name, vType), x)
-        ???
+        foldOverTree(a.resolveVarDecl(name, vType, x), x)
       // case x @ Vec(_, elementType) =>
       //   foldOverTree(a, x)
-
-//   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
-//     for
-//       scope               <- s.meta.scopeFor(n).flatMap(_.asSBlock)
-//       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-//       st                  <- visitType(s, scope, n.vType)
-//       StateType(s1, vType) = st
-//       ss1                  = s1.meta.defineVarType(sVar, vType)
-//       s2                  <- n.expr.visit(s1.copy(meta = ss1), this)
-//       expr                <- s2.ast.asExpr
-//       n1                   = n.copy(vType = vType, expr = expr)
-//       ss2                  = s2.meta.redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s2.copy(ast = n1, meta = ss2)
-
 
 //   override def visit(s: ScopeResolveState, n: ArgDecl): Either[Throwable, ScopeResolveState] =
 //     for

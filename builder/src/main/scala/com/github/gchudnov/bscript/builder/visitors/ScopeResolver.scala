@@ -12,16 +12,18 @@ import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.symbols.Symbol
+import com.github.gchudnov.bscript.builder.state.VarTypes
 
 /**
   * ScopeResolver
   */
 trait ScopeResolver:
-  def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver
+
+  def resolveVarDecl(name: String, vType: Type, ast: AST): ScopeResolver
 
   private[visitors] def scopeFor(ast: AST): Option[Scope]
-  private[visitors] def resolve(sym: SymbolRef, start: Scope): Option[Symbol]
-  private[visitors] def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol]
+  private[visitors] def resolveUp(name: String, start: Scope): Option[Symbol]
+  private[visitors] def resolveIn(name: String, in: Scope): Option[Symbol]
 
   def result: Meta
 
@@ -30,4 +32,4 @@ trait ScopeResolver:
  */
 object ScopeResolver:
   def make(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): ScopeResolver =
-    new BasicScopeResolver(forest, scopeSymbols, scopeAsts)
+    new BasicScopeResolver(forest, scopeSymbols, scopeAsts, VarTypes.empty)

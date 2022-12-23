@@ -32,15 +32,15 @@ final class ScopeResolverSpec extends TestSpec:
       val sr = sb.toResolver
 
       "resolve" in {
-        val actual1 = sr.resolve(SymbolRef(TypeName.i32), sr.scopeFor(ast1).get)
-        val actual2 = sr.resolve(SymbolRef(TypeName.i32), sr.scopeFor(ast2).get)
+        val actual1 = sr.resolveUp(TypeName.i32, sr.scopeFor(ast1).get)
+        val actual2 = sr.resolveUp(TypeName.i32, sr.scopeFor(ast2).get)
 
         actual1.isDefined mustBe (true)
         actual2.isDefined mustBe (true)
       }
 
       "resolveIn" in {
-        val actual = sr.resolveIn(SymbolRef("y"), sr.scopeFor(ast2).get)
+        val actual = sr.resolveIn("y", sr.scopeFor(ast2).get)
 
         actual.isDefined mustBe (true)
       }
@@ -53,13 +53,13 @@ final class ScopeResolverSpec extends TestSpec:
       val sr = sb.toResolver
 
       "not resolve" in {
-        val actual = sr.resolve(SymbolRef("custom-type"), sr.scopeFor(ast).get)
+        val actual = sr.resolveUp("custom-type", sr.scopeFor(ast).get)
 
         actual.isDefined mustBe (false)
       }
 
       "not resolveIn" in {
-        val actual = sr.resolveIn(SymbolRef("custom-type"), sr.scopeFor(ast).get)
+        val actual = sr.resolveIn("custom-type", sr.scopeFor(ast).get)
 
         actual.isDefined mustBe (false)
       }

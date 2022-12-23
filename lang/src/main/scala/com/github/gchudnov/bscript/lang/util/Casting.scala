@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.lang.util
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SBlock, SMethod, SStruct, SVar, Symbol, Type }
 
-object Casting {}
+object Casting:
 
   // AST
   // extension (ast: AST)
@@ -62,34 +62,34 @@ object Casting {}
   //     case _: SBlock  => "Block"
   //     case _          => "?"
 
-  // // Symbol
-  // extension (sym: Symbol)
-  //   def asSVar: Either[AstException, SVar] =
-  //     sym match
-  //       case s: SVar => Right(s)
-  //       case _       => Left(new AstException(s"Cannot cast Symbol '${sym.name}' of type '${symbolKind}' to a SVar"))
+  // Symbol
+  extension (sym: Symbol)
+    def asSVar: Either[AstException, SVar] =
+      sym match
+        case s: SVar => Right(s)
+        case _       => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SVar"))
 
-  //   def asType: Either[AstException, Symbol with Type] =
-  //     sym match
-  //       case x: Type => Right(x)
-  //       case _       => Left(new AstException(s"Cannot cast Symbol '${sym.name}' of type '${symbolKind}' to a Type"))
+    def asType: Either[AstException, Symbol with Type] =
+      sym match
+        case x: Type => Right(x)
+        case _       => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to Type"))
 
   //   def asSMethod: Either[AstException, SMethod] =
   //     sym match
   //       case s: SMethod => Right(s)
-  //       case _          => Left(new AstException(s"Cannot cast Symbol '${sym.name}' of type '${symbolKind}' to a SMethod"))
+  //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SMethod"))
 
   //   def asSStruct: Either[AstException, SStruct] =
   //     sym match
   //       case s: SStruct => Right(s)
-  //       case _          => Left(new AstException(s"Cannot cast Symbol '${sym.name}' of type '${symbolKind}' to a SStruct"))
+  //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SStruct"))
 
-  //   def symbolKind: String = sym match
-  //     case _: SVar    => "SVar"
-  //     case _: SMethod => "SMethod"
-  //     case _: SStruct => "SStruct"
-  //     case _: Type    => "Type"
-  //     case _          => "?"
+    def symbolKind: String = sym match
+      case _: SVar    => "SVar"
+      case _: SMethod => "SMethod"
+      case _: SStruct => "SStruct"
+      case _: Type    => "Type"
+      case other      => s"${other.toString()}"
 
   // // Type
   // extension (t: Type)

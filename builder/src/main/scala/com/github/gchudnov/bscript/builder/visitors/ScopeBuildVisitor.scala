@@ -85,7 +85,7 @@ private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]
       case x @ Var(sym) =>
         foldOverTree(a, x)
       case x @ VarDecl(vType, name, _) =>
-        foldOverTree(a.define(SVar(name)), x)
+        foldOverTree(a.define(SVar(name)).bind(x), x)
       case x @ Vec(_, elementType) =>
         foldOverTree(a, x)
 

@@ -1,85 +1,70 @@
 package com.github.gchudnov.bscript.builder.visitors.internal
 
-import com.github.gchudnov.bscript.builder.visitors.ScopeResolver
+import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.builder.Scope
+import com.github.gchudnov.bscript.builder.ScopeRef
+import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
-import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.builder.state.VarTypes
+import com.github.gchudnov.bscript.builder.visitors.ScopeResolver
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.builder.ScopeRef
-import com.github.gchudnov.bscript.lang.symbols.TypeRef
-import com.github.gchudnov.bscript.lang.symbols.SymbolRef
-import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.lang.symbols.Symbol
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
+import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.symbols.TypeRef
+import com.github.gchudnov.bscript.lang.util.Casting
 
-final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts) extends ScopeResolver {
+final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, varTypes: VarTypes) extends ScopeResolver:
+  import Casting.*
 
-  override def defineVar(scope: ScopeRef, name: String, vType: TypeRef): ScopeResolver =
-    ???
+  override def resolveVarDecl(name: String, vType: Type, refAst: AST): ScopeResolver =
+    val (sVar, sType) = (for
+      scope        <- scopeFor(refAst).toRight(new BuilderException(s"Scope for AST '${refAst}' cannot be found"))
+      resolvedName <- resolveIn(name, scope).toRight(new BuilderException(s"Variable '${name}' cannot be resolved in scope '${scope}'"))
+      resolvedType <- resolveUp(vType.name, scope).toRight(throw new BuilderException(s"Cannot resolve the variable type '${vType}' in scope '${scope}'"))
+      sVar         <- resolvedName.asSVar
+      sType        <- resolvedType.asType
+    yield (sVar, sType)).toTry.get
+
+    new BasicScopeResolver(forest, scopeSymbols, scopeAsts, varTypes.decl(sVar, sType))
 
   /**
-    * Get scope for the given AST
-    *
-    * @param ast
-    * @return
-    */
-  private[visitors] override def scopeFor(ast: AST): Option[Scope] = 
+   * Get scope for the given AST
+   *
+   * @param ast
+   * @return
+   */
+  private[visitors] override def scopeFor(ast: AST): Option[Scope] =
     scopeAsts.scope(ast)
 
   /**
-    * Resolve the reference to a symbol, going up the scope hierarchy.
-    *
-    * @param sym symbol reference
-    * @return resolved symbol
-    */
-  private[visitors] override def resolve(sym: SymbolRef, start: Scope): Option[Symbol] =
+   * Resolve the reference to a symbol, going up the scope hierarchy.
+   *
+   * @param sym
+   *   symbol reference
+   * @return
+   *   resolved symbol
+   */
+  private[visitors] override def resolveUp(name: String, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
-      .find(_.name == sym.name)
-      .orElse(forest.parentOf(start).flatMap(parent => resolve(sym, parent)))
-    
+      .find(_.name == name)
+      .orElse(forest.parentOf(start).flatMap(parent => resolveUp(name, parent)))
+
   /**
-    * Resolve the reference to the symbol in the given scope only.
-    *
-    * @param sym symbol reference
-    * @return resolved symbol
-    */
-  private[visitors] override def resolveIn(sym: SymbolRef, in: Scope): Option[Symbol] =
+   * Resolve the reference to the symbol in the given scope only.
+   *
+   * @param sym
+   *   symbol reference
+   * @return
+   *   resolved symbol
+   */
+  private[visitors] override def resolveIn(name: String, in: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(in)
-      .find(_.name == sym.name)
-
-//    * Resolve a symbol in the scope recursively up to the root
-//    */
-//   def resolve(name: String, in: Scope): Either[ScopeStateException, Symbol] =
-//     maybeResolve(name, in)
-//       .toRight(new ScopeStateException(s"Cannot find a Symbol '${name}' starting from Scope '${in.name}'"))
-
-//   private def maybeResolve(name: String, in: Scope): Option[Symbol] =
-//     scopeSymbols
-//       .get(Ptr(in))
-//       .flatMap(_.find(_.name == name))
-//       .orElse(scopeTree.parentOf(in).flatMap(parentScope => maybeResolve(name, parentScope)))
-
-//   /**
-//    * Resolves a member of a scope by Name
-//    */
-//   def resolveMember(name: String, in: Scope): Either[ScopeStateException, Symbol] =
-//     maybeResolveMember(name, in)
-//       .toRight(new ScopeStateException(s"Cannot find a Symbol '${name}' in Scope '${in.name}'"))
-
-//   private def maybeResolveMember(name: String, in: Scope): Option[Symbol] =
-//     scopeSymbols
-//       .get(Ptr(in))
-//       .flatMap(_.find(_.name == name))
-
-
-
-  // override def scope(ast: AST): Option[Scope] =
-  //   scopeAsts.scope(ast)
-
-
+      .find(_.name == name)
 
   override def result: Meta =
     Meta(
@@ -87,5 +72,3 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
       scopeSymbols = scopeSymbols,
       scopeAsts = scopeAsts
     )
-
-}
