@@ -5,8 +5,6 @@
 - TODO: move some operations to functions
 
 
-https://docs.scala-lang.org/scala3/guides/macros/index.html
-https://eed3si9n.com/intro-to-scala-3-macros/
 https://softwaremill.com/scala-3-macros-tips-and-tricks/
 https://dotty.epfl.ch/docs/reference/metaprogramming/reflection.html
 

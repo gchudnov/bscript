@@ -5,11 +5,11 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type, Ann }
 /**
  * Method Declaration
  */
-final case class MethodDecl(retType: Type, name: String, params: Seq[ArgDecl], body: Block)
+final case class MethodDecl(retType: Type, name: String, params: List[ArgDecl], body: Block)
     extends Decl
 
 object MethodDecl:
-  def apply(retType: Type, name: String, params: Seq[ArgDecl], body: Block): MethodDecl =
+  def apply(retType: Type, name: String, params: List[ArgDecl], body: Block): MethodDecl =
     new MethodDecl(
       retType = retType,
       name = name,

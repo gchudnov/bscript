@@ -14,4 +14,4 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  * @param args
  *   A list of arguments to pass
  */
-final case class Call(id: Symbol, args: Seq[Expr]) extends Expr
+final case class Call(id: Symbol, args: List[Expr]) extends Expr
