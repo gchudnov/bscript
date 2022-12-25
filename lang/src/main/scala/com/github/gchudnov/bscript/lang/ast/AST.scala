@@ -1,5 +1,9 @@
 package com.github.gchudnov.bscript.lang.ast
 
+/**
+  * AST
+  * 
+  */
 abstract class AST
 
 abstract class Stat extends AST

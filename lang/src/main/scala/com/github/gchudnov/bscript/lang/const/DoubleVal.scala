@@ -7,4 +7,4 @@ package com.github.gchudnov.bscript.lang.const
  *   12.34
  * }}}
  */
-final case class DoubleVal(value: Double) extends ConstVal
+final case class DoubleVal(value: Double) extends Const

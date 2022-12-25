@@ -8,4 +8,4 @@ package com.github.gchudnov.bscript.lang.const
  *   true, false
  * }}}
  */
-final case class BoolVal(value: Boolean) extends ConstVal
+final case class BoolVal(value: Boolean) extends Const

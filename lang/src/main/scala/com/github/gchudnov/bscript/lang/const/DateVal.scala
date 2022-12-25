@@ -9,4 +9,4 @@ import java.time.LocalDate
  *   2021-10-12
  * }}}
  */
-final case class DateVal(value: LocalDate) extends ConstVal
+final case class DateVal(value: LocalDate) extends Const

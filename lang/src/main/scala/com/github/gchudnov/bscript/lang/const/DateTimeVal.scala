@@ -9,4 +9,4 @@ import java.time.OffsetDateTime
  *   "2007-12-03T10:15:30+01:00"
  * }}}
  */
-final case class DateTimeVal(value: OffsetDateTime) extends ConstVal
+final case class DateTimeVal(value: OffsetDateTime) extends Const

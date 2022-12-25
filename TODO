@@ -5,8 +5,9 @@
 - TODO: move some operations to functions
 
 
+https://eed3si9n.com/intro-to-scala-3-macros/
 https://softwaremill.com/scala-3-macros-tips-and-tricks/
-https://dotty.epfl.ch/docs/reference/metaprogramming/reflection.html
+
 
 https://github.com/biboudis/dotty/blob/613a4193b3c705a21209f7d63ef79ad77be02d7e/library/src/scala/tasty/reflect/TreeAccumulator.scala#L15
 

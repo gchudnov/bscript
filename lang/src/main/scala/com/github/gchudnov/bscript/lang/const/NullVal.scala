@@ -1,6 +1,4 @@
 package com.github.gchudnov.bscript.lang.const
 
-/**
- * Any Constant Variable
- */
-trait ConstVal
+
+final case class NullVal() extends Const

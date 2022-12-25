@@ -1,5 +1,5 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.const.ConstVal
+import com.github.gchudnov.bscript.lang.const.Const
 
-final case class Literal(const: ConstVal) extends Expr
+final case class Literal(const: Const) extends Expr

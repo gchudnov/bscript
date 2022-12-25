@@ -7,4 +7,4 @@ package com.github.gchudnov.bscript.lang.const
  *   3.3
  * }}}
  */
-final case class DecimalVal(value: BigDecimal) extends ConstVal
+final case class DecimalVal(value: BigDecimal) extends Const

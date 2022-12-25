@@ -1,4 +1,6 @@
 package com.github.gchudnov.bscript.lang.const
 
-
-final case class NothingVal() extends ConstVal
+/**
+ * Any Constant Variable
+ */
+trait Const

@@ -7,4 +7,4 @@ package com.github.gchudnov.bscript.lang.const
  *   12.34f
  * }}}
  */
-final case class FloatVal(value: Float) extends ConstVal
+final case class FloatVal(value: Float) extends Const

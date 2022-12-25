@@ -7,4 +7,4 @@ package com.github.gchudnov.bscript.lang.const
  *   12
  * }}}
  */
-final case class IntVal(value: Int) extends ConstVal
+final case class IntVal(value: Int) extends Const
