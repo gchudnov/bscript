@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.mirror
+package com.github.gchudnov.bscript.lang.operations
 
 import com.github.gchudnov.bscript.lang.ast.*
 
