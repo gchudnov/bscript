@@ -1,9 +1,32 @@
 package com.github.gchudnov.bscript.lang.ast
 
 /**
-  * AST
-  * 
-  */
+ * {{{
+ * AST -+
+ *      |
+ *      +- Stat -+- Decl +- MethodDecl
+ *               |       +- StructDecl
+ *               |       +- VarDecl
+ *               |
+ *               +- Expr
+ *
+ *
+ * Const -+- BoolVal
+ *        +- ByteVal
+ *        +- CharVal
+ *        +- DateTimeVal
+ *        +- DateVal
+ *        +- DecVal
+ *        +- DoubleVal
+ *        +- FloatVal
+ *        +- IntVal
+ *        +- LongVal
+ *        +- NullVal
+ *        +- ShortVal
+ *        +- StrVal
+ *        +- VoidVal
+ * }}}
+ */
 abstract class AST
 
 abstract class Stat extends AST
