@@ -19,9 +19,15 @@ import com.github.gchudnov.bscript.lang.util.Casting
 final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, varTypes: VarTypes) extends ScopeResolver:
   import Casting.*
 
-  override def resolveVarDecl(name: String, vType: Type, refAst: AST): ScopeResolver =
+  override def resolveFldDecl(name: String, fType: Type, ast: AST): ScopeResolver =
+    resolveVarDecl(name, fType, ast)
+
+  override def resolveArgDecl(name: String, aType: Type, ast: AST): ScopeResolver = 
+    resolveVarDecl(name, aType, ast)
+
+  override def resolveVarDecl(name: String, vType: Type, ast: AST): ScopeResolver =
     val (sVar, sType) = (for
-      scope        <- scopeFor(refAst).toRight(new BuilderException(s"Scope for AST '${refAst}' cannot be found"))
+      scope        <- scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
       resolvedName <- resolveIn(name, scope).toRight(new BuilderException(s"Variable '${name}' cannot be resolved in scope '${scope}'"))
       resolvedType <- resolveUp(vType.name, scope).toRight(throw new BuilderException(s"Cannot resolve the variable type '${vType}' in scope '${scope}'"))
       sVar         <- resolvedName.asSVar
@@ -36,7 +42,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
    * @param ast
    * @return
    */
-  private[visitors] override def scopeFor(ast: AST): Option[Scope] =
+  private[visitors] def scopeFor(ast: AST): Option[Scope] =
     scopeAsts.scope(ast)
 
   /**
@@ -47,7 +53,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
    * @return
    *   resolved symbol
    */
-  private[visitors] override def resolveUp(name: String, start: Scope): Option[Symbol] =
+  private[visitors] def resolveUp(name: String, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
       .find(_.name == name)
@@ -61,7 +67,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
    * @return
    *   resolved symbol
    */
-  private[visitors] override def resolveIn(name: String, in: Scope): Option[Symbol] =
+  private[visitors] def resolveIn(name: String, in: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(in)
       .find(_.name == name)

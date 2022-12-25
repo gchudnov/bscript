@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.visitors.internal.BasicScopeResolver
 import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.ScopeRef
@@ -29,7 +30,7 @@ final class ScopeResolverSpec extends TestSpec:
       val ast2 = VarDecl(TypeRef.i32, "y", Literal(IntVal(23)))
 
       val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast1).push().push().bind(ast2).define(SVar("y"))
-      val sr = sb.toResolver
+      val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
 
       "resolve" in {
         val actual1 = sr.resolveUp(TypeName.i32, sr.scopeFor(ast1).get)
@@ -50,7 +51,7 @@ final class ScopeResolverSpec extends TestSpec:
       val ast = VarDecl(TypeRef.i32, "x", Literal(IntVal(12)))
 
       val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast)
-      val sr = sb.toResolver
+      val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
 
       "not resolve" in {
         val actual = sr.resolveUp("custom-type", sr.scopeFor(ast).get)
@@ -69,7 +70,7 @@ final class ScopeResolverSpec extends TestSpec:
       val ast = Literal(IntVal(12))
 
       val sb = ScopeBuilder.make().push().bind(ast).pop()
-      val sr = sb.toResolver
+      val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
 
       "resolve if AST was bounded" in {
         val actual = sr.scopeFor(ast)

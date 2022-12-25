@@ -61,7 +61,7 @@ private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]
       case x: Access =>
         foldOverTree(a, x)
       case x @ ArgDecl(aType, name) =>
-        foldOverTree(a.define(SVar(name)), x)
+        foldOverTree(a.define(SVar(name)).bind(x), x)
       case x: Assign =>
         foldOverTree(a, x)
       case x: Block =>
@@ -73,7 +73,7 @@ private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]
       case x @ Compiled(_, retType) =>
         foldOverTree(a, x)
       case x @ FieldDecl(fType, name) =>
-        foldOverTree(a.define(SVar(name)), x)
+        foldOverTree(a.define(SVar(name)).bind(x), x)
       case x: If =>
         foldOverTree(a, x)
       case x @ Init(iType) =>

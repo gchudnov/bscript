@@ -26,8 +26,7 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
         // foldOverTree(a, x)
         ???
       case x @ ArgDecl(aType, name) =>
-        //foldOverTree(a.define(SVar(name)), x)
-        ???
+        foldOverTree(a.resolveArgDecl(name, aType, x), x)
       // case x: Assign =>
       //   foldOverTree(a, x)
       case x: Block =>
@@ -38,8 +37,8 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       //   foldOverTree(a.bind(x), x)
       // case x @ Compiled(_, retType) =>
       //   foldOverTree(a, x)
-      // case x @ FieldDecl(fType, name) =>
-      //   foldOverTree(a.define(SVar(name)), x)
+      case x @ FieldDecl(fType, name) =>
+        foldOverTree(a.resolveFldDecl(name, fType, x), x)
       // case x: If =>
       //   foldOverTree(a, x)
       case x @ Init(iType) =>
@@ -55,15 +54,16 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       // case x @ Vec(_, elementType) =>
       //   foldOverTree(a, x)
 
-//   override def visit(s: ScopeResolveState, n: ArgDecl): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: ScopeResolveState, n: FieldDecl): Either[Throwable, ScopeResolveState] =
 //     for
-//       scope               <- s.meta.scopeFor(n).flatMap(_.asSMethod)
+//       scope               <- s.meta.scopeFor(n).flatMap(_.asSStruct)
 //       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-//       st                  <- visitType(s, scope, n.aType)
-//       StateType(s1, aType) = st
-//       n1                   = n.copy(aType = aType)
-//       ss1                  = s1.meta.defineVarType(sVar, aType).redefineASTScope(n, n1).ensureNoAST(n)
+//       st                  <- visitType(s, scope, n.fType)
+//       StateType(s1, fType) = st
+//       n1                   = n.copy(fType = fType)
+//       ss1                  = s1.meta.defineVarType(sVar, st.xType).redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
+
 
 
 private[builder] object ScopeResolveVisitor:
@@ -112,16 +112,6 @@ private[builder] object ScopeResolveVisitor:
 //       t             <- iterate(s.meta, n)
 //       (ss1, (_, n1)) = t
 //     yield s.copy(meta = ss1, ast = n1)
-
-//   override def visit(s: ScopeResolveState, n: FieldDecl): Either[Throwable, ScopeResolveState] =
-//     for
-//       scope               <- s.meta.scopeFor(n).flatMap(_.asSStruct)
-//       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
-//       st                  <- visitType(s, scope, n.fType)
-//       StateType(s1, fType) = st
-//       n1                   = n.copy(fType = fType)
-//       ss1                  = s1.meta.defineVarType(sVar, st.xType).redefineASTScope(n, n1).ensureNoAST(n)
-//     yield s1.copy(ast = n1, meta = ss1)
 
 //   override def visit(s: ScopeResolveState, n: MethodDecl): Either[Throwable, ScopeResolveState] =
 //     for
