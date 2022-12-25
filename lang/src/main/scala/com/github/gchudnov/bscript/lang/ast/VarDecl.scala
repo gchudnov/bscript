@@ -5,7 +5,9 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 /**
  * Variable Declaration
  *
- * The AST for int i; would have VARDECL at the root and int and i as children.
+ * used as well for:
+ *   - Argument Declaration
+ *   - Field Declaration in a Struct
  *
  * {{{
  *   int x;

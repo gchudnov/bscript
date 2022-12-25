@@ -19,12 +19,6 @@ import com.github.gchudnov.bscript.lang.util.Casting
 final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, varTypes: VarTypes) extends ScopeResolver:
   import Casting.*
 
-  override def resolveFldDecl(name: String, fType: Type, ast: AST): ScopeResolver =
-    resolveVarDecl(name, fType, ast)
-
-  override def resolveArgDecl(name: String, aType: Type, ast: AST): ScopeResolver = 
-    resolveVarDecl(name, aType, ast)
-
   override def resolveVarDecl(name: String, vType: Type, ast: AST): ScopeResolver =
     val (sVar, sType) = (for
       scope        <- scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))

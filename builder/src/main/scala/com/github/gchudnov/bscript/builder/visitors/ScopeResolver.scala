@@ -19,8 +19,6 @@ import com.github.gchudnov.bscript.builder.state.VarTypes
   */
 trait ScopeResolver:
 
-  def resolveFldDecl(name: String, aType: Type, ast: AST): ScopeResolver
-  def resolveArgDecl(name: String, aType: Type, ast: AST): ScopeResolver
   def resolveVarDecl(name: String, vType: Type, ast: AST): ScopeResolver
 
   def result: Meta

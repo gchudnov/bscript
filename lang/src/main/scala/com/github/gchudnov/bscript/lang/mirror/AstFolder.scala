@@ -16,8 +16,6 @@ trait AstFolder[A]:
     ast match
       case Access(lhs, rhs) =>
         foldAST(foldAST(a, lhs), rhs)
-      case ArgDecl(_, _) =>
-        a
       case Assign(lhs, rhs) =>
         foldAST(foldAST(a, lhs), rhs)
       case Block(exprs) =>
@@ -27,8 +25,6 @@ trait AstFolder[A]:
       case Call(_, args) =>
         foldASTs(a, args)
       case Compiled(_, _) =>
-        a
-      case FieldDecl(_, _) =>
         a
       case If(cond, then1, else1) =>
         foldAST(foldAST(foldAST(a, cond), then1), else1)
