@@ -12,8 +12,4 @@ import com.github.gchudnov.bscript.lang.symbols.TypeRef
  *   int x; // here in AST, Init() is used to initialize the int var to 0.
  * }}}
  */
-final case class Init(iType: Type) extends Expr
-
-object Init:
-  def apply(): Init =
-    new Init(iType = TypeRef.auto)
+final case class Init() extends Expr

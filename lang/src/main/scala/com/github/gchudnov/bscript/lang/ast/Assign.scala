@@ -11,4 +11,4 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  *   x = 10 + 2; // assignment here
  * }}}
  */
-final case class Assign(id: LValue, expr: Expr) extends Expr
+final case class Assign(lhs: Ref, rhs: Expr) extends Expr

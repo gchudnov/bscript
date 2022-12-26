@@ -4,15 +4,23 @@ package com.github.gchudnov.bscript.lang.ast
  * {{{
  * AST -+
  *      |
- *      +- Stat -+- Decl +- MethodDecl
- *               |       +- StructDecl
- *               |       +- VarDecl
+ *      +- Stat -+
  *               |
  *               +- Expr +- Ref +- Access
  *                       |      +- Id
  *                       |
+ *                       +- Decl +- MethodDecl
+ *                       |       +- StructDecl
+ *                       |       +- VarDecl
+ *                       |
  *                       +- Assign
- *
+ *                       +- Block
+ *                       +- Call
+ *                       +- Compiled
+ *                       +- If
+ *                       +- Init
+ *                       +- Literal
+ *                       +- Vec // ??
  *
  * Const -+- BoolVal
  *        +- ByteVal
@@ -43,5 +51,5 @@ object AST:
         case x: Block =>
           x ++ block
         case x: Expr =>
-          Block(statements = x +: block.statements)
+          Block(exprs = x +: block.exprs)
         case _ => sys.error("Cannot prepend non-Expr to Block")

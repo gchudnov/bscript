@@ -28,14 +28,12 @@ trait AstFolder[A]:
         a
       case If(cond, then1, else1) =>
         foldAST(foldAST(foldAST(a, cond), then1), else1)
-      case Init(_) =>
+      case Init() =>
         a
       case MethodDecl(_, _, params, body) =>
         foldAST(foldASTs(a, params), body)
       case StructDecl(_, fields) =>
         foldASTs(a, fields)
-      case Var(_) =>
-        a
       case VarDecl(_, _, expr) =>
         foldAST(a, expr)
       case Vec(elems, _) =>

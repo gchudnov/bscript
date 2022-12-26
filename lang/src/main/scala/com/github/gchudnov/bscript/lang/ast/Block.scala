@@ -5,7 +5,10 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 /**
  * Block of code
  *
- * Contains zero or more statements
+ * Contains zero or more expressions
+ * 
+ * If there the block is empty, it evaluates to Void.
+ * 
  * {{{
  *   {
  *     int x;
@@ -15,27 +18,27 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  *   }
  * }}}
  *
- * @param statements
- *   Statements included in the block
+ * @param exprs
+ *   Expressions included in the block
  */
-final case class Block(statements: List[Expr]) extends Expr
+final case class Block(exprs: List[Expr]) extends Expr
 
 object Block:
 
   val empty: Block =
-    new Block(statements = List.empty[Expr])
+    new Block(exprs = List.empty[Expr])
 
-  def of(statements: Expr*): Block =
-    Block(statements.toList)
+  def of(exprs: Expr*): Block =
+    Block(exprs.toList)
 
   extension (block: Block)
     def ++(other: Block): Block =
-      Block(statements = block.statements ++ other.statements)
+      Block(exprs = block.exprs ++ other.exprs)
 
     def :+(other: AST): Block =
       other match
         case x: Block =>
           block ++ x
         case x: Expr =>
-          Block(statements = block.statements :+ x)
+          Block(exprs = block.exprs :+ x)
         case _ => sys.error("Cannot append non-Expr to Block")

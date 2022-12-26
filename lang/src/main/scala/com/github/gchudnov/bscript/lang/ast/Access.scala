@@ -14,7 +14,7 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  *
  * Given «expr».x, member need’s «expr»’s type because it must look up x with the scope of «expr».
  */
-final case class Access(a: LValue, b: LValue) extends LValue
+final case class Access(a: Ref, b: Id) extends Ref
 
 
 object Access:
@@ -27,4 +27,26 @@ object Access:
       case x: Access => List(iterate(x.a), iterate(x.b)).mkString(Access.sep)
       case x         => sys.error(s"Unsupported Type to get a Path: '${x}'")
     iterate(this)
+*/
+
+/*
+
+      ** Select a term member by symbol *
+      def apply(qualifier: Term, symbol: Symbol): Select
+
+      ** Select a field or a non-overloaded method by name
+      *
+      *  @note The method will produce an assertion error if the selected
+      *        method is overloaded. The method `overloaded` should be used
+      *        in that case.
+      *
+      def unique(qualifier: Term, name: String): Select
+
+      ** Call an overloaded method with the given type and term parameters *
+      def overloaded(qualifier: Term, name: String, targs: List[TypeRepr], args: List[Term]): Term
+
+      ** Call an overloaded method with the given type and term parameters *
+      def overloaded(qualifier: Term, name: String, targs: List[TypeRepr], args: List[Term], returnType: TypeRepr): Term
+
+
 */

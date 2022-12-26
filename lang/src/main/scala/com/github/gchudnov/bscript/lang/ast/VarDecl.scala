@@ -15,3 +15,9 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  * }}}
  */
 final case class VarDecl(vType: Type, name: String, expr: Expr) extends Decl
+
+/*
+ValDef("a", TypeIdent("Int"), Some(Wildcard())))
+
+def unapply(vdef: ValDef): (String, TypeTree, Option[Term])
+*/
