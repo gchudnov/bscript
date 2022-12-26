@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.types.TypeAST
 
 /**
  * Compile Expression to reuse functionality implemented in JVM
@@ -10,7 +11,7 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  * Depending on the interpreter, `Any` is interpreted in a
  * particular way, e.g. for `InterpretVisitor`: it is `(InterpretState) => Either[Throwable, InterpretState]`
  */
-final case class Compiled(callback: Any => Either[Throwable, Any], retType: Type) extends Expr
+final case class Compiled(callback: Any => Either[Throwable, Any], retType: TypeAST) extends Expr
 
 object Compiled:
   val identity: Any => Either[Throwable, Any] = (s: Any) => Right(s)

@@ -30,7 +30,7 @@ trait AstFolder[A]:
         foldAST(foldAST(foldAST(a, cond), then1), else1)
       case Init() =>
         a
-      case MethodDecl(_, _, params, body) =>
+      case MethodDecl(_, _, _, params, body) =>
         foldAST(foldASTs(a, params), body)
       case StructDecl(_, fields) =>
         foldASTs(a, fields)

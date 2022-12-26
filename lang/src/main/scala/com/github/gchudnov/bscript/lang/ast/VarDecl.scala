@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
+import com.github.gchudnov.bscript.lang.types.TypeAST
 
 /**
  * Variable Declaration
@@ -14,7 +15,7 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  *   float y = 10;
  * }}}
  */
-final case class VarDecl(vType: Type, name: String, expr: Expr) extends Decl
+final case class VarDecl(vType: TypeAST, name: String, expr: Expr) extends Decl
 
 /*
 ValDef("a", TypeIdent("Int"), Some(Wildcard())))
