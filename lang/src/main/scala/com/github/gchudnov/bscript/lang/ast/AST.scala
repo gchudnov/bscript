@@ -21,6 +21,7 @@ package com.github.gchudnov.bscript.lang.ast
  *                       +- Init
  *                       +- Literal
  *                       +- Vec // ??
+ *                       +- Dict // ?
  *
  * Const -+- BoolVal
  *        +- ByteVal
@@ -36,6 +37,11 @@ package com.github.gchudnov.bscript.lang.ast
  *        +- ShortVal
  *        +- StrVal
  *        +- VoidVal
+ * 
+ * TypeAST -+- Auto
+ *          +- TypeId
+ *          +- Applied
+ * 
  * }}}
  */
 abstract class AST
