@@ -12,6 +12,7 @@ package com.github.gchudnov.bscript.lang.ast
  *                       +- Decl +- MethodDecl
  *                       |       +- StructDecl
  *                       |       +- VarDecl
+ *                       |       +- TypeDecl
  *                       |
  *                       +- Assign
  *                       +- Block
