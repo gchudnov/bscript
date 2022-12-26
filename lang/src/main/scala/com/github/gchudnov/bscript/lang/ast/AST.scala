@@ -8,7 +8,10 @@ package com.github.gchudnov.bscript.lang.ast
  *               |       +- StructDecl
  *               |       +- VarDecl
  *               |
- *               +- Expr
+ *               +- Expr +- Ref +- Access
+ *                       |      +- Id
+ *                       |
+ *                       +- Assign
  *
  *
  * Const -+- BoolVal
