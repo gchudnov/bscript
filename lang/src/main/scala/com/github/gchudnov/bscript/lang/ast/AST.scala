@@ -5,25 +5,29 @@ package com.github.gchudnov.bscript.lang.ast
  * AST -+
  *      |
  *      +- Stat -+
- *               |
- *               +- Expr +- Ref +- Access
- *                       |      +- Id
- *                       |
- *                       +- Decl +- MethodDecl
- *                       |       +- StructDecl
- *                       |       +- VarDecl
- *                       |       +- TypeDecl
- *                       |
- *                       +- Assign
- *                       +- Block
- *                       +- Call
- *                       +- Compiled
- *                       +- If
- *                       +- Init
- *                       +- Literal
- *                       +- Vec // ?? TODO: check if needed, or do we want to put this type on the lib-level
- *                       +- Dict // ? TODO: check if needed
- *
+ *      |        |
+ *      |        +- Expr +- Ref +- Access
+ *      |                |      +- Id
+ *      |                |
+ *      |                +- Decl +- MethodDecl
+ *      |                |       +- StructDecl
+ *      |                |       +- VarDecl
+ *      |                |       +- TypeDecl
+ *      |                |
+ *      |                +- Assign
+ *      |                +- Block
+ *      |                +- Call
+ *      |                +- Compiled
+ *      |                +- If
+ *      |                +- Init
+ *      |                +- Literal
+ *      |                +- Vec // ?? TODO: check if needed, or do we want to put this type on the lib-level
+ *      |                +- Dict // ? TODO: check if needed
+ *      |
+ *      +- TypeAST -+- Auto
+ *                  +- TypeId
+ *                  +- Applied
+ * 
  * Const -+- BoolVal
  *        +- ByteVal
  *        +- CharVal
@@ -38,10 +42,6 @@ package com.github.gchudnov.bscript.lang.ast
  *        +- ShortVal
  *        +- StrVal
  *        +- VoidVal
- * 
- * TypeAST -+- Auto
- *          +- TypeId
- *          +- Applied
  * 
  * }}}
  */
