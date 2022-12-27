@@ -53,9 +53,9 @@ trait AstMapper {
       case a: Decl =>
         mapDecl(a)
       case a @ Assign(lhs, rhs) =>
-        ???
+        a.copy(lhs = mapRef(lhs), rhs = mapExpr(rhs))
       case a @ Block(exprs) =>
-        ???
+        a.copy(exprs = mapExprs(exprs))
       case a @ Call(id, args) =>
         ???
       case a @ Compiled(callback, retType) =>
@@ -66,13 +66,15 @@ trait AstMapper {
         ???
       case a @ Literal(const) =>
         ???
+      case other => 
+        throw new MatchError(s"Unsupported AST type: ${other}")
     }
   }
 
   def mapRef(ast: Ref): Ref = {
     ast match {
       case a @ Access(x, y) =>
-        ???
+        a.copy(a = mapRef(x), b = mapRef(y).asInstanceOf[Id])
       case a @ Id(name) =>
         a
       case other => 
@@ -99,7 +101,10 @@ trait AstMapper {
     asts.mapConserve(x => mapAST(x))
 
   def mapTypeASTs(asts: List[TypeAST]): List[TypeAST] =
-    asts.mapConserve(x => mapTypeAST(x))    
+    asts.mapConserve(x => mapTypeAST(x))
+
+  def mapExprs(asts: List[Expr]): List[Expr] =
+    asts.mapConserve(x => mapExpr(x))
 }
 
 /*
