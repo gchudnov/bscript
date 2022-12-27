@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.lang.types.TypeAST
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 /**
  * Compile Expression to reuse functionality implemented in JVM

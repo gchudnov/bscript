@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.types
+package com.github.gchudnov.bscript.lang.ast.types
 
 /**
  * Reference to a type definition with a given name

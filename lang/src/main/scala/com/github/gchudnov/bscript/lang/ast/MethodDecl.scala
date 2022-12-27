@@ -1,20 +1,20 @@
 package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.symbols.{ Ann, Symbol, Type }
-import com.github.gchudnov.bscript.lang.types.TypeAST
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 /**
  * Method Declaration
  */
-final case class MethodDecl(retType: TypeAST, name: String, tparams: List[TypeDecl], params: List[VarDecl], body: Block) extends Decl
+final case class MethodDecl(name: String, tparams: List[TypeDecl], params: List[VarDecl], retType: TypeAST, body: Block) extends Decl
 
 object MethodDecl:
-  def apply(retType: TypeAST, name: String, params: List[VarDecl], body: Block): MethodDecl =
+  def apply(name: String, params: List[VarDecl], retType: TypeAST, body: Block): MethodDecl =
     MethodDecl(
-      retType = retType,
       name = name,
       tparams = List.empty[TypeDecl],
       params = params,
+      retType = retType,
       body = body
     )
 

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.types
+package com.github.gchudnov.bscript.lang.ast.types
 
 /**
   * Inferred Type

@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.operations
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 
 /**
  * Folds AST
@@ -16,32 +17,41 @@ trait AstFolder[A]:
     ast match
       case Access(lhs, rhs) =>
         foldAST(foldAST(a, lhs), rhs)
+      case Id(_) =>
+        a
       case Assign(lhs, rhs) =>
         foldAST(foldAST(a, lhs), rhs)
       case Block(exprs) =>
         foldASTs(a, exprs)
       case Literal(_) =>
         a
-      case Call(_, args) =>
-        foldASTs(a, args)
-      case Compiled(_, _) =>
-        a
+      case Call(id, args) =>
+        foldASTs(foldAST(a, id), args)
+      case Compiled(_, retType) =>
+        foldAST(a, retType)
       case If(cond, then1, else1) =>
         foldAST(foldAST(foldAST(a, cond), then1), else1)
       case Init() =>
         a
-      case MethodDecl(_, _, _, params, body) =>
-        foldAST(foldASTs(a, params), body)
-      case StructDecl(_, fields) =>
-        foldASTs(a, fields)
-      case VarDecl(_, _, expr) =>
-        foldAST(a, expr)
-      case Vec(elems, _) =>
-        foldASTs(a, elems)
+      case MethodDecl(_, tparams, params, retType, body) =>
+        foldAST(foldAST(params.foldLeft(foldASTs(a, tparams))(foldAST), retType), body)
+      case StructDecl(_, tfields, fields) =>
+        fields.foldLeft(foldASTs(a, tfields))(foldAST)
+      case VarDecl(_, vType, expr) =>
+        foldAST(foldAST(a, vType), expr)
+      case TypeDecl(_) =>
+        a
+      case Auto() =>
+        a
+      case TypeId(_) =>
+        a
+      case Applied(aType, args) =>
+        foldASTs(foldAST(a, aType), args)
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 
 /*
+
 trait TreeAccumulator[X] {
 
   val reflect: Reflection
