@@ -21,8 +21,8 @@ package com.github.gchudnov.bscript.lang.ast
  *                       +- If
  *                       +- Init
  *                       +- Literal
- *                       +- Vec // ??
- *                       +- Dict // ?
+ *                       +- Vec // ?? TODO: check if needed, or do we want to put this type on the lib-level
+ *                       +- Dict // ? TODO: check if needed
  *
  * Const -+- BoolVal
  *        +- ByteVal

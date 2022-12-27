@@ -1,8 +1,9 @@
 package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.mirror.AstFolder
+import com.github.gchudnov.bscript.lang.func.AstFolder
 
 /**
  * (1-PASS)
@@ -60,29 +61,35 @@ private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]
     ast match
       case x: Access =>
         foldOverTree(a, x)
+      case x @ Id(name) =>
+        foldOverTree(a, x)
       case x: Assign =>
         foldOverTree(a, x)
       case x: Block =>
         foldOverTree(a.push(), x).pop()
-      case x @ Literal(_) =>
+      case x @ Literal(const) =>
         foldOverTree(a, x)
       case x @ Call(id, args) =>
         foldOverTree(a.bind(x), x)
-      case x @ Compiled(_, retType) =>
+      case x @ Compiled(callback, retType) =>
         foldOverTree(a, x)
       case x: If =>
         foldOverTree(a, x)
-      case x @ Init(iType) =>
+      case x @ Init() =>
         foldOverTree(a, x)
-      case x @ MethodDecl(retType, name, _, _) =>
+      case x @ MethodDecl(name, tparams, params, retType, body) =>
         foldOverTree(a.define(SMethod(name)).push(), x).pop()
-      case x @ StructDecl(name, _) =>
+      case x @ StructDecl(name, tfields, fields) =>
         foldOverTree(a.define(SStruct(name)).push(), x).pop()
-      case x @ Var(sym) =>
-        foldOverTree(a, x)
-      case x @ VarDecl(vType, name, _) =>
+      case x @ VarDecl(name, vType, expr) =>
         foldOverTree(a.define(SVar(name)).bind(x), x)
-      case x @ Vec(_, elementType) =>
+      case x @ TypeDecl(name) =>
+        foldOverTree(a.define(SVar(name)).bind(x), x)
+      case x @ Auto() =>
+        foldOverTree(a, x)
+      case x @ TypeId(_) =>
+        foldOverTree(a, x)
+      case x @ Applied(aType, args) =>
         foldOverTree(a, x)
 
 private[builder] object ScopeBuildVisitor:
