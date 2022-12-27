@@ -13,45 +13,45 @@ import com.github.gchudnov.bscript.lang.ast.types.*
   */
 trait AstMapper {
 
-  def mapOverAST(ast: AST): AST = {
+  def mapAST(ast: AST): AST = {
     ast match {
       case a: Stat =>
-        mapOverStat(a)
+        mapStat(a)
       case a: TypeAST =>
-        mapOverTypeAST(a)
+        mapTypeAST(a)
       case other => 
         throw new MatchError(s"Unsupported AST type: ${other}")
     }
   }
 
-  def mapOverStat(ast: Stat): Stat = {
+  def mapStat(ast: Stat): Stat = {
     ast match {
       case a: Expr =>
-        mapOverExpr(a)
+        mapExpr(a)
       case other => 
         throw new MatchError(s"Unsupported AST type: ${other}")
     }
   }
 
-  def mapOverTypeAST(ast: TypeAST): TypeAST = {
+  def mapTypeAST(ast: TypeAST): TypeAST = {
     ast match {
       case a @ Auto() =>
-        ???
+        ast
       case a @ TypeId(name) =>
-        ???
+        a
       case a @ Applied(aType, args) =>
-        ???
+        a.copy(aType = mapTypeAST(aType), args = mapTypeASTs(args))
       case other => 
         throw new MatchError(s"Unsupported AST type: ${other}")
     }
   }
 
-  def mapOverExpr(ast: Expr): Expr = {
+  def mapExpr(ast: Expr): Expr = {
     ast match {
       case a: Ref =>
-        mapOverRef(a)
+        mapRef(a)
       case a: Decl =>
-        mapOverDecl(a)
+        mapDecl(a)
       case a @ Assign(lhs, rhs) =>
         ???
       case a @ Block(exprs) =>
@@ -69,7 +69,7 @@ trait AstMapper {
     }
   }
 
-  def mapOverRef(ast: Ref): Ref = {
+  def mapRef(ast: Ref): Ref = {
     ast match {
       case a @ Access(x, y) =>
         ???
@@ -80,7 +80,7 @@ trait AstMapper {
     }
   }
 
-  def mapOverDecl(ast: Decl): Decl = {
+  def mapDecl(ast: Decl): Decl = {
     ast match {
       case a @ MethodDecl(name, tparams, params, retType, body) =>
         ???
@@ -95,6 +95,11 @@ trait AstMapper {
     }
   }
 
+  def mapASTs(asts: List[AST]): List[AST] =
+    asts.mapConserve(x => mapAST(x))
+
+  def mapTypeASTs(asts: List[TypeAST]): List[TypeAST] =
+    asts.mapConserve(x => mapTypeAST(x))    
 }
 
 /*
