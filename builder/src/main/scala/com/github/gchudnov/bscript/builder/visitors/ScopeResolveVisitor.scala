@@ -37,7 +37,7 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       //   foldOverTree(a, x)
       // case x: If =>
       //   foldOverTree(a, x)
-      case x @ Init(iType) =>
+      case x @ Init() =>
         foldOverTree(a, x)
       // case x @ MethodDecl(retType, name, _, _) =>
       //   foldOverTree(a.define(SMethod(name)).push(), x).pop()
@@ -45,7 +45,7 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       //   foldOverTree(a.define(SStruct(name)).push(), x).pop()
       // case x @ Var(sym) =>
       //   foldOverTree(a, x)
-      case x @ VarDecl(vType, name, _) =>
+      case x @ VarDecl(name, vType, expr) =>
         foldOverTree(a.resolveVarDecl(name, vType, x), x)
       // case x @ Vec(_, elementType) =>
       //   foldOverTree(a, x)

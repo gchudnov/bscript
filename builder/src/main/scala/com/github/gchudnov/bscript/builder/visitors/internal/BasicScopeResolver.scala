@@ -15,20 +15,22 @@ import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.lang.util.Casting
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, varTypes: VarTypes) extends ScopeResolver:
   import Casting.*
 
-  override def resolveVarDecl(name: String, vType: Type, ast: AST): ScopeResolver =
-    val (sVar, sType) = (for
-      scope        <- scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
-      resolvedName <- resolveIn(name, scope).toRight(new BuilderException(s"Variable '${name}' cannot be resolved in scope '${scope}'"))
-      resolvedType <- resolveUp(vType.name, scope).toRight(throw new BuilderException(s"Cannot resolve the variable type '${vType}' in scope '${scope}'"))
-      sVar         <- resolvedName.asSVar
-      sType        <- resolvedType.asType
-    yield (sVar, sType)).toTry.get
+  override def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolver =
+    // val (sVar, sType) = (for
+    //   scope        <- scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
+    //   resolvedName <- resolveIn(name, scope).toRight(new BuilderException(s"Variable '${name}' cannot be resolved in scope '${scope}'"))
+    //   resolvedType <- resolveUp(vType.name, scope).toRight(throw new BuilderException(s"Cannot resolve the variable type '${vType}' in scope '${scope}'"))
+    //   sVar         <- resolvedName.asSVar
+    //   sType        <- resolvedType.asType
+    // yield (sVar, sType)).toTry.get
 
-    new BasicScopeResolver(forest, scopeSymbols, scopeAsts, varTypes.decl(sVar, sType))
+    // new BasicScopeResolver(forest, scopeSymbols, scopeAsts, varTypes.decl(sVar, sType))
+    ???
 
   /**
    * Get scope for the given AST

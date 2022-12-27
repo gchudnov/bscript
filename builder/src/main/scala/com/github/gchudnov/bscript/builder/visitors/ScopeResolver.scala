@@ -13,13 +13,14 @@ import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.VarTypes
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 /**
   * ScopeResolver
   */
 trait ScopeResolver:
 
-  def resolveVarDecl(name: String, vType: Type, ast: AST): ScopeResolver
+  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolver
 
   def result: Meta
 
