@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.TestSpec
 // import com.github.gchudnov.bscript.builder.internal.MetaOps.findMember
-import com.github.gchudnov.bscript.lang.ast.{ ArgDecl, Block as AstBlock, MethodDecl }
+import com.github.gchudnov.bscript.lang.ast.{ VarDecl, Block as AstBlock, MethodDecl }
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.util.Ptr
 
