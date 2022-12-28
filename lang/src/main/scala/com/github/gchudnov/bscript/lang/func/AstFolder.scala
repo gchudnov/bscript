@@ -18,7 +18,7 @@ trait AstFolder[A]:
   def foldASTs(a: A, asts: Iterable[AST]): A =
     asts.foldLeft(a)(foldAST)
 
-  def foldOverTree(a: A, ast: AST): A =
+  def foldOverAST(a: A, ast: AST): A =
     ast match
       case Access(lhs, rhs) =>
         foldAST(foldAST(a, lhs), rhs)
