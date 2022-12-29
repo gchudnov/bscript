@@ -1,6 +1,13 @@
 
 - TODO: add generics? (a primitive ones)
 
+- TODO: fix tests
+- TODO: ANNOTATIONS -- how to add them to AST? should they be in AST in the first place
+- TODO: example:
+  - add(int, int)
+  - add(double, int)
+  - add(string, int)  
+
 - TODO: reduce size of AST by extracting extra params to meta
 - TODO: move some operations to functions
 

@@ -8,6 +8,7 @@ import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
 
 final class ScopeResolverSpec extends TestSpec:
@@ -26,8 +27,8 @@ final class ScopeResolverSpec extends TestSpec:
     }
 
     "defined symbol" should {
-      val ast1 = VarDecl(TypeRef.i32, "x", Literal(IntVal(12)))
-      val ast2 = VarDecl(TypeRef.i32, "y", Literal(IntVal(23)))
+      val ast1 = VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(12)))
+      val ast2 = VarDecl("y", TypeId(TypeName.i32), Literal(IntVal(23)))
 
       val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast1).push().push().bind(ast2).define(SVar("y"))
       val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
@@ -48,7 +49,7 @@ final class ScopeResolverSpec extends TestSpec:
     }
 
     "undefined symbol" should {
-      val ast = VarDecl(TypeRef.i32, "x", Literal(IntVal(12)))
+      val ast = VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(12)))
 
       val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast)
       val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]

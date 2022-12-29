@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.symbols.TypeRef
 /**
  * Initialization Node
  *
- * Used to init variable to the default value.
+ * Used to init variable to the default value (wildcard).
  *
  * {{{
  *   int x; // here in AST, Init() is used to initialize the int var to 0.
