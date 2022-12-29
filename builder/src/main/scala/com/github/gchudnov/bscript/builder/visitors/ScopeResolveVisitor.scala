@@ -23,32 +23,32 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
   override def foldAST(a: ScopeResolver, ast: AST): ScopeResolver =
     ast match
       case x: Access =>
-        // foldOverTree(a, x)
+        // foldOverAST(a, x)
         ???
       // case x: Assign =>
-      //   foldOverTree(a, x)
+      //   foldOverAST(a, x)
       case x: Block =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       // case x @ Literal(_) =>
-      //   foldOverTree(a, x)
+      //   foldOverAST(a, x)
       // case x @ Call(id, args) =>
-      //   foldOverTree(a.bind(x), x)
+      //   foldOverAST(a.bind(x), x)
       // case x @ Compiled(_, retType) =>
-      //   foldOverTree(a, x)
+      //   foldOverAST(a, x)
       // case x: If =>
-      //   foldOverTree(a, x)
+      //   foldOverAST(a, x)
       case x @ Init() =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       // case x @ MethodDecl(retType, name, _, _) =>
-      //   foldOverTree(a.define(SMethod(name)).push(), x).pop()
+      //   foldOverAST(a.define(SMethod(name)).push(), x).pop()
       // case x @ StructDecl(name, _) =>
-      //   foldOverTree(a.define(SStruct(name)).push(), x).pop()
+      //   foldOverAST(a.define(SStruct(name)).push(), x).pop()
       // case x @ Var(sym) =>
-      //   foldOverTree(a, x)
+      //   foldOverAST(a, x)
       case x @ VarDecl(name, vType, expr) =>
-        foldOverTree(a.resolveVarDecl(name, vType, x), x)
+        foldOverAST(a.resolveVarDecl(name, vType, x), x)
       // case x @ Vec(_, elementType) =>
-      //   foldOverTree(a, x)
+      //   foldOverAST(a, x)
 
 private[builder] object ScopeResolveVisitor:
 

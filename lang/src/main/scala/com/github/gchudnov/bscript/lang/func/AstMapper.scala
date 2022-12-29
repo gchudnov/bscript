@@ -79,7 +79,7 @@ trait AstMapper:
       case a @ StructDecl(name, tfields, fields) =>
         a.copy(tfields = mapAs(tfields), fields = mapAs(fields))
       case a @ VarDecl(name, vType, expr) =>
-        a.copy(vType = mapTypeAST(vType), mapExpr(expr))
+        a.copy(vType = mapTypeAST(vType), expr = mapExpr(expr))
       case a @ TypeDecl(name) =>
         a
       case other =>

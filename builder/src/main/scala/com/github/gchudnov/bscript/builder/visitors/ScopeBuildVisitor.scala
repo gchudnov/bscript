@@ -60,37 +60,37 @@ private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]
   override def foldAST(a: ScopeBuilder, ast: AST): ScopeBuilder =
     ast match
       case x: Access =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x @ Id(name) =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x: Assign =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x: Block =>
-        foldOverTree(a.push(), x).pop()
+        foldOverAST(a.push(), x).pop()
       case x @ Literal(const) =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x @ Call(id, args) =>
-        foldOverTree(a.bind(x), x)
+        foldOverAST(a.bind(x), x)
       case x @ Compiled(callback, retType) =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x: If =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x @ Init() =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x @ MethodDecl(name, tparams, params, retType, body) =>
-        foldOverTree(a.define(SMethod(name)).push(), x).pop()
+        foldOverAST(a.define(SMethod(name)).push(), x).pop()
       case x @ StructDecl(name, tfields, fields) =>
-        foldOverTree(a.define(SStruct(name)).push(), x).pop()
+        foldOverAST(a.define(SStruct(name)).push(), x).pop()
       case x @ VarDecl(name, vType, expr) =>
-        foldOverTree(a.define(SVar(name)).bind(x), x)
+        foldOverAST(a.define(SVar(name)).bind(x), x)
       case x @ TypeDecl(name) =>
-        foldOverTree(a.define(SVar(name)).bind(x), x)
+        foldOverAST(a.define(SVar(name)).bind(x), x)
       case x @ Auto() =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x @ TypeId(_) =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
       case x @ Applied(aType, args) =>
-        foldOverTree(a, x)
+        foldOverAST(a, x)
 
 private[builder] object ScopeBuildVisitor:
 
