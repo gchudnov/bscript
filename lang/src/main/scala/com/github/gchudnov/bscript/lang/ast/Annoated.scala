@@ -8,13 +8,23 @@ package com.github.gchudnov.bscript.lang.ast
   * {{{
   *   @f(...params)
   *   expr
+  * }}}
   * 
   *   is equivalent to:
-  * 
+
+  * {{{
   *   f(expr, ...params)
   * }}}
   * 
-  * The annotation should be evaluated on the compile time and excluded from the late stages of the compilation.
+  *   that produces:
+
+  * {{{
+  *   expr1
+  * }}}
+  * 
+  * And replaces the original `expr` during compilation.
+  * 
+  * The annotation is evaluated on the compile time.
   * 
   * @param expr Code the annotation attached to
   * @param id Annotation reference
