@@ -85,7 +85,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
         val t = MethodDecl(
           "myFunc",
           List.empty[TypeDecl],
-          List(VarDecl("x", TypeId(TypeName.i32), Init())),
+          List(VarDecl("x", TypeId(TypeName.i32))),
           TypeId(TypeName.i32),
           Block.of(
             VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
@@ -122,9 +122,9 @@ final class ScopeBuildVisitorSpec extends TestSpec:
             "offsetDateTime",
             List.empty[TypeDecl],
             List(
-              VarDecl("value", TypeId(TypeName.datetime), Init()),
-              VarDecl("offset", TypeId(TypeName.i32), Init()),
-              VarDecl("unit", TypeId(TypeName.str), Init())
+              VarDecl("value", TypeId(TypeName.datetime)),
+              VarDecl("offset", TypeId(TypeName.i32)),
+              VarDecl("unit", TypeId(TypeName.str))
             ),
             TypeId(TypeName.datetime),
             Block.of(
@@ -135,8 +135,8 @@ final class ScopeBuildVisitorSpec extends TestSpec:
             "fieldOfDateTime",
             List.empty[TypeDecl],
             List(
-              VarDecl("value", TypeId(TypeName.datetime), Init()),
-              VarDecl("unit", TypeId(TypeName.str), Init())
+              VarDecl("value", TypeId(TypeName.datetime)),
+              VarDecl("unit", TypeId(TypeName.str))
             ),
             TypeId(TypeName.i32),
             Block.of(
@@ -154,7 +154,177 @@ final class ScopeBuildVisitorSpec extends TestSpec:
 
           case Left(t) => fail("Should be 'right", t)
       }
-    }
+
+      /**
+        * {{{
+        *   int +(lhs: int, rhs: int) {
+        *     // ...
+        *   }
+        * 
+        *   2 + 3
+        * }}}
+        */
+      "be invoked for +(int, int): int" in {
+        val t = Block.of(
+          MethodDecl(
+            "+",
+            List.empty[TypeDecl],
+            List(
+              VarDecl("lhs", TypeId(TypeName.i32)),
+              VarDecl("rhs", TypeId(TypeName.i32)),
+            ),
+            TypeId(TypeName.i32),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
+            )
+          ),
+          Call(Id("+"), List(Literal(IntVal(2)), Literal(IntVal(3))))       
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.symbolsByName("+").size mustBe (1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }
+
+      /**
+        * {{{
+        *   double +(lhs: double, rhs: int) {
+        *     // ...
+        *   }
+        * 
+        *   1.0 + 3
+        * }}}
+        */
+      "be invoked for +(double, int): double" in {
+        val t = Block.of(
+          MethodDecl(
+            "+",
+            List.empty[TypeDecl],
+            List(
+              VarDecl("lhs", TypeId(TypeName.f64)),
+              VarDecl("rhs", TypeId(TypeName.i32)),
+            ),
+            TypeId(TypeName.f64),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64))
+            )
+          ), 
+          Call(Id("+"), List(Literal(DoubleVal(1.0)), Literal(IntVal(3))))       
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.symbolsByName("+").size mustBe (1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }
+
+      /**
+        * {{{
+        *   int +(lhs: int, rhs: int) {
+        *     // ...
+        *   }
+        * 
+        *   "abc" + 3  // incorrect, but it is reported later during compilation on the next phases
+        * }}}
+        */
+      "be invoked for `+(int, int): int` with an invalid argument" in {
+        val t = Block.of(
+          MethodDecl(
+            "+",
+            List.empty[TypeDecl],
+            List(
+              VarDecl("lhs", TypeId(TypeName.i32)),
+              VarDecl("rhs", TypeId(TypeName.i32)),
+            ),
+            TypeId(TypeName.i32),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
+            )
+          ),
+          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))       
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.symbolsByName("+").size mustBe (1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }
+
+      /**
+        * {{{
+        *   T +[T](lhs: T, rhs: T) {
+        *     // ...
+        *   }
+        * 
+        *   4 + 3
+        * }}}
+        */
+      "be invoked for +(T, T): T" in {
+        val t = Block.of(
+          MethodDecl(
+            "+",
+            List(TypeDecl("T")),
+            List(
+              VarDecl("lhs", TypeId("T")),
+              VarDecl("rhs", TypeId("T")),
+            ),
+            TypeId("T"),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeId("T"))
+            )
+          ),
+          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))       
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.symbolsByName("+").size mustBe (1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }      
+
+      /**
+        * {{{
+        *   R +[R, T, U](lhs: T, rhs: U) {
+        *     // ...
+        *   }
+        * 
+        *   4 + 3
+        * }}}
+        */
+      "be invoked for +(T, U): R" in {
+        val t = Block.of(
+          MethodDecl(
+            "+",
+            List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
+            List(
+              VarDecl("lhs", TypeId("T")),
+              VarDecl("rhs", TypeId("U")),
+            ),
+            TypeId("R"),
+            Block.of(
+              Compiled(callback = Compiled.identity, retType = TypeId("R"))
+            )
+          ),
+          Call(Id("+"), List(Literal(IntVal(4)), Literal(IntVal(3))))       
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(State(ast, meta)) =>
+            meta.symbolsByName("+").size mustBe (1)
+
+          case Left(t) => fail("Should be 'right", t)
+      }      
+    }    
 
     "type-declarations" should {
 
@@ -385,8 +555,8 @@ final class ScopeBuildVisitorSpec extends TestSpec:
             "printf",
             List.empty[TypeDecl],
             List(
-              VarDecl("format", TypeId(TypeName.str), Init()),
-              VarDecl("value", Auto(), Init())
+              VarDecl("format", TypeId(TypeName.str)),
+              VarDecl("value", Auto())
             ),
             TypeId(TypeName.void),
             Block.empty
@@ -496,18 +666,18 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        */
       "define related symbols in scopes" in {
         val t = Block.of(
-          StructDecl("B", List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32), Init()))),
-          StructDecl("C", List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32), Init()))),
-          StructDecl("A", List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32), Init()), VarDecl("b", TypeId("B"), Init()), VarDecl("c", TypeId("C"), Init()))),
-          VarDecl("a", TypeId("A"), Init()),
+          StructDecl("B", List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32)))),
+          StructDecl("C", List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32)))),
+          StructDecl("A", List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("b", TypeId("B")), VarDecl("c", TypeId("C")))),
+          VarDecl("a", TypeId("A")),
           MethodDecl(
             "f",
             List.empty[TypeDecl],
             List.empty[VarDecl],
             TypeId(TypeName.void),
             Block.of(
-              StructDecl("D", List(VarDecl("i", TypeId(TypeName.i32), Init()))),
-              VarDecl("d", TypeId("D"), Init()),
+              StructDecl("D", List(VarDecl("i", TypeId(TypeName.i32)))),
+              VarDecl("d", TypeId("D")),
               Assign(
                 Access(Id("d"), Id("i")),
                 Access(Access(Id("a"), Id("b")), Id("y"))
@@ -555,8 +725,8 @@ final class ScopeBuildVisitorSpec extends TestSpec:
        */
       "initialize with an anonymous struct" in {
         val t = Block.of(
-          StructDecl("B", List(VarDecl("y", TypeId(TypeName.i32), Init()))),
-          StructDecl("A", List(VarDecl("x", TypeId(TypeName.i32), Init()), VarDecl("s", TypeId(TypeName.str), Init()), VarDecl("b", TypeId("B"), Init()))),
+          StructDecl("B", List(VarDecl("y", TypeId(TypeName.i32)))),
+          StructDecl("A", List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B")))),
           // VarDecl( TODO: THIS CODE SHOULD NOT BE COMMENTED-OUT, CHECK HOW TO INIT A STRUCT
           //   "a",
           //   TypeId("A"),
@@ -609,7 +779,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           MethodDecl(
             "g",
             List.empty[TypeDecl],
-            List(VarDecl("x", TypeId(TypeName.i32), Init())),
+            List(VarDecl("x", TypeId(TypeName.i32))),
             TypeId(TypeName.void),
             Block.of(
               VarDecl("z", TypeId(TypeName.i32), Literal(IntVal(2)))
@@ -618,7 +788,7 @@ final class ScopeBuildVisitorSpec extends TestSpec:
           MethodDecl(
             "f",
             List.empty[TypeDecl],
-            List(VarDecl("x", TypeId(TypeName.i32), Init())),
+            List(VarDecl("x", TypeId(TypeName.i32))),
             TypeId(TypeName.void),
             Block.of(
               VarDecl("y", TypeId(TypeName.i32), Literal(IntVal(1))),

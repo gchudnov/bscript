@@ -17,6 +17,10 @@ import com.github.gchudnov.bscript.lang.ast.types.TypeAST
  */
 final case class VarDecl(name: String, vType: TypeAST, expr: Expr) extends Decl
 
+object VarDecl:
+  def apply(name: String, vType: TypeAST): VarDecl =
+    VarDecl(name = name, vType = vType, expr = Init())
+
 /*
 ValDef("a", TypeIdent("Int"), Some(Wildcard())))
 

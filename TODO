@@ -1,13 +1,15 @@
 
 - TODO: add generics? (a primitive ones)
 
+- TODO: add RetType(methodId), DeclType(expr) ???
+
 - TODO: fix tests
 - TODO: example:
-  - add(int, int)
-  - add(double, int)
-  - add(string, int)  
-  - add[T]
-  - add[T, U]
+  - add(int, int) -- +
+  - add(double, int) --- +
+  - add(string, int) -- +
+  - add[T] -- +
+  - someFunc[T, U] -- +
 
 - TODO: reduce size of AST by extracting extra params to meta
 - TODO: move some operations to functions
