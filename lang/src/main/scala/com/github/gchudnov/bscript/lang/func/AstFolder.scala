@@ -6,10 +6,6 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 /**
  * Folds AST
  * 
- * Usage:
- * {{{
- *
- * }}}
  */
 trait AstFolder[A]:
 

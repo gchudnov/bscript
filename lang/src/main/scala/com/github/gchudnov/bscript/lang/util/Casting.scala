@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.lang.util
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.symbols.{ DeclType, SBlock, SMethod, SStruct, SVar, Symbol, Type }
+import com.github.gchudnov.bscript.lang.symbols.{ SBlock, SMethod, SStruct, SVar, Symbol, Type }
 
 object Casting:
 

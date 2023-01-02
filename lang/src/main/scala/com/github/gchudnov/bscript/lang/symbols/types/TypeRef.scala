@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.symbols
+package com.github.gchudnov.bscript.lang.symbols.types
 
 import com.github.gchudnov.bscript.lang.types.TypeName
 
@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.types.TypeName
  * @param name
  *   Name of the type that is defined in one of the scopes
  */
-final case class TypeRef(name: String) extends Type
+final case class TypeRef(name: String) extends NamedType
 
 object TypeRef:
   val auto: TypeRef     = TypeRef(TypeName.auto)

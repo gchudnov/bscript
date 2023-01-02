@@ -1,11 +1,14 @@
-package com.github.gchudnov.bscript.lang.ast.types
+package com.github.gchudnov.bscript.lang.symbols.types
+
+import com.github.gchudnov.bscript.lang.symbols.Type
 
 /**
-  * Type Application in the AST
-  * 
   * Given type T and a list of types T1,T2..Tn, constructs T[T1,T2,...Tn]
+  * 
+  * @param t type T
+  * @param args type arguments
   */
-final case class Applied(aType: TypeAST, args: List[TypeAST]) extends TypeAST
+final case class AppliedType(t: Type, args: List[Type])
 
 /*
 Map[Int, String]
