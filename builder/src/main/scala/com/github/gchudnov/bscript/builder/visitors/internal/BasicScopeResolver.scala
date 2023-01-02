@@ -13,7 +13,7 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.symbols.Type
-import com.github.gchudnov.bscript.lang.symbols.TypeRef
+import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 import com.github.gchudnov.bscript.lang.util.Casting
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 

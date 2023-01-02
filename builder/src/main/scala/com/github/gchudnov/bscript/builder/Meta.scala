@@ -1,7 +1,8 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, Type, TypeRef, SymbolRef }
+import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, Type, SymbolRef }
+import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.types.TypeName
