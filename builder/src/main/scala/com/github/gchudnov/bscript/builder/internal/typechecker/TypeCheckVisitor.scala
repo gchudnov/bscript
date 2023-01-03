@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.internal
+package com.github.gchudnov.bscript.builder.internal.typechecker
 
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*

@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
-import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
+import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
 /**
   * Globals for building

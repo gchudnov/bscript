@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.Meta
@@ -12,6 +12,7 @@ import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 
+import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 final class ScopeBuilderSpec extends TestSpec:
 
   "ScopeBuilderSpec" when {

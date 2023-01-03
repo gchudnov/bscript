@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.visitors.internal.BasicScopeResolver
-import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
+import com.github.gchudnov.bscript.builder.internal.scoperesolver.BasicScopeResolver
+import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.*

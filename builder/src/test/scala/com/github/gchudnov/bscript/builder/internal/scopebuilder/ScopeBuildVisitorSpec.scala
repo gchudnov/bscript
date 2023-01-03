@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.internal.scopebuilder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
@@ -11,7 +11,9 @@ import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 
-/**
+import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
+
+import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor/**
  * ScopeBuildVisitorSpec
  */
 final class ScopeBuildVisitorSpec extends TestSpec:

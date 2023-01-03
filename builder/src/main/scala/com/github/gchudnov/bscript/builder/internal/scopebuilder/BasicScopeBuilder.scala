@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.internal
+package com.github.gchudnov.bscript.builder.internal.scopebuilder
 
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.builder.state.Forest
@@ -7,7 +7,7 @@ import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.builder.state.ForestCursor
 import com.github.gchudnov.bscript.lang.symbols.Symbol
-import com.github.gchudnov.bscript.builder.visitors.ScopeBuilder
+import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.lang.ast.AST

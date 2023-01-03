@@ -1,10 +1,11 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.internal.scopebuilder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
+import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 /**
  * (1-PASS)
  *

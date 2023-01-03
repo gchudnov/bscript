@@ -1,9 +1,10 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.internal.scoperesolver
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
+import com.github.gchudnov.bscript.builder.internal.ScopeResolver
 /**
  * (2-PASS)
  * 

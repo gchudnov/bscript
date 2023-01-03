@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.internal
 
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
-import com.github.gchudnov.bscript.builder.visitors.internal.BasicScopeResolver
+import com.github.gchudnov.bscript.builder.internal.scoperesolver.BasicScopeResolver
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.Scope

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.visitors.internal
+package com.github.gchudnov.bscript.builder.internal.scoperesolver
 
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.builder.Meta
