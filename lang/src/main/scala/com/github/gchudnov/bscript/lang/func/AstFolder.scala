@@ -7,47 +7,47 @@ import com.github.gchudnov.bscript.lang.ast.types.*
  * Folds AST
  * 
  */
-trait AstFolder[A]:
+trait AstFolder[S]:
 
-  def foldAST(a: A, ast: AST): A
+  def foldAST(s: S, ast: AST): S
 
-  def foldASTs(a: A, asts: Iterable[AST]): A =
-    asts.foldLeft(a)(foldAST)
+  def foldASTs(s: S, asts: Iterable[AST]): S =
+    asts.foldLeft(s)(foldAST)
 
-  def foldOverAST(a: A, ast: AST): A =
+  def foldOverAST(s: S, ast: AST): S =
     ast match
       case Access(lhs, rhs) =>
-        foldAST(foldAST(a, lhs), rhs)
+        foldAST(foldAST(s, lhs), rhs)
       case Id(_) =>
-        a
+        s
       case Assign(lhs, rhs) =>
-        foldAST(foldAST(a, lhs), rhs)
+        foldAST(foldAST(s, lhs), rhs)
       case Block(exprs) =>
-        foldASTs(a, exprs)
+        foldASTs(s, exprs)
       case Literal(_) =>
-        a
+        s
       case Call(id, args) =>
-        foldASTs(foldAST(a, id), args)
+        foldASTs(foldAST(s, id), args)
       case Compiled(_, retType) =>
-        foldAST(a, retType)
+        foldAST(s, retType)
       case If(cond, then1, else1) =>
-        foldAST(foldAST(foldAST(a, cond), then1), else1)
+        foldAST(foldAST(foldAST(s, cond), then1), else1)
       case Init() =>
-        a
+        s
       case MethodDecl(_, tparams, params, retType, body) =>
-        foldAST(foldAST(params.foldLeft(foldASTs(a, tparams))(foldAST), retType), body)
+        foldAST(foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), retType), body)
       case StructDecl(_, tfields, fields) =>
-        fields.foldLeft(foldASTs(a, tfields))(foldAST)
+        fields.foldLeft(foldASTs(s, tfields))(foldAST)
       case VarDecl(_, vType, expr) =>
-        foldAST(foldAST(a, vType), expr)
+        foldAST(foldAST(s, vType), expr)
       case TypeDecl(_) =>
-        a
+        s
       case Auto() =>
-        a
+        s
       case TypeId(_) =>
-        a
+        s
       case Applied(aType, args) =>
-        foldASTs(foldAST(a, aType), args)
+        foldASTs(foldAST(s, aType), args)
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 

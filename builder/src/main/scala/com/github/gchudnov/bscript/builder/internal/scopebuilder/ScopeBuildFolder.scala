@@ -5,7 +5,6 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
-import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 /**
  * (1-PASS)
  *
@@ -19,7 +18,7 @@ import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
  *
  * At this pass, symbols should be defined in scopes.
  *
- * ScopeBuildVisitor:
+ * ScopeBuildFolder:
  *
  * {{{
  * 1) Pushes Scopes;
@@ -27,7 +26,7 @@ import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
  * 3) Pops Scopes;
  * }}}
  *
- * For (2-PASS) -- see ScopeResolveVisitor
+ * For (2-PASS) -- see ScopeResolveFolder
  *
  * Building a scope tree boils down to executing a sequence of these operations: push, pop, and def.
  *
@@ -56,44 +55,44 @@ import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
  * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. We push as we descend and pop as we
  * ascend. When we see a symbol, we define or resolve it in the current scope.
  */
-private[builder] final class ScopeBuildVisitor() extends AstFolder[ScopeBuilder]:
+private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
 
-  override def foldAST(a: ScopeBuilder, ast: AST): ScopeBuilder =
+  override def foldAST(s: ScopeBuildState, ast: AST): ScopeBuildState =
     ast match
       case x: Access =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x @ Id(name) =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x: Assign =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x: Block =>
-        foldOverAST(a.push(), x).pop()
+        foldOverAST(s.push(), x).pop()
       case x @ Literal(const) =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x @ Call(id, args) =>
-        foldOverAST(a.bind(x), x)
+        foldOverAST(s.bind(x), x)
       case x @ Compiled(callback, retType) =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x: If =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x @ Init() =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x @ MethodDecl(name, tparams, params, retType, body) =>
-        foldOverAST(a.define(SMethod(name)).push(), x).pop()
+        foldOverAST(s.define(SMethod(name)).push(), x).pop()
       case x @ StructDecl(name, tfields, fields) =>
-        foldOverAST(a.define(SStruct(name)).push(), x).pop()
+        foldOverAST(s.define(SStruct(name)).push(), x).pop()
       case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(a.define(SVar(name)).bind(x), x)
+        foldOverAST(s.define(SVar(name)).bind(x), x)
       case x @ TypeDecl(name) =>
-        foldOverAST(a.define(SVar(name)).bind(x), x)
+        foldOverAST(s.define(SVar(name)).bind(x), x)
       case x @ Auto() =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x @ TypeId(_) =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       case x @ Applied(aType, args) =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
 
-private[builder] object ScopeBuildVisitor:
+private[scopebuilder] object ScopeBuildFolder:
 
-  def make(): ScopeBuildVisitor =
-    new ScopeBuildVisitor()
+  def make(): ScopeBuildFolder =
+    new ScopeBuildFolder()
