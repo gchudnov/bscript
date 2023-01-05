@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.internal.scopebuilder
+package com.github.gchudnov.bscript.builder.pass.scopebuilder
 
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.builder.state.Forest
