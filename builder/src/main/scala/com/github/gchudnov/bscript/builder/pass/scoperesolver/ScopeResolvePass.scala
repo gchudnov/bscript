@@ -19,11 +19,13 @@ import com.github.gchudnov.bscript.builder.pass.Pass
 private[builder] final class ScopeResolvePass() extends Pass:
 
   override def go(): Unit =
-    val folder = ScopeResolveFolder.make()
-    val state = ScopeResolveState.make()
+    // val folder = ScopeResolveFolder.make()
+    // val state = ScopeResolveState.make()
 
-    val ast = ???
+    // val ast = ???
 
-    folder.foldAST(state, ast)
+    // folder.foldAST(state, ast)
+
+    ???
 
 // TODO: WE NEED TO DEFINE AN API TO GO FROM ONE PASS TO THE NEXT ONE

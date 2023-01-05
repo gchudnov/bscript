@@ -9,9 +9,10 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.pass.Pass
 
 
-private[builder] final class ScopeBuildPass():
+private[builder] final class ScopeBuildPass() extends Pass:
 
   override def go(): Unit =
     val folder = ScopeBuildFolder.make()
