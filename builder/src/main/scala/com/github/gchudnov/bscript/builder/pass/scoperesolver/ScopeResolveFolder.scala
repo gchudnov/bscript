@@ -4,13 +4,12 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
-import com.github.gchudnov.bscript.builder.internal.ScopeResolver
 /**
  * (2-PASS)
  * 
- * Executed after ScopeBuildVisitor that created scopes and defined symbols in these scopes.
+ * Executed after ScopeBuildFolder that created scopes and defined symbols in these scopes.
  *
- * ScopeResolveVisitor:
+ * ScopeResolveFolder:
  *
  * {{{
  * 3) Resolve Symbols (and verify that names can be referenced).
@@ -19,9 +18,9 @@ import com.github.gchudnov.bscript.builder.internal.ScopeResolver
  * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. 
  * When we see a symbol, we resolve it in the current scope.
  */
-private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolver]:
+private[builder] final class ScopeResolveFolder() extends AstFolder[ScopeResolveState]:
   
-  override def foldAST(a: ScopeResolver, ast: AST): ScopeResolver =
+  override def foldAST(s: ScopeResolveState, ast: AST): ScopeResolveState =
     ast match
       case x: Access =>
         // foldOverAST(a, x)
@@ -29,7 +28,7 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       // case x: Assign =>
       //   foldOverAST(a, x)
       case x: Block =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       // case x @ Literal(_) =>
       //   foldOverAST(a, x)
       // case x @ Call(id, args) =>
@@ -39,7 +38,7 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       // case x: If =>
       //   foldOverAST(a, x)
       case x @ Init() =>
-        foldOverAST(a, x)
+        foldOverAST(s, x)
       // case x @ MethodDecl(retType, name, _, _) =>
       //   foldOverAST(a.define(SMethod(name)).push(), x).pop()
       // case x @ StructDecl(name, _) =>
@@ -47,14 +46,14 @@ private[builder] final class ScopeResolveVisitor() extends AstFolder[ScopeResolv
       // case x @ Var(sym) =>
       //   foldOverAST(a, x)
       case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(a.resolveVarDecl(name, vType, x), x)
+        foldOverAST(s.resolveVarDecl(name, vType, x), x)
       // case x @ Vec(_, elementType) =>
       //   foldOverAST(a, x)
 
-private[builder] object ScopeResolveVisitor:
+private[builder] object ScopeResolveFolder:
 
-  def make(): ScopeResolveVisitor =
-    new ScopeResolveVisitor()
+  def make(): ScopeResolveFolder =
+    new ScopeResolveFolder()
 
 
 //   override def visit(s: ScopeResolveState, n: Access): Either[Throwable, ScopeResolveState] =

@@ -8,7 +8,6 @@ import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.VarTypes
-import com.github.gchudnov.bscript.builder.visitors.ScopeResolver
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
@@ -17,10 +16,15 @@ import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 import com.github.gchudnov.bscript.lang.util.Casting
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
-final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, varTypes: VarTypes) extends ScopeResolver:
+final case class ScopeResolveState(
+  forest: Forest[Scope], 
+  scopeSymbols: ScopeSymbols, 
+  scopeAsts: ScopeAsts, 
+  varTypes: VarTypes
+  ):
   import Casting.*
 
-  override def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolver =
+  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolveState =
     // val (sVar, sType) = (for
     //   scope        <- scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
     //   resolvedName <- resolveIn(name, scope).toRight(new BuilderException(s"Variable '${name}' cannot be resolved in scope '${scope}'"))
@@ -38,7 +42,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
    * @param ast
    * @return
    */
-  private[visitors] def scopeFor(ast: AST): Option[Scope] =
+  private[scoperesolver] def scopeFor(ast: AST): Option[Scope] =
     scopeAsts.scope(ast)
 
   /**
@@ -49,7 +53,7 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
    * @return
    *   resolved symbol
    */
-  private[visitors] def resolveUp(name: String, start: Scope): Option[Symbol] =
+  private[scoperesolver] def resolveUp(name: String, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
       .find(_.name == name)
@@ -63,14 +67,11 @@ final class BasicScopeResolver(forest: Forest[Scope], scopeSymbols: ScopeSymbols
    * @return
    *   resolved symbol
    */
-  private[visitors] def resolveIn(name: String, in: Scope): Option[Symbol] =
+  private[scoperesolver] def resolveIn(name: String, in: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(in)
       .find(_.name == name)
 
-  override def result: Meta =
-    Meta(
-      forest = forest,
-      scopeSymbols = scopeSymbols,
-      scopeAsts = scopeAsts
-    )
+object ScopeResolveState:
+  def make(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): ScopeResolveState =
+    ScopeResolveState(forest, scopeSymbols, scopeAsts, VarTypes.empty)

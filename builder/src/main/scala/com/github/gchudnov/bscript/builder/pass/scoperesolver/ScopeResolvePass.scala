@@ -2,7 +2,6 @@ package com.github.gchudnov.bscript.builder.pass.scoperesolver
 
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
-import com.github.gchudnov.bscript.builder.internal.scoperesolver.BasicScopeResolver
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.Scope
@@ -15,18 +14,16 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.VarTypes
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
-/**
-  * ScopeResolver
-  */
-trait ScopeResolver:
+import com.github.gchudnov.bscript.builder.pass.Pass
 
-  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolver
+private[builder] final class ScopeResolvePass() extends Pass:
 
-  def result: Meta
+  override def go(): Unit =
+    val folder = ScopeResolveFolder.make()
+    val state = ScopeResolveState.make()
 
-/**
- * ScopeResolver
- */
-object ScopeResolver:
-  def make(forest: Forest[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): ScopeResolver =
-    new BasicScopeResolver(forest, scopeSymbols, scopeAsts, VarTypes.empty)
+    val ast = ???
+
+    folder.foldAST(state, ast)
+
+// TODO: WE NEED TO DEFINE AN API TO GO FROM ONE PASS TO THE NEXT ONE
