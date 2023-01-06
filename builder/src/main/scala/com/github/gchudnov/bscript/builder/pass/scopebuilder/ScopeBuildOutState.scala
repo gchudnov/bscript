@@ -1,3 +1,5 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuilder
 
-final case class ScopeBuildOutState()
+import com.github.gchudnov.bscript.lang.ast.AST
+
+final case class ScopeBuildOutState(ast: AST)

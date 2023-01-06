@@ -69,10 +69,11 @@ private[builder] final class ScopeBuildPass() extends Pass:
 
   override def go(in: In): Out =
     val folder = ScopeBuildFolder.make()
-    val state = ScopeBuildState.make()
 
-    val ast = ???
+    val ast = in.ast
+    val state0 = ScopeBuildState.from(in)
+    val state1 = folder.foldAST(state0, ast)
 
-    folder.foldAST(state, ast)
+    val out = ScopeBuildState.to(ast, state1)
 
-    ???
+    out

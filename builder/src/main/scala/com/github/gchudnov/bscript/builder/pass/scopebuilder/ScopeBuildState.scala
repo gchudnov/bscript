@@ -34,9 +34,16 @@ final case class ScopeBuildState(cursor: ForestCursor[Scope], scopeSymbols: Scop
 
 object ScopeBuildState:
 
-  def make(): ScopeBuildState =
+  def from(s: ScopeBuildInState): ScopeBuildState =
     val cursor       = ForestCursor.empty[Scope](it => ScopeRef(it))
     val scopeSymbols = ScopeSymbols.empty
     val scopeAsts    = ScopeAsts.empty
 
-    ScopeBuildState(cursor, scopeSymbols, scopeAsts)
+    ScopeBuildState(
+      cursor, 
+      scopeSymbols, 
+      scopeAsts
+    )
+
+  def to(ast: AST, s: ScopeBuildState): ScopeBuildOutState =
+    ScopeBuildOutState(ast)
