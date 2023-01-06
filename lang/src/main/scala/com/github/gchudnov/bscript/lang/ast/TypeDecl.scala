@@ -1,9 +1,10 @@
 package com.github.gchudnov.bscript.lang.ast
 
 /**
-  * Type Definition, including built-in types
+  * Type Definition, generics or built-in types
   * 
   * {{{
+  *   T in def func[T](...)`
   *   Int
   *   Float
   *   String

@@ -1,48 +1,67 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
-import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
-import com.github.gchudnov.bscript.lang.symbols.SBuiltIn
 /**
   * Globals for building
   */
 object BGlobals:
 
-  def make(sb: ScopeBuilder): ScopeBuilder =
+  def make(): AST =
 
-    // NOTE: we're not defining any new scopes here, thus the scope should be defined before calling `.make()`
-    sb
-      .define(SBuiltIn.auto)
-      .define(SBuiltIn.nothing)
-      .define(SBuiltIn.void)
-      .define(SBuiltIn.bool)
-      .define(SBuiltIn.i32)
-      .define(SBuiltIn.i64)
-      .define(SBuiltIn.f32)
-      .define(SBuiltIn.f64)
-      .define(SBuiltIn.dec)
-      .define(SBuiltIn.str)
-      .define(SBuiltIn.date)
-      .define(SBuiltIn.datetime)
+    val builtInTypes = Block.of(
+      TypeDecl(TypeName.nothing),
+      TypeDecl(TypeName.void),
+      TypeDecl(TypeName.bool),
+      TypeDecl(TypeName.i8),
+      TypeDecl(TypeName.i16),
+      TypeDecl(TypeName.i32),
+      TypeDecl(TypeName.i64),
+      TypeDecl(TypeName.f32),
+      TypeDecl(TypeName.f64),
+      TypeDecl(TypeName.dec),
+      TypeDecl(TypeName.chr),
+      TypeDecl(TypeName.str),
+      TypeDecl(TypeName.date),
+      TypeDecl(TypeName.datetime),
+    )
+
+    val methods = Block.of(
+      // prints the formatted string to StdOut
+      MethodDecl(
+        "printf",
+        List(TypeDecl("T")),
+        List(
+          VarDecl("format", TypeId(TypeName.str)),
+          VarDecl("value", TypeId("T"))
+        ),
+        TypeId(TypeName.void),
+        Block.empty,
+      ),
+//     MethodDecl(
+//       TypeRef(typeNames.i32Type),
+//       "strLen",
+//       List(
+//         ArgDecl(TypeRef(typeNames.strType), "s")
+//       ),
+//       Block(
+//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
+//       ),
+//       Seq(ComAnn("returns the length of the provided string"), StdAnn())
+//     ),
+    )
+
+    builtInTypes ++ methods
+
 
 //   def prelude: Block = Block(
-//     MethodDecl(
-//       TypeRef(typeNames.voidType),
-//       "printf",
-//       List(
-//         ArgDecl(TypeRef(typeNames.strType), "format"),
-//         ArgDecl(TypeRef(typeNames.autoType), "value")
-//       ),
-//       Block.empty,
-//       Seq(ComAnn("prints the formatted string to StdOut"), StdAnn())
-//     ),
 //     MethodDecl(
 //       TypeRef(typeNames.i32Type),
 //       "strLen",

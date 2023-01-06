@@ -6,7 +6,6 @@ package com.github.gchudnov.bscript.lang.types
  * Used to allow to specify different type names for a type. E.g. integer data type might be i32 or int.
  */
 object TypeName:
-  val auto: String     = "auto"
   val nothing: String  = "nothing"
   val void: String     = "void"
   val bool: String     = "bool"
@@ -23,7 +22,6 @@ object TypeName:
   val datetime: String = "datetime"
 
   def all: List[String] = List(
-    auto,
     nothing,
     void,
     bool,

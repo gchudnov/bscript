@@ -10,7 +10,6 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 final case class TypeRef(name: String) extends NamedType
 
 object TypeRef:
-  val auto: TypeRef     = TypeRef(TypeName.auto)
   val nothing: TypeRef  = TypeRef(TypeName.nothing)
   val void: TypeRef     = TypeRef(TypeName.void)
   val bool: TypeRef     = TypeRef(TypeName.bool)

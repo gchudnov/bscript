@@ -17,8 +17,10 @@ import com.github.gchudnov.bscript.builder.BGlobals
 
 import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
-import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor/
-import com.github.gchudnov.bscript.builder.internal.scoperesolver.ScopeResolveVisitor**
+import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
+import com.github.gchudnov.bscript.builder.internal.scoperesolver.ScopeResolveVisitor
+
+/**
  * ScopeResolveVisitorSpec
  */
 final class ScopeResolveVisitorSpec extends TestSpec:

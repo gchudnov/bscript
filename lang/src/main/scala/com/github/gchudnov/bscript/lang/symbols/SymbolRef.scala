@@ -10,7 +10,6 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 final case class SymbolRef(name: String) extends Symbol
 
 object SymbolRef:
-  val auto: SymbolRef     = SymbolRef(TypeName.auto)
   val nothing: SymbolRef  = SymbolRef(TypeName.nothing)
   val void: SymbolRef     = SymbolRef(TypeName.void)
   val bool: SymbolRef     = SymbolRef(TypeName.bool)

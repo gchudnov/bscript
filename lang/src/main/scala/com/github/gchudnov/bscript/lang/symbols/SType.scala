@@ -11,7 +11,6 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 final case class SType(name: String) extends Symbol with Type
 
 object SType:
-  val auto     = SType(TypeName.auto)
   val nothing  = SType(TypeName.nothing)
   val void     = SType(TypeName.void)
   val bool     = SType(TypeName.bool)

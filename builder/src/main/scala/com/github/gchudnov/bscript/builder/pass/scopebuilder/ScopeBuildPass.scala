@@ -64,7 +64,6 @@ import com.github.gchudnov.bscript.builder.pass.Pass
 private[builder] final class ScopeBuildPass() extends Pass:
 
   type In = ScopeBuildInState
-
   type Out = ScopeBuildOutState
 
   override def go(in: In): Out =
