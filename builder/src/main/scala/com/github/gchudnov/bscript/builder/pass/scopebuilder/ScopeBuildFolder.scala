@@ -34,7 +34,7 @@ private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuil
       case x @ VarDecl(name, vType, expr) =>
         foldOverAST(s.define(SVar(name)).bind(x), x)
       case x @ TypeDecl(name) =>
-        foldOverAST(s.define(SVar(name)).bind(x), x)
+        foldOverAST(s.define(SType(name)).bind(x), x)
       case x @ Auto() =>
         foldOverAST(s, x)
       case x @ TypeId(_) =>

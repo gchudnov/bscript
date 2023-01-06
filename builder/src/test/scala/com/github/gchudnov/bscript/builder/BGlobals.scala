@@ -9,6 +9,7 @@ import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
 import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
+import com.github.gchudnov.bscript.lang.symbols.SBuiltIn
 /**
   * Globals for building
   */
