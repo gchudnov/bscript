@@ -9,22 +9,22 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 final case class ScopeBuildOutState(
   forest: Forest[Scope],
-  scopeSymbols: ScopeSymbols, 
+  scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts
 )
 
 object ScopeBuildOutState:
 
   extension (s: ScopeBuildOutState)
-    def forestSize: Int = 
+    def forestSize: Int =
       s.forest.size
 
     def scopeByAST(ast: AST): Option[Scope] =
       s.scopeAsts.scope(ast)
 
     /**
-      * Find all symbols that have the given name
-      */
+     * Find all symbols that have the given name
+     */
     def symbolsByName(name: String): List[Symbol] =
       s.scopeSymbols.symbolsByName(name)
 
@@ -32,5 +32,6 @@ object ScopeBuildOutState:
      * Find all scopes that contain symbols with the given name
      */
     def scopesBySymbol(sym: Symbol): List[Scope] =
-      s.scopeSymbols.symbolsByName(sym.name)
+      s.scopeSymbols
+        .symbolsByName(sym.name)
         .flatMap(it => s.scopeSymbols.scope(it).map(List(_)).getOrElse(List.empty[Scope]))

@@ -25,7 +25,7 @@ abstract class Dict[K, V, D <: Dict[K, V, D]]:
 
     assert(!vs.contains(value), s"value ${value} is already assigned to the key ${key}, cannot set it twice.")
 
-    val keyValues1 = keyValues + (key       -> (vs + value))
+    val keyValues1 = keyValues + (key  -> (vs + value))
     val valueKey1  = valueKey + (value -> key)
 
     clone(

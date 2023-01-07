@@ -10,7 +10,7 @@ final case class ForestCursor[A <: AnyRef](
   aFactory: (String) => A
 ):
   def push(): ForestCursor[A] =
-    val c = updateCounter(this.level)
+    val c    = updateCounter(this.level)
     val name = c.take(level + 1).map(k => Base26.encode(k)).mkString(".")
     val a    = aFactory(name)
     this.copy(

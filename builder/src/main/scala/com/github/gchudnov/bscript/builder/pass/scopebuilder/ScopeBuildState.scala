@@ -40,10 +40,10 @@ object ScopeBuildState:
     val scopeAsts    = ScopeAsts.empty
 
     ScopeBuildState(
-      cursor, 
-      scopeSymbols, 
+      cursor,
+      scopeSymbols,
       scopeAsts
-    )    
+    )
 
   def from(s: ScopeBuildInState): ScopeBuildState =
     empty
@@ -51,6 +51,6 @@ object ScopeBuildState:
   def to(s: ScopeBuildState): ScopeBuildOutState =
     ScopeBuildOutState(
       forest = s.cursor.forest,
-      scopeSymbols = s.scopeSymbols, 
+      scopeSymbols = s.scopeSymbols,
       scopeAsts = s.scopeAsts
     )

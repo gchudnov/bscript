@@ -57,7 +57,7 @@ final class ScopeBuildStateSpec extends TestSpec:
         actual mustBe expected
       }
 
-      "a symbol can be linked to this scope" in  {
+      "a symbol can be linked to this scope" in {
         val sym = SymbolRef.f32
 
         val actual = ScopeBuildState.to(sb.define(sym))

@@ -38,7 +38,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.forestSize mustBe 1
             outState.symbolsByName("x").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             println(t)
             fail("Should be 'right", t)
       }
@@ -75,7 +75,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.forestSize mustBe 3 // root + main(args) + block inside
             outState.symbolsByName("x").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
@@ -106,7 +106,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.forestSize mustBe 3 // root + main(args) + block inside
             outState.symbolsByName("x").size mustBe (2)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
@@ -160,19 +160,19 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.symbolsByName("offsetDateTime").size mustBe (1)
             outState.symbolsByName("fieldOfDateTime").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
       /**
-        * {{{
-        *   int +(lhs: int, rhs: int) {
-        *     // ...
-        *   }
-        * 
-        *   2 + 3
-        * }}}
-        */
+       * {{{
+       *   int +(lhs: int, rhs: int) {
+       *     // ...
+       *   }
+       *
+       *   2 + 3
+       * }}}
+       */
       "be invoked for +(int, int): int" in {
         val t = Block.of(
           MethodDecl(
@@ -180,14 +180,14 @@ final class ScopeBuildPassSpec extends TestSpec:
             List.empty[TypeDecl],
             List(
               VarDecl("lhs", TypeId(TypeName.i32)),
-              VarDecl("rhs", TypeId(TypeName.i32)),
+              VarDecl("rhs", TypeId(TypeName.i32))
             ),
             TypeId(TypeName.i32),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
             )
           ),
-          Call(Id("+"), List(Literal(IntVal(2)), Literal(IntVal(3))))       
+          Call(Id("+"), List(Literal(IntVal(2)), Literal(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -195,19 +195,19 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right((ast, outState)) =>
             outState.symbolsByName("+").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
       /**
-        * {{{
-        *   double +(lhs: double, rhs: int) {
-        *     // ...
-        *   }
-        * 
-        *   1.0 + 3
-        * }}}
-        */
+       * {{{
+       *   double +(lhs: double, rhs: int) {
+       *     // ...
+       *   }
+       *
+       *   1.0 + 3
+       * }}}
+       */
       "be invoked for +(double, int): double" in {
         val t = Block.of(
           MethodDecl(
@@ -215,14 +215,14 @@ final class ScopeBuildPassSpec extends TestSpec:
             List.empty[TypeDecl],
             List(
               VarDecl("lhs", TypeId(TypeName.f64)),
-              VarDecl("rhs", TypeId(TypeName.i32)),
+              VarDecl("rhs", TypeId(TypeName.i32))
             ),
             TypeId(TypeName.f64),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64))
             )
-          ), 
-          Call(Id("+"), List(Literal(DoubleVal(1.0)), Literal(IntVal(3))))       
+          ),
+          Call(Id("+"), List(Literal(DoubleVal(1.0)), Literal(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -230,19 +230,19 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right((ast, outState)) =>
             outState.symbolsByName("+").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
       /**
-        * {{{
-        *   int +(lhs: int, rhs: int) {
-        *     // ...
-        *   }
-        * 
-        *   "abc" + 3  // incorrect, but it is reported later during compilation on the next phases
-        * }}}
-        */
+       * {{{
+       *   int +(lhs: int, rhs: int) {
+       *     // ...
+       *   }
+       *
+       *   "abc" + 3  // incorrect, but it is reported later during compilation on the next phases
+       * }}}
+       */
       "be invoked for `+(int, int): int` with an invalid argument" in {
         val t = Block.of(
           MethodDecl(
@@ -250,14 +250,14 @@ final class ScopeBuildPassSpec extends TestSpec:
             List.empty[TypeDecl],
             List(
               VarDecl("lhs", TypeId(TypeName.i32)),
-              VarDecl("rhs", TypeId(TypeName.i32)),
+              VarDecl("rhs", TypeId(TypeName.i32))
             ),
             TypeId(TypeName.i32),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
             )
           ),
-          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))       
+          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -265,19 +265,19 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right((ast, outState)) =>
             outState.symbolsByName("+").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
       /**
-        * {{{
-        *   T +[T](lhs: T, rhs: T) {
-        *     // ...
-        *   }
-        * 
-        *   4 + 3
-        * }}}
-        */
+       * {{{
+       *   T +[T](lhs: T, rhs: T) {
+       *     // ...
+       *   }
+       *
+       *   4 + 3
+       * }}}
+       */
       "be invoked for +(T, T): T" in {
         val t = Block.of(
           MethodDecl(
@@ -285,14 +285,14 @@ final class ScopeBuildPassSpec extends TestSpec:
             List(TypeDecl("T")),
             List(
               VarDecl("lhs", TypeId("T")),
-              VarDecl("rhs", TypeId("T")),
+              VarDecl("rhs", TypeId("T"))
             ),
             TypeId("T"),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId("T"))
             )
           ),
-          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))       
+          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -300,19 +300,19 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right((ast, outState)) =>
             outState.symbolsByName("+").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
-      }      
+      }
 
       /**
-        * {{{
-        *   R +[R, T, U](lhs: T, rhs: U) {
-        *     // ...
-        *   }
-        * 
-        *   4 + 3
-        * }}}
-        */
+       * {{{
+       *   R +[R, T, U](lhs: T, rhs: U) {
+       *     // ...
+       *   }
+       *
+       *   4 + 3
+       * }}}
+       */
       "be invoked for +(T, U): R" in {
         val t = Block.of(
           MethodDecl(
@@ -320,14 +320,14 @@ final class ScopeBuildPassSpec extends TestSpec:
             List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
             List(
               VarDecl("lhs", TypeId("T")),
-              VarDecl("rhs", TypeId("U")),
+              VarDecl("rhs", TypeId("U"))
             ),
             TypeId("R"),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId("R"))
             )
           ),
-          Call(Id("+"), List(Literal(IntVal(4)), Literal(IntVal(3))))       
+          Call(Id("+"), List(Literal(IntVal(4)), Literal(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -335,10 +335,10 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right((ast, outState)) =>
             outState.symbolsByName("+").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
-      }      
-    }    
+      }
+    }
 
     "type-declarations" should {
 
@@ -505,7 +505,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.symbolsByName("j").size mustBe (1)
             outState.symbolsByName("k").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
@@ -550,7 +550,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.forestSize mustBe 2
             outState.symbolsByName("x").size mustBe (1)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
     }
@@ -593,7 +593,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
             callScope.map(_.name) mustBe Some("a.a")
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
@@ -652,7 +652,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             // NOTE: `i` exists in 2 scopes
             outState.symbolsByName("i").size mustBe (2)
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
     }
@@ -723,7 +723,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.scopesBySymbol(SymbolRef("a")).map(_.name) must contain theSameElementsAs (List("a.a"))
             outState.scopesBySymbol(SymbolRef("f")).map(_.name) must contain theSameElementsAs (List("a.a"))
 
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 

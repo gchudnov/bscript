@@ -17,11 +17,11 @@ import com.github.gchudnov.bscript.lang.util.Casting
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 final case class ScopeResolveState(
-  forest: Forest[Scope], 
-  scopeSymbols: ScopeSymbols, 
-  scopeAsts: ScopeAsts, 
+  forest: Forest[Scope],
+  scopeSymbols: ScopeSymbols,
+  scopeAsts: ScopeAsts,
   varTypes: VarTypes
-  ):
+):
   import Casting.*
 
   def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolveState =
@@ -77,9 +77,9 @@ object ScopeResolveState:
   def from(s: ScopeResolveInState): ScopeResolveState =
     // ScopeResolveState(
     //   ast = s.ast,
-    //   forest, 
-    //   scopeSymbols, 
-    //   scopeAsts, 
+    //   forest,
+    //   scopeSymbols,
+    //   scopeAsts,
     //   VarTypes.empty
     //   )
 

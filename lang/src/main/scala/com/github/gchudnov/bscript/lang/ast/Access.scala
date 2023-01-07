@@ -16,7 +16,6 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  */
 final case class Access(a: Ref, b: Id) extends Ref
 
-
 object Access:
   private val sep: String = "."
 
@@ -27,7 +26,7 @@ object Access:
       case x: Access => List(iterate(x.a), iterate(x.b)).mkString(Access.sep)
       case x         => sys.error(s"Unsupported Type to get a Path: '${x}'")
     iterate(this)
-*/
+ */
 
 /*
 
@@ -35,11 +34,11 @@ object Access:
       def apply(qualifier: Term, symbol: Symbol): Select
 
       ** Select a field or a non-overloaded method by name
-      *
-      *  @note The method will produce an assertion error if the selected
-      *        method is overloaded. The method `overloaded` should be used
-      *        in that case.
-      *
+ *
+ *  @note The method will produce an assertion error if the selected
+ *        method is overloaded. The method `overloaded` should be used
+ *        in that case.
+ *
       def unique(qualifier: Term, name: String): Select
 
       ** Call an overloaded method with the given type and term parameters *
@@ -49,4 +48,4 @@ object Access:
       def overloaded(qualifier: Term, name: String, targs: List[TypeRepr], args: List[Term], returnType: TypeRepr): Term
 
 
-*/
+ */

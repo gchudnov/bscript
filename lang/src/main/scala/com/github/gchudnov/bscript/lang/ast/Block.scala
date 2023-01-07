@@ -6,9 +6,9 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  * Block of code
  *
  * Contains zero or more expressions
- * 
+ *
  * If there the block is empty, it evaluates to Void.
- * 
+ *
  * {{{
  *   {
  *     int x;

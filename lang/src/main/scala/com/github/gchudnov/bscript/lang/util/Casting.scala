@@ -74,15 +74,15 @@ object Casting:
         case x: Type => Right(x)
         case _       => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to Type"))
 
-  //   def asSMethod: Either[AstException, SMethod] =
-  //     sym match
-  //       case s: SMethod => Right(s)
-  //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SMethod"))
+    //   def asSMethod: Either[AstException, SMethod] =
+    //     sym match
+    //       case s: SMethod => Right(s)
+    //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SMethod"))
 
-  //   def asSStruct: Either[AstException, SStruct] =
-  //     sym match
-  //       case s: SStruct => Right(s)
-  //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SStruct"))
+    //   def asSStruct: Either[AstException, SStruct] =
+    //     sym match
+    //       case s: SStruct => Right(s)
+    //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SStruct"))
 
     def symbolKind: String = sym match
       case _: SVar    => "SVar"

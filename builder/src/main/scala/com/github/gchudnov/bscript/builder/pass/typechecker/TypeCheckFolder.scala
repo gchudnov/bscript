@@ -2,8 +2,8 @@ package com.github.gchudnov.bscript.builder.pass.typechecker
 
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
-import com.github.gchudnov.bscript.builder.state.{ Ctx }
-import com.github.gchudnov.bscript.builder.{ Meta }
+import com.github.gchudnov.bscript.builder.state.Ctx
+import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
@@ -366,7 +366,6 @@ private[typechecker] final class TypeCheckFolder() {} // extends TreeVisitor[Typ
 //     //   // TODO: finish it
 //     //   // promotedExprs <- optElementType.fold(Right(Seq.empty[Expr]): Either[Throwable, Seq[Expr]]) { elementType =>
 //     //   //                    val promotedExprTypes =  Transform.sequence(exprs.map(expr => s1.meta.evalTypeFor(expr).map(exprEvalType => promoteFromTo(exprEvalType, elementType))))
-
 
 //     //   //                    val candidateExprs = exprs.map(expr => expr.withPromoteToType(promoteFromTo(expr.evalType, elementType)))
 //     //   //                    Transform.sequence(

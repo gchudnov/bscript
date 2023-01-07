@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.func.AstFolder
 
 /**
  * (2-PASS)
- * 
+ *
  * Executed after ScopeBuildFolder that created scopes and defined symbols in these scopes.
  *
  * ScopeResolveFolder:
@@ -15,11 +15,10 @@ import com.github.gchudnov.bscript.lang.func.AstFolder
  * 3) Resolve Symbols (and verify that names can be referenced).
  * }}}
  *
- * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. 
- * When we see a symbol, we resolve it in the current scope.
+ * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. When we see a symbol, we resolve it in the current scope.
  */
 private[builder] final class ScopeResolveFolder() extends AstFolder[ScopeResolveState]:
-  
+
   override def foldAST(s: ScopeResolveState, ast: AST): ScopeResolveState =
     ast match
       case x: Access =>
@@ -54,7 +53,6 @@ private[builder] object ScopeResolveFolder:
 
   def make(): ScopeResolveFolder =
     new ScopeResolveFolder()
-
 
 //   override def visit(s: ScopeResolveState, n: Access): Either[Throwable, ScopeResolveState] =
 
@@ -139,7 +137,6 @@ private[builder] object ScopeResolveFolder:
 //       n1           = n.copy(fields = fields)
 //       ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
-
 
 //   override def visit(s: ScopeResolveState, n: Var): Either[Throwable, ScopeResolveState] =
 //     for

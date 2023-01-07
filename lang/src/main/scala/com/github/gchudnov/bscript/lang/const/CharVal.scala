@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.lang.const
 
 /**
  * Char Literal
- * 
+ *
  * A string consists of characters.
  *
  * {{{

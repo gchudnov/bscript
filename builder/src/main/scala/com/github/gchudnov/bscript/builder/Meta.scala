@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, Type, SymbolRef }
+import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, SymbolRef, Type }
 import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
 import com.github.gchudnov.bscript.builder.util.Ptr
@@ -18,7 +18,6 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import scala.collection.mutable.StringBuilder as MStringBuilder
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
-
 
 // /**
 //  * Metadata - Scope & Symbol State
@@ -64,17 +63,14 @@ final case class Meta(
   scopeAsts: ScopeAsts
 )
 
-
 object Meta:
 
-  val empty: Meta = 
+  val empty: Meta =
     Meta(
       forest = Forest.empty[Scope],
       scopeSymbols = ScopeSymbols.empty,
       scopeAsts = ScopeAsts.empty
     )
-
-
 
   // def typeNameForVarInScope(meta: Meta)(varName: String, scopeName: String): Either[Throwable, String] =
   //   for
@@ -109,8 +105,6 @@ object Meta:
   // def findMethodAst(meta: Meta, methodName: String): Option[AST] =
   //   findSMethodAST(meta, methodName).map(_._2)
 
-
-  
   // type ScopeTree = Forest[Scope]
 
   // val empty: Meta =
@@ -207,8 +201,8 @@ object Meta:
 //     val scopeSymbols = addScopeSymbol(arg, ms)
 //     val newMethodArgs                      = addMethodArg(ms, arg)
 //     this.copy(
-//       scopeSymbols = scopeSymbols.scopeSymbolsMap, 
-//       symbolScopes = scopeSymbols.symbolScopeMap, 
+//       scopeSymbols = scopeSymbols.scopeSymbolsMap,
+//       symbolScopes = scopeSymbols.symbolScopeMap,
 //       methodArgs = newMethodArgs
 //       )
 
@@ -252,7 +246,7 @@ object Meta:
 
 //   def withPromoteToType(n: AST, t: Type): Meta =
 //     val newPromoteToTypes =  addPromoteToType(n, t)
-//     this.copy(evalTypes = newPromoteToTypes)    
+//     this.copy(evalTypes = newPromoteToTypes)
 
 //   def withPromoteToType(n: AST, t: Option[Type]): Meta =
 //     t.fold(this)(t => withPromoteToType(n, t))
@@ -260,7 +254,7 @@ object Meta:
 //   /**
 //     * Add Symbol to AST
 //     */
-//   def withASTSymbol(n: AST, s: Symbol): Meta = 
+//   def withASTSymbol(n: AST, s: Symbol): Meta =
 //     val newAstSymbols = addSymbol(n, s)
 //     this.copy(astSymbols = newAstSymbols)
 
@@ -396,15 +390,15 @@ object Meta:
 //   private def defineSymbolInScope(symbol: Symbol, scope: Scope): Meta =
 //     val scopeSymbols = addScopeSymbol(symbol, scope)
 //     this.copy(
-//       scopeSymbols = scopeSymbols.scopeSymbolsMap, 
+//       scopeSymbols = scopeSymbols.scopeSymbolsMap,
 //       symbolScopes = scopeSymbols.symbolScopeMap
 //       )
 
 //   private def defineSymbolScopeInScope(symbolWithScope: Symbol with Scope, scope: Scope): Meta =
 //     val scopeSymbols = addScopeSymbol(symbolWithScope, scope)
 //     this.copy(
-//       scopeTree = scopeTree.link(symbolWithScope, scope), 
-//       scopeSymbols = scopeSymbols.scopeSymbolsMap, 
+//       scopeTree = scopeTree.link(symbolWithScope, scope),
+//       scopeSymbols = scopeSymbols.scopeSymbolsMap,
 //       symbolScopes = scopeSymbols.symbolScopeMap
 //       )
 
@@ -501,8 +495,6 @@ object Meta:
 //     scopeSymbolsMap: ScopeSymbolsMap,
 //     symbolScopeMap: SymbolScopeMap
 //   )
-
-
 
 //   def init(): Meta =
 //     val g = SBlock("#global")

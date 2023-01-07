@@ -36,8 +36,8 @@ import com.github.gchudnov.bscript.builder.pass.Pass
  *
  * Building a scope tree boils down to executing a sequence of these operations: *push*, *pop*, and *def*.
  *
- * [push]. At the start of a scope, `push` a new scope on the scope stack. This works even for complicated scopes like classes. Because we are building scope trees, push is more like
- * an “add child” tree construction operation than a conventional stack `push`. An implementation preview:
+ * [push]. At the start of a scope, `push` a new scope on the scope stack. This works even for complicated scopes like classes. Because we are building scope trees, push is more
+ * like an “add child” tree construction operation than a conventional stack `push`. An implementation preview:
  *
  * {{{
  *   // create new scope whose enclosing scope is the current scope
@@ -63,15 +63,15 @@ import com.github.gchudnov.bscript.builder.pass.Pass
  */
 private[builder] final class ScopeBuildPass() extends Pass:
 
-  type In = (AST, ScopeBuildInState)
+  type In  = (AST, ScopeBuildInState)
   type Out = (AST, ScopeBuildOutState)
 
   override def go(in: In): Out =
     val folder = ScopeBuildFolder.make()
 
     val (ast, stateIn) = in
-    val state0 = ScopeBuildState.from(stateIn)
-    val state1 = folder.foldAST(state0, ast)
+    val state0         = ScopeBuildState.from(stateIn)
+    val state1         = folder.foldAST(state0, ast)
 
     val stateOut = ScopeBuildState.to(state1)
 

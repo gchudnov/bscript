@@ -1,6 +1,5 @@
 package com.github.gchudnov.bscript.lang.const
 
-
 /**
  * Boolean Literal
  *

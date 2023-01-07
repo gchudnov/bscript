@@ -4,5 +4,5 @@ final case class ScopeBuildInState()
 
 object ScopeBuildInState:
 
-  val empty: ScopeBuildInState = 
+  val empty: ScopeBuildInState =
     ScopeBuildInState()

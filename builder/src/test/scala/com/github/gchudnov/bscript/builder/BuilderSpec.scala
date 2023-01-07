@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef }
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 
