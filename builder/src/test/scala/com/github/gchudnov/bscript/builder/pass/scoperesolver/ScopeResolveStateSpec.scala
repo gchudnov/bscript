@@ -1,8 +1,8 @@
 package com.github.gchudnov.bscript.builder.pass.scoperesolver
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.internal.scoperesolver.BasicScopeResolver
-import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
+import com.github.gchudnov.bscript.builder.pass.scoperesolver.ScopeResolveState
+import com.github.gchudnov.bscript.builder.pass.scopebuilder.ScopeBuildState
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -11,11 +11,13 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
 
-final class ScopeResolverSpec extends TestSpec:
+final class ScopeResolveStateSpec extends TestSpec:
 
-  "ScopeResolverSpec" when {
+  private val ast = Block.empty
+
+  "ScopeResolveState" when {
     "no input" should {
-      val sb = ScopeBuilder.make().push().define(SBuiltIn.i32)
+      val sb = ScopeBuildState.empty.push().define(SBuiltIn.i32)
       val sr = sb.toResolver
 
       "return the initial object state" in {
@@ -30,7 +32,7 @@ final class ScopeResolverSpec extends TestSpec:
       val ast1 = VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(12)))
       val ast2 = VarDecl("y", TypeId(TypeName.i32), Literal(IntVal(23)))
 
-      val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast1).push().push().bind(ast2).define(SVar("y"))
+      val sb = ScopeBuildState.make().push().define(SBuiltIn.i32).push().bind(ast1).push().push().bind(ast2).define(SVar("y"))
       val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
 
       "resolve" in {
@@ -51,7 +53,7 @@ final class ScopeResolverSpec extends TestSpec:
     "undefined symbol" should {
       val ast = VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(12)))
 
-      val sb = ScopeBuilder.make().push().define(SBuiltIn.i32).push().bind(ast)
+      val sb = ScopeBuildState.make().push().define(SBuiltIn.i32).push().bind(ast)
       val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
 
       "not resolve" in {
@@ -70,7 +72,7 @@ final class ScopeResolverSpec extends TestSpec:
     "scope" should {
       val ast = Literal(IntVal(12))
 
-      val sb = ScopeBuilder.make().push().bind(ast).pop()
+      val sb = ScopeBuildState.make().push().bind(ast).pop()
       val sr = sb.toResolver.asInstanceOf[BasicScopeResolver]
 
       "resolve if AST was bounded" in {

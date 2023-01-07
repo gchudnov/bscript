@@ -14,12 +14,12 @@ import com.github.gchudnov.bscript.builder.state.ScopeAsts
 
 import com.github.gchudnov.bscript.builder.pass.scopebuilder.ScopeBuildState
 
-final class ScopeBuildSpec extends TestSpec:
+final class ScopeBuildStateSpec extends TestSpec:
 
   private val ast = Block.empty
   private val in = ScopeBuildInState(ast)
 
-  "ScopeBuilderSpec" when {
+  "ScopeBuildState" when {
     "no input was specified" should {
       "return an empty object" in {
         val sb = ScopeBuildState.from(in)
