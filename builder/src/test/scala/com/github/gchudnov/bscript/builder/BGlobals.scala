@@ -10,8 +10,8 @@ import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
 
 /**
-  * Globals for building
-  */
+ * Globals for building
+ */
 object BGlobals:
 
   def make(): AST =
@@ -30,10 +30,10 @@ object BGlobals:
       TypeDecl(TypeName.chr),
       TypeDecl(TypeName.str),
       TypeDecl(TypeName.date),
-      TypeDecl(TypeName.datetime),
+      TypeDecl(TypeName.datetime)
     )
 
-    val methods = Block.of(
+    val builtInMethods = Block.of(
       // prints the formatted string to StdOut
       MethodDecl(
         "printf",
@@ -43,137 +43,130 @@ object BGlobals:
           VarDecl("value", TypeId("T"))
         ),
         TypeId(TypeName.void),
-        Block.empty,
+        Block.empty
       ),
-//     MethodDecl(
-//       TypeRef(typeNames.i32Type),
-//       "strLen",
-//       List(
-//         ArgDecl(TypeRef(typeNames.strType), "s")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
-//       ),
-//       Seq(ComAnn("returns the length of the provided string"), StdAnn())
-//     ),
+      // returns the length of the provided string
+      MethodDecl(
+        "strLen",
+        List.empty[TypeDecl],
+        List(
+          VarDecl("s", TypeId(TypeName.str))
+        ),
+        TypeId(TypeName.i32),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
+        )
+      ),
+      // offsets the provided date-time
+      MethodDecl(
+        "offsetDateTime",
+        List.empty[TypeDecl],
+        List(
+          VarDecl("value", TypeId(TypeName.datetime)),
+          VarDecl("offset", TypeId(TypeName.i32)),
+          VarDecl("unit", TypeId(TypeName.str))
+        ),
+        TypeId(TypeName.datetime),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
+        )
+      ),
+      // sets data and time to the specified value
+      MethodDecl(
+        "setDateTime",
+        List.empty[TypeDecl],
+        List(
+          VarDecl("value", TypeId(TypeName.datetime)),
+          VarDecl("offset", TypeId(TypeName.i32)),
+          VarDecl("unit", TypeId(TypeName.str))
+        ),
+        TypeId(TypeName.datetime),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
+        )
+      ),
+      // returns the specified part of date-time as an integer value
+      MethodDecl(
+        "fieldOfDateTime",
+        List.empty[TypeDecl],
+        List(
+          VarDecl("value", TypeId(TypeName.datetime)),
+          VarDecl("unit", TypeId(TypeName.str))
+        ),
+        TypeId(TypeName.i32),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
+        )
+      ),
+      // returns true of the provided variable is defined, otherwise false
+      MethodDecl(
+        "isDefined",
+        List(TypeDecl("T")),
+        List(
+          VarDecl("x", TypeId("T"))
+        ),
+        TypeId(TypeName.bool),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.bool))
+        )
+      ),
+      // returns the first non-null value out of two values that were provided
+      MethodDecl(
+        "coalesce",
+        List(TypeDecl("T")),
+        List(
+          VarDecl("x", TypeId("T")),
+          VarDecl("y", TypeId("T"))
+        ),
+        TypeId("T"),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("T"))
+        )
+      ),
+      // returns today as a date
+      MethodDecl(
+        "today",
+        List.empty[VarDecl],
+        TypeId(TypeName.date),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.date))
+        )
+      ),
+      // returns current date and time as date-time
+      MethodDecl(
+        "now",
+        List.empty[VarDecl],
+        TypeId(TypeName.datetime),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
+        )
+      ),
+      // rounds the provided value with the given precision
+      MethodDecl(
+        "round",
+        List(TypeDecl("T")),
+        List(
+          VarDecl("value", TypeId("T")), // f32, f64, dec
+          VarDecl("precision", TypeId(TypeName.i32))
+        ),
+        TypeId("T"),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("T"))
+        )
+      ),
+      // truncates the provided value with the given precision
+      MethodDecl(
+        "truncate",
+        List(TypeDecl("T")),
+        List(
+          VarDecl("value", TypeId("T")), // f32, f64, dec
+          VarDecl("precision", TypeId(TypeName.i32))
+        ),
+        TypeId("T"),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("T"))
+        )
+      )
     )
 
-    builtInTypes ++ methods
-
-
-//   def prelude: Block = Block(
-//     MethodDecl(
-//       TypeRef(typeNames.i32Type),
-//       "strLen",
-//       List(
-//         ArgDecl(TypeRef(typeNames.strType), "s")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
-//       ),
-//       Seq(ComAnn("returns the length of the provided string"), StdAnn())
-//     ),
-//     MethodDecl(
-//       TypeRef(typeNames.datetimeType),
-//       "offsetDateTime",
-//       List(
-//         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
-//         ArgDecl(TypeRef(typeNames.i32Type), "offset"),
-//         ArgDecl(TypeRef(typeNames.strType), "unit")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
-//       ),
-//       Seq(ComAnn("offsets the provided date-time"), StdAnn())
-//     ),
-//     MethodDecl(
-//       TypeRef(typeNames.datetimeType),
-//       "setDateTime",
-//       List(
-//         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
-//         ArgDecl(TypeRef(typeNames.i32Type), "offset"),
-//         ArgDecl(TypeRef(typeNames.strType), "unit")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
-//       ),
-//       Seq(ComAnn("sets data and time to the specified value"), StdAnn())
-//     ),
-//     MethodDecl(
-//       TypeRef(typeNames.i32Type),
-//       "fieldOfDateTime",
-//       List(
-//         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
-//         ArgDecl(TypeRef(typeNames.strType), "unit")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.i32Type))
-//       ),
-//       Seq(ComAnn("return the specified part of date-time as an integer value"), StdAnn())
-//     ),
-//     MethodDecl(
-//       TypeRef(typeNames.boolType),
-//       "isDefined",
-//       List(
-//         ArgDecl(TypeRef(typeNames.autoType), "x")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.boolType))
-//       ),
-//       Seq(ComAnn("returns true of the provided variable is defined, otherwise false"), StdAnn())
-//     ),
-//     MethodDecl(
-//       DeclType(Var(SymbolRef("x"))),
-//       "coalesce",
-//       List(
-//         ArgDecl(TypeRef(typeNames.autoType), "x"),
-//         ArgDecl(TypeRef(typeNames.autoType), "y")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("x"))))
-//       ),
-//       Seq(ComAnn("returns the first non-null value out of two values that were provided"), StdAnn())
-//     ),
-//     MethodDecl(
-//       TypeRef(typeNames.dateType),
-//       "today",
-//       List.empty[ArgDecl],
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.dateType))
-//       ),
-//       Seq(ComAnn("returns today as date"), StdAnn())
-//     ),
-//     MethodDecl(
-//       TypeRef(typeNames.datetimeType),
-//       "now",
-//       List.empty[ArgDecl],
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = TypeRef(typeNames.datetimeType))
-//       ),
-//       Seq(ComAnn("returns current date and time as date-time"), StdAnn())
-//     ),
-//     MethodDecl(
-//       DeclType(Var(SymbolRef("value"))),
-//       "round",
-//       List(
-//         ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
-//         ArgDecl(TypeRef(typeNames.i32Type), "precision")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
-//       ),
-//       Seq(ComAnn("rounds the provided value with the given precision"), StdAnn())
-//     ),
-//     MethodDecl(
-//       DeclType(Var(SymbolRef("value"))),
-//       "truncate",
-//       List(
-//         ArgDecl(TypeRef(typeNames.autoType), "value"), // f32, f64, dec
-//         ArgDecl(TypeRef(typeNames.i32Type), "precision")
-//       ),
-//       Block(
-//         CompiledExpr(callback = CompiledExpr.idCallback, retType = DeclType(Var(SymbolRef("value"))))
-//       ),
-//       Seq(ComAnn("truncates the provided value with the given precision"), StdAnn())
-//     )
-//   )
+    builtInTypes ++ builtInMethods
