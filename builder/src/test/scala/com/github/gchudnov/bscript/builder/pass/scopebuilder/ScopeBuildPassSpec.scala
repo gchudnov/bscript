@@ -501,7 +501,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.symbolsByName("k").size mustBe (1)
 
           case Left(t) => 
-          fail("Should be 'right", t)
+            fail("Should be 'right", t)
       }
 
       /**
@@ -718,7 +718,8 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.scopesBySymbol(SymbolRef("a")).map(_.name) must contain theSameElementsAs (List("a.a"))
             outState.scopesBySymbol(SymbolRef("f")).map(_.name) must contain theSameElementsAs (List("a.a"))
 
-          case Left(t) => fail("Should be 'right", t)
+          case Left(t) => 
+            fail("Should be 'right", t)
       }
 
       /**
