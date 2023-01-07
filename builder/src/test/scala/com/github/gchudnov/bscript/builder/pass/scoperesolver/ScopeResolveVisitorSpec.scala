@@ -15,10 +15,10 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.BGlobals
 
-import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
+// import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
-import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
-import com.github.gchudnov.bscript.builder.internal.scoperesolver.ScopeResolveVisitor
+// import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
+// import com.github.gchudnov.bscript.builder.internal.scoperesolver.ScopeResolveVisitor
 
 /**
  * ScopeResolveVisitorSpec
@@ -1076,18 +1076,19 @@ final class ScopeResolveVisitorSpec extends TestSpec:
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
   private def eval(ast0: AST): Either[Throwable, State] =
-    val v1                    = ScopeBuildVisitor.make()
-    val v2 = ScopeResolveVisitor.make()
+    // val v1                    = ScopeBuildVisitor.make()
+    // val v2 = ScopeResolveVisitor.make()
 
-    val s1                    = BGlobals.make(ScopeBuilder.make().push())
-    val s2 = v1.foldAST(s1, ast0)
+    // val s1                    = BGlobals.make(ScopeBuilder.make().push())
+    // val s2 = v1.foldAST(s1, ast0)
 
-    val s3 = s2.toResolver
-    val s4 = v2.foldAST(s3, ast0)
+    // val s3 = s2.toResolver
+    // val s4 = v2.foldAST(s3, ast0)
 
-    val meta = s4.result
+    // val meta = s4.result
 
-    Right(State(ast0, meta))
+    // Right(State(ast0, meta))
+    ???
 
 object ScopeResolveVisitorSpec:
 

@@ -1,5 +1,8 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuilder
 
-import com.github.gchudnov.bscript.lang.ast.AST
+final case class ScopeBuildInState()
 
-final case class ScopeBuildInState(ast: AST)
+object ScopeBuildInState:
+
+  val empty: ScopeBuildInState = 
+    ScopeBuildInState()

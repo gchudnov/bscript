@@ -63,16 +63,16 @@ import com.github.gchudnov.bscript.builder.pass.Pass
  */
 private[builder] final class ScopeBuildPass() extends Pass:
 
-  type In = ScopeBuildInState
-  type Out = ScopeBuildOutState
+  type In = (AST, ScopeBuildInState)
+  type Out = (AST, ScopeBuildOutState)
 
   override def go(in: In): Out =
     val folder = ScopeBuildFolder.make()
 
-    val ast = in.ast
-    val state0 = ScopeBuildState.from(in)
+    val (ast, stateIn) = in
+    val state0 = ScopeBuildState.from(stateIn)
     val state1 = folder.foldAST(state0, ast)
 
-    val out = ScopeBuildState.to(ast, state1)
+    val stateOut = ScopeBuildState.to(state1)
 
-    out
+    (ast, stateOut)

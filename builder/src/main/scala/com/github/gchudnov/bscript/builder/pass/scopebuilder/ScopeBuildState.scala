@@ -48,9 +48,8 @@ object ScopeBuildState:
   def from(s: ScopeBuildInState): ScopeBuildState =
     empty
 
-  def to(ast: AST, s: ScopeBuildState): ScopeBuildOutState =
+  def to(s: ScopeBuildState): ScopeBuildOutState =
     ScopeBuildOutState(
-      ast = ast,
       forest = s.cursor.forest,
       scopeSymbols = s.scopeSymbols, 
       scopeAsts = s.scopeAsts
