@@ -520,10 +520,38 @@ final class ScopeBuildPassSpec extends TestSpec:
        *   }
        * }}}
        */
-      // "set in the scope for collections" in {
+      // "auto-defined for collections" in {
       //   val t = Block.of(
-      //     VarDecl(Auto(), "a", Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
+      //     StructDecl("Vec", List(TypeDecl("T")), List.empty[VarDecl]),
+      //     VarDecl("a", Auto(), Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
       //   )
+
+      //   // Applied(TypeIdent("List"), List(TypeIdent("Int")))
+
+      //   val errOrRes = eval(t)
+      //   errOrRes match
+      //     case Right((ast, outState)) =>
+      //       outState.forestSize mustBe 2
+      //       outState.symbolsByName("a").size mustBe (1)
+      //     case Left(t) => fail("Should be 'right", t)
+      // }
+
+      // /**
+      //  * TODO: NOT CLEAR HOW TO REPRESENT A VECTOR
+      //  * {{{
+      //  *   // globals
+      //  *   {
+      //  *     int[] a = [1, 2, 3];
+      //  *   }
+      //  * }}}
+      //  */
+      // "explicitly defined for collections" in {
+      //   val t = Block.of(
+      //     StructDecl("Vec", List(TypeDecl("T")), List.empty[VarDecl]),
+      //     VarDecl("a", Applied(TypeId("Vec"), List(TypeId(TypeName.i32))), Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
+      //   )
+
+      //   // Applied(TypeIdent("List"), List(TypeIdent("Int")))
 
       //   val errOrRes = eval(t)
       //   errOrRes match
@@ -537,11 +565,11 @@ final class ScopeBuildPassSpec extends TestSpec:
        * {{{
        *   // globals
        *   {
-       *     int x = nothing;
+       *     auto x = nothing;
        *   }
        * }}}
        */
-      "allow nothing in declaration" in {
+      "allow nothing in declaration with auto-type deduction" in {
         val t = Block.of(
           VarDecl("x", Auto(), Literal(NullVal()))
         )
@@ -549,7 +577,30 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right((ast, outState)) =>
-            outState.forestSize mustBe 2
+            outState.forestSize mustBe 1
+            outState.symbolsByName("x").size mustBe (1)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int x = nothing;
+       *   }
+       * }}}
+       */
+      "allow nothing in declaration with explicit type" in {
+        val t = Block.of(
+          VarDecl("x", TypeId("i32"), Literal(NullVal()))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right((ast, outState)) =>
+            outState.forestSize mustBe 1
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) =>
@@ -593,7 +644,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             val callExpr        = blockStatements.last.asInstanceOf[Call]
             val callScope       = outState.scopeByAST(callExpr)
 
-            callScope.map(_.name) mustBe Some("a.a")
+            callScope.map(_.name) mustBe Some("a")
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -711,19 +762,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right((ast, outState)) =>
-            outState.scopesBySymbol(SymbolRef("b")).map(_.name) must contain theSameElementsAs (List("a.a.c"))
-            outState.scopesBySymbol(SymbolRef("c")).map(_.name) must contain theSameElementsAs (List("a.a.c"))
-            outState.scopesBySymbol(SymbolRef("x")).map(_.name) must contain theSameElementsAs (List("a.a.c"))
+            outState.scopesBySymbol(SymbolRef("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            outState.scopesBySymbol(SymbolRef("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            outState.scopesBySymbol(SymbolRef("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
 
-            outState.scopesBySymbol(SymbolRef("y")).map(_.name) must contain theSameElementsAs (List("a.a.a"))
-            outState.scopesBySymbol(SymbolRef("z")).map(_.name) must contain theSameElementsAs (List("a.a.b"))
-            outState.scopesBySymbol(SymbolRef("i")).map(_.name) must contain theSameElementsAs (List("a.a.d.a.a"))
+            outState.scopesBySymbol(SymbolRef("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            outState.scopesBySymbol(SymbolRef("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
+            outState.scopesBySymbol(SymbolRef("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
 
-            outState.scopesBySymbol(SymbolRef("A")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            outState.scopesBySymbol(SymbolRef("B")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            outState.scopesBySymbol(SymbolRef("D")).map(_.name) must contain theSameElementsAs (List("a.a.d.a"))
-            outState.scopesBySymbol(SymbolRef("a")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            outState.scopesBySymbol(SymbolRef("f")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            outState.scopesBySymbol(SymbolRef("A")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SymbolRef("B")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SymbolRef("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
+            outState.scopesBySymbol(SymbolRef("a")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SymbolRef("f")).map(_.name) must contain theSameElementsAs (List("a"))
 
           case Left(t) =>
             fail("Should be 'right", t)
