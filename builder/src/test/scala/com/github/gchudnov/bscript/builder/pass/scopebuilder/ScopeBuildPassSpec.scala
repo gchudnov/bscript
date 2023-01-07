@@ -28,7 +28,9 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        val t = VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0)))
+        val t = Block.of(
+          VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0)))
+        )
 
         val errOrRes = eval(t)
         errOrRes match
@@ -37,6 +39,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) => 
+            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -53,14 +56,16 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "define nested scopes" in {
-        val t = MethodDecl(
-          "main",
-          List.empty[TypeDecl],
-          List.empty[VarDecl],
-          TypeId(TypeName.i32),
-          Block.of(
-            VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
-            Assign(Id("x"), Literal(IntVal(3)))
+        val t = Block.of(
+          MethodDecl(
+            "main",
+            List.empty[TypeDecl],
+            List.empty[VarDecl],
+            TypeId(TypeName.i32),
+            Block.of(
+              VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
+              Assign(Id("x"), Literal(IntVal(3)))
+            )
           )
         )
 
