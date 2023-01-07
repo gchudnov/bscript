@@ -89,14 +89,16 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "shadow variables" in {
-        val t = MethodDecl(
-          "myFunc",
-          List.empty[TypeDecl],
-          List(VarDecl("x", TypeId(TypeName.i32))),
-          TypeId(TypeName.i32),
-          Block.of(
-            VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
-            Assign(Id("x"), Literal(IntVal(3)))
+        val t = Block.of(
+          MethodDecl(
+            "myFunc",
+            List.empty[TypeDecl],
+            List(VarDecl("x", TypeId(TypeName.i32))),
+            TypeId(TypeName.i32),
+            Block.of(
+              VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
+              Assign(Id("x"), Literal(IntVal(3)))
+            )
           )
         )
 
@@ -156,7 +158,7 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right((ast, outState)) =>
-            outState.forestSize mustBe 6
+            outState.forestSize mustBe 5
             outState.symbolsByName("offsetDateTime").size mustBe (1)
             outState.symbolsByName("fieldOfDateTime").size mustBe (1)
 
@@ -500,7 +502,7 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t)
         errOrRes match
           case Right((ast, outState)) =>
-            outState.forestSize mustBe 2
+            outState.forestSize mustBe 1
             outState.symbolsByName("i").size mustBe (1)
             outState.symbolsByName("j").size mustBe (1)
             outState.symbolsByName("k").size mustBe (1)
