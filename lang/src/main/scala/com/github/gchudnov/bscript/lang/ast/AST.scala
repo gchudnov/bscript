@@ -22,6 +22,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- If
  *      |                +- Init
  *      |                +- Literal
+ *      |                +- NamedArg
  *      |                |
  *      |                +- Col +- Vec
  *      |                +-     +- Dict

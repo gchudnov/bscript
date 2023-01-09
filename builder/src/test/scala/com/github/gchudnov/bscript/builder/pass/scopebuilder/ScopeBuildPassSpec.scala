@@ -39,7 +39,6 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -530,7 +529,6 @@ final class ScopeBuildPassSpec extends TestSpec:
             outState.forestSize mustBe 1
             outState.symbolsByName("a").size mustBe (1)
           case Left(t) => 
-            println(t)
             fail("Should be 'right", t)
       }
 
