@@ -512,7 +512,7 @@ final class ScopeBuildPassSpec extends TestSpec:
       }
 
       /**
-       * TODO: NOT CLEAR HOW TO REPRESENT A VECTOR
+       * TODO: NOT CLEAR HOW TO REPRESENT A VECTOR / DICTIONARY
        * {{{
        *   // globals
        *   {
@@ -526,7 +526,11 @@ final class ScopeBuildPassSpec extends TestSpec:
       //     VarDecl("a", Auto(), Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
       //   )
 
-      //   // Applied(TypeIdent("List"), List(TypeIdent("Int")))
+      // Scala / Applied / What is Type Call ? is that A[B] ???
+
+      // TODO:  Applied(TypeIdent("List"), List(TypeIdent("Int")))
+      // TODO:  Repeated ?? def apply(elems: List[Term], tpt: TypeTree): Repeated ??
+      // TODO:  Projected for a map ? K -> V
 
       //   val errOrRes = eval(t)
       //   errOrRes match

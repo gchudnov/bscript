@@ -22,8 +22,8 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- If
  *      |                +- Init
  *      |                +- Literal
- *      |                +- Vec // ?? TODO: check if needed, or do we want to put this type on the lib-level // Repeated ?? def apply(elems: List[Term], tpt: TypeTree): Repeated ??
- *      |                +- Dict // ? TODO: check if needed
+ *      |                +- Vec
+ *      |                +- Dict
  *      |
  *      +- TypeAST -+- Auto
  *                  +- TypeId

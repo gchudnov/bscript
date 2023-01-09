@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 // import com.github.gchudnov.bscript.lang.symbols.TypeRef
 
 /**
@@ -10,10 +11,12 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  *   [1, 2, 3, 4, 5]
  * }}}
  *
- * @param elements
+ * @param elems
+ *   Elements of the collection
+ * @param elemType
  *   Elements of the collection
  */
-final case class Vec(elements: List[Expr], elementType: Type) extends Expr
+final case class Vec(elems: List[Expr], elemType: TypeAST) extends Expr
 
 // object Vec:
 //   def apply(): Vec =

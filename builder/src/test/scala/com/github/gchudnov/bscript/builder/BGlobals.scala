@@ -17,20 +17,22 @@ object BGlobals:
   def make(): AST =
 
     val builtInTypes = Block.of(
-      TypeDecl(TypeName.nothing),
-      TypeDecl(TypeName.void),
-      TypeDecl(TypeName.bool),
-      TypeDecl(TypeName.i8),
-      TypeDecl(TypeName.i16),
-      TypeDecl(TypeName.i32),
-      TypeDecl(TypeName.i64),
-      TypeDecl(TypeName.f32),
-      TypeDecl(TypeName.f64),
-      TypeDecl(TypeName.dec),
-      TypeDecl(TypeName.chr),
-      TypeDecl(TypeName.str),
-      TypeDecl(TypeName.date),
-      TypeDecl(TypeName.datetime)
+      Annotated.std(TypeDecl(TypeName.nothing)),
+      Annotated.std(TypeDecl(TypeName.void)),
+      Annotated.std(TypeDecl(TypeName.bool)),
+      Annotated.std(TypeDecl(TypeName.i8)),
+      Annotated.std(TypeDecl(TypeName.i16)),
+      Annotated.std(TypeDecl(TypeName.i32)),
+      Annotated.std(TypeDecl(TypeName.i64)),
+      Annotated.std(TypeDecl(TypeName.f32)),
+      Annotated.std(TypeDecl(TypeName.f64)),
+      Annotated.std(TypeDecl(TypeName.dec)),
+      Annotated.std(TypeDecl(TypeName.chr)),
+      Annotated.std(TypeDecl(TypeName.str)),
+      Annotated.std(TypeDecl(TypeName.date)),
+      Annotated.std(TypeDecl(TypeName.datetime)),
+      Annotated.std(StructDecl("Vec", List(TypeDecl("T")), List.empty[VarDecl])),
+      Annotated.std(StructDecl("Map", List(TypeDecl("K"), TypeDecl("V")), List.empty[VarDecl])),
     )
 
     val builtInMethods = Block.of(
