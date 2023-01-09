@@ -47,6 +47,10 @@ trait AstFolder[S]:
         s
       case Applied(aType, args) =>
         foldASTs(foldAST(s, aType), args)
+      case Vec(elems, elemType) =>
+        foldASTs(foldAST(s, elemType), elems)
+      case Dict(m, keyType, valType) =>
+        m.foldLeft(foldAST(foldAST(s, keyType), valType))({ case (acc, (k, v)) => foldAST(acc, v) })
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 

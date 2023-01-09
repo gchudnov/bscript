@@ -41,6 +41,12 @@ private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuil
         foldOverAST(s, x)
       case x @ Applied(aType, args) =>
         foldOverAST(s, x)
+      case x @ Vec(elems, elemType) =>
+        foldOverAST(s, x)
+      case x @ Dict(m, keyType, valType) =>
+        foldOverAST(s, x)
+      case other =>
+        throw new MatchError(s"Unsupported AST type in ScopeBuildFolder: ${other}")
 
 private[scopebuilder] object ScopeBuildFolder:
 

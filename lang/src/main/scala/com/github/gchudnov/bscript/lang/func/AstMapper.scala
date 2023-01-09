@@ -60,6 +60,8 @@ trait AstMapper:
         a
       case a @ Literal(const) =>
         a
+      case a: Col =>
+        mapCol(a)
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 
@@ -84,6 +86,10 @@ trait AstMapper:
         a
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
+
+  // TODO: it is not clear if we need to have Col / Vec / Dict at all
+  def mapCol(ast: Col): Col =
+    ???
 
   def mapASTs(asts: List[AST]): List[AST] =
     asts.mapConserve(x => mapAST(x))

@@ -512,7 +512,6 @@ final class ScopeBuildPassSpec extends TestSpec:
       }
 
       /**
-       * TODO: NOT CLEAR HOW TO REPRESENT A VECTOR / DICTIONARY
        * {{{
        *   // globals
        *   {
@@ -520,50 +519,41 @@ final class ScopeBuildPassSpec extends TestSpec:
        *   }
        * }}}
        */
-      // "auto-defined for collections" in {
-      //   val t = Block.of(
-      //     StructDecl("Vec", List(TypeDecl("T")), List.empty[VarDecl]),
-      //     VarDecl("a", Auto(), Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
-      //   )
+      "auto-defined for collections" in {
+        val t = Block.of(
+          VarDecl("a", Auto(), Vec(List(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3))), Auto()))
+        )
 
-      // Scala / Applied / What is Type Call ? is that A[B] ???
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right((ast, outState)) =>
+            outState.forestSize mustBe 1
+            outState.symbolsByName("a").size mustBe (1)
+          case Left(t) => 
+            println(t)
+            fail("Should be 'right", t)
+      }
 
-      // TODO:  Applied(TypeIdent("List"), List(TypeIdent("Int")))
-      // TODO:  Repeated ?? def apply(elems: List[Term], tpt: TypeTree): Repeated ??
-      // TODO:  Projected for a map ? K -> V
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     int[] a = [1, 2, 3];
+       *   }
+       * }}}
+       */
+      "explicitly defined for collections" in {
+        val t = Block.of(
+          VarDecl("a", Applied(TypeId("Vec"), List(TypeId(TypeName.i32))), Vec(List(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3))), Auto()))
+        )
 
-      //   val errOrRes = eval(t)
-      //   errOrRes match
-      //     case Right((ast, outState)) =>
-      //       outState.forestSize mustBe 2
-      //       outState.symbolsByName("a").size mustBe (1)
-      //     case Left(t) => fail("Should be 'right", t)
-      // }
-
-      // /**
-      //  * TODO: NOT CLEAR HOW TO REPRESENT A VECTOR
-      //  * {{{
-      //  *   // globals
-      //  *   {
-      //  *     int[] a = [1, 2, 3];
-      //  *   }
-      //  * }}}
-      //  */
-      // "explicitly defined for collections" in {
-      //   val t = Block.of(
-      //     StructDecl("Vec", List(TypeDecl("T")), List.empty[VarDecl]),
-      //     VarDecl("a", Applied(TypeId("Vec"), List(TypeId(TypeName.i32))), Vec(Seq(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3)))))
-      //   )
-
-      //   // Applied(TypeIdent("List"), List(TypeIdent("Int")))
-
-      //   val errOrRes = eval(t)
-      //   errOrRes match
-      //     case Right((ast, outState)) =>
-      //       outState.forestSize mustBe 2
-      //       outState.symbolsByName("a").size mustBe (1)
-      //     case Left(t) => fail("Should be 'right", t)
-      // }
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right((ast, outState)) =>
+            outState.forestSize mustBe 1
+            outState.symbolsByName("a").size mustBe (1)
+          case Left(t) => fail("Should be 'right", t)
+      }
 
       /**
        * {{{
@@ -785,6 +775,7 @@ final class ScopeBuildPassSpec extends TestSpec:
       }
 
       /**
+       * TODO: not clear how to init the struct
        * {{{
        *   // globals
        *   {

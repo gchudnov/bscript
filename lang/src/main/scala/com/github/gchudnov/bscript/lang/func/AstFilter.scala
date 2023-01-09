@@ -78,6 +78,8 @@ trait AstFilter:
         Some(a)
       case a @ Literal(const) =>
         Some(a)
+      case a: Col =>
+        filterCol(a)
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 
@@ -113,6 +115,10 @@ trait AstFilter:
         Some(a)
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
+
+  // TODO: it is not clear if we need to have Col / Vec / Dict at all
+  def filterCol(ast: Col): Option[Col] =
+    ???
 
   def filterASTs(asts: List[AST]): List[AST] =
     asts.flatMap(x => filterAST(x))

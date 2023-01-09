@@ -10,4 +10,4 @@ import com.github.gchudnov.bscript.lang.const.Const
   * @param keyType type of a key
   * @param valType type of a value
   */
-final case class Dict(m: Map[Const, Expr], keyType: TypeAST, valType: TypeAST) extends Expr
+final case class Dict(m: Map[Const, Expr], keyType: TypeAST, valType: TypeAST) extends Col

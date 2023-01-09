@@ -17,6 +17,7 @@ object BGlobals:
   def make(): AST =
 
     val builtInTypes = Block.of(
+      // TODO: probably we need to define Std struct and self-annotate it.
       Annotated.std(TypeDecl(TypeName.nothing)),
       Annotated.std(TypeDecl(TypeName.void)),
       Annotated.std(TypeDecl(TypeName.bool)),

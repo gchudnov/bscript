@@ -16,7 +16,7 @@ import com.github.gchudnov.bscript.lang.ast.types.TypeAST
  * @param elemType
  *   Elements of the collection
  */
-final case class Vec(elems: List[Expr], elemType: TypeAST) extends Expr
+final case class Vec(elems: List[Expr], elemType: TypeAST) extends Col
 
 // object Vec:
 //   def apply(): Vec =
