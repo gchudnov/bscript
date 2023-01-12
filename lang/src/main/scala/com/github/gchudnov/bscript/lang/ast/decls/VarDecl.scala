@@ -1,7 +1,7 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.lang.ast.decls
 
-import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
-import com.github.gchudnov.bscript.lang.ast.types.TypeAST
+import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.ast.*
 
 /**
  * Variable Declaration

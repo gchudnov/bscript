@@ -1,11 +1,15 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+
+import com.github.gchudnov.bscript.lang.ast.decls.TypeDecl
+import com.github.gchudnov.bscript.lang.ast.decls.VarDeclpackage com.github.gchudnov.bscript.builder.pass.scopebuilder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
-private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
+import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
+
+import com.github.gchudnov.bscript.lang.ast.decls.StructDeclprivate[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
 
   override def foldAST(s: ScopeBuildState, ast: AST): ScopeBuildState =
     ast match

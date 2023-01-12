@@ -1,9 +1,10 @@
-package com.github.gchudnov.bscript.builder.state
+
+import com.github.gchudnov.bscript.lang.ast.decls.VarDeclpackage com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.TestSpec
 // import com.github.gchudnov.bscript.builder.internal.MetaOps.findMember
-import com.github.gchudnov.bscript.lang.ast.{ Block as AstBlock, MethodDecl, VarDecl }
-import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.lang.ast.{ Block as AstBlock, VarDecl }
+import com.github.gchudnov.bscript.lang.ast.decls.MethodDeclimport com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.util.Ptr
 
 final class ScopeStateSpec extends TestSpec:

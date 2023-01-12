@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.lang.ast.decls
 
 /**
  * Type Definition, generics or built-in types

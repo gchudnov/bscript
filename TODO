@@ -8,6 +8,9 @@ https://dev.to/nakabonne/take-a-walk-the-go-ast-e02
 https://blog.bradleygore.com/2022/04/18/ast-in-go-p1/
 https://yuroyoro.github.io/goast-viewer/index.html
 
+https://github.com/golang/exp/tree/master/typeparams/example
+
+
 - TODO: How to init a struct in AST?? ^^^
 
 

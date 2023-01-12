@@ -1,5 +1,6 @@
 package com.github.gchudnov.bscript.lang.ast
 
+import com.github.gchudnov.bscript.lang.ast.decls.TypeDecl
 /**
  * Annotation attached to some Expr
  *

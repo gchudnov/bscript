@@ -1,9 +1,14 @@
-package com.github.gchudnov.bscript.lang.func
+
+import com.github.gchudnov.bscript.lang.ast.decls.Decl
+import com.github.gchudnov.bscript.lang.ast.decls.TypeDeclpackage com.github.gchudnov.bscript.lang.func
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 
-/**
+import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
+
+import com.github.gchudnov.bscript.lang.ast.decls.StructDecl/
+import com.github.gchudnov.bscript.lang.ast.decls.VarDecl**
  * Maps AST
  *
  * Usage:

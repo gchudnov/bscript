@@ -1,4 +1,5 @@
-package com.github.gchudnov.bscript.builder
+
+import com.github.gchudnov.bscript.lang.ast.decls.TypeDeclpackage com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
@@ -9,7 +10,10 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
 
-/**
+import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
+
+import com.github.gchudnov.bscript.lang.ast.decls.StructDecl/
+import com.github.gchudnov.bscript.lang.ast.decls.VarDecl**
  * Globals for building
  */
 object BGlobals:

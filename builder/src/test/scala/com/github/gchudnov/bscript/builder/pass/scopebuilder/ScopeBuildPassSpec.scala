@@ -1,4 +1,5 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+
+import com.github.gchudnov.bscript.lang.ast.decls.TypeDeclpackage com.github.gchudnov.bscript.builder.pass.scopebuilder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
@@ -12,7 +13,10 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import scala.util.control.Exception.*
 
-/**
+import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
+
+import com.github.gchudnov.bscript.lang.ast.decls.StructDecl/
+import com.github.gchudnov.bscript.lang.ast.decls.VarDecl**
  * ScopeBuildPassSpec
  */
 final class ScopeBuildPassSpec extends TestSpec:

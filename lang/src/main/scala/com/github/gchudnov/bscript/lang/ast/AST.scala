@@ -21,15 +21,21 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- Compiled
  *      |                +- If
  *      |                +- Init
- *      |                +- Literal
  *      |                +- NamedArg
  *      |                |
  *      |                +- Col +- Vec
  *      |                +-     +- Dict
+ *      |                |
+ *      |                +- Lit +- ConstLit
+ *      |                       +- ColLit    /// ?? VecLit, MapLit ???
+ *      |                       +- MethodLit
  *      |
  *      +- TypeAST -+- Auto
  *                  +- TypeId
- *                  +- Applied
+ *                  +- VecType
+ *                  +- MapType
+ *                  +- StructType
+ *                  +- MethodType
  *
  * Const -+- BoolVal
  *        +- ByteVal
