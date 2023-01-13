@@ -21,10 +21,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- Compiled
  *      |                +- If
  *      |                +- Init
- *      |                +- NamedArg
- *      |                |
- *      |                +- Col +- Vec
- *      |                +-     +- Dict
+ *      |                +- KeyValue
  *      |                |
  *      |                +- Lit +- ConstLit
  *      |                       +- ColLit    /// ?? VecLit, MapLit ???
