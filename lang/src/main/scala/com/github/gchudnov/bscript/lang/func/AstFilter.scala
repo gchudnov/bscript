@@ -4,8 +4,8 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
- 
-/** 
+
+/**
  * Filters AST
  *
  * If predicate returns 'true', the node is kept, otherwise it is removed.
@@ -37,27 +37,33 @@ trait AstFilter:
 
   private def filterTypeAST(ast: TypeAST): Option[TypeAST] =
     ast match
-      case a : Auto =>
+      case a: Auto =>
         if isKeep(a) then Some(a) else None
-      case a : TypeId =>
+      case a: TypeId =>
         if isKeep(a) then Some(a) else None
       case a: VecType =>
-
-
-
-        mapVecType(a)
-      case a: MapType =>
-        mapMapType(a)
-      case a: StructType =>
-        mapStructType(a)
-      case a: MethodType =>
-        mapMethodType(a)
-
-      case a @ Applied(aType, args) =>
         for
-          aType1 <- filterTypeAST(aType)
-          args1   = filterTypeASTs(args)
-        yield a.copy(aType = aType1, args = args1)
+          elemType <- filterTypeAST(a.elemType)
+          vecType  <- if isKeep(a) then Some(a.copy(elemType = elemType)) else None
+        yield vecType
+      case a: MapType =>
+        for
+          keyType   <- filterTypeAST(a.keyType)
+          valueType <- filterTypeAST(a.valueType)
+          mapType   <- if isKeep(a) then Some(a.copy(keyType = keyType, valueType = valueType)) else None
+        yield mapType
+      case a: StructType =>
+        val tfields = filterTypeDecls(a.tfields)
+        val fields  = filterVarDecls(a.fields)
+        for structType <- if isKeep(a) then Some(a.copy(tfields = tfields, fields = fields)) else None
+        yield structType
+      case a: MethodType =>
+        val tparams = filterTypeDecls(a.tparams)
+        val params  = filterVarDecls(a.params)
+        for
+          retType    <- filterTypeAST(a.retType)
+          methodType <- if isKeep(a) then Some(a.copy(tparams = tparams, params = params, retType = retType)) else None
+        yield methodType
       case other =>
         throw new MatchError(s"Unsupported TypeAST: ${other}")
 
@@ -67,75 +73,116 @@ trait AstFilter:
         filterRef(a)
       case a: Decl =>
         filterDecl(a)
-      case a @ Assign(lhs, rhs) =>
+      case a: Annotated =>
+        val tparams = filterTypeDecls(a.tparams)
+        val params  = filterExprs(a.params)
         for
-          lhs1 <- filterRef(lhs)
-          rhs1 <- filterExpr(rhs)
-        yield a.copy(lhs = lhs1, rhs = rhs1)
-      case a @ Block(exprs) =>
-        Some(a.copy(exprs = filterExprs(exprs)))
-      case a @ Call(id, args) =>
+          expr      <- filterExpr(a.expr)
+          id        <- filterRef(a.id)
+          annotated <- if isKeep(a) then Some(a.copy(expr = expr, id = id, tparams = tparams, params = params)) else None
+        yield annotated
+      case a: Assign =>
         for
-          id1  <- filterRef(id)
-          args1 = filterExprs(args)
-        yield a.copy(id = id1, args = args1)
-      case a @ Compiled(callback, retType) =>
-        for retType1 <- filterTypeAST(retType)
-        yield a.copy(retType = retType1)
-      case a @ If(cond, then1, else1) =>
+          lhs    <- filterRef(a.lhs)
+          rhs    <- filterExpr(a.rhs)
+          assign <- if isKeep(a) then Some(a.copy(lhs = lhs, rhs = rhs)) else None
+        yield assign
+      case a: Block =>
+        val exprs = filterExprs(a.exprs)
+        for block <- if isKeep(a) then Some(a.copy(exprs = exprs)) else None
+        yield block
+      case a: Call =>
         for
-          cond2 <- filterExpr(cond)
-          then2 <- filterExpr(then1)
-          else2 <- filterExpr(else1)
-        yield a.copy(cond = cond2, then1 = then2, else1 = else2)
-      case a @ Init() =>
-        Some(a)
-      case a @ Literal(const) =>
-        Some(a)
-      case a: Col =>
-        filterCol(a)
+          id   <- filterRef(a.id)
+          args  = filterExprs(a.args)
+          call <- if isKeep(a) then Some(a.copy(id = id, args = args)) else None
+        yield call
+      case a: Compiled =>
+        for
+          retType  <- filterTypeAST(a.retType)
+          compiled <- if isKeep(a) then Some(a.copy(retType = retType)) else None
+        yield compiled
+      case a: If =>
+        for
+          cond  <- filterExpr(a.cond)
+          then1 <- filterExpr(a.then1)
+          else1 <- filterExpr(a.else1)
+          if1   <- if isKeep(a) then Some(a.copy(cond = cond, then1 = then1, else1 = else1)) else None
+        yield if1
+      case a: Init =>
+        if isKeep(a) then Some(a) else None
+      case a: KeyValue =>
+        for
+          key      <- filterLit(a.key).map(_.asInstanceOf[ConstLit])
+          value    <- filterExpr(a.value)
+          keyValue <- if isKeep(a) then Some(a.copy(key = key, value = value)) else None
+        yield keyValue
+      case a: Lit =>
+        filterLit(a)
       case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
+        throw new MatchError(s"Unsupported Expr: ${other}")
 
   private def filterRef(ast: Ref): Option[Ref] =
     ast match
-      case a @ Access(x, y) =>
+      case a: Access =>
         for
-          x1 <- filterRef(x)
-          y1 <- filterA(y)
-        yield a.copy(a = x1, b = y1)
-      case a @ Id(name) =>
-        Some(a)
+          x1     <- filterRef(a.a)
+          y1     <- filterRef(a.b).map(_.asInstanceOf[Id])
+          access <- if isKeep(a) then Some(a.copy(a = x1, b = y1)) else None
+        yield access
+      case a: Id =>
+        if isKeep(a) then Some(a) else None
       case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
+        throw new MatchError(s"Unsupported Ref: ${other}")
 
   private def filterDecl(ast: Decl): Option[Decl] =
     ast match
-      case a @ MethodDecl(name, tparams, params, retType, body) =>
+      case a: MethodDecl =>
         for
-          retType1 <- filterTypeAST(retType)
-          body1    <- filterA(body)
-          tparams1  = filterAs(tparams)
-          params1   = filterAs(params)
-        yield a.copy(tparams = tparams1, params = params1, retType = retType1, body = body1)
-      case a @ StructDecl(name, tfields, fields) =>
-        Some(a.copy(tfields = filterAs(tfields), fields = filterAs(fields)))
-      case a @ VarDecl(name, vType, expr) =>
+          mType      <- filterTypeAST(a.mType).map(_.asInstanceOf[MethodType])
+          body       <- filterExpr(a.body).map(_.asInstanceOf[Block])
+          methodDecl <- if isKeep(a) then Some(a.copy(mType = mType, body = body)) else None
+        yield methodDecl
+      case a: StructDecl =>
         for
-          vType1 <- filterTypeAST(vType)
-          expr1  <- filterExpr(expr)
-        yield a.copy(vType = vType1, expr = expr1)
-      case a @ TypeDecl(name) =>
-        Some(a)
+          sType      <- filterTypeAST(a.sType).map(_.asInstanceOf[StructType])
+          structDecl <- if isKeep(a) then Some(a.copy(sType = sType)) else None
+        yield structDecl
+      case a: VarDecl =>
+        for
+          vType   <- filterTypeAST(a.vType)
+          expr    <- filterExpr(a.expr)
+          varDecl <- if isKeep(a) then Some(a.copy(vType = vType, expr = expr)) else None
+        yield varDecl
+      case a: TypeDecl =>
+        if isKeep(a) then Some(a) else None
       case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
+        throw new MatchError(s"Unsupported Decl: ${other}")
 
+  private def filterLit(ast: Lit): Option[Lit] =
+    ast match
+      case a: ConstLit =>
+        if isKeep(a) then Some(a) else None
+      case a: ColLit =>
+        for
+          cType  <- filterTypeAST(a.cType)
+          elems   = filterExprs(a.elems)
+          colLit <- if isKeep(a) then Some(a.copy(cType = cType, elems = elems)) else None
+        yield colLit
+      case a: MethodLit =>
+        for
+          mType     <- filterTypeAST(a.mType).map(_.asInstanceOf[MethodType])
+          body      <- filterExpr(a.body).map(_.asInstanceOf[Block])
+          methodLit <- if isKeep(a) then Some(a.copy(mType = mType, body = body)) else None
+        yield methodLit
+      case other =>
+        throw new MatchError(s"Unsupported Lit: ${other}")
 
-  private def filterASTs(asts: List[AST]): List[AST] =
-    asts.flatMap(x => filterAST(x))
+  private def filterTypeDecls(typeDecls: List[TypeDecl]): List[TypeDecl] =
+    typeDecls.flatMap(it => filterDecl(it).map(_.asInstanceOf[TypeDecl]))
 
-  private def filterTypeASTs(asts: List[TypeAST]): List[TypeAST] =
-    asts.flatMap(x => filterTypeAST(x))
+  private def filterVarDecls(typeDecls: List[VarDecl]): List[VarDecl] =
+    typeDecls.flatMap(it => filterDecl(it).map(_.asInstanceOf[VarDecl]))
 
-  private def filterExprs(asts: List[Expr]): List[Expr] =
-    asts.flatMap(x => filterExpr(x))
+  private def filterExprs(exprs: List[Expr]): List[Expr] =
+    exprs.flatMap(it => filterExpr(it))
