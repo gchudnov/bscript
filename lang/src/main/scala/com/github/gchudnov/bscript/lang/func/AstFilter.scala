@@ -2,11 +2,8 @@ package com.github.gchudnov.bscript.lang.func
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
-
-import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
-
-import com.github.gchudnov.bscript.lang.ast.decls.StructDecl
-import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
+import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
  
 /** 
  * Filters AST
@@ -29,30 +26,42 @@ trait AstFilter:
       case a: TypeAST =>
         filterTypeAST(a)
       case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
+        throw new MatchError(s"Unsupported AST: ${other}")
 
-  def filterStat(ast: Stat): Option[Stat] =
+  private def filterStat(ast: Stat): Option[Stat] =
     ast match
       case a: Expr =>
         filterExpr(a)
       case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
+        throw new MatchError(s"Unsupported Stat: ${other}")
 
-  def filterTypeAST(ast: TypeAST): Option[TypeAST] =
+  private def filterTypeAST(ast: TypeAST): Option[TypeAST] =
     ast match
-      case a @ Auto() =>
-        if isKeep(ast) then Some(a) else None
-      case a @ TypeId(name) =>
+      case a : Auto =>
         if isKeep(a) then Some(a) else None
+      case a : TypeId =>
+        if isKeep(a) then Some(a) else None
+      case a: VecType =>
+
+
+
+        mapVecType(a)
+      case a: MapType =>
+        mapMapType(a)
+      case a: StructType =>
+        mapStructType(a)
+      case a: MethodType =>
+        mapMethodType(a)
+
       case a @ Applied(aType, args) =>
         for
           aType1 <- filterTypeAST(aType)
           args1   = filterTypeASTs(args)
         yield a.copy(aType = aType1, args = args1)
       case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
+        throw new MatchError(s"Unsupported TypeAST: ${other}")
 
-  def filterExpr(ast: Expr): Option[Expr] =
+  private def filterExpr(ast: Expr): Option[Expr] =
     ast match
       case a: Ref =>
         filterRef(a)
@@ -88,7 +97,7 @@ trait AstFilter:
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 
-  def filterRef(ast: Ref): Option[Ref] =
+  private def filterRef(ast: Ref): Option[Ref] =
     ast match
       case a @ Access(x, y) =>
         for
@@ -100,7 +109,7 @@ trait AstFilter:
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 
-  def filterDecl(ast: Decl): Option[Decl] =
+  private def filterDecl(ast: Decl): Option[Decl] =
     ast match
       case a @ MethodDecl(name, tparams, params, retType, body) =>
         for
@@ -121,21 +130,12 @@ trait AstFilter:
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
 
-  // TODO: it is not clear if we need to have Col / Vec / Dict at all
-  def filterCol(ast: Col): Option[Col] =
-    ???
 
-  def filterASTs(asts: List[AST]): List[AST] =
+  private def filterASTs(asts: List[AST]): List[AST] =
     asts.flatMap(x => filterAST(x))
 
-  def filterTypeASTs(asts: List[TypeAST]): List[TypeAST] =
+  private def filterTypeASTs(asts: List[TypeAST]): List[TypeAST] =
     asts.flatMap(x => filterTypeAST(x))
 
-  def filterExprs(asts: List[Expr]): List[Expr] =
+  private def filterExprs(asts: List[Expr]): List[Expr] =
     asts.flatMap(x => filterExpr(x))
-
-  def filterA[A <: AST](ast: A): Option[A] =
-    filterAST(ast).asInstanceOf[Option[A]]
-
-  def filterAs[A <: AST](asts: List[A]): List[A] =
-    asts.mapConserve(x => filterAST(x)).asInstanceOf[List[A]]

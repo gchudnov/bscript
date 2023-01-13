@@ -4,6 +4,7 @@ package com.github.gchudnov.bscript.lang.func
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 
 /**
  * Folds AST
@@ -32,23 +33,29 @@ trait AstFolder[S]:
         s
 
       case Annotated(expr, id, tparams, params) =>
-        ???
+        foldAST(foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), id), expr)
       case Assign(lhs, rhs) =>
         foldAST(foldAST(s, lhs), rhs)
-
-
       case Block(exprs) =>
         foldASTs(s, exprs)
-      case Literal(_) =>
-        s
       case Call(id, args) =>
-        foldASTs(foldAST(s, id), args)
-      case Compiled(_, retType) =>
+        foldAST(foldASTs(s, args), id)
+      case Compiled(cb, retType) =>
         foldAST(s, retType)
       case If(cond, then1, else1) =>
         foldAST(foldAST(foldAST(s, cond), then1), else1)
       case Init() =>
         s
+      case KeyValue(key, value) =>
+        foldAST(foldAST(s, value), key)
+
+      case ConstLit(const) =>
+        s
+      case ColLit(cType, elems) =>
+        foldASTs(foldAST(s, cType), elems)
+      case MethodLit(mType, body) =>
+        foldAST(foldAST(s, mType), body)
+
       case Auto() =>
         s
       case TypeId(name) =>
@@ -61,16 +68,6 @@ trait AstFolder[S]:
         fields.foldLeft(foldASTs(s, tfields))(foldAST)
       case MethodType(tparams, params, retType) =>
         foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), retType)
-
-
-      case Applied(aType, args) =>
-        foldASTs(foldAST(s, aType), args)
-      case Vec(elems, elemType) =>
-        foldASTs(foldAST(s, elemType), elems)
-      case Dict(m, keyType, valType) =>
-        m.foldLeft(foldAST(foldAST(s, keyType), valType))({ case (acc, (k, v)) => foldAST(acc, v) })
-
-
 
       case other =>
         throw new MatchError(s"Unsupported AST type: ${other}")
