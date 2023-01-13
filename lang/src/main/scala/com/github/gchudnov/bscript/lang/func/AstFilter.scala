@@ -5,8 +5,10 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 
 import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
 
-import com.github.gchudnov.bscript.lang.ast.decls.StructDecl/
-import com.github.gchudnov.bscript.lang.ast.decls.VarDecl**
+import com.github.gchudnov.bscript.lang.ast.decls.StructDecl
+import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
+ 
+/** 
  * Filters AST
  *
  * If predicate returns 'true', the node is kept, otherwise it is removed.

@@ -26,13 +26,6 @@ import com.github.gchudnov.bscript.lang.ast.decls.TypeDecl
  * And replaces the original `expr` during compilation.
  *
  * The annotation is evaluated on the compile time.
- *
- * @param expr
- *   Code the annotation attached to
- * @param id
- *   Annotation reference
- * @param params
- *   Parameters passed to annotation
  */
 final case class Annotated(expr: Expr, id: Ref, tparams: List[TypeDecl], params: List[Expr]) extends Expr
 
