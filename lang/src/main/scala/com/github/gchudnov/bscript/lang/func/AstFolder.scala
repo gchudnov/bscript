@@ -6,6 +6,7 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 
+import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
 /**
  * Folds AST
  */
@@ -51,7 +52,7 @@ trait AstFolder[S]:
 
       case ConstLit(const) =>
         s
-      case ColLit(cType, elems) =>
+      case GroupLit(cType, elems) =>
         foldASTs(foldAST(s, cType), elems)
       case MethodLit(mType, body) =>
         foldAST(foldAST(s, mType), body)

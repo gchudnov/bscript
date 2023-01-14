@@ -5,6 +5,7 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 
+import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
 /**
  * Filters AST
  *
@@ -163,12 +164,12 @@ trait AstFilter:
     ast match
       case a: ConstLit =>
         if isKeep(a) then Some(a) else None
-      case a: ColLit =>
+      case a: GroupLit =>
         for
           cType  <- filterTypeAST(a.cType)
           elems   = filterExprs(a.elems)
-          colLit <- if isKeep(a) then Some(a.copy(cType = cType, elems = elems)) else None
-        yield colLit
+          groupLit <- if isKeep(a) then Some(a.copy(cType = cType, elems = elems)) else None
+        yield groupLit
       case a: MethodLit =>
         for
           mType     <- filterTypeAST(a.mType).map(_.asInstanceOf[MethodType])

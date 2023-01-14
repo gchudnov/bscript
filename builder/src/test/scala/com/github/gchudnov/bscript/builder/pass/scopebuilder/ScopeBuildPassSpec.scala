@@ -1,9 +1,10 @@
 
 package com.github.gchudnov.bscript.builder.pass.scopebuilder
 
-import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.builder.Scope
@@ -13,11 +14,6 @@ import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import scala.util.control.Exception.*
-
-import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
-
-import com.github.gchudnov.bscript.lang.ast.decls.StructDecl
-import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
 
 /**
  * ScopeBuildPassSpec
@@ -801,27 +797,28 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           StructDecl("B", List(VarDecl("y", TypeId(TypeName.i32)))),
           StructDecl("A", List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B")))),
-          // VarDecl( TODO: THIS CODE SHOULD NOT BE COMMENTED-OUT, CHECK HOW TO INIT A STRUCT
-          //   "a",
-          //   TypeId("A"),
-          //   Literal(
-          //     StructVal(
-          //       Id("A"),
-          //       Map(
-          //         "x" -> Literal(IntVal(1)),
-          //         "s" -> Literal(StrVal("alice")),
-          //         "b" -> Literal(
-          //           StructVal(
-          //             Id("B"),
-          //             Map(
-          //               "y" -> Literal(IntVal(2))
-          //             )
-          //           )
-          //         )
-          //       )
-          //     )
-          //   )
-          // ),
+          VarDecl(
+            "a",
+            TypeId("A"),
+            ColLit(
+
+              StructVal(
+                Id("A"),
+                Map(
+                  "x" -> Literal(IntVal(1)),
+                  "s" -> Literal(StrVal("alice")),
+                  "b" -> Literal(
+                    StructVal(
+                      Id("B"),
+                      Map(
+                        "y" -> Literal(IntVal(2))
+                      )
+                    )
+                  )
+                )
+              )
+            )
+          ),
           Id("a")
         )
 
