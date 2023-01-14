@@ -2,11 +2,12 @@ package com.github.gchudnov.bscript.builder.visitors
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.const.*
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
 // import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
 import com.github.gchudnov.bscript.builder.Meta
-// import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
@@ -15,7 +16,7 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.BGlobals
 
-import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
+
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
 // import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
@@ -38,7 +39,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
        * }}}
        */
       "eval to build ast" in {
-        val t = VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0)))
+        val t = VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0)))
 
         val errOrRes = eval(t)
         errOrRes match

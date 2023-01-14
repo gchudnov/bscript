@@ -32,7 +32,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "put it in a scope" in {
         val t = Block.of(
-          VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0)))
+          VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0)))
         )
 
         val errOrRes = eval(t)

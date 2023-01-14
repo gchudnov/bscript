@@ -1,19 +1,17 @@
 
-import com.github.gchudnov.bscript.lang.ast.decls.TypeDeclpackage com.github.gchudnov.bscript.builder
+package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.lang.types.TypeName
+import com.github.gchudnov.bscript.lang.types.*
 
 import java.time.{ LocalDate, OffsetDateTime, ZoneId }
 import scala.util.control.Exception.allCatch
 
-import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
-
-import com.github.gchudnov.bscript.lang.ast.decls.StructDecl/
-import com.github.gchudnov.bscript.lang.ast.decls.VarDecl**
+/**
  * Globals for building
  */
 object BGlobals:
@@ -22,44 +20,46 @@ object BGlobals:
 
     val builtInTypes = Block.of(
       // TODO: probably we need to define Std struct and self-annotate it.
-      Annotated.std(TypeDecl(TypeName.nothing)),
-      Annotated.std(TypeDecl(TypeName.void)),
-      Annotated.std(TypeDecl(TypeName.bool)),
-      Annotated.std(TypeDecl(TypeName.i8)),
-      Annotated.std(TypeDecl(TypeName.i16)),
-      Annotated.std(TypeDecl(TypeName.i32)),
-      Annotated.std(TypeDecl(TypeName.i64)),
-      Annotated.std(TypeDecl(TypeName.f32)),
-      Annotated.std(TypeDecl(TypeName.f64)),
-      Annotated.std(TypeDecl(TypeName.dec)),
-      Annotated.std(TypeDecl(TypeName.chr)),
-      Annotated.std(TypeDecl(TypeName.str)),
-      Annotated.std(TypeDecl(TypeName.date)),
-      Annotated.std(TypeDecl(TypeName.datetime)),
-      Annotated.std(StructDecl("Vec", List(TypeDecl("T")), List.empty[VarDecl])),
-      Annotated.std(StructDecl("Map", List(TypeDecl("K"), TypeDecl("V")), List.empty[VarDecl])),
+      TypeDecl(TypeName.nothing),
+      TypeDecl(TypeName.void),
+      TypeDecl(TypeName.bool),
+      TypeDecl(TypeName.i8),
+      TypeDecl(TypeName.i16),
+      TypeDecl(TypeName.i32),
+      TypeDecl(TypeName.i64),
+      TypeDecl(TypeName.f32),
+      TypeDecl(TypeName.f64),
+      TypeDecl(TypeName.dec),
+      TypeDecl(TypeName.chr),
+      TypeDecl(TypeName.str),
+      TypeDecl(TypeName.date),
+      TypeDecl(TypeName.datetime),
     )
 
     val builtInMethods = Block.of(
       // prints the formatted string to StdOut
       MethodDecl(
         "printf",
-        List(TypeDecl("T")),
-        List(
-          VarDecl("format", TypeId(TypeName.str)),
-          VarDecl("value", TypeId("T"))
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("format", TypeId(TypeName.str)),
+            VarDecl("value", TypeId("T"))
+          ),
+          TypeId(TypeName.void),
         ),
-        TypeId(TypeName.void),
         Block.empty
       ),
       // returns the length of the provided string
       MethodDecl(
         "strLen",
-        List.empty[TypeDecl],
-        List(
-          VarDecl("s", TypeId(TypeName.str))
+        MethodType(
+          List.empty[TypeDecl],
+          List(
+            VarDecl("s", TypeId(TypeName.str))
+          ),
+          TypeId(TypeName.i32),
         ),
-        TypeId(TypeName.i32),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
         )
@@ -67,13 +67,15 @@ object BGlobals:
       // offsets the provided date-time
       MethodDecl(
         "offsetDateTime",
-        List.empty[TypeDecl],
-        List(
-          VarDecl("value", TypeId(TypeName.datetime)),
-          VarDecl("offset", TypeId(TypeName.i32)),
-          VarDecl("unit", TypeId(TypeName.str))
+        MethodType(
+          List.empty[TypeDecl],
+          List(
+            VarDecl("value", TypeId(TypeName.datetime)),
+            VarDecl("offset", TypeId(TypeName.i32)),
+            VarDecl("unit", TypeId(TypeName.str))
+          ),
+          TypeId(TypeName.datetime),
         ),
-        TypeId(TypeName.datetime),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
         )
@@ -81,13 +83,15 @@ object BGlobals:
       // sets data and time to the specified value
       MethodDecl(
         "setDateTime",
-        List.empty[TypeDecl],
-        List(
-          VarDecl("value", TypeId(TypeName.datetime)),
-          VarDecl("offset", TypeId(TypeName.i32)),
-          VarDecl("unit", TypeId(TypeName.str))
+        MethodType(
+          List.empty[TypeDecl],
+          List(
+            VarDecl("value", TypeId(TypeName.datetime)),
+            VarDecl("offset", TypeId(TypeName.i32)),
+            VarDecl("unit", TypeId(TypeName.str))
+          ),
+          TypeId(TypeName.datetime),
         ),
-        TypeId(TypeName.datetime),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
         )
@@ -95,12 +99,14 @@ object BGlobals:
       // returns the specified part of date-time as an integer value
       MethodDecl(
         "fieldOfDateTime",
-        List.empty[TypeDecl],
-        List(
-          VarDecl("value", TypeId(TypeName.datetime)),
-          VarDecl("unit", TypeId(TypeName.str))
+        MethodType(
+          List.empty[TypeDecl],
+          List(
+            VarDecl("value", TypeId(TypeName.datetime)),
+            VarDecl("unit", TypeId(TypeName.str))
+          ),
+          TypeId(TypeName.i32),
         ),
-        TypeId(TypeName.i32),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
         )
@@ -108,11 +114,13 @@ object BGlobals:
       // returns true of the provided variable is defined, otherwise false
       MethodDecl(
         "isDefined",
-        List(TypeDecl("T")),
-        List(
-          VarDecl("x", TypeId("T"))
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("x", TypeId("T"))
+          ),
+          TypeId(TypeName.bool),
         ),
-        TypeId(TypeName.bool),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.bool))
         )
@@ -120,12 +128,14 @@ object BGlobals:
       // returns the first non-null value out of two values that were provided
       MethodDecl(
         "coalesce",
-        List(TypeDecl("T")),
-        List(
-          VarDecl("x", TypeId("T")),
-          VarDecl("y", TypeId("T"))
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("x", TypeId("T")),
+            VarDecl("y", TypeId("T"))
+          ),
+          TypeId("T"),
         ),
-        TypeId("T"),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId("T"))
         )
@@ -133,8 +143,11 @@ object BGlobals:
       // returns today as a date
       MethodDecl(
         "today",
-        List.empty[VarDecl],
-        TypeId(TypeName.date),
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.date),
+        ),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.date))
         )
@@ -142,8 +155,11 @@ object BGlobals:
       // returns current date and time as date-time
       MethodDecl(
         "now",
-        List.empty[VarDecl],
-        TypeId(TypeName.datetime),
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.datetime),
+        ),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
         )
@@ -151,12 +167,14 @@ object BGlobals:
       // rounds the provided value with the given precision
       MethodDecl(
         "round",
-        List(TypeDecl("T")),
-        List(
-          VarDecl("value", TypeId("T")), // f32, f64, dec
-          VarDecl("precision", TypeId(TypeName.i32))
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("value", TypeId("T")), // f32, f64, dec
+            VarDecl("precision", TypeId(TypeName.i32))
+          ),
+          TypeId("T"),
         ),
-        TypeId("T"),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId("T"))
         )
@@ -164,16 +182,122 @@ object BGlobals:
       // truncates the provided value with the given precision
       MethodDecl(
         "truncate",
-        List(TypeDecl("T")),
-        List(
-          VarDecl("value", TypeId("T")), // f32, f64, dec
-          VarDecl("precision", TypeId(TypeName.i32))
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("value", TypeId("T")), // f32, f64, dec
+            VarDecl("precision", TypeId(TypeName.i32))
+          ),
+          TypeId("T"),
         ),
-        TypeId("T"),
         Block.of(
           Compiled(callback = Compiled.identity, retType = TypeId("T"))
         )
-      )
+      ),
+      // checks whether the provided array contains the given element
+      MethodDecl(
+        "contains",
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("xs", VecType(TypeId("T"))), // array[T]
+            VarDecl("x", TypeId("T")), // f32, f64, dec
+          ),
+          TypeId(TypeName.bool),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.bool))
+        )
+      ),
+      // checks whether the provided map contains the given element
+      MethodDecl(
+        "contains",
+        MethodType(
+          List(TypeDecl("K"), TypeDecl("V")),
+          List(
+            VarDecl("x", TypeId("K")), // f32, f64, dec
+            VarDecl("m", MapType(TypeId("K"), TypeId("V"))), // map[K, V]
+          ),
+          TypeId(TypeName.bool),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.bool))
+        )
+      ),
+      // returns the length of the array
+      MethodDecl(
+        "len",
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("xs", VecType(TypeId("T"))), // array[T]
+          ),
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
+        )
+      ),
+      // returns the number of keys in the map
+      MethodDecl(
+        "len",
+        MethodType(
+          List(TypeDecl("K"), TypeDecl("V")),
+          List(
+            VarDecl("m", MapType(TypeId("K"), TypeId("V"))), // map[K, V]
+          ),
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
+        )
+      ),
+      // gets an element of the array at position N
+      MethodDecl(
+        "get",
+        MethodType(
+          List(TypeDecl("T")),
+          List(
+            VarDecl("xs", VecType(TypeId("T"))), // array[T]
+            VarDecl("pos", TypeId(TypeName.i32)),
+          ),
+          TypeId("T"),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("T"))
+        )
+      ),
+      // gets an element of the map by key K
+      MethodDecl(
+        "get",
+        MethodType(
+          List(TypeDecl("K"), TypeDecl("V")),
+          List(
+            VarDecl("m", MapType(TypeId("K"), TypeId("V"))), // map[K, V]
+            VarDecl("key", TypeId("K"))
+          ),
+          TypeId("V"),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("V"))
+        )
+      ),
+      // sets the element of the map by key K
+      MethodDecl(
+        "set",
+        MethodType(
+          List(TypeDecl("K"), TypeDecl("V")),
+          List(
+            VarDecl("m", MapType(TypeId("K"), TypeId("V"))), // map[K, V]
+            VarDecl("key", TypeId("K")),
+            VarDecl("value", TypeId("V"))
+          ),
+           MapType(TypeId("K"), TypeId("V")),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType =  MapType(TypeId("K"), TypeId("V")))
+        )
+      ),
     )
 
     builtInTypes ++ builtInMethods
