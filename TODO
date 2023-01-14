@@ -1,8 +1,6 @@
 
 - TODO: add generics? (a primitive ones)
 
-- GO AST
-
 https://mytechshares.com/2022/04/10/gopher-should-know-goast/
 https://dev.to/nakabonne/take-a-walk-the-go-ast-e02
 https://blog.bradleygore.com/2022/04/18/ast-in-go-p1/

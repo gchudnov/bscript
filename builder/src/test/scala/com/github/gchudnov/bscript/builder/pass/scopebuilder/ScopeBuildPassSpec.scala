@@ -1,4 +1,3 @@
-
 package com.github.gchudnov.bscript.builder.pass.scopebuilder
 
 import com.github.gchudnov.bscript.lang.ast.*
@@ -64,7 +63,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List.empty[VarDecl],
-              TypeId(TypeName.i32),
+              TypeId(TypeName.i32)
             ),
             Block.of(
               VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
@@ -99,7 +98,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List(VarDecl("x", TypeId(TypeName.i32))),
-              TypeId(TypeName.i32),
+              TypeId(TypeName.i32)
             ),
             Block.of(
               VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
@@ -143,7 +142,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("offset", TypeId(TypeName.i32)),
                 VarDecl("unit", TypeId(TypeName.str))
               ),
-              TypeId(TypeName.datetime),
+              TypeId(TypeName.datetime)
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
@@ -157,7 +156,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("value", TypeId(TypeName.datetime)),
                 VarDecl("unit", TypeId(TypeName.str))
               ),
-              TypeId(TypeName.i32),
+              TypeId(TypeName.i32)
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
@@ -195,7 +194,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("lhs", TypeId(TypeName.i32)),
                 VarDecl("rhs", TypeId(TypeName.i32))
               ),
-              TypeId(TypeName.i32),
+              TypeId(TypeName.i32)
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
@@ -230,9 +229,9 @@ final class ScopeBuildPassSpec extends TestSpec:
               List.empty[TypeDecl],
               List(
                 VarDecl("lhs", TypeId(TypeName.f64)),
-                VarDecl("rhs", TypeId(TypeName.i32)),
+                VarDecl("rhs", TypeId(TypeName.i32))
               ),
-              TypeId(TypeName.f64),
+              TypeId(TypeName.f64)
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64))
@@ -269,7 +268,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("lhs", TypeId(TypeName.i32)),
                 VarDecl("rhs", TypeId(TypeName.i32))
               ),
-              TypeId(TypeName.i32),
+              TypeId(TypeName.i32)
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
@@ -306,7 +305,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("lhs", TypeId("T")),
                 VarDecl("rhs", TypeId("T"))
               ),
-              TypeId("T"),
+              TypeId("T")
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId("T"))
@@ -343,7 +342,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("lhs", TypeId("T")),
                 VarDecl("rhs", TypeId("U"))
               ),
-              TypeId("R"),
+              TypeId("R")
             ),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId("R"))
@@ -549,7 +548,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right((ast, outState)) =>
             outState.forestSize mustBe 1
             outState.symbolsByName("a").size mustBe (1)
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
@@ -642,7 +641,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                 VarDecl("format", TypeId(TypeName.str)),
                 VarDecl("value", Auto())
               ),
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.empty
           ),
@@ -689,7 +688,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List.empty[VarDecl],
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.of(
               VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(0))),
@@ -706,7 +705,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List.empty[VarDecl],
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.of(
               VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
@@ -767,7 +766,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List.empty[VarDecl],
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.of(
               StructDecl("D", StructType(List.empty[TypeDecl], List(VarDecl("i", TypeId(TypeName.i32))))),
@@ -802,7 +801,6 @@ final class ScopeBuildPassSpec extends TestSpec:
       }
 
       /**
-       * TODO: not clear how to init the struct
        * {{{
        *   // globals
        *   {
@@ -823,28 +821,24 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
           StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B"))))),
-          // VarDecl(
-          //   "a",
-          //   TypeId("A"),
-          //   ColLit(
-
-          //     StructVal(
-          //       Id("A"),
-          //       Map(
-          //         "x" -> ConstLit(IntVal(1)),
-          //         "s" -> ConstLit(StrVal("alice")),
-          //         "b" -> ConstLit(
-          //           StructVal(
-          //             Id("B"),
-          //             Map(
-          //               "y" -> ConstLit(IntVal(2))
-          //             )
-          //           )
-          //         )
-          //       )
-          //     )
-          //   )
-          // ),
+          VarDecl(
+            "a",
+            TypeId("A"),
+            GroupLit(
+              TypeId("A"),
+              List(
+                KeyValue(ConstLit(StrVal("x")), ConstLit(IntVal(1))),
+                KeyValue(ConstLit(StrVal("s")), ConstLit(StrVal("alice"))),
+                KeyValue(
+                  ConstLit(StrVal("b")),
+                  GroupLit(
+                    TypeId("B"),
+                    List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2))))
+                  )
+                )
+              )
+            )
+          ),
           Id("a")
         )
 
@@ -878,7 +872,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List(VarDecl("x", TypeId(TypeName.i32))),
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.of(
               VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(2)))
@@ -889,7 +883,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List(VarDecl("x", TypeId(TypeName.i32))),
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.of(
               VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(1))),
@@ -901,7 +895,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             MethodType(
               List.empty[TypeDecl],
               List.empty[VarDecl],
-              TypeId(TypeName.void),
+              TypeId(TypeName.void)
             ),
             Block.of(
               Call(Id("f"), List(ConstLit(IntVal(3))))
