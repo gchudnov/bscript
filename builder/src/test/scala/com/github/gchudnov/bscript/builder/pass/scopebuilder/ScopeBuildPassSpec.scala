@@ -61,12 +61,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "main",
-            List.empty[TypeDecl],
-            List.empty[VarDecl],
-            TypeId(TypeName.i32),
+            MethodType(
+              List.empty[TypeDecl],
+              List.empty[VarDecl],
+              TypeId(TypeName.i32),
+            ),
             Block.of(
-              VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
-              Assign(Id("x"), Literal(IntVal(3)))
+              VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+              Assign(Id("x"), ConstLit(IntVal(3)))
             )
           )
         )
@@ -94,12 +96,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "myFunc",
-            List.empty[TypeDecl],
-            List(VarDecl("x", TypeId(TypeName.i32))),
-            TypeId(TypeName.i32),
+            MethodType(
+              List.empty[TypeDecl],
+              List(VarDecl("x", TypeId(TypeName.i32))),
+              TypeId(TypeName.i32),
+            ),
             Block.of(
-              VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
-              Assign(Id("x"), Literal(IntVal(3)))
+              VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+              Assign(Id("x"), ConstLit(IntVal(3)))
             )
           )
         )
@@ -132,25 +136,29 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "offsetDateTime",
-            List.empty[TypeDecl],
-            List(
-              VarDecl("value", TypeId(TypeName.datetime)),
-              VarDecl("offset", TypeId(TypeName.i32)),
-              VarDecl("unit", TypeId(TypeName.str))
+            MethodType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("value", TypeId(TypeName.datetime)),
+                VarDecl("offset", TypeId(TypeName.i32)),
+                VarDecl("unit", TypeId(TypeName.str))
+              ),
+              TypeId(TypeName.datetime),
             ),
-            TypeId(TypeName.datetime),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
             )
           ),
           MethodDecl(
             "fieldOfDateTime",
-            List.empty[TypeDecl],
-            List(
-              VarDecl("value", TypeId(TypeName.datetime)),
-              VarDecl("unit", TypeId(TypeName.str))
+            MethodType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("value", TypeId(TypeName.datetime)),
+                VarDecl("unit", TypeId(TypeName.str))
+              ),
+              TypeId(TypeName.i32),
             ),
-            TypeId(TypeName.i32),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
             )
@@ -181,17 +189,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "+",
-            List.empty[TypeDecl],
-            List(
-              VarDecl("lhs", TypeId(TypeName.i32)),
-              VarDecl("rhs", TypeId(TypeName.i32))
+            MethodType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("lhs", TypeId(TypeName.i32)),
+                VarDecl("rhs", TypeId(TypeName.i32))
+              ),
+              TypeId(TypeName.i32),
             ),
-            TypeId(TypeName.i32),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
             )
           ),
-          Call(Id("+"), List(Literal(IntVal(2)), Literal(IntVal(3))))
+          Call(Id("+"), List(ConstLit(IntVal(2)), ConstLit(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -216,17 +226,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "+",
-            List.empty[TypeDecl],
-            List(
-              VarDecl("lhs", TypeId(TypeName.f64)),
-              VarDecl("rhs", TypeId(TypeName.i32))
+            MethodType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("lhs", TypeId(TypeName.f64)),
+                VarDecl("rhs", TypeId(TypeName.i32)),
+              ),
+              TypeId(TypeName.f64),
             ),
-            TypeId(TypeName.f64),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64))
             )
           ),
-          Call(Id("+"), List(Literal(DoubleVal(1.0)), Literal(IntVal(3))))
+          Call(Id("+"), List(ConstLit(DoubleVal(1.0)), ConstLit(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -251,17 +263,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "+",
-            List.empty[TypeDecl],
-            List(
-              VarDecl("lhs", TypeId(TypeName.i32)),
-              VarDecl("rhs", TypeId(TypeName.i32))
+            MethodType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("lhs", TypeId(TypeName.i32)),
+                VarDecl("rhs", TypeId(TypeName.i32))
+              ),
+              TypeId(TypeName.i32),
             ),
-            TypeId(TypeName.i32),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
             )
           ),
-          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))
+          Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -286,17 +300,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "+",
-            List(TypeDecl("T")),
-            List(
-              VarDecl("lhs", TypeId("T")),
-              VarDecl("rhs", TypeId("T"))
+            MethodType(
+              List(TypeDecl("T")),
+              List(
+                VarDecl("lhs", TypeId("T")),
+                VarDecl("rhs", TypeId("T"))
+              ),
+              TypeId("T"),
             ),
-            TypeId("T"),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId("T"))
             )
           ),
-          Call(Id("+"), List(Literal(StrVal("abc")), Literal(IntVal(3))))
+          Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -321,17 +337,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "+",
-            List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
-            List(
-              VarDecl("lhs", TypeId("T")),
-              VarDecl("rhs", TypeId("U"))
+            MethodType(
+              List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
+              List(
+                VarDecl("lhs", TypeId("T")),
+                VarDecl("rhs", TypeId("U"))
+              ),
+              TypeId("R"),
             ),
-            TypeId("R"),
             Block.of(
               Compiled(callback = Compiled.identity, retType = TypeId("R"))
             )
           ),
-          Call(Id("+"), List(Literal(IntVal(4)), Literal(IntVal(3))))
+          Call(Id("+"), List(ConstLit(IntVal(4)), ConstLit(IntVal(3))))
         )
 
         val errOrRes = eval(t)
@@ -496,9 +514,9 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "be set in a scope" in {
         val t = Block.of(
-          VarDecl("i", TypeId(TypeName.i32), Literal(IntVal(9))),
-          VarDecl("j", TypeId(TypeName.f32), Literal(FloatVal(0.0f))),
-          VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), Literal(IntVal(2)))))
+          VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(9))),
+          VarDecl("j", TypeId(TypeName.f32), ConstLit(FloatVal(0.0f))),
+          VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), ConstLit(IntVal(2)))))
         )
 
         val errOrRes = eval(t)
@@ -523,7 +541,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "auto-defined for collections" in {
         val t = Block.of(
-          VarDecl("a", Auto(), Vec(List(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3))), Auto()))
+          VarDecl("a", Auto(), GroupLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
         )
 
         val errOrRes = eval(t)
@@ -545,7 +563,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "explicitly defined for collections" in {
         val t = Block.of(
-          VarDecl("a", Applied(TypeId("Vec"), List(TypeId(TypeName.i32))), Vec(List(Literal(IntVal(1)), Literal(IntVal(2)), Literal(IntVal(3))), Auto()))
+          VarDecl("a", Applied(TypeId("Vec"), List(TypeId(TypeName.i32))), Vec(List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3))), Auto()))
         )
 
         val errOrRes = eval(t)
@@ -566,7 +584,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "allow nothing in declaration with auto-type deduction" in {
         val t = Block.of(
-          VarDecl("x", Auto(), Literal(NullVal()))
+          VarDecl("x", Auto(), ConstLit(NullVal()))
         )
 
         val errOrRes = eval(t)
@@ -589,7 +607,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "allow nothing in declaration with explicit type" in {
         val t = Block.of(
-          VarDecl("x", TypeId("i32"), Literal(NullVal()))
+          VarDecl("x", TypeId("i32"), ConstLit(NullVal()))
         )
 
         val errOrRes = eval(t)
@@ -627,9 +645,9 @@ final class ScopeBuildPassSpec extends TestSpec:
             Block.empty
           ),
           Block.of(
-            VarDecl("z", TypeId(TypeName.i32), Literal(IntVal(0)))
+            VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(0)))
           ),
-          Call(Id("printf"), List(Literal(StrVal("%d")), Id("z"))) // z is no longer visible; Will be an error in Phase #2
+          Call(Id("printf"), List(ConstLit(StrVal("%d")), Id("z"))) // z is no longer visible; Will be an error in Phase #2
         )
 
         val errOrRes = eval(t)
@@ -663,29 +681,33 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "retain scope information for several nested scopes" in {
         val t = Block.of(
-          VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(0))),
+          VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
           MethodDecl(
             "f",
-            List.empty[TypeDecl],
-            List.empty[VarDecl],
-            TypeId(TypeName.void),
+            MethodType(
+              List.empty[TypeDecl],
+              List.empty[VarDecl],
+              TypeId(TypeName.void),
+            ),
             Block.of(
-              VarDecl("y", TypeId(TypeName.i32), Literal(IntVal(0))),
+              VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(0))),
               Block.of(
-                VarDecl("i", TypeId(TypeName.i32), Literal(IntVal(0)))
+                VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
               ),
               Block.of(
-                VarDecl("j", TypeId(TypeName.i32), Literal(IntVal(0)))
+                VarDecl("j", TypeId(TypeName.i32), ConstLit(IntVal(0)))
               )
             )
           ),
           MethodDecl(
             "g",
-            List.empty[TypeDecl],
-            List.empty[VarDecl],
-            TypeId(TypeName.void),
+            MethodType(
+              List.empty[TypeDecl],
+              List.empty[VarDecl],
+              TypeId(TypeName.void),
+            ),
             Block.of(
-              VarDecl("i", TypeId(TypeName.i32), Literal(IntVal(0)))
+              VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
             )
           )
         )
@@ -740,9 +762,11 @@ final class ScopeBuildPassSpec extends TestSpec:
           VarDecl("a", TypeId("A")),
           MethodDecl(
             "f",
-            List.empty[TypeDecl],
-            List.empty[VarDecl],
-            TypeId(TypeName.void),
+            MethodType(
+              List.empty[TypeDecl],
+              List.empty[VarDecl],
+              TypeId(TypeName.void),
+            ),
             Block.of(
               StructDecl("D", List(VarDecl("i", TypeId(TypeName.i32)))),
               VarDecl("d", TypeId("D")),
@@ -797,28 +821,28 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           StructDecl("B", List(VarDecl("y", TypeId(TypeName.i32)))),
           StructDecl("A", List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B")))),
-          VarDecl(
-            "a",
-            TypeId("A"),
-            ColLit(
+          // VarDecl(
+          //   "a",
+          //   TypeId("A"),
+          //   ColLit(
 
-              StructVal(
-                Id("A"),
-                Map(
-                  "x" -> Literal(IntVal(1)),
-                  "s" -> Literal(StrVal("alice")),
-                  "b" -> Literal(
-                    StructVal(
-                      Id("B"),
-                      Map(
-                        "y" -> Literal(IntVal(2))
-                      )
-                    )
-                  )
-                )
-              )
-            )
-          ),
+          //     StructVal(
+          //       Id("A"),
+          //       Map(
+          //         "x" -> ConstLit(IntVal(1)),
+          //         "s" -> ConstLit(StrVal("alice")),
+          //         "b" -> ConstLit(
+          //           StructVal(
+          //             Id("B"),
+          //             Map(
+          //               "y" -> ConstLit(IntVal(2))
+          //             )
+          //           )
+          //         )
+          //       )
+          //     )
+          //   )
+          // ),
           Id("a")
         )
 
@@ -846,33 +870,39 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "build scopes" in {
         val t = Block.of(
-          VarDecl("x", TypeId(TypeName.i32), Literal(IntVal(1))),
+          VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
           MethodDecl(
             "g",
-            List.empty[TypeDecl],
-            List(VarDecl("x", TypeId(TypeName.i32))),
-            TypeId(TypeName.void),
+            MethodType(
+              List.empty[TypeDecl],
+              List(VarDecl("x", TypeId(TypeName.i32))),
+              TypeId(TypeName.void),
+            ),
             Block.of(
-              VarDecl("z", TypeId(TypeName.i32), Literal(IntVal(2)))
+              VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(2)))
             )
           ),
           MethodDecl(
             "f",
-            List.empty[TypeDecl],
-            List(VarDecl("x", TypeId(TypeName.i32))),
-            TypeId(TypeName.void),
+            MethodType(
+              List.empty[TypeDecl],
+              List(VarDecl("x", TypeId(TypeName.i32))),
+              TypeId(TypeName.void),
+            ),
             Block.of(
-              VarDecl("y", TypeId(TypeName.i32), Literal(IntVal(1))),
-              Call(Id("g"), List(Call(Id("*"), List(Literal(IntVal(2)), Id("x")))))
+              VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(1))),
+              Call(Id("g"), List(Call(Id("*"), List(ConstLit(IntVal(2)), Id("x")))))
             )
           ),
           MethodDecl(
             "main",
-            List.empty[TypeDecl],
-            List.empty[VarDecl],
-            TypeId(TypeName.void),
+            MethodType(
+              List.empty[TypeDecl],
+              List.empty[VarDecl],
+              TypeId(TypeName.void),
+            ),
             Block.of(
-              Call(Id("f"), List(Literal(IntVal(3))))
+              Call(Id("f"), List(ConstLit(IntVal(3))))
             )
           ),
           Call(Id("main"), List.empty[Expr])
