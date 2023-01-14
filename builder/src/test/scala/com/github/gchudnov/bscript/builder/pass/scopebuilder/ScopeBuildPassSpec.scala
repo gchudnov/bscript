@@ -758,9 +758,9 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "define related symbols in scopes" in {
         val t = Block.of(
-          StructDecl("B", List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32)))),
-          StructDecl("C", List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32)))),
-          StructDecl("A", List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("b", TypeId("B")), VarDecl("c", TypeId("C")))),
+          StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
+          StructDecl("C", StructType(List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32))))),
+          StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("b", TypeId("B")), VarDecl("c", TypeId("C"))))),
           VarDecl("a", TypeId("A")),
           MethodDecl(
             "f",
@@ -770,7 +770,7 @@ final class ScopeBuildPassSpec extends TestSpec:
               TypeId(TypeName.void),
             ),
             Block.of(
-              StructDecl("D", List(VarDecl("i", TypeId(TypeName.i32)))),
+              StructDecl("D", StructType(List.empty[TypeDecl], List(VarDecl("i", TypeId(TypeName.i32))))),
               VarDecl("d", TypeId("D")),
               Assign(
                 Access(Id("d"), Id("i")),
@@ -821,8 +821,8 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "initialize with an anonymous struct" in {
         val t = Block.of(
-          StructDecl("B", List(VarDecl("y", TypeId(TypeName.i32)))),
-          StructDecl("A", List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B")))),
+          StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
+          StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B"))))),
           // VarDecl(
           //   "a",
           //   TypeId("A"),
