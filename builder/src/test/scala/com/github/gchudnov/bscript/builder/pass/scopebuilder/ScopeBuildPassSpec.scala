@@ -914,6 +914,40 @@ final class ScopeBuildPassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
     }
+
+    "a complex program" should {
+      /**
+       * {{{
+       *   // given a collection of words, create a map of word lengths
+       *   def main(): map[str, i32] = {
+       *     auto as = ["alice", "bob", "carol"];
+       *   
+       *     val f = [](as: []str) -> map[str, i32] {
+       *       val m = map[string, int]{};
+       * 
+       *       val iterate = [](i: i32) -> map[str, i32] {
+       *         if len(m) == i {
+       *           m;
+       *         } else {
+       *           w = get(as, i)
+       *           m = set(m, w, len(w))
+       *           iterate(i + 1)
+       *         }
+       *       }    
+       *   
+       *       iterate(0);
+       *     };
+       *   
+       *     f(as); // returns a map of lengths
+       *   }
+       *   
+       *   main();
+       * }}}
+       */
+      "build scopes" in {
+
+      }
+    }
   }
 
   /**
