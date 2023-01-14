@@ -535,7 +535,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * {{{
        *   // globals
        *   {
-       *     int[] a = [1, 2, 3];
+       *     auto a = [1, 2, 3];
        *   }
        * }}}
        */
@@ -563,7 +563,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        */
       "explicitly defined for collections" in {
         val t = Block.of(
-          VarDecl("a", Applied(TypeId("Vec"), List(TypeId(TypeName.i32))), Vec(List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3))), Auto()))
+          VarDecl("a", VecType(TypeId(TypeName.i32)), GroupLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
         )
 
         val errOrRes = eval(t)
@@ -636,12 +636,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val t = Block.of(
           MethodDecl(
             "printf",
-            List.empty[TypeDecl],
-            List(
-              VarDecl("format", TypeId(TypeName.str)),
-              VarDecl("value", Auto())
+            MethodType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("format", TypeId(TypeName.str)),
+                VarDecl("value", Auto())
+              ),
+              TypeId(TypeName.void),
             ),
-            TypeId(TypeName.void),
             Block.empty
           ),
           Block.of(
