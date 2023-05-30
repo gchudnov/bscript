@@ -73,10 +73,10 @@ final class ForestSpec extends TestSpec:
         val t2 = t1
           .add(b1)
           .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
-          .link(b1, b0)
-          .link(b2, b0)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
 
         t2.vertices.size mustBe (3)
         t2.vertices must contain allElementsOf List(b0, b1, b2)
@@ -102,8 +102,8 @@ final class ForestSpec extends TestSpec:
           .add(b0)
           .add(b1)
           .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
 
         t1.vertices.size mustBe (3)
         t1.vertices must contain allElementsOf List(b0, b1, b2)
@@ -133,9 +133,9 @@ final class ForestSpec extends TestSpec:
           .add(b1)
           .add(b2)
           .add(b3)
-          .link(b1, b0)
-          .link(b2, b0)
-          .link(b3, b2)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
+          .linkParent(b3, b2)
 
         t1.vertices.size mustBe (4)
         t1.vertices must contain allElementsOf List(b0, b1, b2, b3)
@@ -166,7 +166,7 @@ final class ForestSpec extends TestSpec:
      *                     b1
      * }}}
      */
-    "link" should {
+    "linkParent" should {
       "allow to relink" in {
         val b0 = Node("b0")
         val b1 = Node("b1")
@@ -177,54 +177,20 @@ final class ForestSpec extends TestSpec:
           .add(b0)
           .add(b1)
           .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
 
         t1.vertices.size mustBe (3)
         t1.vertices must contain allElementsOf List(b0, b1, b2)
         t1.edges.size mustBe (2)
         t1.parentOf(b1) mustBe (Some(b0))
 
-        val t2 = t1.link(b1, b2)
+        val t2 = t1.linkParent(b1, b2)
 
         t2.vertices.size mustBe (3)
         t2.vertices must contain allElementsOf List(b0, b1, b2)
         t2.edges.size mustBe (2)
         t2.parentOf(b1) mustBe (Some(b2))
-      }
-    }
-
-    "maybeLink" should {
-      "link if the destination is specified" in {
-        val b0 = Node("b0")
-        val b1 = Node("b1")
-
-        val t1 = Forest
-          .empty[Node]
-          .add(b0)
-          .add(b1)
-          .maybeLink(b1, Some(b0))
-
-        t1.vertices.size mustBe (2)
-        t1.vertices must contain allElementsOf List(b0, b1)
-        t1.edges.size mustBe (1)
-        t1.parentOf(b1) mustBe (Some(b0))
-      }
-
-      "do not link of the destination is not specified" in {
-        val b0 = Node("b0")
-        val b1 = Node("b1")
-
-        val t1 = Forest
-          .empty[Node]
-          .add(b0)
-          .add(b1)
-          .maybeLink(b1, None)
-
-        t1.vertices.size mustBe (2)
-        t1.vertices must contain allElementsOf List(b0, b1)
-        t1.edges.size mustBe (0)
-        t1.parentOf(b1) mustBe None
       }
     }
 
@@ -248,8 +214,8 @@ final class ForestSpec extends TestSpec:
           .add(b0)
           .add(b1)
           .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
 
         t1.vertices.size mustBe (3)
         t1.vertices must contain allElementsOf List(b0, b1, b2)
@@ -308,8 +274,8 @@ final class ForestSpec extends TestSpec:
           .add(b0)
           .add(b1)
           .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
 
         t1.vertices.size mustBe (2)
         t1.vertices must contain allElementsOf List(b0, b1)
@@ -340,9 +306,9 @@ final class ForestSpec extends TestSpec:
           .add(b1)
           .add(b2)
           .add(b3)
-          .link(b1, b0)
-          .link(b2, b0)
-          .link(b3, b2)
+          .linkParent(b1, b0)
+          .linkParent(b2, b0)
+          .linkParent(b3, b2)
 
         val expected = List(b3, b2, b0)
         val actual   = t1.path(b3)

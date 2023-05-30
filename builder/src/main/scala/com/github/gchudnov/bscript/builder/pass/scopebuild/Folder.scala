@@ -20,6 +20,7 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
       case x @ Id(name) =>
         foldOverAST(s, x)
 
+      // TODO: a declaration should be unified, see cpp2
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s.define(SMethod(name)).push(), x).pop()
       case x @ StructDecl(name, sType) =>
@@ -63,9 +64,6 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
         foldOverAST(s, x)
       case x @ MethodType(tparams, params, retType) =>
         foldOverAST(s, x)
-
-      case other =>
-        throw new MatchError(s"Unsupported AST type in Folder: ${other}")
 
 private[scopebuild] object Folder:
 

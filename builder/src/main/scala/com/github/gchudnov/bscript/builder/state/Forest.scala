@@ -33,17 +33,11 @@ final case class Forest[A <: AnyRef](vertices: Set[A], edges: Map[A, A]):
     this.copy(vertices = vertices + x)
 
   /**
-   * Adds link from node `from` to the node `to`
+   * Adds link from node `from` to the node `parent`
    */
-  def link(from: A, to: A): Forest[A] =
+  def linkParent(from: A, parent: A): Forest[A] =
     assert(vertices.contains(from) && vertices.contains(from), "Cannot link nodes that are not added to the forest")
-    this.copy(edges = edges + (from -> to))
-
-  /**
-   * Adds a link only if `to` node is specified
-   */
-  def maybeLink(from: A, to: Option[A]): Forest[A] =
-    to.fold(this)(b => link(from, b))
+    this.copy(edges = edges + (from -> parent))
 
   /**
    * Replaces a node

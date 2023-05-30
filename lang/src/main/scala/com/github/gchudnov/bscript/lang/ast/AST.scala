@@ -9,7 +9,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |        +- Expr +- Ref +- Access
  *      |                |      +- Id
  *      |                |
- *      |                +- Decl +- MethodDecl
+ *      |                +- Decl +- MethodDecl // TODO: refactor declarations (?), see cpp2
  *      |                |       +- StructDecl
  *      |                |       +- VarDecl
  *      |                |       +- TypeDecl
