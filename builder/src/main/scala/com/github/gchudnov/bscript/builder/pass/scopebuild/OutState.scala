@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.state.Forest
@@ -7,15 +7,16 @@ import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 
-final case class ScopeBuildOutState(
+final case class OutState(
+  ast: AST,
   forest: Forest[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts
 )
 
-object ScopeBuildOutState:
+object OutState:
 
-  extension (s: ScopeBuildOutState)
+  extension (s: OutState)
     def forestSize: Int =
       s.forest.size
 

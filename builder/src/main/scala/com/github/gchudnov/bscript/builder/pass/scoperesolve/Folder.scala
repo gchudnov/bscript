@@ -1,16 +1,17 @@
-package com.github.gchudnov.bscript.builder.pass.scoperesolver
+package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
 import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState
 /**
  * (2-PASS)
  *
  * Executed after ScopeBuildFolder that created scopes and defined symbols in these scopes.
  *
- * ScopeResolveFolder:
+ * Folder:
  *
  * {{{
  * 3) Resolve Symbols (and verify that names can be referenced).
@@ -18,9 +19,9 @@ import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
  *
  * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. When we see a symbol, we resolve it in the current scope.
  */
-private[builder] final class ScopeResolveFolder() extends AstFolder[ScopeResolveState]:
+private[builder] final class Folder() extends AstFolder[PassState]:
 
-  override def foldAST(s: ScopeResolveState, ast: AST): ScopeResolveState =
+  override def foldAST(s: PassState, ast: AST): PassState =
     ast match
       case x: Access =>
         // foldOverAST(a, x)
@@ -50,12 +51,12 @@ private[builder] final class ScopeResolveFolder() extends AstFolder[ScopeResolve
       // case x @ Vec(_, elementType) =>
       //   foldOverAST(a, x)
 
-private[builder] object ScopeResolveFolder:
+private[builder] object Folder:
 
-  def make(): ScopeResolveFolder =
-    new ScopeResolveFolder()
+  def make(): Folder =
+    new Folder()
 
-//   override def visit(s: ScopeResolveState, n: Access): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: Access): Either[Throwable, PassState] =
 
 //     // Find 'y'-symbol in 'x'-struct
 //     def member(xVar: SVar, y: Var): Either[Throwable, SVar] =
@@ -96,10 +97,10 @@ private[builder] object ScopeResolveFolder:
 //       (ss1, (_, n1)) = t
 //     yield s.copy(meta = ss1, ast = n1)
 
-//   override def visit(s: ScopeResolveState, n: MethodDecl): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: MethodDecl): Either[Throwable, PassState] =
 //     for
 //       scope <- s.meta.scopeFor(n).flatMap(_.asSBlock)
-//       sa <- n.params.foldLeft(Right((s, List.empty[ArgDecl])): Either[Throwable, (ScopeResolveState, List[ArgDecl])]) { case (acc, argDecl) =>
+//       sa <- n.params.foldLeft(Right((s, List.empty[ArgDecl])): Either[Throwable, (PassState, List[ArgDecl])]) { case (acc, argDecl) =>
 //               acc match
 //                 case Left(ex) => Left(ex)
 //                 case Right((sx, args)) =>
@@ -120,12 +121,12 @@ private[builder] object ScopeResolveFolder:
 //       ss2                    = s4.meta.defineMethodAST(sMethod, n1).redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s3.copy(ast = n1, meta = ss2)
 
-//   override def visit(s: ScopeResolveState, n: StructDecl): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: StructDecl): Either[Throwable, PassState] =
 //     for
 //       scope   <- s.meta.scopeFor(n).flatMap(_.asSBlock)
 //       _       <- s.meta.resolve(n.name, scope).flatMap(_.asType) // NOTE: Struct is a Type as well; this line is used to assert this fact here.
 //       sStruct <- s.meta.resolve(n.name, scope).flatMap(_.asSStruct)
-//       sf <- n.fields.foldLeft(Right((s, List.empty[FieldDecl])): Either[Throwable, (ScopeResolveState, List[FieldDecl])]) { case (acc, fieldDecl) =>
+//       sf <- n.fields.foldLeft(Right((s, List.empty[FieldDecl])): Either[Throwable, (PassState, List[FieldDecl])]) { case (acc, fieldDecl) =>
 //               acc match
 //                 case Left(ex) => Left(ex)
 //                 case Right((sx, fields)) =>
@@ -139,7 +140,7 @@ private[builder] object ScopeResolveFolder:
 //       ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: Var): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: Var): Either[Throwable, PassState] =
 //     for
 //       scope <- s.meta.scopeFor(n)
 //       sVar  <- s.meta.resolve(n.symbol.name, scope).flatMap(_.asSVar)
@@ -147,7 +148,7 @@ private[builder] object ScopeResolveFolder:
 //       ss1    = s.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: Assign): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: Assign): Either[Throwable, PassState] =
 //     for
 //       ls    <- n.id.visit(s, this)
 //       rs    <- n.expr.visit(ls, this)
@@ -157,12 +158,12 @@ private[builder] object ScopeResolveFolder:
 //       ss1    = rs.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield rs.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: StructVal): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: StructVal): Either[Throwable, PassState] =
 //     for
 //       scope               <- s.meta.scopeFor(n)
 //       st                  <- visitType(s, scope, n.sType)
 //       StateType(s1, sType) = st
-//       sv <- n.value.foldLeft(Right((s1, Map.empty[String, Expr])): Either[Throwable, (ScopeResolveState, Map[String, Expr])]) { case (acc, (name, expr)) =>
+//       sv <- n.value.foldLeft(Right((s1, Map.empty[String, Expr])): Either[Throwable, (PassState, Map[String, Expr])]) { case (acc, (name, expr)) =>
 //               acc match
 //                 case Left(ex) => Left(ex)
 //                 case Right((sx, map)) =>
@@ -176,9 +177,9 @@ private[builder] object ScopeResolveFolder:
 //       ss1          = s2.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s2.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: Vec): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: Vec): Either[Throwable, PassState] =
 //     for
-//       se <- n.elements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeResolveState, List[Expr])]) { case (acc, expr) =>
+//       se <- n.elements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (PassState, List[Expr])]) { case (acc, expr) =>
 //               acc match
 //                 case Left(ex) => Left(ex)
 //                 case Right((sx, exprs)) =>
@@ -192,11 +193,11 @@ private[builder] object ScopeResolveFolder:
 //       ss1         = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: Call): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: Call): Either[Throwable, PassState] =
 //     for
 //       scope   <- s.meta.scopeFor(n).flatMap(_.asSBlock)
 //       sMethod <- s.meta.resolve(n.id.name, scope).flatMap(_.asSMethod)
-//       sa <- n.args.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeResolveState, List[Expr])]) { case (acc, expr) =>
+//       sa <- n.args.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (PassState, List[Expr])]) { case (acc, expr) =>
 //               acc match
 //                 case Left(ex) => Left(ex)
 //                 case Right((sx, args)) =>
@@ -210,7 +211,7 @@ private[builder] object ScopeResolveFolder:
 //       ss1        = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: If): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: If): Either[Throwable, PassState] =
 //     for
 //       cs          <- n.cond.visit(s, this)
 //       ts          <- n.then1.visit(cs, this)
@@ -223,7 +224,7 @@ private[builder] object ScopeResolveFolder:
 //       ss1          = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
-//   override def visit(s: ScopeResolveState, n: CompiledExpr): Either[Throwable, ScopeResolveState] =
+//   override def visit(s: PassState, n: CompiledExpr): Either[Throwable, PassState] =
 //     for
 //       scope                 <- s.meta.scopeFor(n).flatMap(_.asSBlock)
 //       st                    <- visitType(s, scope, n.retType)
@@ -232,7 +233,7 @@ private[builder] object ScopeResolveFolder:
 //       ss1                    = s1.meta.redefineASTScope(n, n1).ensureNoAST(n)
 //     yield s1.copy(ast = n1, meta = ss1)
 
-//   private def visitType(s: ScopeResolveState, scope: Scope, t: Type): Either[Throwable, StateType] =
+//   private def visitType(s: PassState, scope: Scope, t: Type): Either[Throwable, StateType] =
 //     t match
 //       case VectorType(elementType) =>
 //         visitType(s, scope, elementType).map(st => st.copy(xType = VectorType(st.xType)))

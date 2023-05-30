@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scoperesolver
+package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.builder.Meta
@@ -15,8 +15,10 @@ import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 import com.github.gchudnov.bscript.lang.util.Casting
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
-final case class ScopeResolveState(
+final case class PassState(
   forest: Forest[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts,
@@ -24,7 +26,7 @@ final case class ScopeResolveState(
 ):
   import Casting.*
 
-  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): ScopeResolveState =
+  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
     // val (sVar, sType) = (for
     //   scope        <- scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
     //   resolvedName <- resolveIn(name, scope).toRight(new BuilderException(s"Variable '${name}' cannot be resolved in scope '${scope}'"))
@@ -42,7 +44,7 @@ final case class ScopeResolveState(
    * @param ast
    * @return
    */
-  private[scoperesolver] def scopeFor(ast: AST): Option[Scope] =
+  private[scoperesolve] def scopeFor(ast: AST): Option[Scope] =
     scopeAsts.scope(ast)
 
   /**
@@ -53,7 +55,7 @@ final case class ScopeResolveState(
    * @return
    *   resolved symbol
    */
-  private[scoperesolver] def resolveUp(name: String, start: Scope): Option[Symbol] =
+  private[scoperesolve] def resolveUp(name: String, start: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(start)
       .find(_.name == name)
@@ -67,15 +69,15 @@ final case class ScopeResolveState(
    * @return
    *   resolved symbol
    */
-  private[scoperesolver] def resolveIn(name: String, in: Scope): Option[Symbol] =
+  private[scoperesolve] def resolveIn(name: String, in: Scope): Option[Symbol] =
     scopeSymbols
       .symbols(in)
       .find(_.name == name)
 
-object ScopeResolveState:
+object PassState:
 
-  def from(s: ScopeResolveInState): ScopeResolveState =
-    // ScopeResolveState(
+  def from(s: InState): PassState =
+    // PassState(
     //   ast = s.ast,
     //   forest,
     //   scopeSymbols,
@@ -85,5 +87,5 @@ object ScopeResolveState:
 
     ???
 
-  def to(s: ScopeResolveState): ScopeResolveOutState =
+  def into(s: PassState): OutState =
     ???

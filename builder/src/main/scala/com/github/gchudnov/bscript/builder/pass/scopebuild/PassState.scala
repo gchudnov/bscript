@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.builder.state.Forest
@@ -9,47 +9,50 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
 
-final case class ScopeBuildState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
+final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
-  def push(): ScopeBuildState =
+  def push(): PassState =
     this.copy(cursor = cursor.push())
 
-  def pop(): ScopeBuildState =
+  def pop(): PassState =
     this.copy(cursor = cursor.pop())
 
-  def define(symbol: Symbol): ScopeBuildState =
+  def define(symbol: Symbol): PassState =
     cursor.current match
       case Some(scope) =>
         this.copy(scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol))
       case None =>
         throw new BuilderException(s"Cannot define '${symbol}' without any scope. Invoke .push() to create a scope first.")
 
-  def bind(ast: AST): ScopeBuildState =
+  def bind(ast: AST): PassState =
     cursor.current match
       case Some(scope) =>
         this.copy(scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
       case None =>
         throw new BuilderException(s"Cannot define '${ast}' without any scope. Invoke .push() to create a scope first.")
 
-object ScopeBuildState:
+object PassState:
 
-  val empty: ScopeBuildState =
+  val empty: PassState =
     val cursor       = ForestCursor.empty[Scope](it => ScopeRef(it))
     val scopeSymbols = ScopeSymbols.empty
     val scopeAsts    = ScopeAsts.empty
 
-    ScopeBuildState(
+    PassState(
       cursor,
       scopeSymbols,
       scopeAsts
     )
 
-  def from(s: ScopeBuildInState): ScopeBuildState =
+  def from(s: InState): PassState =
     empty
 
-  def to(s: ScopeBuildState): ScopeBuildOutState =
-    ScopeBuildOutState(
+  def into(s: PassState, ast: AST): OutState =
+    OutState(
+      ast = ast,
       forest = s.cursor.forest,
       scopeSymbols = s.scopeSymbols,
       scopeAsts = s.scopeAsts

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.builder.TestSpec
@@ -12,19 +12,20 @@ import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 
-import com.github.gchudnov.bscript.builder.pass.scopebuilder.ScopeBuildState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
 
-final class ScopeBuildStateSpec extends TestSpec:
+final class PassStateSpec extends TestSpec:
 
-  private val stateIn = ScopeBuildInState()
+  private val ast0 = Block.empty
+  private val stateIn = InState.from(ast0)
 
-  "ScopeBuildState" when {
+  "PassState" when {
     "no input was specified" should {
       "return an empty object" in {
-        val sb = ScopeBuildState.from(stateIn)
+        val sb = PassState.from(stateIn)
 
         val actual   = sb
-        val expected = ScopeBuildState.empty
+        val expected = PassState.empty
 
         actual mustBe expected
       }
@@ -35,20 +36,21 @@ final class ScopeBuildStateSpec extends TestSpec:
         val sym = SymbolRef.date
 
         intercept[BuilderException] {
-          ScopeBuildState.from(stateIn).define(sym)
+          PassState.from(stateIn).define(sym)
         }
       }
     }
 
     "a scope was pushed" should {
-      val sb = ScopeBuildState
+      val sb = PassState
         .from(stateIn)
         .push()
 
       "return state with one scope" in {
-        val actual = ScopeBuildState.to(sb)
+        val actual = PassState.into(sb, ast0)
 
-        val expected = ScopeBuildOutState(
+        val expected = OutState(
+          ast = ast0,
           forest = Forest(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
           scopeSymbols = ScopeSymbols.empty,
           scopeAsts = ScopeAsts.empty
@@ -60,9 +62,10 @@ final class ScopeBuildStateSpec extends TestSpec:
       "a symbol can be linked to this scope" in {
         val sym = SymbolRef.f32
 
-        val actual = ScopeBuildState.to(sb.define(sym))
+        val actual = PassState.into(sb.define(sym), ast0)
 
-        val expected = ScopeBuildOutState(
+        val expected = OutState(
+          ast = ast0,
           forest = Forest(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
           scopeSymbols = ScopeSymbols(Map(ScopeRef("a") -> Set(Ptr(sym))), Map(Ptr(sym) -> ScopeRef("a"))),
           scopeAsts = ScopeAsts.empty

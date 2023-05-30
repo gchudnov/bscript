@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.const.*
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
-// import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
+// import com.github.gchudnov.bscript.builder.internal.Folder.ScopeResolveState
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeName
@@ -20,15 +20,15 @@ import com.github.gchudnov.bscript.builder.BGlobals
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
 
 // import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
-// import com.github.gchudnov.bscript.builder.internal.scoperesolver.ScopeResolveVisitor
+// import com.github.gchudnov.bscript.builder.internal.scoperesolver.Folder
 
 /**
- * ScopeResolveVisitorSpec
+ * FolderSpec
  */
-final class ScopeResolveVisitorSpec extends TestSpec:
-  import ScopeResolveVisitorSpec.*
+final class FolderSpec extends TestSpec:
+  import FolderSpec.*
 
-  "ScopeResolveVisitor" when {
+  "Folder" when {
 
     "var is declared" should {
 
@@ -68,7 +68,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
 
 //           case Left(t) => fail("Should be 'right", t)
@@ -99,7 +99,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
 
 //           case Left(t) => fail("Should be 'right", t)
@@ -127,7 +127,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
 //             typeNameForVarInScope(meta)("y", "#a") mustBe (Right("type:UNDEFINED")) // NOTE: it will be resolved later, in #3
 
@@ -153,7 +153,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("y", "#a") mustBe (Right("type:UNDEFINED")) // NOTE: it will be resolved later, in #3
 
@@ -195,7 +195,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.f32Type))
 //             typeNameForVarInScope(meta)("z", "#a") mustBe (Right(typeNames.autoType))
 //             typeNameForVarInScope(meta)("p", "#a") mustBe (Right(typeNames.i32Type))
@@ -239,7 +239,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "contains") mustBe (Right(typeNames.autoType))
 //           case Left(t) =>
 //             fail("Should be 'right", t)
@@ -263,7 +263,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
 //           case Left(t) => fail("Should be 'right", t)
 //       }
@@ -285,7 +285,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
 //           case Left(t) => fail("Should be 'right", t)
 //       }
@@ -309,7 +309,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("i", "#a") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("j", "#a") mustBe (Right(typeNames.f32Type))
 //             typeNameForVarInScope(meta)("k", "#a") mustBe (Right(typeNames.i32Type))
@@ -331,7 +331,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("a", "#a") mustBe (Right("[]int"))
 //           case Left(t) => fail("Should be 'right", t)
 //       }
@@ -361,7 +361,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("as", "#a") mustBe (Right("[][]int"))
 //           case Left(t) => fail("Should be 'right", t)
 //       }
@@ -394,7 +394,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("s", "#a") mustBe (Right(typeNames.autoType))
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
 //             typeNameForVarInScope(meta)("y", "#a") mustBe (Right(typeNames.autoType))
@@ -460,7 +460,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("i", "#e") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("j", "#d") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.i32Type))
@@ -632,7 +632,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("x", "f") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("y", "f") mustBe (Right(typeNames.f32Type))
 //           case Left(t) => fail("Should be 'right", t)
@@ -689,7 +689,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("a", "#a") mustBe (Right("A"))
 //             typeNameForVarInScope(meta)("b", "A") mustBe (Right("B"))
 //             typeNameForVarInScope(meta)("c", "A") mustBe (Right("C"))
@@ -745,7 +745,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("a", "#a") mustBe (Right("A"))
 //           case Left(t) => fail("Should be 'right", t)
 //       }
@@ -782,7 +782,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("a", "#b") mustBe (Right("A"))
 //             typeNameForVarInScope(meta)("x", "A") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("y", "A") mustBe (Right(typeNames.f32Type))
@@ -855,7 +855,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("s", "#a") mustBe (Right(typeNames.autoType))
 //             typeNameForVarInScope(meta)("x", "#a") mustBe (Right(typeNames.autoType))
 //             typeNameForVarInScope(meta)("y", "#a") mustBe (Right(typeNames.autoType))
@@ -887,7 +887,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("format", "printf") mustBe (Right(typeNames.strType))
 //             typeNameForVarInScope(meta)("value", "printf") mustBe (Right(typeNames.autoType))
 
@@ -918,7 +918,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             typeNameForVarInScope(meta)("offset", "offsetDateTime") mustBe (Right(typeNames.i32Type))
 //             typeNameForVarInScope(meta)("unit", "offsetDateTime") mustBe (Right(typeNames.strType))
 //             typeNameForVarInScope(meta)("value", "offsetDateTime") mustBe (Right(typeNames.datetimeType))
@@ -964,7 +964,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             val units          = meta.varTypes.filter(_._1.value.name == "unit").keys.toList
 //             val (unit1, unit2) = (units.head, units.last)
 //             units.size mustBe (2)
@@ -1009,7 +1009,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) => succeed
+//           case Right(FolderState(ast, meta)) => succeed
 //           case Left(t)                                    => fail("Should be 'right", t)
 //       }
 //     }
@@ -1061,7 +1061,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
 
 //         val errOrRes = eval(t)
 //         errOrRes match
-//           case Right(ScopeResolveVisitorState(ast, meta)) =>
+//           case Right(FolderState(ast, meta)) =>
 //             findMethodAst(meta, "f").isDefined mustBe (true)
 //             findMethodAst(meta, "g").isDefined mustBe (true)
 //             findMethodAst(meta, "main").isDefined mustBe (true)
@@ -1079,7 +1079,7 @@ final class ScopeResolveVisitorSpec extends TestSpec:
    */
   private def eval(ast0: AST): Either[Throwable, State] =
     // val v1                    = ScopeBuildVisitor.make()
-    // val v2 = ScopeResolveVisitor.make()
+    // val v2 = Folder.make()
 
     // val s1                    = BGlobals.make(ScopeBuilder.make().push())
     // val s2 = v1.foldAST(s1, ast0)
@@ -1092,11 +1092,11 @@ final class ScopeResolveVisitorSpec extends TestSpec:
     // Right(State(ast0, meta))
     ???
 
-object ScopeResolveVisitorSpec:
+object FolderSpec:
 
   final case class State(ast: AST, meta: Meta)
 
-//   def verifyResolved(t: ScopeResolveVisitorState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
+//   def verifyResolved(t: FolderState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 
 //     override def visit(s: String, n: Init): Either[Throwable, Unit] = for _ <- checkType(n.iType, s"${s} -> Init(iType=${n.iType.name}")
 //     yield ()

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.typechecker
+package com.github.gchudnov.bscript.builder.pass.typecheck
 
 import com.github.gchudnov.bscript.lang.ast.*
 // import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState

@@ -1,8 +1,8 @@
-package com.github.gchudnov.bscript.builder.pass.scoperesolver
+package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.pass.scoperesolver.ScopeResolveState
-import com.github.gchudnov.bscript.builder.pass.scopebuilder.ScopeBuildState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState as ScopeResolveState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState as ScopeBuildState
 import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -11,15 +11,15 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
 
-final class ScopeResolveStateSpec extends TestSpec:
+final class PassStateSpec extends TestSpec:
 
-  "ScopeResolveState" when {
+  "PassState" when {
     // "no input" should {
     //   val sb = ScopeBuildState.empty.push().define(SType(TypeName.i32))
-    //   val sr = ScopeResolveState.from(adapter.map(ScopeBuildState.to(sb)))
+    //   val sr = PassState.from(adapter.map(ScopeBuildState.to(sb)))
 
     //   "return the initial object state" in {
-    //     val actual   = ScopeResolveState.to(sr)
+    //     val actual   = PassState.to(sr)
     //     val expected = sb.result
 
     //     actual mustBe (expected)

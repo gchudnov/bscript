@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
@@ -6,11 +6,12 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
 
 
-private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
+private[scopebuild] final class Folder() extends AstFolder[PassState]:
 
-  override def foldAST(s: ScopeBuildState, ast: AST): ScopeBuildState =
+  override def foldAST(s: PassState, ast: AST): PassState =
     ast match
       case x: Access =>
         foldOverAST(s, x)
@@ -62,9 +63,9 @@ private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuil
         foldOverAST(s, x)
 
       case other =>
-        throw new MatchError(s"Unsupported AST type in ScopeBuildFolder: ${other}")
+        throw new MatchError(s"Unsupported AST type in Folder: ${other}")
 
-private[scopebuilder] object ScopeBuildFolder:
+private[scopebuild] object Folder:
 
-  def make(): ScopeBuildFolder =
-    new ScopeBuildFolder()
+  def make(): Folder =
+    new Folder()

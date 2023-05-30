@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scoperesolver
+package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
@@ -15,14 +15,16 @@ import com.github.gchudnov.bscript.builder.state.VarTypes
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 import com.github.gchudnov.bscript.builder.pass.Pass
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
-private[builder] final class ScopeResolvePass() extends Pass:
+private[builder] final class PassImpl() extends Pass:
 
-  type In = ScopeResolveInState
+  type In = InState
 
-  type Out = ScopeResolveOutState
+  type Out = OutState
 
-  override def go(in: In): Out =
+  override def go(in: InState): OutState =
     // val folder = ScopeResolveFolder.make()
     // val state = ScopeResolveState.make()
 

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.typechecker
+package com.github.gchudnov.bscript.builder.pass.typecheck
 
 import com.github.gchudnov.bscript.builder.TypeCheckLaws
 import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
@@ -27,7 +27,7 @@ import scala.annotation.tailrec
  *
  * 3) I the he third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
  */
-private[typechecker] final class TypeCheckFolder() {} // extends TreeVisitor[TypeCheckState, TypeCheckState]:
+private[typecheck] final class TypeCheckFolder() {} // extends TreeVisitor[TypeCheckState, TypeCheckState]:
 //   import Casting.*
 //   import TypeCheckVisitor.*
 

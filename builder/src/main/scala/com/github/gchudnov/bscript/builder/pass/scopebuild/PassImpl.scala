@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuilder
+package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.Meta
@@ -10,6 +10,10 @@ import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.pass.Pass
+import com.github.gchudnov.bscript.builder.pass.scopebuild.Folder
+import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
 
 /**
  * (1-PASS)
@@ -61,18 +65,17 @@ import com.github.gchudnov.bscript.builder.pass.Pass
  * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. We push as we descend and pop as we
  * ascend. When we see a symbol, we define or resolve it in the current scope.
  */
-private[builder] final class ScopeBuildPass() extends Pass:
+private[builder] final class PassImpl() extends Pass:
 
-  type In  = (AST, ScopeBuildInState)
-  type Out = (AST, ScopeBuildOutState)
+  type In  = InState
+  type Out = OutState
 
-  override def go(in: In): Out =
-    val folder = ScopeBuildFolder.make()
+  override def go(in: InState): OutState =
+    val folder = Folder.make()
 
-    val (ast, stateIn) = in
-    val state0         = ScopeBuildState.from(stateIn)
-    val state1         = folder.foldAST(state0, ast)
+    val state0         = PassState.from(in)
+    val state1         = folder.foldAST(state0, in.ast)
 
-    val stateOut = ScopeBuildState.to(state1)
+    val out = PassState.into(state1, in.ast)
 
-    (ast, stateOut)
+    out
