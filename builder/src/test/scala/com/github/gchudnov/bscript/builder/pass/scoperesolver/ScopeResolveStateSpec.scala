@@ -10,11 +10,8 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
-import com.github.gchudnov.bscript.builder.pass.adapters.BuilderResolverAdapter
 
 final class ScopeResolveStateSpec extends TestSpec:
-
-  private val adapter = new BuilderResolverAdapter()
 
   "ScopeResolveState" when {
     // "no input" should {
