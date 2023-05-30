@@ -2,8 +2,8 @@ package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.state.Forest
-import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 
@@ -31,6 +31,8 @@ object OutState:
 
     /**
      * Find all scopes that contain symbols with the given name
+     * 
+     * TODO: ordering???
      */
     def scopesBySymbol(sym: Symbol): List[Scope] =
       s.scopeSymbols

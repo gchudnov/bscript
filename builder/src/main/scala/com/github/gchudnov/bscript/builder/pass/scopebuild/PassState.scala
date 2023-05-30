@@ -1,17 +1,24 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.ScopeRef
-import com.github.gchudnov.bscript.builder.state.ForestCursor
-import com.github.gchudnov.bscript.lang.symbols.Symbol
-import com.github.gchudnov.bscript.builder.state.ScopeSymbols
-import com.github.gchudnov.bscript.builder.state.ScopeAsts
-import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
+import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.builder.state.ForestCursor
+import com.github.gchudnov.bscript.builder.state.ScopeAsts
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.lang.symbols.Symbol
 
+/**
+  * Pass State
+  *
+  * @param cursor
+  * @param scopeSymbols
+  * @param scopeAsts
+  */
 final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
   def push(): PassState =

@@ -1,19 +1,19 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
-import com.github.gchudnov.bscript.builder.state.Forest
 import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.builder.state.ForestCursor
-import com.github.gchudnov.bscript.lang.symbols.Symbol
-import com.github.gchudnov.bscript.builder.state.ScopeSymbols
-import com.github.gchudnov.bscript.builder.state.ScopeAsts
-import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.pass.Pass
 import com.github.gchudnov.bscript.builder.pass.scopebuild.Folder
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
+import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.builder.state.ForestCursor
+import com.github.gchudnov.bscript.builder.state.ScopeAsts
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 /**
  * (1-PASS)
@@ -35,8 +35,6 @@ import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
  * 2) Defines symbols in scopes;
  * 3) Pops Scopes;
  * }}}
- *
- * For (2-PASS) -- see ScopeResolvePass
  *
  * Building a scope tree boils down to executing a sequence of these operations: *push*, *pop*, and *def*.
  *
@@ -64,13 +62,15 @@ import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
  *
  * To create a scope tree then, all we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. We push as we descend and pop as we
  * ascend. When we see a symbol, we define or resolve it in the current scope.
+ * 
+ * NOTE: for (2-PASS) -- see scoperesolve/PassImpl.scala
  */
 private[builder] final class PassImpl() extends Pass:
 
   type In  = InState
   type Out = OutState
 
-  override def go(in: InState): OutState =
+  override def run(in: InState): OutState =
     val folder = Folder.make()
 
     val state0         = PassState.from(in)

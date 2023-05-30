@@ -18,13 +18,26 @@ import com.github.gchudnov.bscript.builder.pass.Pass
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
+/**
+ * (2-PASS)
+ *
+ * Executed **after** ScopeBuildFolder that created scopes and defined symbols in these scopes.
+ *
+ * Folder:
+ *
+ * {{{
+ * 3) Resolve Symbols (and verify that names can be referenced).
+ * }}}
+ *
+ * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. When we see a symbol, we resolve it in the current scope.
+ */
 private[builder] final class PassImpl() extends Pass:
 
   type In = InState
 
   type Out = OutState
 
-  override def go(in: InState): OutState =
+  override def run(in: InState): OutState =
     // val folder = ScopeResolveFolder.make()
     // val state = ScopeResolveState.make()
 

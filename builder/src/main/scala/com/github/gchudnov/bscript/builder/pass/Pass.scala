@@ -9,4 +9,4 @@ trait Pass:
   type In
   type Out
 
-  def go(in: In): Out
+  def run(in: In): Out

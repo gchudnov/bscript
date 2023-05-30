@@ -18,11 +18,11 @@ import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
 
 /**
- * ScopeBuildPassSpec
+ * BuildPassSpec
  */
-final class ScopeBuildPassSpec extends TestSpec:
+final class BuildPassSpec extends TestSpec:
 
-  "ScopeBuildPass" when {
+  "BuildPass" when {
 
     "var is defined" should {
 
@@ -387,7 +387,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(ScopeBuildVisitorStateoutState) =>
+      //       case Right(BuildVisitorStateoutState) =>
       //         outState.astScopes.size mustBe (7)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
@@ -412,7 +412,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(ScopeBuildVisitorStateoutState) =>
+      //       case Right(BuildVisitorStateoutState) =>
       //         outState.astScopes.size mustBe (7)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
@@ -453,7 +453,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(ScopeBuildVisitorStateoutState) =>
+      //       case Right(BuildVisitorStateoutState) =>
       //         outState.astScopes.size mustBe (17)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
@@ -494,7 +494,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(ScopeBuildVisitorStateoutState) =>
+      //       case Right(BuildVisitorStateoutState) =>
       //         outState.astScopes.size mustBe (15)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
@@ -962,4 +962,4 @@ final class ScopeBuildPassSpec extends TestSpec:
     val pass = new PassImpl()
 
     val stateIn = InState.from(ast0)
-    allCatch.either(pass.go(stateIn))
+    allCatch.either(pass.run(stateIn))

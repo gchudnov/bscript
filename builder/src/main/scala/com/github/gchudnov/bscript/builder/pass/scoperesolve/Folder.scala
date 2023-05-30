@@ -6,19 +6,10 @@ import com.github.gchudnov.bscript.lang.func.AstFolder
 
 import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState
+
 /**
- * (2-PASS)
- *
- * Executed after ScopeBuildFolder that created scopes and defined symbols in these scopes.
- *
- * Folder:
- *
- * {{{
- * 3) Resolve Symbols (and verify that names can be referenced).
- * }}}
- *
- * All we have to do is a depth-first walk of the AST, executing actions in the pre- and/or post-order position. When we see a symbol, we resolve it in the current scope.
- */
+  * Fold the AST to resolve scopes
+  */
 private[builder] final class Folder() extends AstFolder[PassState]:
 
   override def foldAST(s: PassState, ast: AST): PassState =

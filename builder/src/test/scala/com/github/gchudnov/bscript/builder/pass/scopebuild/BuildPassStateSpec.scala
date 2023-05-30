@@ -19,7 +19,7 @@ final class PassStateSpec extends TestSpec:
   private val ast0 = Block.empty
   private val stateIn = InState.from(ast0)
 
-  "PassState" when {
+  "BuildPassState" when {
     "no input was specified" should {
       "return an empty object" in {
         val sb = PassState.from(stateIn)

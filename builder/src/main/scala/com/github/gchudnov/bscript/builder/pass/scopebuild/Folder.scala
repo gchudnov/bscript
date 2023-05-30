@@ -1,14 +1,16 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
-import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
+import com.github.gchudnov.bscript.lang.symbols.*
 
-
+/**
+ * Fold the AST to build it
+ */
 private[scopebuild] final class Folder() extends AstFolder[PassState]:
 
   override def foldAST(s: PassState, ast: AST): PassState =
