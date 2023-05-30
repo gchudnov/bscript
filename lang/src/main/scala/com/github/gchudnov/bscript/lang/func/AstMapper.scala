@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.const.*
 
-import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
+import com.github.gchudnov.bscript.lang.ast.lit.CollectionLit
 /* Maps AST
  *
  * Usage:
@@ -102,7 +102,7 @@ trait AstMapper:
     ast match
       case a: ConstLit =>
         mapConstLit(a)
-      case a: GroupLit =>
+      case a: CollectionLit =>
         mapGroupLit(a)
       case a: MethodLit =>
         mapMethodLit(a)
@@ -172,7 +172,7 @@ trait AstMapper:
   def mapConstLit(ast: ConstLit): ConstLit =
     ast.copy(const = mapConst(ast.const))
 
-  def mapGroupLit(ast: GroupLit): GroupLit =
+  def mapGroupLit(ast: CollectionLit): CollectionLit =
     ast.copy(cType = mapTypeAST(ast.cType), elems = mapExprs(ast.elems))
 
   def mapMethodLit(ast: MethodLit): MethodLit =

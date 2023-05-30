@@ -1,21 +1,22 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
+import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.builder.Scope
+import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl
+import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
-import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
-import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.builder.Meta
+import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.builder.util.Gen
-import com.github.gchudnov.bscript.builder.TestSpec
+
 import scala.util.control.Exception.*
-import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl
-import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
 
 /**
  * BuildPassSpec
@@ -543,7 +544,7 @@ final class BuildPassSpec extends TestSpec:
        */
       "auto-defined for collections" in {
         val t = Block.of(
-          VarDecl("a", Auto(), GroupLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
+          VarDecl("a", Auto(), CollectionLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
         )
 
         val errOrRes = eval(t)
@@ -565,7 +566,7 @@ final class BuildPassSpec extends TestSpec:
        */
       "explicitly defined for collections" in {
         val t = Block.of(
-          VarDecl("a", VecType(TypeId(TypeName.i32)), GroupLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
+          VarDecl("a", VecType(TypeId(TypeName.i32)), CollectionLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
         )
 
         val errOrRes = eval(t)
@@ -827,14 +828,14 @@ final class BuildPassSpec extends TestSpec:
           VarDecl(
             "a",
             TypeId("A"),
-            GroupLit(
+            CollectionLit(
               TypeId("A"),
               List(
                 KeyValue(ConstLit(StrVal("x")), ConstLit(IntVal(1))),
                 KeyValue(ConstLit(StrVal("s")), ConstLit(StrVal("alice"))),
                 KeyValue(
                   ConstLit(StrVal("b")),
-                  GroupLit(
+                  CollectionLit(
                     TypeId("B"),
                     List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2))))
                   )

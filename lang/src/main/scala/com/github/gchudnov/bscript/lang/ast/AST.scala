@@ -24,7 +24,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- KeyValue
  *      |                |
  *      |                +- Lit +- ConstLit
- *      |                       +- GroupLit    /// ?? VecLit, MapLit ???
+ *      |                       +- CollectionLit
  *      |                       +- MethodLit
  *      |
  *      +- TypeAST -+- Auto

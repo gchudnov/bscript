@@ -5,6 +5,12 @@ import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 
+/**
+  * Scope-Ast Dictionary
+  *
+  * @param keyValues
+  * @param valueKey
+  */
 final case class ScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], ScopeAsts]:
   override def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): ScopeAsts =
     ScopeAsts(keyValues = keyValues, valueKey = valueKey)

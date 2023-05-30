@@ -2,6 +2,15 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.util.Base26
 
+/**
+  * Forest Cursor
+  *
+  * @param forest
+  * @param current
+  * @param counter
+  * @param level
+  * @param aFactory
+  */
 final case class ForestCursor[A <: AnyRef](
   forest: Forest[A],
   current: Option[A],

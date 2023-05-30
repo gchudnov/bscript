@@ -46,7 +46,7 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
 
       case x @ ConstLit(const) =>
         foldOverAST(s, x)
-      case x @ GroupLit(cType, elems) =>
+      case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
       case x @ MethodLit(mType, body) =>
         foldOverAST(s.define(SMethod("anon")).push(), x).pop()

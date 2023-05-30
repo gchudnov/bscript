@@ -5,6 +5,12 @@ import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 
+/**
+  * Scope-Symbol Dictionary
+  *
+  * @param keyValues
+  * @param valueKey
+  */
 final case class ScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]) extends Dict[Scope, Ptr[Symbol], ScopeSymbols]:
   override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): ScopeSymbols =
     ScopeSymbols(keyValues = keyValues, valueKey = valueKey)

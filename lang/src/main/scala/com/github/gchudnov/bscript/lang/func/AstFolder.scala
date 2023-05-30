@@ -2,11 +2,10 @@
 package com.github.gchudnov.bscript.lang.func
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 
-import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
 /**
  * Folds AST
  */
@@ -52,7 +51,7 @@ trait AstFolder[S]:
 
       case ConstLit(const) =>
         s
-      case GroupLit(cType, elems) =>
+      case CollectionLit(cType, elems) =>
         foldASTs(foldAST(s, cType), elems)
       case MethodLit(mType, body) =>
         foldAST(foldAST(s, mType), body)
@@ -69,9 +68,6 @@ trait AstFolder[S]:
         fields.foldLeft(foldASTs(s, tfields))(foldAST)
       case MethodType(tparams, params, retType) =>
         foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), retType)
-
-      case other =>
-        throw new MatchError(s"Unsupported AST type: ${other}")
 
 /*
 

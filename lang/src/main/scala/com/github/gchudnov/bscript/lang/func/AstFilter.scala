@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 
-import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
+import com.github.gchudnov.bscript.lang.ast.lit.CollectionLit
 /**
  * Filters AST
  *
@@ -164,7 +164,7 @@ trait AstFilter:
     ast match
       case a: ConstLit =>
         if isKeep(a) then Some(a) else None
-      case a: GroupLit =>
+      case a: CollectionLit =>
         for
           cType  <- filterTypeAST(a.cType)
           elems   = filterExprs(a.elems)
