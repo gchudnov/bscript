@@ -28,7 +28,7 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
  *
  * At this pass, symbols should be defined in scopes.
  *
- * ScopeBuildPass:
+ * ScopeBuild Pass:
  *
  * {{{
  * 1) Pushes Scopes;

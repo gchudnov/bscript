@@ -26,6 +26,26 @@ final class BuildPassSpec extends TestSpec:
 
   "BuildPass" when {
 
+    "const literals" should {
+      /**
+       * {{{
+       *   // globals
+       *   2;
+       * }}}
+       */
+      "build scope for an integer" in {
+        val t = Examples.ex21
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            outState.forestSize mustBe 1
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
     "var is defined" should {
 
       /**
@@ -698,4 +718,4 @@ final class BuildPassSpec extends TestSpec:
     val pass = new PassImpl()
 
     val stateIn = InState.from(ast0)
-    allCatch.either(pass.run(stateIn))
+    nonFatalCatch.either(pass.run(stateIn))

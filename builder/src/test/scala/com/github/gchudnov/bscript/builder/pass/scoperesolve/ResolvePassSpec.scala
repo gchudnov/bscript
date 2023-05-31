@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.visitors
+package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
@@ -16,7 +16,11 @@ import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.builder.pass.Examples
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
+import com.github.gchudnov.bscript.builder.pass.scopebuild.InState as BuildInState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
 
+import scala.util.control.Exception.*
 
 /**
  * ResolvePassSpec
@@ -25,6 +29,27 @@ final class ResolvePassSpec extends TestSpec:
   // import ResolvePass.*
 
   "ResolvePass" when {
+
+    "const literals" should {
+      /**
+       * {{{
+       *   // globals
+       *   2;
+       * }}}
+       */
+      "resolve scope for an integer" in {
+        val t = Examples.ex21
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            // outState.forestSize mustBe 1
+            ???
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
 
     "var is declared" should {
 
@@ -1075,6 +1100,19 @@ final class ResolvePassSpec extends TestSpec:
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
   private def eval(ast0: AST): Either[Throwable, OutState] =
+    val buildPass = new BuildPassImpl()
+    val resolvePass = new PassImpl()
+
+    val buildStateIn = BuildInState.from(ast0)
+    nonFatalCatch.either(buildPass.run(buildStateIn))
+      .flatMap(buildOutState => {
+        val resolveStateIn = InState.from(buildOutState.ast)
+        nonFatalCatch.either(resolvePass.run(resolveStateIn))
+      })
+
+
+    // val buildOutState = 
+
     // val v1                    = ScopeBuildVisitor.make()
     // val v2 = Folder.make()
 
@@ -1087,7 +1125,7 @@ final class ResolvePassSpec extends TestSpec:
     // val meta = s4.result
 
     // Right(State(ast0, meta))
-    ???
+    //???
 
 // object ResolvePass:
 

@@ -646,3 +646,16 @@ object Examples:
   val ex20: Example =
     val t = Block.empty // TODO: implement
     Example("ex20", t)
+
+  /**
+   * Const literal -- Integer
+   * {{{
+   *   // globals
+   *   2;
+   * }}}
+   */
+  val ex21: Example =
+    val t = Block.of(
+      ConstLit(IntVal(2))
+    )
+    Example("ex21", t)
