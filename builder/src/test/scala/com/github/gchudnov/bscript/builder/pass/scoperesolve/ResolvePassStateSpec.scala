@@ -1,19 +1,19 @@
 package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
-import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState as ScopeResolveState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState as ScopeBuildState
-import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 import com.github.gchudnov.bscript.builder.ScopeRef
-import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.types.TypeName
+import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState as ScopeBuildState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState as ScopeResolveState
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
+import com.github.gchudnov.bscript.lang.symbols.SymbolRef
+import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.lang.types.TypeName
 
-final class PassStateSpec extends TestSpec:
+final class ResolvePassStateSpec extends TestSpec:
 
-  "PassState" when {
+  "ResolvePassState" when {
     // "no input" should {
     //   val sb = ScopeBuildState.empty.push().define(SType(TypeName.i32))
     //   val sr = PassState.from(adapter.map(ScopeBuildState.to(sb)))

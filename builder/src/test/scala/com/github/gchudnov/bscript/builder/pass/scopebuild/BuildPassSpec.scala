@@ -429,7 +429,8 @@ final class BuildPassSpec extends TestSpec:
           case Right(outState) =>
             outState.forestSize mustBe 1
             outState.symbolsByName("a").size mustBe (1)
-          case Left(t) => fail("Should be 'right", t)
+          case Left(t) => 
+            fail("Should be 'right", t)
       }
 
       /**

@@ -1,6 +1,3 @@
-- TODO: finish example creation: bscript/builder/src/test/scala/com/github/gchudnov/bscript/builder/pass/Examples.scala
-        extract all examples
-
 - TODO: start horizontal execution:
         - evaluate 2
         - evaluate 2 + 2

@@ -5,8 +5,6 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.const.*
-// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
-// import com.github.gchudnov.bscript.builder.internal.Folder.ScopeResolveState
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeName
@@ -15,39 +13,38 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.BGlobals
+import com.github.gchudnov.bscript.builder.pass.Examples
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
-
-// import com.github.gchudnov.bscript.builder.internal.ScopeBuilder
-
-// import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
-// import com.github.gchudnov.bscript.builder.internal.scoperesolver.Folder
 
 /**
- * FolderSpec
+ * ResolvePassSpec
  */
-final class FolderSpec extends TestSpec:
-  import FolderSpec.*
+final class ResolvePassSpec extends TestSpec:
+  // import ResolvePass.*
 
-  "Folder" when {
+  "ResolvePass" when {
 
     "var is declared" should {
 
       /**
        * {{{
        *   // globals
-       *   int x;
+       *   int x = 0;
        * }}}
        */
-      "eval to build ast" in {
-        val t = VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+      "resolve scopes" in {
+        val t = Examples.ex1
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(State(ast, meta)) =>
+          case Right(outState) =>
             // typeNameForVarInScope(meta)("x", "#global") mustBe (Right(typeNames.i32Type))
             ???
 
-          case Left(t) => fail("Should be 'right", t)
+          case Left(t) => 
+            fail("Should be 'right", t)
       }
     }
 
@@ -1077,7 +1074,7 @@ final class FolderSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
-  private def eval(ast0: AST): Either[Throwable, State] =
+  private def eval(ast0: AST): Either[Throwable, OutState] =
     // val v1                    = ScopeBuildVisitor.make()
     // val v2 = Folder.make()
 
@@ -1092,9 +1089,9 @@ final class FolderSpec extends TestSpec:
     // Right(State(ast0, meta))
     ???
 
-object FolderSpec:
+// object ResolvePass:
 
-  final case class State(ast: AST, meta: Meta)
+  // final case class State(ast: AST, meta: Meta)
 
 //   def verifyResolved(t: FolderState): TreeVisitor[String, Unit] = new TreeVisitor[String, Unit]:
 

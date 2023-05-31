@@ -1,3 +1,7 @@
 package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
-final case class OutState()
+import com.github.gchudnov.bscript.lang.ast.AST
+
+final case class OutState(
+  ast: AST
+)
