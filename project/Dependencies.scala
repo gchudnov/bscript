@@ -4,7 +4,7 @@ object Dependencies {
 
   object versions {
     val scopt              = "4.1.0"
-    val scalatest          = "3.2.15"
+    val scalatest          = "3.2.16"
     val json4sNative       = "4.0.6"
     val swearwolf          = "2.1.0"
   }

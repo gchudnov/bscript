@@ -50,7 +50,7 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
       case x @ MethodLit(mType, body) =>
-        foldOverAST(s.define(SMethod("anon")).push(), x).pop()
+        foldOverAST(s.define(SMethod("anon")).push(), x).pop() // TODO: predefined name is incorrect, instead we should generate a new one ?
 
       case x @ Auto() =>
         foldOverAST(s, x)

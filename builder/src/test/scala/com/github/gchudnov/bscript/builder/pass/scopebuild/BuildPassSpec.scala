@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.builder.pass.scopebuild
 import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.builder.Scope
 import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.pass.Examples
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl
@@ -34,11 +35,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        val t = Block.of(
-          VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-        )
+        val t = Examples.ex1
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 1
@@ -61,22 +60,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "define nested scopes" in {
-        val t = Block.of(
-          MethodDecl(
-            "main",
-            MethodType(
-              List.empty[TypeDecl],
-              List.empty[VarDecl],
-              TypeId(TypeName.i32)
-            ),
-            Block.of(
-              VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-              Assign(Id("x"), ConstLit(IntVal(3)))
-            )
-          )
-        )
+        val t = Examples.ex2
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 3 // root + main(args) + block inside
@@ -96,22 +82,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "shadow variables" in {
-        val t = Block.of(
-          MethodDecl(
-            "myFunc",
-            MethodType(
-              List.empty[TypeDecl],
-              List(VarDecl("x", TypeId(TypeName.i32))),
-              TypeId(TypeName.i32)
-            ),
-            Block.of(
-              VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-              Assign(Id("x"), ConstLit(IntVal(3)))
-            )
-          )
-        )
+        val t = Examples.ex3
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 3 // root + main(args) + block inside
@@ -136,39 +109,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "produce several scopes if there are several method declarations" in {
-        val t = Block.of(
-          MethodDecl(
-            "offsetDateTime",
-            MethodType(
-              List.empty[TypeDecl],
-              List(
-                VarDecl("value", TypeId(TypeName.datetime)),
-                VarDecl("offset", TypeId(TypeName.i32)),
-                VarDecl("unit", TypeId(TypeName.str))
-              ),
-              TypeId(TypeName.datetime)
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
-            )
-          ),
-          MethodDecl(
-            "fieldOfDateTime",
-            MethodType(
-              List.empty[TypeDecl],
-              List(
-                VarDecl("value", TypeId(TypeName.datetime)),
-                VarDecl("unit", TypeId(TypeName.str))
-              ),
-              TypeId(TypeName.i32)
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
-            )
-          )
-        )
+        val t = Examples.ex4
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 5
@@ -189,25 +132,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(int, int): int" in {
-        val t = Block.of(
-          MethodDecl(
-            "+",
-            MethodType(
-              List.empty[TypeDecl],
-              List(
-                VarDecl("lhs", TypeId(TypeName.i32)),
-                VarDecl("rhs", TypeId(TypeName.i32))
-              ),
-              TypeId(TypeName.i32)
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
-            )
-          ),
-          Call(Id("+"), List(ConstLit(IntVal(2)), ConstLit(IntVal(3))))
-        )
+        val t = Examples.ex5
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("+").size mustBe (1)
@@ -226,25 +153,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(double, int): double" in {
-        val t = Block.of(
-          MethodDecl(
-            "+",
-            MethodType(
-              List.empty[TypeDecl],
-              List(
-                VarDecl("lhs", TypeId(TypeName.f64)),
-                VarDecl("rhs", TypeId(TypeName.i32))
-              ),
-              TypeId(TypeName.f64)
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64))
-            )
-          ),
-          Call(Id("+"), List(ConstLit(DoubleVal(1.0)), ConstLit(IntVal(3))))
-        )
+        val t = Examples.ex6
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("+").size mustBe (1)
@@ -263,25 +174,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for `+(int, int): int` with an invalid argument" in {
-        val t = Block.of(
-          MethodDecl(
-            "+",
-            MethodType(
-              List.empty[TypeDecl],
-              List(
-                VarDecl("lhs", TypeId(TypeName.i32)),
-                VarDecl("rhs", TypeId(TypeName.i32))
-              ),
-              TypeId(TypeName.i32)
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
-            )
-          ),
-          Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
-        )
+        val t = Examples.ex7
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("+").size mustBe (1)
@@ -300,25 +195,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(T, T): T" in {
-        val t = Block.of(
-          MethodDecl(
-            "+",
-            MethodType(
-              List(TypeDecl("T")),
-              List(
-                VarDecl("lhs", TypeId("T")),
-                VarDecl("rhs", TypeId("T"))
-              ),
-              TypeId("T")
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId("T"))
-            )
-          ),
-          Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
-        )
+        val t = Examples.ex8
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("+").size mustBe (1)

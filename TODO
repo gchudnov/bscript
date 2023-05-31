@@ -1,3 +1,14 @@
+- TODO: finish example creation: bscript/builder/src/test/scala/com/github/gchudnov/bscript/builder/pass/Examples.scala
+
+- TODO: 
+ *      |                +- Decl +- MethodDecl // TODO: refactor declarations (?), see cpp2
+ *      |                |       +- StructDecl
+ *      |                |       +- VarDecl
+ *      |                |       +- TypeDecl
+
+
+TODO: check an example of small languages
+
 
 - TODO: add generics? (a primitive ones)
 
