@@ -38,7 +38,7 @@ object Examples:
    *
    * {{{
    *   // globals
-   *   int main() {
+   *   fn main() -> int = {
    *     int x;
    *     x = 3;
    *   }
@@ -66,7 +66,7 @@ object Examples:
    *
    * {{{
    *   // globals
-   *   int myFunc(long x) {
+   *   fn myFunc(long x) -> int {
    *     int x;
    *     x = 3;
    *   }
@@ -95,11 +95,11 @@ object Examples:
    * {{{
    *   // globals
    *   {
-   *       datetime offsetDateTime(value: datetime, offset: int, unit: str) {
+   *       fn offsetDateTime(value: datetime, offset: int, unit: str) -> datetime {
    *         // ...
    *       }
    *
-   *       int fieldOfDateTime(value: datetime, unit: str) {
+   *       fn fieldOfDateTime(value: datetime, unit: str) -> int {
    *         // ...
    *       }
    *   }
@@ -143,7 +143,7 @@ object Examples:
    * Plus for integers
    *
    * {{{
-   *   int +(lhs: int, rhs: int) {
+   *   fn +(lhs: int, rhs: int) -> int {
    *     // ...
    *   }
    *
@@ -174,7 +174,7 @@ object Examples:
    * Plus for different data types
    *
    * {{{
-   *   double +(lhs: double, rhs: int) {
+   *   fn +(lhs: double, rhs: int) -> double {
    *     // ...
    *   }
    *
@@ -205,7 +205,7 @@ object Examples:
    * Plus on string and integer
    *
    * {{{
-   *   int +(lhs: int, rhs: int) {
+   *   fn +(lhs: int, rhs: int) -> int {
    *     // ...
    *   }
    *
@@ -236,7 +236,7 @@ object Examples:
    * Generic plus
    *
    * {{{
-   *   T +[T](lhs: T, rhs: T) {
+   *   fn +[T](lhs: T, rhs: T) -> T {
    *     // ...
    *   }
    *
