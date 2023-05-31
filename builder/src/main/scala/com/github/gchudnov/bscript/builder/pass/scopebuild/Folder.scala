@@ -20,7 +20,7 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
       case x @ Id(name) =>
         foldOverAST(s, x)
 
-      // TODO: a declaration should be unified, see cpp2
+      // TODO: a declaration should be unified, see cpp2 tests
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s.define(SMethod(name)).push(), x).pop()
       case x @ StructDecl(name, sType) =>
@@ -44,6 +44,7 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
         foldOverAST(s, x)
       case x @ Init() =>
         foldOverAST(s, x)
+      // TODO: define for KeyValue
 
       case x @ ConstLit(const) =>
         foldOverAST(s, x)

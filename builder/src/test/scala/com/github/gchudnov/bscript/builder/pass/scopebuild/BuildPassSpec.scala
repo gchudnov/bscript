@@ -611,7 +611,8 @@ final class BuildPassSpec extends TestSpec:
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("a").size mustBe (1)
-          case Left(t) => fail("Should be 'right", t)
+          case Left(t) => 
+            fail("Should be 'right", t)
       }
     }
 
