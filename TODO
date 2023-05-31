@@ -5,6 +5,13 @@
         - evaluate 2
         - evaluate 2 + 2
 
+https://toylang.com/
+https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/
+
+https://github.com/faiface/generics/blob/master/go/ast/ast.go
+https://softwareengineering.stackexchange.com/questions/334167/how-are-generics-implemented-in-a-modern-compiler
+
+
 
 - TODO: 
  *      |                +- Decl +- MethodDecl // TODO: refactor declarations (?), see cpp2

@@ -216,25 +216,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(T, U): R" in {
-        val t = Block.of(
-          MethodDecl(
-            "+",
-            MethodType(
-              List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
-              List(
-                VarDecl("lhs", TypeId("T")),
-                VarDecl("rhs", TypeId("U"))
-              ),
-              TypeId("R")
-            ),
-            Block.of(
-              Compiled(callback = Compiled.identity, retType = TypeId("R"))
-            )
-          ),
-          Call(Id("+"), List(ConstLit(IntVal(4)), ConstLit(IntVal(3))))
-        )
+        val t = Examples.ex9
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("+").size mustBe (1)
@@ -395,13 +379,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "be set in a scope" in {
-        val t = Block.of(
-          VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(9))),
-          VarDecl("j", TypeId(TypeName.f32), ConstLit(FloatVal(0.0f))),
-          VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), ConstLit(IntVal(2)))))
-        )
+        val t = Examples.ex10
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 1
@@ -422,11 +402,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "auto-defined for collections" in {
-        val t = Block.of(
-          VarDecl("a", Auto(), CollectionLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
-        )
+        val t = Examples.ex11
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 1
@@ -444,11 +422,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "explicitly defined for collections" in {
-        val t = Block.of(
-          VarDecl("a", VecType(TypeId(TypeName.i32)), CollectionLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
-        )
+        val t = Examples.ex12
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 1
@@ -465,11 +441,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "allow nothing in declaration with auto-type deduction" in {
-        val t = Block.of(
-          VarDecl("x", Auto(), ConstLit(NullVal()))
-        )
+        val t = Examples.ex13
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 1
@@ -488,11 +462,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "allow nothing in declaration with explicit type" in {
-        val t = Block.of(
-          VarDecl("x", TypeId("i32"), ConstLit(NullVal()))
-        )
+        val t = Examples.ex14
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.forestSize mustBe 1
@@ -515,26 +487,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "assign scope to the Call Variable" in {
-        val t = Block.of(
-          MethodDecl(
-            "printf",
-            MethodType(
-              List.empty[TypeDecl],
-              List(
-                VarDecl("format", TypeId(TypeName.str)),
-                VarDecl("value", Auto())
-              ),
-              TypeId(TypeName.void)
-            ),
-            Block.empty
-          ),
-          Block.of(
-            VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-          ),
-          Call(Id("printf"), List(ConstLit(StrVal("%d")), Id("z"))) // z is no longer visible; Will be an error in Phase #2
-        )
+        val t = Examples.ex15
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             val blockStatements = outState.ast.asInstanceOf[Block].exprs
@@ -564,39 +519,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "retain scope information for several nested scopes" in {
-        val t = Block.of(
-          VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-          MethodDecl(
-            "f",
-            MethodType(
-              List.empty[TypeDecl],
-              List.empty[VarDecl],
-              TypeId(TypeName.void)
-            ),
-            Block.of(
-              VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-              Block.of(
-                VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-              ),
-              Block.of(
-                VarDecl("j", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-              )
-            )
-          ),
-          MethodDecl(
-            "g",
-            MethodType(
-              List.empty[TypeDecl],
-              List.empty[VarDecl],
-              TypeId(TypeName.void)
-            ),
-            Block.of(
-              VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-            )
-          )
-        )
+        val t = Examples.ex16
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("x").size mustBe (1)
@@ -639,30 +564,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "define related symbols in scopes" in {
-        val t = Block.of(
-          StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
-          StructDecl("C", StructType(List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32))))),
-          StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("b", TypeId("B")), VarDecl("c", TypeId("C"))))),
-          VarDecl("a", TypeId("A")),
-          MethodDecl(
-            "f",
-            MethodType(
-              List.empty[TypeDecl],
-              List.empty[VarDecl],
-              TypeId(TypeName.void)
-            ),
-            Block.of(
-              StructDecl("D", StructType(List.empty[TypeDecl], List(VarDecl("i", TypeId(TypeName.i32))))),
-              VarDecl("d", TypeId("D")),
-              Assign(
-                Access(Id("d"), Id("i")),
-                Access(Access(Id("a"), Id("b")), Id("y"))
-              )
-            )
-          )
-        )
+        val t = Examples.ex17
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.scopesBySymbol(SymbolRef("b")).map(_.name) must contain theSameElementsAs (List("a.c"))

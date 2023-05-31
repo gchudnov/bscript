@@ -95,11 +95,11 @@ object Examples:
    * {{{
    *   // globals
    *   {
-   *       fn offsetDateTime(value: datetime, offset: int, unit: str) -> datetime {
+   *       fn offsetDateTime(value: datetime, offset: int, unit: str) -> datetime = {
    *         // ...
    *       }
    *
-   *       fn fieldOfDateTime(value: datetime, unit: str) -> int {
+   *       fn fieldOfDateTime(value: datetime, unit: str) -> int = {
    *         // ...
    *       }
    *   }
@@ -262,3 +262,256 @@ object Examples:
       Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
     )
     Example("ex8", t)
+
+  /**
+   * Generic plus with multiple type parameters
+   *
+   * {{{
+   *   fn +[R, T, U](lhs: T, rhs: U) -> R {
+   *     // ...
+   *   }
+   *
+   *   4 + 3
+   * }}}
+   */
+  val ex9: Example =
+    val t = Block.of(
+      MethodDecl(
+        "+",
+        MethodType(
+          List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
+          List(
+            VarDecl("lhs", TypeId("T")),
+            VarDecl("rhs", TypeId("U"))
+          ),
+          TypeId("R")
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("R"))
+        )
+      ),
+      Call(Id("+"), List(ConstLit(IntVal(4)), ConstLit(IntVal(3))))
+    )
+    Example("ex9", t)
+
+  /**
+   * Several variables in a scope
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     int i = 9;
+   *     float j;
+   *     int k = i+2;
+   *   }
+   * }}}
+   */
+  val ex10: Example =
+    val t = Block.of(
+      VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(9))),
+      VarDecl("j", TypeId(TypeName.f32), ConstLit(FloatVal(0.0f))),
+      VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), ConstLit(IntVal(2)))))
+    )
+    Example("ex10", t)
+
+  /**
+   * Collection literal where the type is defined automatically
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     auto a = [1, 2, 3];
+   *   }
+   * }}}
+   */
+  val ex11: Example =
+    val t = Block.of(
+      VarDecl("a", Auto(), CollectionLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
+    )
+    Example("ex11", t)
+
+  /**
+   * Collection literal where the type is passed manually
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     int[] a = [1, 2, 3];
+   *   }
+   * }}}
+   */
+  val ex12: Example =
+    val t = Block.of(
+      VarDecl("a", VecType(TypeId(TypeName.i32)), CollectionLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
+    )
+    Example("ex12", t)
+
+  /**
+   * Declare variable and assign it to Null; auto-type deduction
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     auto x = nothing;
+   *   }
+   * }}}
+   */
+  val ex13: Example =
+    val t = Block.of(
+      VarDecl("x", Auto(), ConstLit(NullVal()))
+    )
+    Example("ex13", t)
+
+  /**
+   * Declare variable and assign it to Null; manual type specification
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     int x = nothing;
+   *   }
+   * }}}
+   */
+  val ex14: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId("i32"), ConstLit(NullVal()))
+    )
+    Example("ex14", t)
+
+  /**
+   * Several scopes, variable use from the non-available scope
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     fn printf(format: str, value: auto) -> void = { }
+   *
+   *     { int z = 0; }       // local scope nested within f's local scope
+   *     printf("%d", z); // z is no longer visible; static analysis ERROR!
+   *   }
+   * }}}
+   */
+  val ex15: Example =
+    val t = Block.of(
+      MethodDecl(
+        "printf",
+        MethodType(
+          List.empty[TypeDecl],
+          List(
+            VarDecl("format", TypeId(TypeName.str)),
+            VarDecl("value", Auto())
+          ),
+          TypeId(TypeName.void)
+        ),
+        Block.empty
+      ),
+      Block.of(
+        VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+      ),
+      Call(Id("printf"), List(ConstLit(StrVal("%d")), Id("z"))) // z is no longer visible; Will be an error in Phase #2
+    )
+    Example("ex15", t)
+
+  /**
+   * Several nested scopes
+   *
+   * {{{
+   * // globals
+   *   {
+   *     int x;                // define variable x in global scope
+   *     fn f() -> void = {    // define function f in global scope
+   *       int y;              // define variable y in local scope of f
+   *       { int i; }          // define variable i in nested local scope
+   *       { int j; }          // define variable j in another nested local scope
+   *     }
+   *     fn g() -> void = {    // define function g in global scope
+   *       int i;              // define variable i in local scope of g
+   *     }
+   *   }
+   * }}}
+   */
+  val ex16: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      MethodDecl(
+        "f",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.void)
+        ),
+        Block.of(
+          VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+          Block.of(
+            VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+          ),
+          Block.of(
+            VarDecl("j", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+          )
+        )
+      ),
+      MethodDecl(
+        "g",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.void)
+        ),
+        Block.of(
+          VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+        )
+      )
+    )
+    Example("ex16", t)
+
+  /**
+   * Structure definition and usage
+   * 
+   * {{{
+   *   // globals
+   *   {
+   *     struct B { int y; };
+   *     struct C { int z; };
+   *     struct A {
+   *       int x;
+   *       B b;
+   *       C c;
+   *     };
+   *
+   *     A a;
+   *
+   *     fn f() -> void = {
+   *       struct D {
+   *         int i;
+   *       };
+   *
+   *       D d;
+   *       d.i = a.b.y;
+   *     }
+   *   }
+   * }}}
+   */
+  val ex17: Example = 
+    val t = Block.of(
+      StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
+      StructDecl("C", StructType(List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32))))),
+      StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("b", TypeId("B")), VarDecl("c", TypeId("C"))))),
+      VarDecl("a", TypeId("A")),
+      MethodDecl(
+        "f",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.void)
+        ),
+        Block.of(
+          StructDecl("D", StructType(List.empty[TypeDecl], List(VarDecl("i", TypeId(TypeName.i32))))),
+          VarDecl("d", TypeId("D")),
+          Assign(
+            Access(Id("d"), Id("i")),
+            Access(Access(Id("a"), Id("b")), Id("y"))
+          )
+        )
+      )
+    )
+    Example("ex17", t)
