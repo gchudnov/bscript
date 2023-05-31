@@ -466,7 +466,7 @@ object Examples:
 
   /**
    * Structure definition and usage
-   * 
+   *
    * {{{
    *   // globals
    *   {
@@ -491,7 +491,7 @@ object Examples:
    *   }
    * }}}
    */
-  val ex17: Example = 
+  val ex17: Example =
     val t = Block.of(
       StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
       StructDecl("C", StructType(List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32))))),
@@ -515,3 +515,134 @@ object Examples:
       )
     )
     Example("ex17", t)
+
+  /**
+   * Struct initalization
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     struct B { int y; };
+   *
+   *     struct A {
+   *       int x;
+   *       string s;
+   *       B b;
+   *     };
+   *
+   *     A a = { 1, "hello", { 2 } };
+   *     a
+   *   }
+   * }}}
+   */
+  val ex18: Example =
+    val t = Block.of(
+      StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
+      StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B"))))),
+      VarDecl(
+        "a",
+        TypeId("A"),
+        CollectionLit(
+          TypeId("A"),
+          List(
+            KeyValue(ConstLit(StrVal("x")), ConstLit(IntVal(1))),
+            KeyValue(ConstLit(StrVal("s")), ConstLit(StrVal("alice"))),
+            KeyValue(
+              ConstLit(StrVal("b")),
+              CollectionLit(
+                TypeId("B"),
+                List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2))))
+              )
+            )
+          )
+        )
+      ),
+      Id("a")
+    )
+    Example("ex18", t)
+
+  /**
+   * A small program
+   * {{{
+   *   // globals
+   *   {
+   *     int x = 1;
+   *     fn g(int x) -> void = { int z = 2; }
+   *     fn f(int x) -> void = { int y = 1; g(2*x); }
+   *     fn main() -> void = { f(3); }
+   *     main();
+   *   }
+   * }}}
+   */
+  val ex19: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
+      MethodDecl(
+        "g",
+        MethodType(
+          List.empty[TypeDecl],
+          List(VarDecl("x", TypeId(TypeName.i32))),
+          TypeId(TypeName.void)
+        ),
+        Block.of(
+          VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(2)))
+        )
+      ),
+      MethodDecl(
+        "f",
+        MethodType(
+          List.empty[TypeDecl],
+          List(VarDecl("x", TypeId(TypeName.i32))),
+          TypeId(TypeName.void)
+        ),
+        Block.of(
+          VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(1))),
+          Call(Id("g"), List(Call(Id("*"), List(ConstLit(IntVal(2)), Id("x")))))
+        )
+      ),
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.void)
+        ),
+        Block.of(
+          Call(Id("f"), List(ConstLit(IntVal(3))))
+        )
+      ),
+      Call(Id("main"), List.empty[Expr])
+    )
+    Example("ex19", t)
+
+  /**
+   * {{{
+   *   // given a collection of words, create a map of word lengths
+   *   def main(): map[str, i32] = {
+   *     auto as = ["alice", "bob", "carol"];
+   *
+   *     val f = [](as: []str) -> map[str, i32] {
+   *       val m = map[string, int]{};
+   *
+   *       val iterate = [](i: i32) -> map[str, i32] {
+   *         if len(m) == i {
+   *           m;
+   *         } else {
+   *           w = get(as, i)
+   *           m = set(m, w, len(w))
+   *           iterate(i + 1)
+   *         }
+   *       }
+   *
+   *       iterate(0);
+   *     };
+   *
+   *     f(as); // returns a map of lengths
+   *   }
+   *
+   *   main();
+   * }}}
+   */
+  val ex20: Example =
+    val t = Block.empty // TODO: implement
+    Example("ex20", t)

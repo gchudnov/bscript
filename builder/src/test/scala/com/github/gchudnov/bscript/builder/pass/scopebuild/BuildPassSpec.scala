@@ -605,31 +605,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "initialize with an anonymous struct" in {
-        val t = Block.of(
-          StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
-          StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B"))))),
-          VarDecl(
-            "a",
-            TypeId("A"),
-            CollectionLit(
-              TypeId("A"),
-              List(
-                KeyValue(ConstLit(StrVal("x")), ConstLit(IntVal(1))),
-                KeyValue(ConstLit(StrVal("s")), ConstLit(StrVal("alice"))),
-                KeyValue(
-                  ConstLit(StrVal("b")),
-                  CollectionLit(
-                    TypeId("B"),
-                    List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2))))
-                  )
-                )
-              )
-            )
-          ),
-          Id("a")
-        )
+        val t = Examples.ex18
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("a").size mustBe (1)
@@ -652,46 +630,9 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "build scopes" in {
-        val t = Block.of(
-          VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
-          MethodDecl(
-            "g",
-            MethodType(
-              List.empty[TypeDecl],
-              List(VarDecl("x", TypeId(TypeName.i32))),
-              TypeId(TypeName.void)
-            ),
-            Block.of(
-              VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(2)))
-            )
-          ),
-          MethodDecl(
-            "f",
-            MethodType(
-              List.empty[TypeDecl],
-              List(VarDecl("x", TypeId(TypeName.i32))),
-              TypeId(TypeName.void)
-            ),
-            Block.of(
-              VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(1))),
-              Call(Id("g"), List(Call(Id("*"), List(ConstLit(IntVal(2)), Id("x")))))
-            )
-          ),
-          MethodDecl(
-            "main",
-            MethodType(
-              List.empty[TypeDecl],
-              List.empty[VarDecl],
-              TypeId(TypeName.void)
-            ),
-            Block.of(
-              Call(Id("f"), List(ConstLit(IntVal(3))))
-            )
-          ),
-          Call(Id("main"), List.empty[Expr])
-        )
+        val t = Examples.ex19
 
-        val errOrRes = eval(t)
+        val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("f").size mustBe (1)
@@ -732,7 +673,16 @@ final class BuildPassSpec extends TestSpec:
        * }}}
        */
       "build scopes" in {
+        val t = Examples.ex20
 
+        // TODO: note that the example is not implemented yet
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            ()
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
     }
   }
