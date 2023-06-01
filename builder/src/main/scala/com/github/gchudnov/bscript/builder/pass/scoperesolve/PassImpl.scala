@@ -37,13 +37,11 @@ private[builder] final class PassImpl() extends Pass:
   type Out = OutState
 
   override def run(in: InState): OutState =
-    // val folder = ScopeResolveFolder.make()
-    // val state = ScopeResolveState.make()
+    val folder = Folder.make()
 
-    // val ast = ???
+    val state0         = PassState.from(in)
+    val state1         = folder.foldAST(state0, in.ast)
 
-    // folder.foldAST(state, ast)
+    val out = PassState.into(state1, in.ast)
 
-    ???
-
-// TODO: WE NEED TO DEFINE AN API TO GO FROM ONE PASS TO THE NEXT ONE
+    out

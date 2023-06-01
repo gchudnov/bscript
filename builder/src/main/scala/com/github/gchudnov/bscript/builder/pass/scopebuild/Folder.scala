@@ -66,6 +66,10 @@ private[scopebuild] final class Folder() extends AstFolder[PassState]:
       case x @ MethodType(tparams, params, retType) =>
         foldOverAST(s, x)
 
+      case other =>
+        throw new MatchError(s"Unsupported AST type in Build-Folder: ${other}")
+
+
 private[scopebuild] object Folder:
 
   def make(): Folder =

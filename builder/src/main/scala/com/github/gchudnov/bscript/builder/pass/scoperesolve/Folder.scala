@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
@@ -31,16 +32,24 @@ private[builder] final class Folder() extends AstFolder[PassState]:
       //   foldOverAST(a, x)
       case x @ Init() =>
         foldOverAST(s, x)
+
+      case x @ ConstLit(const) =>
+        foldOverAST(s, x)
+
       // case x @ MethodDecl(retType, name, _, _) =>
       //   foldOverAST(a.define(SMethod(name)).push(), x).pop()
       // case x @ StructDecl(name, _) =>
       //   foldOverAST(a.define(SStruct(name)).push(), x).pop()
       // case x @ Var(sym) =>
       //   foldOverAST(a, x)
-      case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(s.resolveVarDecl(name, vType, x), x)
+      // case x @ VarDecl(name, vType, expr) =>
+      //   foldOverAST(s.resolveVarDecl(name, vType, x), x)
       // case x @ Vec(_, elementType) =>
       //   foldOverAST(a, x)
+
+      case other =>
+        throw new MatchError(s"Unsupported AST type in Resolve-Folder: ${other}")
+
 
 private[builder] object Folder:
 

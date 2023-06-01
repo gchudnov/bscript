@@ -43,7 +43,7 @@ final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbo
 
 object PassState:
 
-  val empty: PassState =
+  lazy val empty: PassState =
     val cursor       = ForestCursor.empty[Scope](it => ScopeRef(it))
     val scopeSymbols = ScopeSymbols.empty
     val scopeAsts    = ScopeAsts.empty

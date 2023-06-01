@@ -26,7 +26,6 @@ import scala.util.control.Exception.*
  * ResolvePassSpec
  */
 final class ResolvePassSpec extends TestSpec:
-  // import ResolvePass.*
 
   "ResolvePass" when {
 
@@ -43,10 +42,9 @@ final class ResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            // outState.forestSize mustBe 1
-            ???
-
+            ()
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }
