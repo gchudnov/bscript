@@ -98,6 +98,8 @@ final class AreaSpec extends TestSpec:
       }
     }
 
+    // TODO: add get by path for arrays
+
     /**
      * {{{
      *   struct A {

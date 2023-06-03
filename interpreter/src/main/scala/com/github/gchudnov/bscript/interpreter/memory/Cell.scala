@@ -184,8 +184,6 @@ object Cell:
    */
   extension (cell: Cell)
 
-    // TODO: note that there is an inconsistency here in the return types, see asBoolean + asStruct
-
     def asStruct: Either[Throwable, Struct] = cell match
       case struct: Struct => Right(struct)
       case other              => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Struct"))
