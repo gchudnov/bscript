@@ -186,7 +186,10 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "update" should {
+    "update by name" should {
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
+      val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
 
       /**
        * {{{
@@ -198,10 +201,6 @@ final class AreaSpec extends TestSpec:
        * }}}
        */
       "return a new memory space hierarchy when update an element in the deepest memory space" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
-        val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
-
         val updated = main.update("a", Cell.I32(20))
 
         updated match
@@ -227,10 +226,6 @@ final class AreaSpec extends TestSpec:
        * }}}
        */
       "return a new memory space hierarchy when add an element in the parent memory space" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
-        val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
-
         val updated = main.update("b", Cell.I32(20))
 
         updated match
@@ -255,10 +250,6 @@ final class AreaSpec extends TestSpec:
        * }}}
        */
       "return a new memory space hierarchy when add an element in the child memory space" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
-        val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
-
         val updated = main.update("c", Cell.F32(20.1f))
 
         updated match
@@ -270,6 +261,27 @@ final class AreaSpec extends TestSpec:
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
                   Diff.Updated(Path.parse("main.c"), Cell.F64(12.34), Cell.F32(20.1f)),
+                )
+      }
+    }
+
+    "tryUpdate by name" should {
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
+      val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
+
+      "update the cell by name" in {
+        val errOrUpd = main.tryUpdate("a", Cell.I32(20))
+        errOrUpd match
+          case Left(_) =>
+            fail("should be 'right")
+          case Right(u) =>
+            Area.diff(main, u) match
+              case Left(_) =>
+                fail("should be 'right")
+              case Right(diff) =>
+                diff must contain theSameElementsAs List(
+                  Diff.Updated(Path.parse("main.f.globals.a"), Cell.I32(10), Cell.I32(20)),
                 )
       }
     }

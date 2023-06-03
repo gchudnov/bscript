@@ -114,12 +114,36 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   def put(id: String, value: Cell): Area =
     Area(name, members + (id -> value), parent)
 
+  /**
+   * Update a cell by id
+   *
+   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   *
+   * @param id
+   *   Id of the cell to update
+   * @param value
+   *   New value of the cell
+   * @return
+   *   Some(area) if the cell is found, None otherwise
+   */
   def update(id: String, value: Cell): Option[Area] =
     members
       .get(id)
       .map(_ => Area(name, members = members + (id -> value), parent))
       .orElse(parent.flatMap(_.update(id, value).map(updParent => Area(name, members, Some(updParent)))))
 
+  /**
+   * Update a cell by id
+   *
+   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   *
+   * @param id
+   *   Id of the cell to update
+   * @param value
+   *   New value of the cell
+   * @return
+   *   Right(area) if the cell is found, Left(error) otherwise
+   */
   def tryUpdate(id: String, value: Cell): Either[Throwable, Area] =
     update(id, value)
       .toRight(new MemoryException(s"Cannot find Area for: '${id}'"))
