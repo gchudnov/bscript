@@ -3,7 +3,10 @@ package com.github.gchudnov.bscript.interpreter
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.builder.BuildState
-import com.github.gchudnov.bscript.interpreter.internal.Folder
+import com.github.gchudnov.bscript.interpreter.pass.interpret.PassImpl
+import com.github.gchudnov.bscript.interpreter.pass.interpret.InState
+
+import scala.util.control.Exception.*
 
 /**
  *
@@ -26,12 +29,14 @@ sealed trait Interpreter:
    *
    * NOTE: AST must be built *before* the interpretation.
    */
-  def interpret(ast1: AST, state: BuildState): Either[Throwable, Cell] =
-    val folder = Folder.make()
+  def interpret(ast1: AST, state: BuildState): Either[Throwable, (Cell, InterpretState)] =
+    val interpretPass = new PassImpl()
 
-    // for {
+    val in = InState.from(ast1)
 
-    // } yield cell
+    for {
+      outState <- nonFatalCatch.either(interpretPass.run(in))
+    } yield outState
 
     ???
 

@@ -15,7 +15,7 @@ import scala.util.control.Exception.*
 
 sealed trait Builder:
 
-  def build(ast0: AST): Either[Throwable, BuildState] =
+  def build(ast0: AST): Either[Throwable, (AST, BuildState)] =
     val buildPass     = new BuildPassImpl()
     val resolvePass   = new ResolvePassImpl()
     val typeCheckPass = new TypeCheckPassImpl()
@@ -27,7 +27,8 @@ sealed trait Builder:
       resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
       typeCheckStateIn  <- nonFatalCatch.either(TypeCheckInState.from(resolveOutState.ast))
       typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))
+      ast1  = typeCheckStateOut.ast 
       buildState         = BuildState.from(typeCheckStateOut.ast)
-    yield buildState
+    yield (ast1, buildState)
 
 object Builder extends Builder
