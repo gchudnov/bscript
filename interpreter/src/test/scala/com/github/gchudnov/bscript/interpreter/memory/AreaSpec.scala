@@ -24,6 +24,43 @@ final class AreaSpec extends TestSpec:
       }
     }
 
+    "get" should {
+      "return a cell by its id if the cell exists" in {
+        val m = Area("globals", Map("a" -> Cell.I32(10)))
+
+        val optCell = m.get("a")
+        optCell match
+          case None =>
+            fail("should be 'right")
+          case Some(actual) =>
+            actual mustBe Cell.I32(10)
+      }
+
+      "return a cell from a parent if the cell exists" in {
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map.empty, Some(globals))
+
+        val optCell = locals.get("a")
+        optCell match
+          case None =>
+            fail("should be 'right")
+          case Some(actual) =>
+            actual mustBe Cell.I32(10)
+      }
+
+      "do not return a cell from a parent if the cell does not exist" in {
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map.empty, Some(globals))
+
+        val optCell = locals.get("b")
+        optCell match
+          case None =>
+            succeed
+          case Some(actual) =>
+            fail("should be 'left")
+      }
+    }
+
     /**
      * {{{
      *   struct A {

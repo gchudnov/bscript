@@ -20,7 +20,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
     members.isEmpty
 
   /**
-   * Get a call by its id
+   * Get a Cell by its id
    *
    * If the cell is not found in the current memory space, it will be searched in the parent one.
    *
@@ -32,6 +32,16 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   def get(id: String): Option[Cell] =
     members.get(id).orElse(parent.flatMap(_.get(id)))
 
+  /**
+   * Get a Cell by its id
+   *
+   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   *
+   * @param id
+   *   cell id
+   * @return
+   *   Right(cell) if the cell is found, Left(error) otherwise
+   */
   def tryGet(id: String): Either[Throwable, Cell] =
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
