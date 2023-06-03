@@ -24,14 +24,14 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "get" should {
+    "get by name" should {
       "return a cell by its id if the cell exists" in {
         val m = Area("globals", Map("a" -> Cell.I32(10)))
 
         val optCell = m.get("a")
         optCell match
           case None =>
-            fail("should be 'right")
+            fail("should be 'some")
           case Some(actual) =>
             actual mustBe Cell.I32(10)
       }
@@ -43,7 +43,7 @@ final class AreaSpec extends TestSpec:
         val optCell = locals.get("a")
         optCell match
           case None =>
-            fail("should be 'right")
+            fail("should be 'some")
           case Some(actual) =>
             actual mustBe Cell.I32(10)
       }
@@ -57,6 +57,43 @@ final class AreaSpec extends TestSpec:
           case None =>
             succeed
           case Some(actual) =>
+            fail("should be 'some")
+      }
+    }
+
+    "tryGet by name" should {
+      "return a cell by its id if the cell exists" in {
+        val m = Area("globals", Map("a" -> Cell.I32(10)))
+
+        val errOrCell = m.tryGet("a")
+        errOrCell match
+          case Left(_) =>
+            fail("should be 'right")
+          case Right(actual) =>
+            actual mustBe Cell.I32(10)
+      }
+
+      "return a cell from a parent if the cell exists" in {
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map.empty, Some(globals))
+
+        val errOrCell = locals.tryGet("a")
+        errOrCell match
+          case Left(_) =>
+            fail("should be 'right")
+          case Right(actual) =>
+            actual mustBe Cell.I32(10)
+      }
+
+      "do not return a cell from a parent if the cell does not exist" in {
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map.empty, Some(globals))
+
+        val errOrCell = locals.tryGet("b")
+        errOrCell match
+          case Left(_) =>
+            succeed
+          case Right(actual) =>
             fail("should be 'left")
       }
     }

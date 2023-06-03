@@ -184,11 +184,15 @@ object Cell:
    */
   extension (cell: Cell)
 
-    // TODO: note that there is an inconsistency here in the return types
+    // TODO: note that there is an inconsistency here in the return types, see asBoolean + asStruct
 
     def asStruct: Either[Throwable, Struct] = cell match
       case struct: Struct => Right(struct)
       case other              => Left(new MemoryException(s"Cannot convert ${other} to StructCell"))
+
+    def asBoolean: Either[Throwable, Boolean] = cell match
+      case Bool(x) => Right(x)
+      case other       => Left(new MemoryException(s"Cannot convert ${other} to Boolean"))
 
     def asAny: Either[Throwable, Any] = cell match
       case _: Nothing.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing
@@ -204,10 +208,6 @@ object Cell:
       case DateTime(value) => Right(value.asInstanceOf[Any])
       case Vec(value)      => Right(value.asInstanceOf[Any])
       case Struct(value)   => Right(value.asInstanceOf[Any])
-
-    def asBoolean: Either[Throwable, Boolean] = cell match
-      case Bool(x) => Right(x)
-      case other       => Left(new MemoryException(s"Cannot convert ${other} to Boolean"))
 
   given Show[Cell] with
     extension (a: Cell)
