@@ -1,33 +1,33 @@
 package com.github.gchudnov.bscript.builder.pass.typecheck
 
-import com.github.gchudnov.bscript.builder.TypeCheckLaws
-import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
-import com.github.gchudnov.bscript.builder.state.Ctx
-import com.github.gchudnov.bscript.builder.Meta
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
+import com.github.gchudnov.bscript.lang.func.AstFolder
+
+import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
+import com.github.gchudnov.bscript.builder.pass.typecheck.PassState
 
 import scala.annotation.tailrec
 
 /**
- * (3-PASS)
- *
- * Checks Type Safety and promotes data types.
- *
- * Languages typically have lots and lots of semantic rules. Some rules are runtime constraints (dynamic semantics), and some are compile-time constraints (static semantics).
- * Dynamic semantic rules enforce things like “no division by zero” and “no array index out of bounds.” Depending on the language, we can enforce some rules statically such as “no
- * multiplication of incompatible types.”
- *
- * We use general three-pass strategy:
- *
- * 1) In the first pass, the parser builds an AST.
- *
- * 2) In the second pass, a tree walker builds a scope tree and populates a symbol table.
- *
- * 3) I the he third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
- */
-private[typecheck] final class TypeCheckFolder() {} // extends TreeVisitor[TypeCheckState, TypeCheckState]:
+  * Fold the AST to do type checking.
+  */
+private[builder] final class Folder() extends AstFolder[PassState]:
+
+  override def foldAST(s: PassState, ast: AST): PassState =
+    ast match
+
+      case x @ ConstLit(const) =>
+        foldOverAST(s, x)
+
+private[builder] object Folder:
+
+  def make(): Folder =
+    new Folder()
+
+
+// private[typecheck] final class TypeCheckFolder() {} // extends TreeVisitor[TypeCheckState, TypeCheckState]:
 //   import Casting.*
 //   import TypeCheckVisitor.*
 
