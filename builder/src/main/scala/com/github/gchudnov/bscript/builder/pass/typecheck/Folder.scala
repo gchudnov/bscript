@@ -18,6 +18,9 @@ private[builder] final class Folder() extends AstFolder[PassState]:
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match
 
+      case x: Block =>
+        foldOverAST(s, x)
+
       case x @ ConstLit(const) =>
         foldOverAST(s, x)
 
