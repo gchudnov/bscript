@@ -9,8 +9,40 @@ import java.time.OffsetDateTime
 
 final class CellSpec extends TestSpec:
   "Cell" when {
-    "two struct-cells are merged" should {
-      "produce a merged struct" in {
+    "merge" should {
+
+      /**
+        * {{{
+        * strict a {
+        *   a: 1,
+        *   b: "alice",
+        *   c: true,
+        *   d: {
+        *     e: 3.14
+        * }
+        * 
+        * struct b {
+        *   a: 2,
+        *   c: false,
+        *   d: {
+        *     e: 6.28
+        *   }
+        * }
+        * 
+        * merged:
+
+        * struct c {
+        *   a: 2,
+        *   b: "alice",
+        *   c: false,
+        *   d: {
+        *     e: 6.28
+        *   }
+        * } 
+        * 
+        * }}}
+        */
+      "merge two structs" in {
         val a = Cell.Struct(
           Map(
             "a" -> Cell.I32(1),
@@ -43,19 +75,49 @@ final class CellSpec extends TestSpec:
       }
     }
 
-    "difference is calculated" should {
-      "calc it for primitives" in {
+    "difference" should {
+
+      /**
+        * {{{
+        *   a = 1
+        *   b = 2
+        * 
+        *   diff(a, b) = [
+        *     Updated("A", 1, 2)
+        *   ]
+        * }}}
+        */
+      "diff for primitives" in {
         val a = Cell.I32(1)
         val b = Cell.I32(2)
 
         val actual = Cell.diff("A", Some(a), Some(b))
 
-        val expected = List(Diff.Updated("A", a, b))
+        val expected = List(Diff.Updated(Path.parse("A"), a, b))
 
         actual.toList must contain theSameElementsAs expected
       }
 
-      "calc it for structs" in {
+      /**
+       * {{{
+       * struct a = {
+       *   a: 1,
+       *   b: "alice"
+       * }
+       * 
+       * struct b = {
+       *   a: 2,
+       *   c: 12.34
+       * }
+       * 
+       * diff(a, b) = [
+       *   Updated("A.a", 1, 2),
+       *   Removed("A.b", "alice"),
+       *   Added("A.c", 12.34)
+       * ]
+       * }}}
+       */
+      "diff for structs" in {
         val cellA1 = Cell.I32(1)
         val cellA2 = Cell.I32(2)
         val cellB  = Cell.Str("alice")
@@ -66,21 +128,161 @@ final class CellSpec extends TestSpec:
 
         val actual = Cell.diff("A", Some(a), Some(b))
 
-        val expected = List(Diff.Updated("A.a", cellA1, cellA2), Diff.Removed("A.b", cellB), Diff.Added("A.c", cellC))
+        val expected = List(
+          Diff.Updated(Path.parse("A.a"), cellA1, cellA2), 
+          Diff.Removed(Path.parse("A.b"), cellB), 
+          Diff.Added(Path.parse("A.c"), cellC),
+        )
 
         actual.toList must contain theSameElementsAs expected
       }
 
-      "calc it for arrays" in {
+      /**
+        * {{{
+        * a = [1, 2, 3]
+        * b = [1, 2, 3, 4]
+        * 
+        * diff(a, b) = [
+        *   Added("A.3", 4)
+        * ]
+        * }}}
+        */
+      "diff for arrays if len(a) < len(b)" in {
         val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
         val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
 
         val actual = Cell.diff("A", Some(a), Some(b))
 
-        val expected = List(Diff.Added("A.2", Cell.I32(4)))
+        val expected = List(Diff.Added(Path.parse("A.3"), Cell.I32(4)))
+
+        actual mustBe(expected)
       }
 
-      "calc it for nested structs" in {
+      /**
+        * {{{
+        * a = [1, 2, 3, 4]
+        * b = [1, 2, 3]
+        * 
+        * diff(a, b) = [
+        *   Removed("A.3", 4)
+        * ]
+        * }}}
+        */
+      "diff for arrays if len(a) > len(b)" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(Diff.Removed(Path(List("A", "3")), Cell.I32(4)))
+
+        actual mustBe(expected)
+      }
+
+      /**
+        * {{{
+        * a = [1, 2, 3]
+        * b = [1, 2, 3]
+        * 
+        * diff(a, b) = [
+        * ]
+        * }}}
+        */
+      "diff for arrays if a == b" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List.empty[Diff.Change[Path, Cell]]
+
+        actual mustBe(expected)
+      }
+
+      /**
+        * {{{
+        * a = []
+        * b = [1, 2, 3, 4]
+        * 
+        * diff(a, b) = [
+        *   Added("A.0", 1),
+        *   Added("A.1", 2),
+        *   Added("A.2", 3),
+        *   Added("A.3", 4)
+        * ]
+        * }}}
+        */
+      "diff for arrays if a.isEmpty && b.nonEmpty" in {
+        val a = Cell.Vec(List.empty[Cell])
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Added(Path(List("A", "0")), Cell.I32(1)), 
+          Diff.Added(Path(List("A", "1")), Cell.I32(2)), 
+          Diff.Added(Path(List("A", "2")), Cell.I32(3)), 
+          Diff.Added(Path(List("A", "3")), Cell.I32(4))
+        )
+
+        actual mustBe(expected)
+      }
+
+      /**
+        * {{{
+        * a = [1, 2, 3, 4]
+        * b = []
+        * 
+        * diff(a, b) = [
+        *   Removed("A.0", 1),
+        *   Removed("A.1", 2),
+        *   Removed("A.2", 3),
+        *   Removed("A.3", 4)
+        * ]
+        * }}}
+        */
+      "diff for arrays if a.nonEmpty && b.isEmpty" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+        val b = Cell.Vec(List.empty[Cell])
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Removed(Path(List("A", "0")), Cell.I32(1)), 
+          Diff.Removed(Path(List("A", "1")), Cell.I32(2)), 
+          Diff.Removed(Path(List("A", "2")), Cell.I32(3)), 
+          Diff.Removed(Path(List("A", "3")), Cell.I32(4))
+        )
+
+        actual mustBe(expected)
+      }
+
+      /**
+        * {{{
+        * a = [1, 2]
+        * b = [3, 4]
+        * 
+        * diff(a, b) = [
+        *   Updated("A.0", 1, 3),
+        *   Updated("A.1", 2, 4)
+        * ]
+        * }}}
+        */
+      "diff for arrays if len(a) == len(b)" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2)))
+        val b = Cell.Vec(List(Cell.I32(3), Cell.I32(4)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Updated(Path(List("A", "0")), Cell.I32(1), Cell.I32(3)), 
+          Diff.Updated(Path(List("A", "1")), Cell.I32(2), Cell.I32(4))
+        )
+
+        actual mustBe(expected)
+      }
+
+      "diff for nested structs" in {
         val a = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Struct(Map("c" -> Cell.Bool(true))), "d" -> Cell.Vec(List(Cell.Str("alice")))))
         val b = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Struct(Map("c" -> Cell.Bool(false))), "d" -> Cell.Vec(List(Cell.Str("bob")))))
 
