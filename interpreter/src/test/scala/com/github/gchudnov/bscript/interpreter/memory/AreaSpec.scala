@@ -57,7 +57,7 @@ final class AreaSpec extends TestSpec:
           case None =>
             succeed
           case Some(actual) =>
-            fail("should be 'some")
+            fail("should be 'none")
       }
     }
 
@@ -111,7 +111,7 @@ final class AreaSpec extends TestSpec:
      *   a.b.y; // here 'a.b.y' is a path
      * }}}
      */
-    "fetch" should {
+    "get by Path" should {
       val aStruct = Cell.Struct(
         "x" -> Cell.i32(0),
         "b" -> Cell.struct("y" -> Cell.I32(3))
@@ -121,21 +121,21 @@ final class AreaSpec extends TestSpec:
       val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
       "return a cell by its path if the path exists" in {
-        val optCell = locals.fetch(Path(List("a", "b", "y")))
+        val optCell = locals.get(Path(List("a", "b", "y")))
         optCell match
           case None =>
-            fail("should be 'right")
+            fail("should be 'some")
           case Some(actual) =>
             actual mustBe Cell.I32(3)
       }
 
       "return no value if the path is invalid" in {
-        val optCell = locals.fetch(Path(List("a", "b", "y", "z")))
+        val optCell = locals.get(Path(List("a", "b", "y", "z")))
         optCell match
           case None =>
             succeed
           case Some(actual) =>
-            fail("should be 'left")
+            fail("should be 'none")
       }
     }
 

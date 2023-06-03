@@ -46,7 +46,13 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
-  def fetch(path: Path): Option[Cell] =
+  /**
+    * Get a Cell by its path
+    *
+    * @param path Path to the cell
+    * @return Some(cell) if the cell is found, None otherwise
+    */
+  def get(path: Path): Option[Cell] =
     def iterate(ps: Path, where: Cell): Option[Cell] = ps match
       case Path(h, tail) =>
         where match
