@@ -10,6 +10,9 @@ import com.github.gchudnov.bscript.interpreter.memory.Path
  */
 case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
 
+  def isEmpty: Boolean =
+    members.isEmpty
+
   def get(id: String): Option[Cell] =
     members.get(id).orElse(parent.flatMap(_.get(id)))
 

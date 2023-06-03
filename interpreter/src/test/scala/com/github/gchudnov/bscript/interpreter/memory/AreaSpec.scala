@@ -10,11 +10,11 @@ final class AreaSpec extends TestSpec:
 
   "Area" when {
 
-    "created" should {
+    "create" should {
       "be empty" in {
         val m = Area("globals")
 
-        m.members.isEmpty mustBe (true)
+        m.isEmpty mustBe (true)
       }
     }
 
