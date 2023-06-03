@@ -715,7 +715,9 @@ final class BuildPassSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
   private def eval(ast0: AST): Either[Throwable, OutState] =
-    val pass = new PassImpl()
+    val buildPass = new PassImpl()
 
-    val stateIn = InState.from(ast0)
-    nonFatalCatch.either(pass.run(stateIn))
+    for
+      buildStateIn      <- nonFatalCatch.either(InState.from(ast0))
+      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+    yield buildOutState

@@ -14,11 +14,10 @@ import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.builder.pass.Examples
-import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
-import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState as BuildInState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
 import scala.util.control.Exception.*
 
@@ -1101,29 +1100,13 @@ final class ResolvePassSpec extends TestSpec:
     val buildPass = new BuildPassImpl()
     val resolvePass = new PassImpl()
 
-    val buildStateIn = BuildInState.from(ast0)
-    nonFatalCatch.either(buildPass.run(buildStateIn))
-      .flatMap(buildOutState => {
-        val resolveStateIn = InState.from(buildOutState.ast)
-        nonFatalCatch.either(resolvePass.run(resolveStateIn))
-      })
+    for
+      buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
+      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+      resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast))
+      resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
+    yield resolveOutState
 
-
-    // val buildOutState = 
-
-    // val v1                    = ScopeBuildVisitor.make()
-    // val v2 = Folder.make()
-
-    // val s1                    = BGlobals.make(ScopeBuilder.make().push())
-    // val s2 = v1.foldAST(s1, ast0)
-
-    // val s3 = s2.toResolver
-    // val s4 = v2.foldAST(s3, ast0)
-
-    // val meta = s4.result
-
-    // Right(State(ast0, meta))
-    //???
 
 // object ResolvePass:
 

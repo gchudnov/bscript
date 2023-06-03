@@ -1,10 +1,7 @@
 package com.github.gchudnov.bscript.builder.pass.typecheck
 
+import com.github.gchudnov.bscript.builder.pass.Examples
 import com.github.gchudnov.bscript.lang.ast.*
-// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
-// import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-// import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
-// import com.github.gchudnov.bscript.builder.BGlobals
 import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.Meta
@@ -12,9 +9,71 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.pass.scopebuild.InState as BuildInState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState as ResolveInState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState as ResolveOutState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassImpl as ResolvePassImpl
+import com.github.gchudnov.bscript.builder.pass.typecheck.InState as InState
+import com.github.gchudnov.bscript.builder.pass.typecheck.OutState as OutState
+import com.github.gchudnov.bscript.builder.pass.typecheck.PassImpl as PassImpl
 
-final class TypeCheckVisitorSpec {}
+import scala.util.control.Exception.*
 
+/**
+ * TypeCheckPassSpec
+ */
+final class TypeCheckPassSpec extends TestSpec:
+
+  "TypeCheckPass" when {
+
+    "const literals" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   2;
+       * }}}
+       */
+      "type check for an integer" in {
+        val t = Examples.ex21
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            ()
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+    }
+
+  }
+
+  /**
+   * To evaluate, we run Phase 1, 2 and 3
+   *
+   *   - In Phase 1 we build scopes and define symbols in scopes.
+   *   - In Phase 2 we resolve symbols that were populated in Phase-1
+   *   - In Phase 3 we check types and promote them as necessary.
+   */
+  private def eval(ast0: AST): Either[Throwable, OutState] =
+    val buildPass     = new BuildPassImpl()
+    val resolvePass   = new ResolvePassImpl()
+    val typeCheckPass = new PassImpl()
+
+    for
+      buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
+      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast))
+      resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
+      typeCheckStateIn  <- nonFatalCatch.either(InState.from(resolveOutState.ast))
+      typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))
+    yield typeCheckStateOut
+
+
+    
 // final class TypeCheckVisitorSpec extends TestSpec:
 //   import TypeCheckVisitorSpec.*
 //   import Meta.*
