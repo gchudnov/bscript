@@ -3,6 +3,9 @@ package com.github.gchudnov.bscript.interpreter.pass.interpret
 import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.builder.pass.Examples
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.Builder
+
+import scala.util.control.Exception.*
 
 // import com.github.gchudnov.bscript.builder.Builder
 // import com.github.gchudnov.bscript.interpreter.IGlobals
@@ -38,8 +41,37 @@ final class InterpretPassSpec extends TestSpec {
   }
 
   private def eval(ast0: AST): Either[Throwable, OutState] =
-    ???
+    val interpretPass = new PassImpl()
+
+    for {
+      b <- Builder.build(ast0)
+      (ast1, buildState) = b
+      in = InState.from(ast1)
+      out <- nonFatalCatch.either(interpretPass.run(in))
+    } yield out
 }
+
+//   private def eval(ast0: AST): Either[Throwable, InterpretState] =
+//     val types         = Types.make(typeNames)
+//     val typeCheckLaws = ITypeCheckLaws.make(types)
+
+//     Builder
+//       .build(ast0, types, typeCheckLaws)
+//       .flatMap({ astMeta =>
+//         val ms = MemorySpace("globals")
+
+//         val laws = IInterpretLaws.make(types, astMeta.meta)
+
+//         val interpretVisitor = InterpretVisitor.make(laws)
+//         val interpretState   = InterpretState.make(meta = astMeta.meta, Stash.empty, memSpace = ms, retValue = VoidCell)
+
+//         astMeta.ast.visit(interpretState, interpretVisitor)
+//       })
+
+// object InterpretVisitorSpec {}
+
+
+
 
 // final class InterpretVisitorSpec extends TestSpec:
 
