@@ -10,9 +10,25 @@ import com.github.gchudnov.bscript.interpreter.memory.Path
  */
 case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
 
+  /**
+   * Checks if the memory space is empty
+   *
+   * @return
+   *   true if the memory space is empty, false otherwise
+   */
   def isEmpty: Boolean =
     members.isEmpty
 
+  /**
+   * Get a call by its id
+   *
+   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   *
+   * @param id
+   *   cell id
+   * @return
+   *   Some(cell) if the cell is found, None otherwise
+   */
   def get(id: String): Option[Cell] =
     members.get(id).orElse(parent.flatMap(_.get(id)))
 
@@ -165,7 +181,7 @@ object Area:
             nameLines,
             depthLines,
             parentNameLines,
-            membersLines
+            membersLines,
           )
 
           val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))

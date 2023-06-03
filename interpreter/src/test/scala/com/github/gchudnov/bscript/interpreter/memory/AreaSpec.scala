@@ -10,11 +10,17 @@ final class AreaSpec extends TestSpec:
 
   "Area" when {
 
-    "create" should {
-      "be empty" in {
+    "isEmpty" should {
+      "return true if there are no members in the area" in {
         val m = Area("globals")
 
         m.isEmpty mustBe (true)
+      }
+
+      "return false if there are members in the area" in {
+        val m = Area("globals", Map("a" -> Cell.I32(10)))
+
+        m.isEmpty mustBe (false)
       }
     }
 
@@ -85,7 +91,8 @@ final class AreaSpec extends TestSpec:
 
         val errOrCell = locals.tryFetch(Path(List("a", "b", "y")))
         errOrCell match
-          case Left(_) => fail("should be 'right")
+          case Left(_) => 
+            fail("should be 'right")
           case Right(actual) =>
             actual mustBe Cell.I32(3)
       }
@@ -110,13 +117,15 @@ final class AreaSpec extends TestSpec:
         val updated = main.update("a", Cell.I32(20))
 
         updated match
-          case None => fail("should be 'some")
+          case None => 
+            fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
-              case Left(_) => fail("should be 'right")
+              case Left(_) => 
+                fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("main/f/globals/a", Cell.I32(10), Cell.I32(20))
+                  Diff.Updated(Path.parse("main.f.globals.a"), Cell.I32(10), Cell.I32(20))
                 )
       }
 
@@ -140,10 +149,11 @@ final class AreaSpec extends TestSpec:
           case None => fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
-              case Left(_) => fail("should be 'right")
+              case Left(_) => 
+                fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("main/f/b", Cell.Str("B"), Cell.I32(20))
+                  Diff.Updated(Path.parse("main.f.b"), Cell.Str("B"), Cell.I32(20))
                 )
       }
 
@@ -164,13 +174,14 @@ final class AreaSpec extends TestSpec:
         val updated = main.update("c", Cell.F32(20.1f))
 
         updated match
-          case None => fail("should be 'some")
+          case None => 
+            fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("main/c", Cell.F64(12.34), Cell.F32(20.1f))
+                  Diff.Updated(Path.parse("main.c"), Cell.F64(12.34), Cell.F32(20.1f))
                 )
       }
     }
