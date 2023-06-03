@@ -19,7 +19,7 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
   * @param scopeSymbols
   * @param scopeAsts
   */
-final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
+private[scopebuild] final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
   def push(): PassState =
     this.copy(cursor = cursor.push())

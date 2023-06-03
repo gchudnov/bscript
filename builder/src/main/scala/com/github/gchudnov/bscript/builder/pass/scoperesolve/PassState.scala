@@ -17,7 +17,7 @@ import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
 
-final case class PassState(
+private[scoperesolve] final case class PassState(
   // forest: Forest[Scope],
   // scopeSymbols: ScopeSymbols,
   // scopeAsts: ScopeAsts,

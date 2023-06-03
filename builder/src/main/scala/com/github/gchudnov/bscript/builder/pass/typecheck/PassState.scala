@@ -2,10 +2,10 @@ package com.github.gchudnov.bscript.builder.pass.typecheck
 
 import com.github.gchudnov.bscript.lang.ast.AST
 
-final case class PassState(
+private[typecheck] final case class PassState(
 )
 
-object PassState:
+private[typecheck] object PassState:
   
   lazy val empty: PassState =
     PassState(

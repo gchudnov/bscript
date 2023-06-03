@@ -1,21 +1,28 @@
 package com.github.gchudnov.bscript.interpreter.internal
 
 import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
 
-// import com.github.gchudnov.bscript.lang.ast.*
-// import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-// import com.github.gchudnov.bscript.interpreter.InterpreterLaws
-// import com.github.gchudnov.bscript.interpreter.laws.*
-// import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
-// import com.github.gchudnov.bscript.interpreter.memory.*
-// import com.github.gchudnov.bscript.lang.symbols.Type
-// import com.github.gchudnov.bscript.builder.state.Meta
-// import com.github.gchudnov.bscript.lang.types.Types
-// import com.github.gchudnov.bscript.lang.util.Transform
-// import com.github.gchudnov.bscript.lang.util.Casting
-// import com.github.gchudnov.bscript.lang.symbols.SStruct
-// import com.github.gchudnov.bscript.lang.symbols.SVar
+/**
+ * Fold the AST to interpret it
+ */
+private[interpreter] final class Folder() extends AstFolder[PassState] {
 
+  override def foldAST(s: PassState, ast: AST): PassState =
+    ast match
+
+      case x: Block =>
+        foldOverAST(s, x)
+
+      case x @ ConstLit(const) =>
+        foldOverAST(s, x)
+}
+
+private[interpreter] object Folder {
+  def make(): Folder =
+    new Folder()
+}
 
 
 

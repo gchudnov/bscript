@@ -7,14 +7,14 @@ import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 
-final case class OutState(
+private[builder] final case class OutState(
   ast: AST,
   forest: Forest[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts
 )
 
-object OutState:
+private[builder] object OutState:
 
   extension (s: OutState)
     def forestSize: Int =
