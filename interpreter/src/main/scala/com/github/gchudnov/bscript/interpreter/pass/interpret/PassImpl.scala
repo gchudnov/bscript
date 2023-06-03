@@ -16,6 +16,6 @@ private[interpreter] final class PassImpl() extends Pass:
     val state0         = PassState.from(in)
     val state1         = folder.foldAST(state0, in.ast)
 
-    val out = PassState.into(state1, in.ast)
+    val out = PassState.into(state1)
 
     out

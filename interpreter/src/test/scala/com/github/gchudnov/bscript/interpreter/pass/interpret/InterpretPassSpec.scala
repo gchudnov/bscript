@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.builder.pass.Examples
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.Builder
+import com.github.gchudnov.bscript.interpreter.memory.*
 
 import scala.util.control.Exception.*
 
@@ -25,19 +26,28 @@ import scala.util.control.Exception.*
 final class InterpretPassSpec extends TestSpec {
 
   "InterpretPass" when {
+
     "const literals" should {
-      "interpret" in {
+
+      /**
+       * {{{
+       *   // globals
+       *   2;
+       * }}}
+       */
+      "interpret an integer" in {
         val t = Examples.ex21
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            ()
+            outState.retValue mustBe (IntCell(2))
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)
       }
     }
+
   }
 
   private def eval(ast0: AST): Either[Throwable, OutState] =
