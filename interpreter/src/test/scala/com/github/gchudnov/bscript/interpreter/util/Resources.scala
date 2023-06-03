@@ -6,9 +6,9 @@ import scala.io.Source
 import scala.util.Using
 import scala.util.control.Exception.allCatch
 
-object ResourceOps:
+object Resources:
 
-  def resourceToString(resourcePath: String): Either[Throwable, String] =
-    Using(Source.fromResource(resourcePath)) { source =>
+  def asString(resPath: String): Either[Throwable, String] =
+    Using(Source.fromResource(resPath)) { source =>
       source.getLines().mkString(sys.props("line.separator"))
     }.toEither

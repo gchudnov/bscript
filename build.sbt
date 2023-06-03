@@ -54,7 +54,7 @@ lazy val builder = (project in file("builder"))
   )
 
 lazy val interpreter = (project in file("interpreter"))
-  .dependsOn(lang, builder)
+  .dependsOn(lang, builder % "compile->compile;test->test")
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(Settings.sonatype)

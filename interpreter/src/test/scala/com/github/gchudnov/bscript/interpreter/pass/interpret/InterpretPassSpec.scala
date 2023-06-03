@@ -1,10 +1,13 @@
-package com.github.gchudnov.bscript.interpreter.internal
+package com.github.gchudnov.bscript.interpreter.pass.interpret
+
+import com.github.gchudnov.bscript.interpreter.TestSpec
+import com.github.gchudnov.bscript.builder.pass.Examples
+import com.github.gchudnov.bscript.lang.ast.AST
 
 // import com.github.gchudnov.bscript.builder.Builder
 // import com.github.gchudnov.bscript.interpreter.IGlobals
 // import com.github.gchudnov.bscript.interpreter.IInterpretLaws
 // import com.github.gchudnov.bscript.interpreter.ITypeCheckLaws
-// import com.github.gchudnov.bscript.interpreter.TestSpec
 // import com.github.gchudnov.bscript.interpreter.internal.InterpretState
 // import com.github.gchudnov.bscript.interpreter.memory.*
 // import com.github.gchudnov.bscript.lang.ast.*
@@ -16,7 +19,27 @@ package com.github.gchudnov.bscript.interpreter.internal
 // import java.time.LocalDate
 // import java.time.OffsetDateTime
 
-trait InterpretVisitorSpec {}
+final class InterpretPassSpec extends TestSpec {
+
+  "InterpretPass" when {
+    "const literals" should {
+      "interpret" in {
+        val t = Examples.ex21
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            ()
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+    }
+  }
+
+  private def eval(ast0: AST): Either[Throwable, OutState] =
+    ???
+}
 
 // final class InterpretVisitorSpec extends TestSpec:
 
