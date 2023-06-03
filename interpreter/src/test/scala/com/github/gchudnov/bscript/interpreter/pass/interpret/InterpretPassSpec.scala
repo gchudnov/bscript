@@ -41,7 +41,7 @@ final class InterpretPassSpec extends TestSpec {
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.retValue mustBe (IntCell(2))
+            outState.retValue mustBe (Cell.I32(2))
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)

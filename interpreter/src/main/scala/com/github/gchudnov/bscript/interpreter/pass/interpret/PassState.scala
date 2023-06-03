@@ -11,7 +11,7 @@ object PassState:
 
   def from(in: InState): PassState =
     PassState(
-      retValue = VoidCell
+      retValue = Cell.Void
     )
 
   def into(state: PassState): OutState =

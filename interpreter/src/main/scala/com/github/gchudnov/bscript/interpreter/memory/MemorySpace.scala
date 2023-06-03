@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
-import com.github.gchudnov.bscript.interpreter.memory.StructCell
+import com.github.gchudnov.bscript.interpreter.memory.*
 
 /**
  * Immutable Memory Area
@@ -20,7 +20,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     def iterate(ps: List[String], where: Cell): Option[Cell] = ps match
       case h :: tail =>
         where match
-          case sc: StructCell =>
+          case sc: Cell.Struct =>
             sc.value
               .get(h)
               .flatMap(c => iterate(tail, c))
@@ -40,7 +40,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
         where match
-          case sc: StructCell =>
+          case sc: Cell.Struct =>
             sc.value
               .get(h)
               .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
@@ -75,11 +75,11 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
         where match
-          case sc: StructCell =>
+          case sc: Cell.Struct =>
             sc.value
               .get(h)
               .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
-              .flatMap(c => iterate(tail, c).map(uc => StructCell(sc.value.updated(h, uc))))
+              .flatMap(c => iterate(tail, c).map(uc => Cell.Struct(sc.value.updated(h, uc))))
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
       case Nil =>
@@ -156,7 +156,7 @@ object MemorySpace:
         def iterate(d: Int, ms: MemorySpace): Seq[String] =
           val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
 
-          val membersCell: Cell = StructCell(ms.members)
+          val membersCell: Cell = Cell.Struct(ms.members)
           val membersCellLines  = LineOps.split(membersCell.show)
 
           val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
