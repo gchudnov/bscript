@@ -15,22 +15,47 @@ package com.github.gchudnov.bscript.interpreter.memory
  *   a.b.y = 2; // here 'a.b.y' is a path
  * }}}
  */
-final case class Path(value: String):
+final case class Path(elems: List[String]):
   import Path.*
 
-  def split: List[String] =
-    if value.isEmpty then List.empty[String]
-    else value.split(sepRx).toList
+  def head: String =
+    elems.head
+
+  def tail: Path =
+    Path(elems.tail)
+
+  def concat(other: Path): Path =
+    Path(elems ++ other.elems)
+
+  def prepend(elem: String): Path =
+    Path(elem :: elems)
+
+  def append(elem: String): Path =
+    Path(elems :+ elem)
+
+  def asString: String = 
+    elems.mkString(sep)
 
   def isEmpty: Boolean =
-    value.isEmpty
+    elems.isEmpty
+
 
 object Path:
-  val sep: String   = "."
-  private val sepRx = "\\."
+  private val sep: String   = "."
+  private val rxSep: String = "\\."
+
+  def parse(p: String, regex: String = rxSep): Path =
+    if p.isEmpty then 
+      empty
+    else
+      Path(p.split(regex).toList)
+
+  def unapply(path: Path): Option[(String, Path)] =
+    if path.isEmpty then None
+    else Some((path.head, path.tail))
 
   val empty: Path =
-    Path("")
+    Path(List.empty[String])
 
-  def make(ps: Seq[String]): Path =
-    Path(ps.mkString(sep))
+  def make(ps: Iterable[String]): Path =
+    Path(ps.toList)

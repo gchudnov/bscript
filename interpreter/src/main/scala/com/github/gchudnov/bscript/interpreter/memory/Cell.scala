@@ -4,7 +4,6 @@ import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
 
 import java.time.{ LocalDate, OffsetDateTime }
-import com.github.gchudnov.bscript.interpreter.memory.Path
 
 sealed trait Cell
 
@@ -100,8 +99,8 @@ object Cell:
   /**
    * Calculate the difference between two cells.
    */
-  def diff(name: String, before: Option[Cell], after: Option[Cell]): List[Diff.Change[String, Cell]] =
-    iterateDiff(List(name), before, after)
+  def diff(name: String, before: Option[Cell], after: Option[Cell]): List[Diff.Change[Path, Cell]] =
+    iterateDiff(Path(List(name)), before, after)
 
   /**
     * Caclulate the difference between two lists of cells.
@@ -111,19 +110,19 @@ object Cell:
     * @param a List of cells
     * @return The list of changes.
     */
-  private def diffList(ns: List[String], b: List[Cell], a: List[Cell]): List[Diff.Change[String, Cell]] =
-    val rs = List.newBuilder[Diff.Change[String, Cell]]
+  private def diffList(ns: Path, b: List[Cell], a: List[Cell]): List[Diff.Change[Path, Cell]] =
+    val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
     (b.zip(a)).zipWithIndex.foreach { case ((vb, va), i) =>
-      rs ++= iterateDiff(ns :+ s"${i}", Some(vb), Some(va))
+      rs ++= iterateDiff(ns.append(s"${i}"), Some(vb), Some(va))
     }
 
     if b.size > a.size then
       val bTail = b.drop(a.size)
-      bTail.zipWithIndex.foreach { case (vb, i) => rs ++= iterateDiff(ns :+ s"${(i + a.size)}", Some(vb), None) }
+      bTail.zipWithIndex.foreach { case (vb, i) => rs ++= iterateDiff(ns.append(s"${(i + a.size)}"), Some(vb), None) }
     else if a.size > b.size then
       val aTail = a.drop(b.size)
-      aTail.zipWithIndex.foreach { case (va, i) => rs ++= iterateDiff(ns :+ s"${i + b.size}", None, Some(va)) }
+      aTail.zipWithIndex.foreach { case (va, i) => rs ++= iterateDiff(ns.append(s"${i + b.size}"), None, Some(va)) }
 
     rs.result()
 
@@ -136,17 +135,17 @@ object Cell:
     * @param a Map of cells
     * @return The list of changes.
     */
-  private def diffMap(ns: List[String], b: Map[String, Cell], a: Map[String, Cell]): List[Diff.Change[String, Cell]] =
-    val rs = List.newBuilder[Diff.Change[String, Cell]]
+  private def diffMap(ns: Path, b: Map[String, Cell], a: Map[String, Cell]): List[Diff.Change[Path, Cell]] =
+    val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
     b.foreach { case (k, vb) =>
       val va = a.get(k)
-      rs ++= iterateDiff(ns :+ k, Some(vb), va)
+      rs ++= iterateDiff(ns.append(k), Some(vb), va)
     }
 
     a.foreach { case (k, va) =>
       val vb = b.get(k)
-      if vb.isEmpty then rs ++= iterateDiff(ns :+ k, vb, Some(va))
+      if vb.isEmpty then rs ++= iterateDiff(ns.append(k), vb, Some(va))
     }
 
     rs.result()
@@ -159,8 +158,7 @@ object Cell:
     * @param a Maybe Cell
     * @return The list of changes.
     */
-  private def iterateDiff(ns: List[String], b: Option[Cell], a: Option[Cell]): List[Diff.Change[String, Cell]] =
-    val path = Path.make(ns).value
+  private def iterateDiff(ns: Path, b: Option[Cell], a: Option[Cell]): List[Diff.Change[Path, Cell]] =
     (b, a) match
       case (Some(Struct(ba)), Some(Struct(aa))) =>
         diffMap(ns, ba, aa)
@@ -169,32 +167,17 @@ object Cell:
         diffList(ns, ba, aa)
 
       case (Some(x), Some(y)) =>
-        if x != y then List(Diff.Updated(path, x, y))
-        else List.empty[Diff.Change[String, Cell]]
+        if x != y then List(Diff.Updated(ns, x, y))
+        else List.empty[Diff.Change[Path, Cell]]
 
       case (Some(x), None) =>
-        List(Diff.Removed(path, x))
+        List(Diff.Removed(ns, x))
 
       case (None, Some(x)) =>
-        List(Diff.Added(path, x))
+        List(Diff.Added(ns, x))
 
       case (None, None) =>
-        List.empty[Diff.Change[String, Cell]]
-
-  /**
-    * Append a prefix to the key of a change.
-    *
-    * @param prefix The prefix to append.
-    * @param change The change to modify.
-    * @return The change with the prefix appended to the key.
-    */
-  private def appendKeyPrefix[K, V](prefix: String, change: Diff.Change[K, V]): Diff.Change[String, V] =
-    def toKey(k: K): String = s"${prefix}${Path.sep}${k.toString}"
-
-    change match
-      case Diff.Removed(k, v)    => Diff.Removed(toKey(k), v)
-      case Diff.Added(k, v)      => Diff.Added(toKey(k), v)
-      case Diff.Updated(k, b, a) => Diff.Updated(toKey(k), b, a)
+        List.empty[Diff.Change[Path, Cell]]
 
   /**
    * Extension Call Operations

@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.interpreter.memory.Path
 /**
  * Immutable Memory Area
  */
-case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[MemorySpace]):
+case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
 
   def get(id: String): Option[Cell] =
     members.get(id).orElse(parent.flatMap(_.get(id)))
@@ -18,8 +18,8 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
   def fetch(path: Path): Option[Cell] =
-    def iterate(ps: List[String], where: Cell): Option[Cell] = ps match
-      case h :: tail =>
+    def iterate(ps: Path, where: Cell): Option[Cell] = ps match
+      case Path(h, tail) =>
         where match
           case sc: Cell.Struct =>
             sc.value
@@ -27,10 +27,10 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
               .flatMap(c => iterate(tail, c))
           case other =>
             None
-      case Nil =>
+      case _ =>
         Some(where)
 
-    val parts = path.split
+    val parts = path
     if parts.isEmpty then None
     else
       val (h, tail) = (parts.head, parts.tail)
@@ -38,8 +38,8 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
         .flatMap(c => iterate(tail, c))
 
   def tryFetch(path: Path): Either[Throwable, Cell] =
-    def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
-      case h :: tail =>
+    def iterate(ps: Path, where: Cell): Either[Throwable, Cell] = ps match
+      case Path(h, tail) =>
         where match
           case sc: Cell.Struct =>
             sc.value
@@ -48,33 +48,32 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
               .flatMap(c => iterate(tail, c))
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
-      case Nil =>
+      case _ =>
         Right(where)
 
-    val parts = path.split
-    if parts.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
+    if path.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
     else
-      val (h, tail) = (parts.head, parts.tail)
+      val (h, tail) = (path.head, path.tail)
       get(h)
-        .toRight(new MemoryException(s"Cannot find MemorySpace with variable '${h}'"))
+        .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
         .flatMap(c => iterate(tail, c))
 
-  def put(id: String, value: Cell): MemorySpace =
-    MemorySpace(name, members + (id -> value), parent)
+  def put(id: String, value: Cell): Area =
+    Area(name, members + (id -> value), parent)
 
-  def update(id: String, value: Cell): Option[MemorySpace] =
+  def update(id: String, value: Cell): Option[Area] =
     members
       .get(id)
-      .map(_ => MemorySpace(name, members = members + (id -> value), parent))
-      .orElse(parent.flatMap(_.update(id, value).map(updParent => MemorySpace(name, members, Some(updParent)))))
+      .map(_ => Area(name, members = members + (id -> value), parent))
+      .orElse(parent.flatMap(_.update(id, value).map(updParent => Area(name, members, Some(updParent)))))
 
-  def tryUpdate(id: String, value: Cell): Either[Throwable, MemorySpace] =
+  def tryUpdate(id: String, value: Cell): Either[Throwable, Area] =
     update(id, value)
-      .toRight(new MemoryException(s"Cannot find MemorySpace for: '${id}'"))
+      .toRight(new MemoryException(s"Cannot find Area for: '${id}'"))
 
-  def tryPatch(path: Path, value: Cell): Either[Throwable, MemorySpace] =
-    def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
-      case h :: tail =>
+  def tryPatch(path: Path, value: Cell): Either[Throwable, Area] =
+    def iterate(ps: Path, where: Cell): Either[Throwable, Cell] = ps match
+      case Path(h, tail) =>
         where match
           case sc: Cell.Struct =>
             sc.value
@@ -83,78 +82,72 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
               .flatMap(c => iterate(tail, c).map(uc => Cell.Struct(sc.value.updated(h, uc))))
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
-      case Nil =>
+      case _ =>
         Right(value)
 
-    val parts = path.split
-    if parts.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
+    if path.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
     else
-      val (h, tail) = (parts.head, parts.tail)
+      val (h, tail) = (path.head, path.tail)
       get(h)
-        .toRight(new MemoryException(s"Cannot find MemorySpace with variable '${h}'"))
-        .flatMap(c => iterate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update MemorySpace with the updated cell ${uc} at '${h}'"))))
+        .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
+        .flatMap(c => iterate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update Area with the updated cell ${uc} at '${h}'"))))
 
-  def tryPop(): Either[Throwable, MemorySpace] =
+  def tryPop(): Either[Throwable, Area] =
     parent.toRight(new MemoryException(s"Cannot pop a memory space, getting a parent one."))
 
   override def toString: String =
     val pairs = members.map(it => s"${it._1}: ${it._2}")
     s"[${name}]${pairs.mkString("{", ", ", "}")}"
 
-object MemorySpace:
+object Area:
 
   private val sep: String = "/"
 
-  def apply(name: String): MemorySpace =
-    new MemorySpace(name = name, members = Map.empty[String, Cell], parent = None)
+  def apply(name: String): Area =
+    new Area(name = name, members = Map.empty[String, Cell], parent = None)
 
-  def apply(name: String, members: Map[String, Cell]): MemorySpace =
-    new MemorySpace(name = name, members = members, parent = None)
+  def apply(name: String, members: Map[String, Cell]): Area =
+    new Area(name = name, members = members, parent = None)
 
-  def apply(name: String, parent: Option[MemorySpace]): MemorySpace =
-    new MemorySpace(name = name, members = Map.empty[String, Cell], parent = parent)
+  def apply(name: String, parent: Option[Area]): Area =
+    new Area(name = name, members = Map.empty[String, Cell], parent = parent)
 
   /**
    * Returns an *unordered* diff between two memory spaces
    */
-  def diff(before: MemorySpace, after: MemorySpace): Either[Throwable, List[Diff.Change[String, Cell]]] =
+  def diff(before: Area, after: Area): Either[Throwable, List[Diff.Change[Path, Cell]]] =
 
-    def iterate(ns: List[String], a: MemorySpace, b: MemorySpace): Either[Throwable, List[Diff.Change[String, Cell]]] =
+    def iterate(ns: Path, a: Area, b: Area): Either[Throwable, List[Diff.Change[Path, Cell]]] =
       if a.name != b.name then Left(new MemoryException(s"Cannot calculate the diff between unrelated memory spaces '${a.name}' and '${b.name}'"))
       else
-        val ns1 = ns :+ a.name
+        val ns1 = ns.append(a.name)
         val errOrParentDiff = (a.parent, b.parent) match
           case (Some(x), None) =>
-            iterate(ns1, x, MemorySpace(name = x.name))
+            iterate(ns1, x, Area(name = x.name))
           case (None, Some(x)) =>
-            iterate(ns1, MemorySpace(name = x.name), x)
+            iterate(ns1, Area(name = x.name), x)
           case (Some(x), Some(y)) =>
             iterate(ns1, x, y)
           case (None, None) =>
-            Right(List.empty[Diff.Change[String, Cell]])
+            Right(List.empty[Diff.Change[Path, Cell]])
 
-        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(appendKeyPrefix(makeMemoryPath(ns :+ a.name), _)))
+        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(it => withPrefix(ns.append(a.name), it)))
 
-    iterate(List.empty[String], before, after)
+    iterate(Path.empty, before, after)
 
-  private[memory] def appendKeyPrefix[V](prefix: String, change: Diff.Change[String, V]): Diff.Change[String, V] =
-    def toKey(k: String): String = s"${prefix}${sep}${k}"
-
+  private[memory] def withPrefix[V](prefix: Path, change: Diff.Change[String, V]): Diff.Change[Path, V] =
     change match
-      case Diff.Removed(k, v)    => Diff.Removed(toKey(k), v)
-      case Diff.Added(k, v)      => Diff.Added(toKey(k), v)
-      case Diff.Updated(k, b, a) => Diff.Updated(toKey(k), b, a)
+      case Diff.Removed(k, v)    => Diff.Removed(prefix.append(k), v)
+      case Diff.Added(k, v)      => Diff.Added(prefix.append(k), v)
+      case Diff.Updated(k, b, a) => Diff.Updated(prefix.append(k), b, a)
 
-  private def makeMemoryPath(ps: Seq[String]): String =
-    ps.mkString(sep)
-
-  given Show[MemorySpace] with
+  given Show[Area] with
     import Cell.{ *, given }
 
-    extension (a: MemorySpace)
+    extension (a: Area)
       def show: String =
 
-        def iterate(d: Int, ms: MemorySpace): Seq[String] =
+        def iterate(d: Int, ms: Area): Seq[String] =
           val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
 
           val membersCell: Cell = Cell.Struct(ms.members)

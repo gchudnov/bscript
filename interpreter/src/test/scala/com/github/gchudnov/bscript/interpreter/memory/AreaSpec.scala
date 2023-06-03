@@ -4,14 +4,15 @@ import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.util.Resources
 import com.github.gchudnov.bscript.interpreter.memory.Path
+import com.github.gchudnov.bscript.interpreter.memory.Area
 
-final class MemorySpaceSpec extends TestSpec:
+final class AreaSpec extends TestSpec:
 
-  "MemorySpace" when {
+  "Area" when {
 
     "created" should {
       "be empty" in {
-        val m = MemorySpace("globals")
+        val m = Area("globals")
 
         m.members.isEmpty mustBe (true)
       }
@@ -36,11 +37,11 @@ final class MemorySpaceSpec extends TestSpec:
         "b" -> Cell.struct("y" -> Cell.I32(3))
       )
 
-      val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-      val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
       "return a cell by its path if the path exists" in {
-        val optCell = locals.fetch(Path("a.b.y"))
+        val optCell = locals.fetch(Path(List("a", "b", "y")))
         optCell match
           case None =>
             fail("should be 'right")
@@ -49,7 +50,7 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return no value if the path is invalid" in {
-        val optCell = locals.fetch(Path("a.b.y.z"))
+        val optCell = locals.fetch(Path(List("a", "b", "y", "z")))
         optCell match
           case None =>
             succeed
@@ -79,10 +80,10 @@ final class MemorySpaceSpec extends TestSpec:
           "b" -> Cell.Struct("y" -> Cell.I32(3))
         )
 
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrCell = locals.tryFetch(Path("a.b.y"))
+        val errOrCell = locals.tryFetch(Path(List("a", "b", "y")))
         errOrCell match
           case Left(_) => fail("should be 'right")
           case Right(actual) =>
@@ -102,16 +103,16 @@ final class MemorySpaceSpec extends TestSpec:
        * }}}
        */
       "return a new memory space hierarchy when update an element in the deepest memory space" in {
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val f       = MemorySpace("f", Map("b" -> Cell.Str("B")), Some(globals))
-        val main    = MemorySpace("main", Map("c" -> Cell.F64(12.34)), Some(f))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
+        val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
 
         val updated = main.update("a", Cell.I32(20))
 
         updated match
           case None => fail("should be 'some")
           case Some(u) =>
-            MemorySpace.diff(main, u) match
+            Area.diff(main, u) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
@@ -129,16 +130,16 @@ final class MemorySpaceSpec extends TestSpec:
        * }}}
        */
       "return a new memory space hierarchy when add an element in the parent memory space" in {
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val f       = MemorySpace("f", Map("b" -> Cell.Str("B")), Some(globals))
-        val main    = MemorySpace("main", Map("c" -> Cell.F64(12.34)), Some(f))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
+        val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
 
         val updated = main.update("b", Cell.I32(20))
 
         updated match
           case None => fail("should be 'some")
           case Some(u) =>
-            MemorySpace.diff(main, u) match
+            Area.diff(main, u) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
@@ -156,16 +157,16 @@ final class MemorySpaceSpec extends TestSpec:
        * }}}
        */
       "return a new memory space hierarchy when add an element in the child memory space" in {
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val f       = MemorySpace("f", Map("b" -> Cell.Str("B")), Some(globals))
-        val main    = MemorySpace("main", Map("c" -> Cell.F64(12.34)), Some(f))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val f       = Area("f", Map("b" -> Cell.Str("B")), Some(globals))
+        val main    = Area("main", Map("c" -> Cell.F64(12.34)), Some(f))
 
         val updated = main.update("c", Cell.F32(20.1f))
 
         updated match
           case None => fail("should be 'some")
           case Some(u) =>
-            MemorySpace.diff(main, u) match
+            Area.diff(main, u) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
@@ -195,14 +196,14 @@ final class MemorySpaceSpec extends TestSpec:
           "b" -> Cell.Struct("y" -> Cell.I32(0))
         )
 
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val locals  = MemorySpace("locals", Map("a" -> initStruct), Some(globals))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map("a" -> initStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path("a.b.y"), Cell.I32(12))
+        val errOrUpd = locals.tryPatch(Path(List("a", "b", "y")), Cell.I32(12))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
-            MemorySpace.diff(locals, updated) match
+            Area.diff(locals, updated) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 val newStruct = Cell.Struct(
@@ -234,14 +235,14 @@ final class MemorySpaceSpec extends TestSpec:
           "b" -> Cell.Struct("y" -> Cell.I32(0))
         )
 
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path("a"), Cell.I32(22))
+        val errOrUpd = locals.tryPatch(Path(List("a")), Cell.I32(22))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
-            MemorySpace.diff(locals, updated) match
+            Area.diff(locals, updated) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 val expected = Cell.I32(22)
@@ -257,10 +258,10 @@ final class MemorySpaceSpec extends TestSpec:
           "b" -> Cell.Struct("y" -> Cell.I32(0))
         )
 
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path("a.b.y.z"), Cell.I32(12))
+        val errOrUpd = locals.tryPatch(Path(List("a", "b", "y", "z")), Cell.I32(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
           case Right(_) => fail("should be 'left")
@@ -272,10 +273,10 @@ final class MemorySpaceSpec extends TestSpec:
           "b" -> Cell.Struct("y" -> Cell.I32(0))
         )
 
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path(""), Cell.I32(12))
+        val errOrUpd = locals.tryPatch(Path.empty, Cell.I32(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("Path to update a Cell is empty") mustBe (true)
           case Right(_) => fail("should be 'left")
@@ -285,7 +286,7 @@ final class MemorySpaceSpec extends TestSpec:
     "name prefix" should {
       "be appended to the name in the diff results" in {
         val changes = List(Diff.Updated("1", "foo", "baz"), Diff.Removed("3", "foo"), Diff.Added("4", "boo"))
-        val updated = changes.map(MemorySpace.appendKeyPrefix("parent", _))
+        val updated = changes.map(Area.withPrefix(Path(List("parent")), _))
 
         val keys = updated.map(_.key)
 
@@ -293,34 +294,34 @@ final class MemorySpaceSpec extends TestSpec:
       }
     }
 
-    "MemorySpace diff" should {
+    "Area diff" should {
 
       "return an error if spaces have different names" in {
-        val spaceBefore = MemorySpace("SPACE-A", Map.empty[String, Cell], None)
-        val spaceAfter  = MemorySpace("SPACE-B", Map.empty[String, Cell], None)
+        val spaceBefore = Area("SPACE-A", Map.empty[String, Cell], None)
+        val spaceAfter  = Area("SPACE-B", Map.empty[String, Cell], None)
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff.isLeft mustBe (true)
       }
 
       "return an error if parent spaces have different names" in {
-        val parentBefore = MemorySpace("PARENT-A", Map("b" -> Cell.Str("A")), None)
-        val parentAfter  = MemorySpace("PARENT-B", Map("b" -> Cell.Str("A")), None)
+        val parentBefore = Area("PARENT-A", Map("b" -> Cell.Str("A")), None)
+        val parentAfter  = Area("PARENT-B", Map("b" -> Cell.Str("A")), None)
 
-        val spaceBefore = MemorySpace("s", Map.empty[String, Cell], Some(parentBefore))
-        val spaceAfter  = MemorySpace("s", Map.empty[String, Cell], Some(parentAfter))
+        val spaceBefore = Area("s", Map.empty[String, Cell], Some(parentBefore))
+        val spaceAfter  = Area("s", Map.empty[String, Cell], Some(parentAfter))
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff.isLeft mustBe (true)
       }
 
       "return no changes if spaces are empty without parents" in {
-        val spaceBefore = MemorySpace("s", Map.empty[String, Cell], None)
-        val spaceAfter  = MemorySpace("s", Map.empty[String, Cell], None)
+        val spaceBefore = Area("s", Map.empty[String, Cell], None)
+        val spaceAfter  = Area("s", Map.empty[String, Cell], None)
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_)     => fail("should be 'right")
@@ -328,13 +329,13 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return no changes if spaces are empty with parents with the same data" in {
-        val parentBefore = MemorySpace("p", Map("b" -> Cell.Str("A")), None)
-        val parentAfter  = MemorySpace("p", Map("b" -> Cell.Str("A")), None)
+        val parentBefore = Area("p", Map("b" -> Cell.Str("A")), None)
+        val parentAfter  = Area("p", Map("b" -> Cell.Str("A")), None)
 
-        val spaceBefore = MemorySpace("s", Map.empty[String, Cell], Some(parentBefore))
-        val spaceAfter  = MemorySpace("s", Map.empty[String, Cell], Some(parentAfter))
+        val spaceBefore = Area("s", Map.empty[String, Cell], Some(parentBefore))
+        val spaceAfter  = Area("s", Map.empty[String, Cell], Some(parentAfter))
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_)     => fail("should be 'right")
@@ -342,10 +343,10 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return no changes if spaces are the same without parents" in {
-        val spaceBefore = MemorySpace("s", Map("a" -> Cell.I32(10)), None)
-        val spaceAfter  = MemorySpace("s", Map("a" -> Cell.I32(10)), None)
+        val spaceBefore = Area("s", Map("a" -> Cell.I32(10)), None)
+        val spaceAfter  = Area("s", Map("a" -> Cell.I32(10)), None)
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_)     => fail("should be 'right")
@@ -353,13 +354,13 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return no changes if spaces are the same with the same data in parents" in {
-        val parentBefore = MemorySpace("p", Map("b" -> Cell.Str("A")), None)
-        val parentAfter  = MemorySpace("p", Map("b" -> Cell.Str("A")), None)
+        val parentBefore = Area("p", Map("b" -> Cell.Str("A")), None)
+        val parentAfter  = Area("p", Map("b" -> Cell.Str("A")), None)
 
-        val spaceBefore = MemorySpace("s", Map("a" -> Cell.I32(23)), Some(parentBefore))
-        val spaceAfter  = MemorySpace("s", Map("a" -> Cell.I32(23)), Some(parentAfter))
+        val spaceBefore = Area("s", Map("a" -> Cell.I32(23)), Some(parentBefore))
+        val spaceAfter  = Area("s", Map("a" -> Cell.I32(23)), Some(parentAfter))
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_)     => fail("should be 'right")
@@ -367,10 +368,10 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return changes if space was updated" in {
-        val spaceBefore = MemorySpace("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), None)
-        val spaceAfter  = MemorySpace("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), None)
+        val spaceBefore = Area("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), None)
+        val spaceAfter  = Area("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), None)
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_) => fail("should be 'right")
@@ -383,13 +384,13 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return changes if space was updated including updates in parents" in {
-        val parentBefore = MemorySpace("p", Map("x" -> Cell.Str("A"), "u" -> Cell.I64(1L)), None)
-        val parentAfter  = MemorySpace("p", Map("x" -> Cell.Str("B"), "struct" -> Cell.Struct(Map("x" -> Cell.Str("alice")))), None)
+        val parentBefore = Area("p", Map("x" -> Cell.Str("A"), "u" -> Cell.I64(1L)), None)
+        val parentAfter  = Area("p", Map("x" -> Cell.Str("B"), "struct" -> Cell.Struct(Map("x" -> Cell.Str("alice")))), None)
 
-        val spaceBefore = MemorySpace("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), Some(parentBefore))
-        val spaceAfter  = MemorySpace("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), Some(parentAfter))
+        val spaceBefore = Area("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), Some(parentBefore))
+        val spaceAfter  = Area("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), Some(parentAfter))
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_) => fail("should be 'right")
@@ -405,12 +406,12 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return changes if parent before was absent" in {
-        val parentAfter = MemorySpace("p", Map("x" -> Cell.Str("B"), "struct" -> Cell.Struct(Map("x" -> Cell.Str("alice")))), None)
+        val parentAfter = Area("p", Map("x" -> Cell.Str("B"), "struct" -> Cell.Struct(Map("x" -> Cell.Str("alice")))), None)
 
-        val spaceBefore = MemorySpace("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), None)
-        val spaceAfter  = MemorySpace("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), Some(parentAfter))
+        val spaceBefore = Area("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), None)
+        val spaceAfter  = Area("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), Some(parentAfter))
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_) => fail("should be 'right")
@@ -425,12 +426,12 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return changes if parent after is absent" in {
-        val parentBefore = MemorySpace("p", Map("x" -> Cell.Str("A"), "u" -> Cell.I64(1L)), None)
+        val parentBefore = Area("p", Map("x" -> Cell.Str("A"), "u" -> Cell.I64(1L)), None)
 
-        val spaceBefore = MemorySpace("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), Some(parentBefore))
-        val spaceAfter  = MemorySpace("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), None)
+        val spaceBefore = Area("s", Map("x" -> Cell.I32(1), "y" -> Cell.F32(1.2f)), Some(parentBefore))
+        val spaceAfter  = Area("s", Map("x" -> Cell.I32(2), "z" -> Cell.Str("str")), None)
 
-        val errOrDiff = MemorySpace.diff(spaceBefore, spaceAfter)
+        val errOrDiff = Area.diff(spaceBefore, spaceAfter)
 
         errOrDiff match
           case Left(_) => fail("should be 'right")
@@ -452,8 +453,8 @@ final class MemorySpaceSpec extends TestSpec:
           "b" -> Cell.struct("y" -> Cell.I32(0))
         )
 
-        val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
-        val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
+        val globals = Area("globals", Map("a" -> Cell.I32(10)))
+        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
         val expected = Resources.asString("data/mem-space-2.json").toTry.get
         val actual   = locals.show

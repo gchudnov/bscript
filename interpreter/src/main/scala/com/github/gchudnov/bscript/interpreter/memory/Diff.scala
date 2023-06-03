@@ -38,7 +38,7 @@ object Diff:
     * @param after The list after the change.
     * @return The list of changes.
     */
-  def calc[V](before: Seq[V], after: Seq[V]): List[Change[Int, V]] =
+  def calc[V](before: Iterable[V], after: Iterable[V]): List[Change[Int, V]] =
     val rs = List.newBuilder[Change[Int, V]]
 
     (before.zip(after)).zipWithIndex.foreach { case ((vb, va), i) =>
