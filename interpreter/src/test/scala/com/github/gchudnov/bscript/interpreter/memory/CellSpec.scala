@@ -348,7 +348,7 @@ final class CellSpec extends TestSpec:
       }
     }
 
-    "converted to a string" should {
+    "cell as a string" should {
       import Cell.{ *, given }
 
       "show nothing" in {
