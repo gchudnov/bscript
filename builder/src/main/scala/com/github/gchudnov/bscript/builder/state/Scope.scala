@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder
+package com.github.gchudnov.bscript.builder.state
 
 /**
  * Scope

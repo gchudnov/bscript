@@ -1,34 +1,33 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-// import com.github.gchudnov.bscript.builder.internal.scopebuilder.ScopeBuildVisitor
-// import com.github.gchudnov.bscript.builder.internal.scoperesolver.ScopeResolveVisitor
-// import com.github.gchudnov.bscript.builder.pass.typechecker.TypeCheckVisitor
-// import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
-// import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-// import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
-import com.github.gchudnov.bscript.builder.util.Gen
-import com.github.gchudnov.bscript.lang.types.TypeName
+import com.github.gchudnov.bscript.builder.pass.scopebuild.InState as BuildInState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
+import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState as ResolveInState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState as ResolveOutState
+import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassImpl as ResolvePassImpl
+import com.github.gchudnov.bscript.builder.pass.typecheck.InState as TypeCheckInState
+import com.github.gchudnov.bscript.builder.pass.typecheck.OutState as TypeCheckOutState
+import com.github.gchudnov.bscript.builder.pass.typecheck.PassImpl as TypeCheckPassImpl
+
+import scala.util.control.Exception.*
 
 sealed trait Builder:
 
-  def build(ast0: AST, typeCheckLaws: TypeCheckLaws): Either[Throwable, AstMeta] =
-    ???
-    // val meta0 = Meta.init()
-    // for
-    //   scope0             <- Right() // meta0.scopeTree.root.toRight(new Exception(s"Root scope not found"))
-    //   scopeBuildVisitor   = ScopeBuildVisitor.make()
-    //   scopeBuildState0    = ScopeBuildState.make(ast0, meta0, scope0, Gen.empty)
-    //   scopeBuildState1   <- ast0.visit(scopeBuildState0, scopeBuildVisitor)
-    //   scopeResolveVisitor = ScopeResolveVisitor.make()
-    //   (ast1, meta1)       = (scopeBuildState1.ast, scopeBuildState1.meta)
-    //   scopeResolveState0  = ScopeResolveState.make(ast1, meta1)
-    //   scopeResolveState1 <- ast1.visit(scopeResolveState0, scopeResolveVisitor)
-    //   (ast2, meta2)       = (scopeResolveState1.ast, scopeResolveState1.meta)
-    //   typeCheckVisitor    = TypeCheckVisitor.make(typeCheckLaws)
-    //   typeCheckState0     = TypeCheckState.make(ast2, meta2)
-    //   typeCheckState1    <- ast2.visit(typeCheckState0, typeCheckVisitor)
-    //   (ast3, meta3)       = (typeCheckState1.ast, typeCheckState1.meta)
-    // yield AstMeta(meta = meta3, ast = ast3)
+  def build(ast0: AST): Either[Throwable, BuildState] =
+    val buildPass     = new BuildPassImpl()
+    val resolvePass   = new ResolvePassImpl()
+    val typeCheckPass = new TypeCheckPassImpl()
+
+    for
+      buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
+      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast))
+      resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
+      typeCheckStateIn  <- nonFatalCatch.either(TypeCheckInState.from(resolveOutState.ast))
+      typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))
+      buildState         = BuildState.from(typeCheckStateOut.ast)
+    yield buildState
 
 object Builder extends Builder

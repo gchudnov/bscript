@@ -1,21 +1,21 @@
 package com.github.gchudnov.bscript.builder
 
-import com.github.gchudnov.bscript.builder.TypeCheckLaws
-import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
-import com.github.gchudnov.bscript.builder.BTypeCheckLaws.*
-import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
+// import com.github.gchudnov.bscript.builder.pass.typecheck.TypeCheckLaws
+// import com.github.gchudnov.bscript.builder.TypeCheckLaws.*
+// import com.github.gchudnov.bscript.builder.BTypeCheckLaws.*
+// import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
 
-final case class BTypeCheckLaws(
-  commonTable: CommonResult,
-  additionTable: AdditionResult,
-  arithmeticTable: ArithmeticResult,
-  relationalTable: RelationalResult,
-  equalityTable: EqualityResult,
-  logicTable: LogicResult,
-  unaryArithmeticSet: UnaryArithmeticAllow,
-  unaryLogicSet: UnaryLogicAllow,
-  promoteFromToTable: PromoteFromTo
-) extends TypeCheckLaws
+// final case class BTypeCheckLaws(
+//   commonTable: CommonResult,
+//   additionTable: AdditionResult,
+//   arithmeticTable: ArithmeticResult,
+//   relationalTable: RelationalResult,
+//   equalityTable: EqualityResult,
+//   logicTable: LogicResult,
+//   unaryArithmeticSet: UnaryArithmeticAllow,
+//   unaryLogicSet: UnaryLogicAllow,
+//   promoteFromToTable: PromoteFromTo
+// ) extends TypeCheckLaws
 
 object BTypeCheckLaws {}
 

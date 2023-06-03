@@ -1,8 +1,8 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.builder.ScopeRef
+import com.github.gchudnov.bscript.builder.state.Scope
+import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
 import com.github.gchudnov.bscript.builder.state.Forest

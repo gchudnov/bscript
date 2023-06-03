@@ -1,23 +1,35 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, SymbolRef, Type }
-import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
-import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
-import com.github.gchudnov.bscript.builder.util.Ptr
-import com.github.gchudnov.bscript.lang.types.TypeName
-import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.builder.state.Forest
-import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.builder.ScopeRef
-import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.builder.state.ForestCursor
-import com.github.gchudnov.bscript.lang.symbols.Symbol
+// import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, SymbolRef, Type }
+// import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
+// import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
+// import com.github.gchudnov.bscript.builder.util.Ptr
+// import com.github.gchudnov.bscript.lang.types.TypeName
+// import com.github.gchudnov.bscript.lang.util.Show
+// import com.github.gchudnov.bscript.builder.BuilderException
+// import com.github.gchudnov.bscript.builder.state.Forest
+// import com.github.gchudnov.bscript.builder.Scope
+// import com.github.gchudnov.bscript.builder.ScopeRef
+// import com.github.gchudnov.bscript.builder.Meta
+// import com.github.gchudnov.bscript.builder.state.ForestCursor
+// import com.github.gchudnov.bscript.lang.symbols.Symbol
 
-import scala.collection.mutable.StringBuilder as MStringBuilder
-import com.github.gchudnov.bscript.builder.state.ScopeSymbols
-import com.github.gchudnov.bscript.builder.state.ScopeAsts
+// import scala.collection.mutable.StringBuilder as MStringBuilder
+// import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+// import com.github.gchudnov.bscript.builder.state.ScopeAsts
+
+final case class BuildState(
+  ast: AST
+)
+
+object BuildState:
+
+  def from(ast: AST): BuildState =
+    BuildState(
+      ast
+    )
+
 
 // /**
 //  * Metadata - Scope & Symbol State
@@ -57,20 +69,20 @@ import com.github.gchudnov.bscript.builder.state.ScopeAsts
 //   astSymbols: Map[Ptr[AST], Symbol]            //
 // )
 
-final case class Meta(
-  forest: Forest[Scope],
-  scopeSymbols: ScopeSymbols,
-  scopeAsts: ScopeAsts
-)
+// final case class Meta(
+//   forest: Forest[Scope],
+//   scopeSymbols: ScopeSymbols,
+//   scopeAsts: ScopeAsts
+// )
 
-object Meta:
+// object Meta:
 
-  val empty: Meta =
-    Meta(
-      forest = Forest.empty[Scope],
-      scopeSymbols = ScopeSymbols.empty,
-      scopeAsts = ScopeAsts.empty
-    )
+//   val empty: Meta =
+//     Meta(
+//       forest = Forest.empty[Scope],
+//       scopeSymbols = ScopeSymbols.empty,
+//       scopeAsts = ScopeAsts.empty
+//     )
 
   // def typeNameForVarInScope(meta: Meta)(varName: String, scopeName: String): Either[Throwable, String] =
   //   for

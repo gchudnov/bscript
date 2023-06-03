@@ -1,7 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
-import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.builder.Scope
+import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.pass.Examples
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState

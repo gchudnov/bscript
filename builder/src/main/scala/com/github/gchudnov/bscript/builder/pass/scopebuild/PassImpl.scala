@@ -1,19 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
-import com.github.gchudnov.bscript.builder.Meta
-import com.github.gchudnov.bscript.builder.Scope
-import com.github.gchudnov.bscript.builder.ScopeRef
 import com.github.gchudnov.bscript.builder.pass.Pass
-import com.github.gchudnov.bscript.builder.pass.scopebuild.Folder
-import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
-import com.github.gchudnov.bscript.builder.state.Forest
-import com.github.gchudnov.bscript.builder.state.ForestCursor
-import com.github.gchudnov.bscript.builder.state.ScopeAsts
-import com.github.gchudnov.bscript.builder.state.ScopeSymbols
-import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 /**
  * (1-PASS)
