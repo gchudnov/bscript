@@ -47,52 +47,70 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
   /**
-    * Get a Cell by its path
-    *
-    * @param path Path to the cell
-    * @return Some(cell) if the cell is found, None otherwise
-    */
+   * Get a Cell by its path
+   *
+   * @param path
+   *   Path to the cell
+   * @return
+   *   Some(cell) if the cell is found, None otherwise
+   */
   def get(path: Path): Option[Cell] =
-    def iterate(ps: Path, where: Cell): Option[Cell] = ps match
-      case Path(h, tail) =>
-        where match
-          case sc: Cell.Struct =>
-            sc.value
-              .get(h)
-              .flatMap(c => iterate(tail, c))
-          case other =>
-            None
-      case _ =>
-        Some(where)
-
-    val parts = path
-    if parts.isEmpty then None
+    if path.isEmpty then None
     else
-      val (h, tail) = (parts.head, parts.tail)
-      get(h)
-        .flatMap(c => iterate(tail, c))
+      get(path.head)
+        .flatMap(c => iterateGet(path.tail, c))
 
-  def tryFetch(path: Path): Either[Throwable, Cell] =
-    def iterate(ps: Path, where: Cell): Either[Throwable, Cell] = ps match
-      case Path(h, tail) =>
-        where match
-          case sc: Cell.Struct =>
-            sc.value
-              .get(h)
-              .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
-              .flatMap(c => iterate(tail, c))
-          case other =>
-            Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
-      case _ =>
-        Right(where)
+  private def iterateGet(ps: Path, where: Cell): Option[Cell] = ps match
+    case Path(h, tail) =>
+      where match
+        case sc: Cell.Struct =>
+          sc.value
+            .get(h)
+            .flatMap(c => iterateGet(tail, c))
+        case other =>
+          None
+    case _ =>
+      Some(where)
 
+  /**
+   * Get a Cell by its path
+   *
+   * @param path
+   *   Path to the cell
+   * @return
+   *   Right(cell) if the cell is found, Left(error) otherwise
+   */
+  def tryGet(path: Path): Either[Throwable, Cell] =
     if path.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
     else
       val (h, tail) = (path.head, path.tail)
       get(h)
         .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
-        .flatMap(c => iterate(tail, c))
+        .flatMap(c => iterateTryGet(tail, c))
 
+  private def iterateTryGet(ps: Path, where: Cell): Either[Throwable, Cell] = ps match
+    case Path(h, tail) =>
+      where match
+        case sc: Cell.Struct =>
+          sc.value
+            .get(h)
+            .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
+            .flatMap(c => iterateTryGet(tail, c))
+        case other =>
+          Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
+    case _ =>
+      Right(where)
+
+  /**
+   * Set value for a Cell by its id
+   *
+   * @param id
+   *   cell id
+   * @param value
+   *   cell value
+   * @return
+   *   new Area with updated cell
+   */
   def put(id: String, value: Cell): Area =
     Area(name, members + (id -> value), parent)
 

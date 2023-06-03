@@ -114,7 +114,7 @@ final class AreaSpec extends TestSpec:
     "get by Path" should {
       val aStruct = Cell.Struct(
         "x" -> Cell.i32(0),
-        "b" -> Cell.struct("y" -> Cell.I32(3))
+        "b" -> Cell.struct("y" -> Cell.I32(3)),
       )
 
       val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -139,7 +139,7 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "tryFetch" should {
+    "tryGet by path" should {
 
       /**
        * {{{
@@ -157,18 +157,32 @@ final class AreaSpec extends TestSpec:
       "return a cell by its path" in {
         val aStruct = Cell.Struct(
           "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(3))
+          "b" -> Cell.Struct("y" -> Cell.I32(3)),
         )
 
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
         val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrCell = locals.tryFetch(Path(List("a", "b", "y")))
+        val errOrCell = locals.tryGet(Path(List("a", "b", "y")))
         errOrCell match
-          case Left(_) => 
+          case Left(_) =>
             fail("should be 'right")
           case Right(actual) =>
             actual mustBe Cell.I32(3)
+      }
+    }
+
+    "put" should {
+      "update area" in {
+        val m = Area("globals", Map("a" -> Cell.I32(10)))
+
+        val u = m.put("a", Cell.I32(20))
+
+        Area.diff(m, u) match
+          case Left(_) =>
+            fail("should be 'right")
+          case Right(diff) =>
+            diff mustBe List(Diff.Updated(Path(List("globals", "a")), Cell.I32(10), Cell.I32(20)))
       }
     }
 
@@ -191,15 +205,15 @@ final class AreaSpec extends TestSpec:
         val updated = main.update("a", Cell.I32(20))
 
         updated match
-          case None => 
+          case None =>
             fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
-              case Left(_) => 
+              case Left(_) =>
                 fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated(Path.parse("main.f.globals.a"), Cell.I32(10), Cell.I32(20))
+                  Diff.Updated(Path.parse("main.f.globals.a"), Cell.I32(10), Cell.I32(20)),
                 )
       }
 
@@ -223,11 +237,11 @@ final class AreaSpec extends TestSpec:
           case None => fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
-              case Left(_) => 
+              case Left(_) =>
                 fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated(Path.parse("main.f.b"), Cell.Str("B"), Cell.I32(20))
+                  Diff.Updated(Path.parse("main.f.b"), Cell.Str("B"), Cell.I32(20)),
                 )
       }
 
@@ -248,14 +262,14 @@ final class AreaSpec extends TestSpec:
         val updated = main.update("c", Cell.F32(20.1f))
 
         updated match
-          case None => 
+          case None =>
             fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
               case Left(_) => fail("should be 'right")
               case Right(diff) =>
                 diff must contain theSameElementsAs List(
-                  Diff.Updated(Path.parse("main.c"), Cell.F64(12.34), Cell.F32(20.1f))
+                  Diff.Updated(Path.parse("main.c"), Cell.F64(12.34), Cell.F32(20.1f)),
                 )
       }
     }
@@ -278,7 +292,7 @@ final class AreaSpec extends TestSpec:
       "modify cell by its path" in {
         val initStruct = Cell.Struct(
           "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0))
+          "b" -> Cell.Struct("y" -> Cell.I32(0)),
         )
 
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -293,11 +307,11 @@ final class AreaSpec extends TestSpec:
               case Right(diff) =>
                 val newStruct = Cell.Struct(
                   "x" -> Cell.I32(0),
-                  "b" -> Cell.Struct("y" -> Cell.I32(12))
+                  "b" -> Cell.Struct("y" -> Cell.I32(12)),
                 )
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals/a", initStruct, newStruct)
+                  Diff.Updated("locals/a", initStruct, newStruct),
                 )
       }
 
@@ -317,7 +331,7 @@ final class AreaSpec extends TestSpec:
       "modify cell by its path if path has only one part" in {
         val aStruct = Cell.Struct(
           "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0))
+          "b" -> Cell.Struct("y" -> Cell.I32(0)),
         )
 
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -333,14 +347,14 @@ final class AreaSpec extends TestSpec:
                 val expected = Cell.I32(22)
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals/a", aStruct, expected)
+                  Diff.Updated("locals/a", aStruct, expected),
                 )
       }
 
       "modify cell by its path cannot be made if the path is too long" in {
         val aStruct = Cell.Struct(
           "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0))
+          "b" -> Cell.Struct("y" -> Cell.I32(0)),
         )
 
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -355,7 +369,7 @@ final class AreaSpec extends TestSpec:
       "modify cell by its path cannot be made if the path is empty" in {
         val aStruct = Cell.Struct(
           "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0))
+          "b" -> Cell.Struct("y" -> Cell.I32(0)),
         )
 
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -464,7 +478,7 @@ final class AreaSpec extends TestSpec:
             diff must contain theSameElementsAs List(
               Diff.Updated("s/x", Cell.I32(1), Cell.I32(2)),
               Diff.Removed("s/y", Cell.F32(1.2f)),
-              Diff.Added("s/z", Cell.Str("str"))
+              Diff.Added("s/z", Cell.Str("str")),
             )
       }
 
@@ -486,7 +500,7 @@ final class AreaSpec extends TestSpec:
               Diff.Added("s/p/struct", Cell.Struct(Map("x" -> Cell.Str("alice")))),
               Diff.Updated("s/x", Cell.I32(1), Cell.I32(2)),
               Diff.Removed("s/y", Cell.F32(1.2f)),
-              Diff.Added("s/z", Cell.Str("str"))
+              Diff.Added("s/z", Cell.Str("str")),
             )
       }
 
@@ -506,7 +520,7 @@ final class AreaSpec extends TestSpec:
               Diff.Added("s/p/struct", Cell.Struct(Map("x" -> Cell.Str("alice")))),
               Diff.Updated("s/x", Cell.I32(1), Cell.I32(2)),
               Diff.Removed("s/y", Cell.F32(1.2f)),
-              Diff.Added("s/z", Cell.Str("str"))
+              Diff.Added("s/z", Cell.Str("str")),
             )
       }
 
@@ -526,7 +540,7 @@ final class AreaSpec extends TestSpec:
               Diff.Removed("s/p/u", Cell.I64(1L)),
               Diff.Updated("s/x", Cell.I32(1), Cell.I32(2)),
               Diff.Removed("s/y", Cell.F32(1.2f)),
-              Diff.Added("s/z", Cell.Str("str"))
+              Diff.Added("s/z", Cell.Str("str")),
             )
       }
     }
@@ -535,7 +549,7 @@ final class AreaSpec extends TestSpec:
       "display the hierarchy" in {
         val aStruct = Cell.Struct(
           "x" -> Cell.I32(0),
-          "b" -> Cell.struct("y" -> Cell.I32(0))
+          "b" -> Cell.struct("y" -> Cell.I32(0)),
         )
 
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
