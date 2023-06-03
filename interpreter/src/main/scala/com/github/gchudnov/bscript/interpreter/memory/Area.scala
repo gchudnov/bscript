@@ -88,18 +88,19 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
         .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
         .flatMap(c => iterateTryGet(tail, c))
 
-  private def iterateTryGet(ps: Path, where: Cell): Either[Throwable, Cell] = ps match
-    case Path(h, tail) =>
-      where match
-        case sc: Cell.Struct =>
-          sc.value
-            .get(h)
-            .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
-            .flatMap(c => iterateTryGet(tail, c))
-        case other =>
-          Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
-    case _ =>
-      Right(where)
+  private def iterateTryGet(ps: Path, where: Cell): Either[Throwable, Cell] =
+    ps match
+      case Path(h, tail) =>
+        where match
+          case sc: Cell.Struct =>
+            sc.value
+              .get(h)
+              .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
+              .flatMap(c => iterateTryGet(tail, c))
+          case other =>
+            Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
+      case _ =>
+        Right(where)
 
   /**
    * Set value for a Cell by its id
@@ -148,26 +149,50 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
     update(id, value)
       .toRight(new MemoryException(s"Cannot find Area for: '${id}'"))
 
-  def tryPatch(path: Path, value: Cell): Either[Throwable, Area] =
-    def iterate(ps: Path, where: Cell): Either[Throwable, Cell] = ps match
+  /**
+   * Update a cell by path
+   *
+   * @param path
+   *   Path to the cell to update
+   * @param value
+   *   New value of the cell
+   * @return
+   *   Some(area) if the cell is found, None otherwise
+   */
+  def update(path: Path, value: Cell): Option[Area] =
+    ???
+
+  /**
+   * Update a cell by path
+   *
+   * @param path
+   *   Path to the cell to update
+   * @param value
+   *   New value of the cell
+   * @return
+   *   Right(area) if the cell is found, Left(error) otherwise
+   */
+  def tryUpdate(path: Path, value: Cell): Either[Throwable, Area] =
+    if path.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
+    else
+      val (h, tail) = (path.head, path.tail)
+      get(h)
+        .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
+        .flatMap(c => iterateTryUpdate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update Area with the updated cell ${uc} at '${h}'"))))
+
+  private def iterateTryUpdate(ps: Path, where: Cell): Either[Throwable, Cell] =
+    ps match
       case Path(h, tail) =>
         where match
           case sc: Cell.Struct =>
             sc.value
               .get(h)
               .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
-              .flatMap(c => iterate(tail, c).map(uc => Cell.Struct(sc.value.updated(h, uc))))
+              .flatMap(c => iterateTryUpdate(tail, c).map(uc => Cell.Struct(sc.value.updated(h, uc))))
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
       case _ =>
-        Right(value)
-
-    if path.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
-    else
-      val (h, tail) = (path.head, path.tail)
-      get(h)
-        .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
-        .flatMap(c => iterate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update Area with the updated cell ${uc} at '${h}'"))))
+        Right(where)
 
   def tryPop(): Either[Throwable, Area] =
     parent.toRight(new MemoryException(s"Cannot pop a memory space, getting a parent one."))
