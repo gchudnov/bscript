@@ -8,8 +8,15 @@ object Diff:
   case class Added[K, V](key: K, value: V)              extends Change[K, V]
   case class Updated[K, V](key: K, before: V, after: V) extends Change[K, V]
 
-  def calc[K, V](before: Map[K, V], after: Map[K, V]): Iterable[Change[K, V]] =
-    val rs = Iterable.newBuilder[Change[K, V]]
+  /**
+    * Calculates the difference between two maps.
+    *
+    * @param before The map before the change.
+    * @param after The map after the change.
+    * @return The list of changes.
+    */
+  def calc[K, V](before: Map[K, V], after: Map[K, V]): List[Change[K, V]] =
+    val rs = List.newBuilder[Change[K, V]]
 
     before.foreach { case (k, vb) =>
       after.get(k) match
@@ -24,8 +31,15 @@ object Diff:
 
     rs.result()
 
-  def calc[V](before: Seq[V], after: Seq[V]): Iterable[Change[Int, V]] =
-    val rs = Iterable.newBuilder[Change[Int, V]]
+  /**
+    * Calculates the difference between two lists.
+    *
+    * @param before The list before the change.
+    * @param after The list after the change.
+    * @return The list of changes.
+    */
+  def calc[V](before: Seq[V], after: Seq[V]): List[Change[Int, V]] =
+    val rs = List.newBuilder[Change[Int, V]]
 
     (before.zip(after)).zipWithIndex.foreach { case ((vb, va), i) =>
       if vb != va then rs += Updated(i, vb, va)

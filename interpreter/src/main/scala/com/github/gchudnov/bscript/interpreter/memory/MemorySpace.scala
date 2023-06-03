@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.interpreter.memory
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
 import com.github.gchudnov.bscript.interpreter.memory.*
+import com.github.gchudnov.bscript.interpreter.memory.Path
 
 /**
  * Immutable Memory Area
@@ -16,7 +17,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
-  def fetch(path: CellPath): Option[Cell] =
+  def fetch(path: Path): Option[Cell] =
     def iterate(ps: List[String], where: Cell): Option[Cell] = ps match
       case h :: tail =>
         where match
@@ -36,7 +37,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
       get(h)
         .flatMap(c => iterate(tail, c))
 
-  def tryFetch(path: CellPath): Either[Throwable, Cell] =
+  def tryFetch(path: Path): Either[Throwable, Cell] =
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
         where match
@@ -71,7 +72,7 @@ case class MemorySpace(name: String, members: Map[String, Cell], parent: Option[
     update(id, value)
       .toRight(new MemoryException(s"Cannot find MemorySpace for: '${id}'"))
 
-  def tryPatch(path: CellPath, value: Cell): Either[Throwable, MemorySpace] =
+  def tryPatch(path: Path, value: Cell): Either[Throwable, MemorySpace] =
     def iterate(ps: List[String], where: Cell): Either[Throwable, Cell] = ps match
       case h :: tail =>
         where match

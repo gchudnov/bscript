@@ -15,8 +15,8 @@ package com.github.gchudnov.bscript.interpreter.memory
  *   a.b.y = 2; // here 'a.b.y' is a path
  * }}}
  */
-final case class CellPath(value: String):
-  import CellPath.*
+final case class Path(value: String):
+  import Path.*
 
   def split: List[String] =
     if value.isEmpty then List.empty[String]
@@ -25,12 +25,12 @@ final case class CellPath(value: String):
   def isEmpty: Boolean =
     value.isEmpty
 
-object CellPath:
+object Path:
   val sep: String   = "."
   private val sepRx = "\\."
 
-  val empty: CellPath =
-    CellPath("")
+  val empty: Path =
+    Path("")
 
-  def make(ps: Seq[String]): CellPath =
-    CellPath(ps.mkString(sep))
+  def make(ps: Seq[String]): Path =
+    Path(ps.mkString(sep))

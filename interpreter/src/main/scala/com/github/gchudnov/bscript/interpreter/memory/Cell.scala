@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
 
 import java.time.{ LocalDate, OffsetDateTime }
+import com.github.gchudnov.bscript.interpreter.memory.Path
 
 sealed trait Cell
 
@@ -159,7 +160,7 @@ object Cell:
     * @return The list of changes.
     */
   private def iterateDiff(ns: List[String], b: Option[Cell], a: Option[Cell]): List[Diff.Change[String, Cell]] =
-    val path = CellPath.make(ns).value
+    val path = Path.make(ns).value
     (b, a) match
       case (Some(Struct(ba)), Some(Struct(aa))) =>
         diffMap(ns, ba, aa)
@@ -188,7 +189,7 @@ object Cell:
     * @return The change with the prefix appended to the key.
     */
   private def appendKeyPrefix[K, V](prefix: String, change: Diff.Change[K, V]): Diff.Change[String, V] =
-    def toKey(k: K): String = s"${prefix}${CellPath.sep}${k.toString}"
+    def toKey(k: K): String = s"${prefix}${Path.sep}${k.toString}"
 
     change match
       case Diff.Removed(k, v)    => Diff.Removed(toKey(k), v)

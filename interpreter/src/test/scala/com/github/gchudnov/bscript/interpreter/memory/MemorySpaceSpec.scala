@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.interpreter.memory
 import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.util.Resources
+import com.github.gchudnov.bscript.interpreter.memory.Path
 
 final class MemorySpaceSpec extends TestSpec:
 
@@ -39,7 +40,7 @@ final class MemorySpaceSpec extends TestSpec:
       val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
       "return a cell by its path if the path exists" in {
-        val optCell = locals.fetch(CellPath("a.b.y"))
+        val optCell = locals.fetch(Path("a.b.y"))
         optCell match
           case None =>
             fail("should be 'right")
@@ -48,7 +49,7 @@ final class MemorySpaceSpec extends TestSpec:
       }
 
       "return no value if the path is invalid" in {
-        val optCell = locals.fetch(CellPath("a.b.y.z"))
+        val optCell = locals.fetch(Path("a.b.y.z"))
         optCell match
           case None =>
             succeed
@@ -81,7 +82,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrCell = locals.tryFetch(CellPath("a.b.y"))
+        val errOrCell = locals.tryFetch(Path("a.b.y"))
         errOrCell match
           case Left(_) => fail("should be 'right")
           case Right(actual) =>
@@ -197,7 +198,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
         val locals  = MemorySpace("locals", Map("a" -> initStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(CellPath("a.b.y"), Cell.I32(12))
+        val errOrUpd = locals.tryPatch(Path("a.b.y"), Cell.I32(12))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
@@ -236,7 +237,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(CellPath("a"), Cell.I32(22))
+        val errOrUpd = locals.tryPatch(Path("a"), Cell.I32(22))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
@@ -259,7 +260,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(CellPath("a.b.y.z"), Cell.I32(12))
+        val errOrUpd = locals.tryPatch(Path("a.b.y.z"), Cell.I32(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
           case Right(_) => fail("should be 'left")
@@ -274,7 +275,7 @@ final class MemorySpaceSpec extends TestSpec:
         val globals = MemorySpace("globals", Map("a" -> Cell.I32(10)))
         val locals  = MemorySpace("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(CellPath(""), Cell.I32(12))
+        val errOrUpd = locals.tryPatch(Path(""), Cell.I32(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("Path to update a Cell is empty") mustBe (true)
           case Right(_) => fail("should be 'left")
