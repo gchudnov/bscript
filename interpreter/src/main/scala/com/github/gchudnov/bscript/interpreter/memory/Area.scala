@@ -3,7 +3,6 @@ package com.github.gchudnov.bscript.interpreter.memory
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
 import com.github.gchudnov.bscript.interpreter.memory.*
-import com.github.gchudnov.bscript.interpreter.memory.Path
 
 /**
  * Immutable Memory Area
@@ -60,17 +59,18 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
       get(path.head)
         .flatMap(c => iterateGet(path.tail, c))
 
-  private def iterateGet(ps: Path, where: Cell): Option[Cell] = ps match
-    case Path(h, tail) =>
-      where match
-        case sc: Cell.Struct =>
-          sc.value
-            .get(h)
-            .flatMap(c => iterateGet(tail, c))
-        case other =>
-          None
-    case _ =>
-      Some(where)
+  private def iterateGet(ps: Path, where: Cell): Option[Cell] = 
+    ps match
+      case Path(h, tail) =>
+        where match
+          case sc: Cell.Struct =>
+            sc.value
+              .get(h)
+              .flatMap(c => iterateGet(tail, c))
+          case other =>
+            None
+      case _ =>
+        Some(where)
 
   /**
    * Get a Cell by its path
@@ -160,6 +160,15 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Some(area) if the cell is found, None otherwise
    */
   def update(path: Path, value: Cell): Option[Area] =
+    if path.isEmpty then None
+    else
+      // val (h, tail) = (path.head, path.tail)
+      // get(h)
+      //   .map(c => iterateUpdate(tail, c, value))
+      //   .orElse(parent.flatMap(_.update(path, value).map(updParent => Area(name, members, Some(updParent)))))
+      ???
+
+  private def iterateUpdate(ps: Path, where: Cell, value: Cell): Option[Area] =
     ???
 
   /**

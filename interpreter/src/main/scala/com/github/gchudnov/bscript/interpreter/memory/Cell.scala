@@ -188,11 +188,11 @@ object Cell:
 
     def asStruct: Either[Throwable, Struct] = cell match
       case struct: Struct => Right(struct)
-      case other              => Left(new MemoryException(s"Cannot convert ${other} to StructCell"))
+      case other              => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Struct"))
 
-    def asBoolean: Either[Throwable, Boolean] = cell match
-      case Bool(x) => Right(x)
-      case other       => Left(new MemoryException(s"Cannot convert ${other} to Boolean"))
+    def asBool: Either[Throwable, Bool] = cell match
+      case bool: Bool => Right(bool)
+      case other       => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Bool"))
 
     def asAny: Either[Throwable, Any] = cell match
       case _: Nothing.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing

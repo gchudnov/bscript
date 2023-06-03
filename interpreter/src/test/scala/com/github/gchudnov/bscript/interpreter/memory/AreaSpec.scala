@@ -286,7 +286,10 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "tryPatch" should {
+    // TODO: get, update by path should follow the path without gaps
+    //             a.b.c means that after we found cell a, b.c should follow without area gaps.
+
+    "tryUpdate by path" should {
 
       /**
        * {{{
@@ -310,7 +313,7 @@ final class AreaSpec extends TestSpec:
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
         val locals  = Area("locals", Map("a" -> initStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path(List("a", "b", "y")), Cell.I32(12))
+        val errOrUpd = locals.tryUpdate(Path(List("a", "b", "y")), Cell.I32(12))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
@@ -349,7 +352,7 @@ final class AreaSpec extends TestSpec:
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
         val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path(List("a")), Cell.I32(22))
+        val errOrUpd = locals.tryUpdate(Path(List("a")), Cell.I32(22))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
@@ -372,7 +375,7 @@ final class AreaSpec extends TestSpec:
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
         val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path(List("a", "b", "y", "z")), Cell.I32(12))
+        val errOrUpd = locals.tryUpdate(Path(List("a", "b", "y", "z")), Cell.I32(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
           case Right(_) => fail("should be 'left")
@@ -387,7 +390,7 @@ final class AreaSpec extends TestSpec:
         val globals = Area("globals", Map("a" -> Cell.I32(10)))
         val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
-        val errOrUpd = locals.tryPatch(Path.empty, Cell.I32(12))
+        val errOrUpd = locals.tryUpdate(Path.empty, Cell.I32(12))
         errOrUpd match
           case Left(t)  => t.getMessage.contains("Path to update a Cell is empty") mustBe (true)
           case Right(_) => fail("should be 'left")
