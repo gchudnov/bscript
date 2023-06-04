@@ -162,7 +162,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
     else
       get(path.head)
         .toRight(new MemoryException(s"Cannot find Area with variable '${path.head}'"))
-        .flatMap(c => iterateTryUpdate(path.tail, c, value).flatMap(updated => tryUpdate(path.head, updated)))
+        .flatMap(c => iterateTryUpdate(path.tail, c, value).flatMap(u => tryUpdate(path.head, u)))
 
   private def iterateTryUpdate(ps: Path, start: Cell, value: Cell): Either[Throwable, Cell] =
     ps match
@@ -172,7 +172,16 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
             struct.value
               .get(h)
               .toRight(new MemoryException(s"Cannot find field '${h}' in ${struct}"))
-              .flatMap(c => iterateTryUpdate(tail, c, value).map(updated => Cell.Struct(struct.value.updated(h, updated))))
+              .flatMap(c => iterateTryUpdate(tail, c, value).map(u => Cell.Struct(struct.value.updated(h, u))))
+          case arr: Cell.Vec =>
+            h.toIntOption
+              .toRight(new MemoryException(s"Cannot find field '${h}' in ${arr}"))
+              .flatMap(i =>
+                arr.value
+                  .lift(i)
+                  .toRight(new MemoryException(s"Cannot find field '${h}' in ${arr}"))
+                  .flatMap(c => iterateTryUpdate(tail, c, value).map(u => Cell.Vec(arr.value.updated(i, u)))),
+              )
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
       case _ =>
@@ -244,26 +253,25 @@ object Area:
 
     extension (a: Area)
       def show: String =
+        LineOps.join(LineOps.wrap("[", "]", iterateShow(0, a)))
 
-        def iterate(d: Int, ms: Area): Seq[String] =
-          val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
+      private def iterateShow(d: Int, ms: Area): Seq[String] =
+        val parentLines = ms.parent.fold(Seq.empty[String])(p => iterateShow(d - 1, p))
 
-          val membersCell: Cell = Cell.Struct(ms.members)
-          val membersCellLines  = LineOps.split(membersCell.show)
+        val membersCell: Cell = Cell.Struct(ms.members)
+        val membersCellLines  = LineOps.split(membersCell.show)
 
-          val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
-          val depthLines      = Seq(s"\"depth\": ${d}")
-          val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => LineOps.quote(it.name)).getOrElse("null")}")
-          val membersLines    = LineOps.joinCR(": ", Seq("\"members\""), membersCellLines)
+        val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
+        val depthLines      = Seq(s"\"depth\": ${d}")
+        val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => LineOps.quote(it.name)).getOrElse("null")}")
+        val membersLines    = LineOps.joinCR(": ", Seq("\"members\""), membersCellLines)
 
-          val lineLines = Seq(
-            nameLines,
-            depthLines,
-            parentNameLines,
-            membersLines,
-          )
+        val lineLines = Seq(
+          nameLines,
+          depthLines,
+          parentNameLines,
+          membersLines,
+        )
 
-          val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-          LineOps.joinVAll(",", Seq(parentLines, objLines))
-
-        LineOps.join(LineOps.wrap("[", "]", iterate(0, a)))
+        val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
+        LineOps.joinVAll(",", Seq(parentLines, objLines))
