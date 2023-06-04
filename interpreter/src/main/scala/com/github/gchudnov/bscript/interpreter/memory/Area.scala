@@ -54,23 +54,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Some(cell) if the cell is found, None otherwise
    */
   def get(path: Path): Option[Cell] =
-    if path.isEmpty then None
-    else
-      get(path.head)
-        .flatMap(c => iterateGet(path.tail, c))
-
-  private def iterateGet(ps: Path, start: Cell): Option[Cell] = 
-    ps match
-      case Path(h, tail) =>
-        start match
-          case sc: Cell.Struct =>
-            sc.value
-              .get(h)
-              .flatMap(c => iterateGet(tail, c))
-          case other =>
-            None
-      case _ =>
-        Some(start)
+    tryGet(path).toOption
 
   /**
    * Get a Cell by its path
@@ -84,18 +68,22 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
     if path.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
     else
       val (h, tail) = (path.head, path.tail)
-      get(h)
-        .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
+      tryGet(h)
         .flatMap(c => iterateTryGet(tail, c))
 
   private def iterateTryGet(ps: Path, start: Cell): Either[Throwable, Cell] =
     ps match
       case Path(h, tail) =>
         start match
-          case sc: Cell.Struct =>
-            sc.value
+          case c: Cell.Struct =>
+            c.value
               .get(h)
-              .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
+              .toRight(new MemoryException(s"Cannot find field '${h}' in ${c}"))
+              .flatMap(c => iterateTryGet(tail, c))
+          case arr: Cell.Vec =>
+            h.toIntOption
+              .toRight(new MemoryException(s"Cannot find field '${h}' in ${arr}"))
+              .flatMap(i => arr.value.lift(i).toRight(new MemoryException(s"Cannot find field '${h}' in ${arr}")))
               .flatMap(c => iterateTryGet(tail, c))
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))

@@ -106,6 +106,10 @@ final class AreaSpec extends TestSpec:
         "x" -> Cell.i32(0),
         "b" -> Cell.struct("y" -> Cell.I32(3)),
         "c" -> Cell.vec(Cell.I32(1), Cell.I32(2), Cell.I32(3)),
+        "d" -> Cell.vec(
+          Cell.struct("x" -> Cell.I32(1), "y" -> Cell.I32(2)),
+          Cell.struct("x" -> Cell.I32(3), "y" -> Cell.I32(4)),
+        ),
       )
 
       val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -130,7 +134,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "retrun no value if the path is broken" in {
-        // NOTE: a.b.y is a path, but a.b is not
+        // NOTE: a.b.y is a valid path, but a.b is not
         val optCell = locals.get(Path(List("a", "y")))
         optCell match
           case None =>
@@ -146,6 +150,15 @@ final class AreaSpec extends TestSpec:
             fail("should be 'some")
           case Some(actual) =>
             actual mustBe Cell.I32(2)
+      }
+
+      "return value from a struct inside of an array" in {
+        val optCell = locals.get(Path(List("a", "d", "1", "y")))
+        optCell match
+          case None =>
+            fail("should be 'some")
+          case Some(actual) =>
+            actual mustBe Cell.I32(4)
       }
     }
 

@@ -22,8 +22,7 @@ object Cell:
   final case class DateTime(value: OffsetDateTime)  extends Cell
   final case class Vec(value: List[Cell])           extends Cell
   final case class Struct(value: Map[String, Cell]) extends Cell
-
-  // TODO: add method, since it will be a first class citizen
+  final case class Method(value: List[Cell] => Either[Throwable, Cell]) extends Cell
 
   object Struct:
     def apply(values: (String, Cell)*): Cell =
