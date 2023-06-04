@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
 /**
- * Path to a cell in a structure
+ * Path to a Cell
  *
  * {{{
  *   struct A {
@@ -33,28 +33,28 @@ final case class Path(elems: List[String]):
   def append(elem: String): Path =
     Path(elems :+ elem)
 
-  def asString: String = 
+  def asString: String =
     elems.mkString(sep)
 
   def isEmpty: Boolean =
     elems.isEmpty
 
+  def nonEmpty: Boolean =
+    !isEmpty
 
 object Path:
   private val sep: String   = "."
   private val rxSep: String = "\\."
 
   def parse(p: String, regex: String = rxSep): Path =
-    if p.isEmpty then 
-      empty
-    else
-      Path(p.split(regex).toList)
+    if p.isEmpty then empty
+    else Path(p.split(regex).toList)
 
   def unapply(path: Path): Option[(String, Path)] =
     if path.isEmpty then None
     else Some((path.head, path.tail))
 
-  val empty: Path =
+  lazy val empty: Path =
     Path(List.empty[String])
 
   def make(ps: Iterable[String]): Path =
