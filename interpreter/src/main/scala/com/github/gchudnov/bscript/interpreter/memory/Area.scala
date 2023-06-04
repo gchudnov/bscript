@@ -59,10 +59,10 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
       get(path.head)
         .flatMap(c => iterateGet(path.tail, c))
 
-  private def iterateGet(ps: Path, where: Cell): Option[Cell] = 
+  private def iterateGet(ps: Path, start: Cell): Option[Cell] = 
     ps match
       case Path(h, tail) =>
-        where match
+        start match
           case sc: Cell.Struct =>
             sc.value
               .get(h)
@@ -70,7 +70,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
           case other =>
             None
       case _ =>
-        Some(where)
+        Some(start)
 
   /**
    * Get a Cell by its path
@@ -88,10 +88,10 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
         .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
         .flatMap(c => iterateTryGet(tail, c))
 
-  private def iterateTryGet(ps: Path, where: Cell): Either[Throwable, Cell] =
+  private def iterateTryGet(ps: Path, start: Cell): Either[Throwable, Cell] =
     ps match
       case Path(h, tail) =>
-        where match
+        start match
           case sc: Cell.Struct =>
             sc.value
               .get(h)
@@ -100,7 +100,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
       case _ =>
-        Right(where)
+        Right(start)
 
   /**
    * Set value for a Cell by its id
@@ -168,7 +168,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
       //   .orElse(parent.flatMap(_.update(path, value).map(updParent => Area(name, members, Some(updParent)))))
       ???
 
-  private def iterateUpdate(ps: Path, where: Cell, value: Cell): Option[Area] =
+  private def iterateUpdate(ps: Path, start: Cell, value: Cell): Option[Area] =
     ???
 
   /**
@@ -189,10 +189,10 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
         .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
         .flatMap(c => iterateTryUpdate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update Area with the updated cell ${uc} at '${h}'"))))
 
-  private def iterateTryUpdate(ps: Path, where: Cell): Either[Throwable, Cell] =
+  private def iterateTryUpdate(ps: Path, start: Cell): Either[Throwable, Cell] =
     ps match
       case Path(h, tail) =>
-        where match
+        start match
           case sc: Cell.Struct =>
             sc.value
               .get(h)
@@ -201,7 +201,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
       case _ =>
-        Right(where)
+        Right(start)
 
   def tryPop(): Either[Throwable, Area] =
     parent.toRight(new MemoryException(s"Cannot pop a memory space, getting a parent one."))

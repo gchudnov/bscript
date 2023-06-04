@@ -63,7 +63,10 @@ object Cell:
   def datetime(value: OffsetDateTime): Cell =
     DateTime(value)
 
-  def vec(value: Seq[Cell]): Cell =
+  def vec(value: List[Cell]): Cell =
+    Vec(value.toList)
+
+  def vec(value: Cell*): Cell =
     Vec(value.toList)
 
   def struct(value: Map[String, Cell]): Cell =

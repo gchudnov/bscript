@@ -25,10 +25,11 @@ final class AreaSpec extends TestSpec:
     }
 
     "get by name" should {
-      "return a cell by its id if the cell exists" in {
-        val m = Area("globals", Map("a" -> Cell.I32(10)))
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val locals  = Area("locals", Map.empty, Some(globals))
 
-        val optCell = m.get("a")
+      "return a cell by its id if the cell exists" in {
+        val optCell = globals.get("a")
         optCell match
           case None =>
             fail("should be 'some")
@@ -37,9 +38,6 @@ final class AreaSpec extends TestSpec:
       }
 
       "return a cell from a parent if the cell exists" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map.empty, Some(globals))
-
         val optCell = locals.get("a")
         optCell match
           case None =>
@@ -49,9 +47,6 @@ final class AreaSpec extends TestSpec:
       }
 
       "do not return a cell from a parent if the cell does not exist" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map.empty, Some(globals))
-
         val optCell = locals.get("b")
         optCell match
           case None =>
@@ -62,10 +57,11 @@ final class AreaSpec extends TestSpec:
     }
 
     "tryGet by name" should {
-      "return a cell by its id if the cell exists" in {
-        val m = Area("globals", Map("a" -> Cell.I32(10)))
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val locals  = Area("locals", Map.empty, Some(globals))
 
-        val errOrCell = m.tryGet("a")
+      "return a cell by its id if the cell exists" in {
+        val errOrCell = globals.tryGet("a")
         errOrCell match
           case Left(_) =>
             fail("should be 'right")
@@ -74,9 +70,6 @@ final class AreaSpec extends TestSpec:
       }
 
       "return a cell from a parent if the cell exists" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map.empty, Some(globals))
-
         val errOrCell = locals.tryGet("a")
         errOrCell match
           case Left(_) =>
@@ -86,9 +79,6 @@ final class AreaSpec extends TestSpec:
       }
 
       "do not return a cell from a parent if the cell does not exist" in {
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map.empty, Some(globals))
-
         val errOrCell = locals.tryGet("b")
         errOrCell match
           case Left(_) =>
@@ -97,8 +87,6 @@ final class AreaSpec extends TestSpec:
             fail("should be 'left")
       }
     }
-
-    // TODO: add get by path for arrays
 
     /**
      * {{{
@@ -117,6 +105,7 @@ final class AreaSpec extends TestSpec:
       val aStruct = Cell.Struct(
         "x" -> Cell.i32(0),
         "b" -> Cell.struct("y" -> Cell.I32(3)),
+        "c" -> Cell.vec(Cell.I32(1), Cell.I32(2), Cell.I32(3)),
       )
 
       val globals = Area("globals", Map("a" -> Cell.I32(10)))
@@ -138,6 +127,25 @@ final class AreaSpec extends TestSpec:
             succeed
           case Some(actual) =>
             fail("should be 'none")
+      }
+
+      "retrun no value if the path is broken" in {
+        // NOTE: a.b.y is a path, but a.b is not
+        val optCell = locals.get(Path(List("a", "y")))
+        optCell match
+          case None =>
+            succeed
+          case Some(actual) =>
+            fail("should be 'none")
+      }
+
+      "return value from the array" in {
+        val optCell = locals.get(Path(List("a", "c", "1")))
+        optCell match
+          case None =>
+            fail("should be 'some")
+          case Some(actual) =>
+            actual mustBe Cell.I32(2)
       }
     }
 
