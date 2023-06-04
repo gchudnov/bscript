@@ -10,10 +10,10 @@ import com.github.gchudnov.bscript.interpreter.memory.*
 case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
 
   /**
-   * Checks if the memory space is empty
+   * Checks if the memory area is empty
    *
    * @return
-   *   true if the memory space is empty, false otherwise
+   *   true if the memory area is empty, false otherwise
    */
   def isEmpty: Boolean =
     members.isEmpty
@@ -21,7 +21,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   /**
    * Get a Cell by its id
    *
-   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   * If the cell is not found in the current memory area, it will be searched in the parent one.
    *
    * @param id
    *   cell id
@@ -34,7 +34,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   /**
    * Get a Cell by its id
    *
-   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   * If the cell is not found in the current memory area, it will be searched in the parent one.
    *
    * @param id
    *   cell id
@@ -67,18 +67,17 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   def tryGet(path: Path): Either[Throwable, Cell] =
     if path.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
     else
-      val (h, tail) = (path.head, path.tail)
-      tryGet(h)
-        .flatMap(c => iterateTryGet(tail, c))
+      tryGet(path.head)
+        .flatMap(c => iterateTryGet(path.tail, c))
 
   private def iterateTryGet(ps: Path, start: Cell): Either[Throwable, Cell] =
     ps match
       case Path(h, tail) =>
         start match
-          case c: Cell.Struct =>
-            c.value
+          case struct: Cell.Struct =>
+            struct.value
               .get(h)
-              .toRight(new MemoryException(s"Cannot find field '${h}' in ${c}"))
+              .toRight(new MemoryException(s"Cannot find field '${h}' in ${struct}"))
               .flatMap(c => iterateTryGet(tail, c))
           case arr: Cell.Vec =>
             h.toIntOption
@@ -91,7 +90,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
         Right(start)
 
   /**
-   * Set value for a Cell by its id
+   * Set value for a Cell by its id in this area
    *
    * @param id
    *   cell id
@@ -106,7 +105,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   /**
    * Update a cell by id
    *
-   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   * If the cell is not found in the current memory area, it will be searched in the parent one.
    *
    * @param id
    *   Id of the cell to update
@@ -116,15 +115,13 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Some(area) if the cell is found, None otherwise
    */
   def update(id: String, value: Cell): Option[Area] =
-    members
-      .get(id)
-      .map(_ => Area(name, members = members + (id -> value), parent))
-      .orElse(parent.flatMap(_.update(id, value).map(updParent => Area(name, members, Some(updParent)))))
+    if members.contains(id) then Some(put(id, value))
+    else parent.flatMap(_.update(id, value).map(updParent => Area(name, members, Some(updParent))))
 
   /**
    * Update a cell by id
    *
-   * If the cell is not found in the current memory space, it will be searched in the parent one.
+   * If the cell is not found in the current memory area, it will be searched in the parent one.
    *
    * @param id
    *   Id of the cell to update
@@ -148,16 +145,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Some(area) if the cell is found, None otherwise
    */
   def update(path: Path, value: Cell): Option[Area] =
-    if path.isEmpty then None
-    else
-      // val (h, tail) = (path.head, path.tail)
-      // get(h)
-      //   .map(c => iterateUpdate(tail, c, value))
-      //   .orElse(parent.flatMap(_.update(path, value).map(updParent => Area(name, members, Some(updParent)))))
-      ???
-
-  private def iterateUpdate(ps: Path, start: Cell, value: Cell): Option[Area] =
-    ???
+    tryUpdate(path, value).toOption
 
   /**
    * Update a cell by path
@@ -172,35 +160,47 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
   def tryUpdate(path: Path, value: Cell): Either[Throwable, Area] =
     if path.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
     else
-      val (h, tail) = (path.head, path.tail)
-      get(h)
-        .toRight(new MemoryException(s"Cannot find Area with variable '${h}'"))
-        .flatMap(c => iterateTryUpdate(tail, c).flatMap(uc => update(h, uc).toRight(new MemoryException(s"Cannot update Area with the updated cell ${uc} at '${h}'"))))
+      get(path.head)
+        .toRight(new MemoryException(s"Cannot find Area with variable '${path.head}'"))
+        .flatMap(c => iterateTryUpdate(path.tail, c, value).flatMap(updated => tryUpdate(path.head, updated)))
 
-  private def iterateTryUpdate(ps: Path, start: Cell): Either[Throwable, Cell] =
+  private def iterateTryUpdate(ps: Path, start: Cell, value: Cell): Either[Throwable, Cell] =
     ps match
       case Path(h, tail) =>
         start match
-          case sc: Cell.Struct =>
-            sc.value
+          case struct: Cell.Struct =>
+            struct.value
               .get(h)
-              .toRight(new MemoryException(s"Cannot find field '${h}' in ${sc}"))
-              .flatMap(c => iterateTryUpdate(tail, c).map(uc => Cell.Struct(sc.value.updated(h, uc))))
+              .toRight(new MemoryException(s"Cannot find field '${h}' in ${struct}"))
+              .flatMap(c => iterateTryUpdate(tail, c, value).map(updated => Cell.Struct(struct.value.updated(h, updated))))
           case other =>
             Left(new MemoryException(s"Cell ${other} doesn't have fields to fetch field '${h}'"))
       case _ =>
-        Right(start)
+        Right(value)
 
+  /**
+   * Drop current memory area and return a parent one
+   *
+   * @return
+   *   Some(parent) if the parent exists, None otherwise
+   */
+  def pop(): Option[Area] =
+    parent
+
+  /**
+   * Drop current memory area and return a parent one
+   *
+   * @return
+   *   Some(parent) if the parent exists, None otherwise
+   */
   def tryPop(): Either[Throwable, Area] =
-    parent.toRight(new MemoryException(s"Cannot pop a memory space, getting a parent one."))
+    pop().toRight(new MemoryException(s"Cannot pop a memory area to get the parent area."))
 
   override def toString: String =
     val pairs = members.map(it => s"${it._1}: ${it._2}")
     s"[${name}]${pairs.mkString("{", ", ", "}")}"
 
 object Area:
-
-  private val sep: String = "/"
 
   def apply(name: String): Area =
     new Area(name = name, members = Map.empty[String, Cell], parent = None)
@@ -212,27 +212,26 @@ object Area:
     new Area(name = name, members = Map.empty[String, Cell], parent = parent)
 
   /**
-   * Returns an *unordered* diff between two memory spaces
+   * Returns an *unordered* diff between two memory areas
    */
   def diff(before: Area, after: Area): Either[Throwable, List[Diff.Change[Path, Cell]]] =
+    iterateDiff(Path.empty, before, after)
 
-    def iterate(ns: Path, a: Area, b: Area): Either[Throwable, List[Diff.Change[Path, Cell]]] =
-      if a.name != b.name then Left(new MemoryException(s"Cannot calculate the diff between unrelated memory spaces '${a.name}' and '${b.name}'"))
-      else
-        val ns1 = ns.append(a.name)
-        val errOrParentDiff = (a.parent, b.parent) match
-          case (Some(x), None) =>
-            iterate(ns1, x, Area(name = x.name))
-          case (None, Some(x)) =>
-            iterate(ns1, Area(name = x.name), x)
-          case (Some(x), Some(y)) =>
-            iterate(ns1, x, y)
-          case (None, None) =>
-            Right(List.empty[Diff.Change[Path, Cell]])
+  private def iterateDiff(ns: Path, a: Area, b: Area): Either[Throwable, List[Diff.Change[Path, Cell]]] =
+    if a.name != b.name then Left(new MemoryException(s"Cannot calculate the diff between unrelated memory areas '${a.name}' and '${b.name}'"))
+    else
+      val ns1 = ns.append(a.name)
+      val errOrParentDiff = (a.parent, b.parent) match
+        case (Some(x), None) =>
+          iterateDiff(ns1, x, Area(name = x.name))
+        case (None, Some(x)) =>
+          iterateDiff(ns1, Area(name = x.name), x)
+        case (Some(x), Some(y)) =>
+          iterateDiff(ns1, x, y)
+        case (None, None) =>
+          Right(List.empty[Diff.Change[Path, Cell]])
 
-        errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(it => withPrefix(ns.append(a.name), it)))
-
-    iterate(Path.empty, before, after)
+      errOrParentDiff.map(_ ++ Diff.calc(a.members, b.members).map(it => withPrefix(ns.append(a.name), it)))
 
   private[memory] def withPrefix[V](prefix: Path, change: Diff.Change[String, V]): Diff.Change[Path, V] =
     change match

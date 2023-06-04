@@ -208,6 +208,7 @@ object Cell:
       case DateTime(value) => Right(value.asInstanceOf[Any])
       case Vec(value)      => Right(value.asInstanceOf[Any])
       case Struct(value)   => Right(value.asInstanceOf[Any])
+      case Method(value)   => Right(value.asInstanceOf[Any])
 
   given Show[Cell] with
     extension (a: Cell)
@@ -235,3 +236,4 @@ object Cell:
           }
           val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
           LineOps.join(lines)
+        case Method(value) => s"\"method(${value})\""

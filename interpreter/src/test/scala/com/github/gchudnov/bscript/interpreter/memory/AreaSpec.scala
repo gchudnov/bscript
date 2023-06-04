@@ -196,12 +196,12 @@ final class AreaSpec extends TestSpec:
     }
 
     "put" should {
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+
       "update area" in {
-        val m = Area("globals", Map("a" -> Cell.I32(10)))
+        val updated = globals.put("a", Cell.I32(20))
 
-        val u = m.put("a", Cell.I32(20))
-
-        Area.diff(m, u) match
+        Area.diff(globals, updated) match
           case Left(_) =>
             fail("should be 'right")
           case Right(diff) =>
@@ -223,7 +223,7 @@ final class AreaSpec extends TestSpec:
        *   main { c: 12.34 }
        * }}}
        */
-      "return a new memory space hierarchy when update an element in the deepest memory space" in {
+      "return a new memory area hierarchy when update an element in the deepest memory area" in {
         val updated = main.update("a", Cell.I32(20))
 
         updated match
@@ -248,11 +248,12 @@ final class AreaSpec extends TestSpec:
        *   main { c: 12.34 }
        * }}}
        */
-      "return a new memory space hierarchy when add an element in the parent memory space" in {
+      "return a new memory area hierarchy when add an element in the parent memory area" in {
         val updated = main.update("b", Cell.I32(20))
 
         updated match
-          case None => fail("should be 'some")
+          case None =>
+            fail("should be 'some")
           case Some(u) =>
             Area.diff(main, u) match
               case Left(_) =>
@@ -272,7 +273,7 @@ final class AreaSpec extends TestSpec:
        *   main { c: 12.34 }
        * }}}
        */
-      "return a new memory space hierarchy when add an element in the child memory space" in {
+      "return a new memory area hierarchy when add an element in the child memory area" in {
         val updated = main.update("c", Cell.F32(20.1f))
 
         updated match
@@ -309,10 +310,14 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    // TODO: get, update by path should follow the path without gaps
-    //             a.b.c means that after we found cell a, b.c should follow without area gaps.
-
     "tryUpdate by path" should {
+      val aStruct = Cell.Struct(
+        "x" -> Cell.I32(0),
+        "b" -> Cell.Struct("y" -> Cell.I32(0)),
+      )
+
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
 
       /**
        * {{{
@@ -328,20 +333,13 @@ final class AreaSpec extends TestSpec:
        * }}}
        */
       "modify cell by its path" in {
-        val initStruct = Cell.Struct(
-          "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0)),
-        )
-
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map("a" -> initStruct), Some(globals))
-
         val errOrUpd = locals.tryUpdate(Path(List("a", "b", "y")), Cell.I32(12))
         errOrUpd match
           case Left(_) => fail("should be 'right")
           case Right(updated) =>
             Area.diff(locals, updated) match
-              case Left(_) => fail("should be 'right")
+              case Left(_) =>
+                fail("should be 'right")
               case Right(diff) =>
                 val newStruct = Cell.Struct(
                   "x" -> Cell.I32(0),
@@ -349,7 +347,7 @@ final class AreaSpec extends TestSpec:
                 )
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals/a", initStruct, newStruct),
+                  Diff.Updated(Path.parse("locals.a"), aStruct, newStruct),
                 )
       }
 
@@ -367,56 +365,96 @@ final class AreaSpec extends TestSpec:
        * }}}
        */
       "modify cell by its path if path has only one part" in {
-        val aStruct = Cell.Struct(
-          "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0)),
-        )
-
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
-
         val errOrUpd = locals.tryUpdate(Path(List("a")), Cell.I32(22))
         errOrUpd match
-          case Left(_) => fail("should be 'right")
+          case Left(_) =>
+            fail("should be 'right")
           case Right(updated) =>
             Area.diff(locals, updated) match
-              case Left(_) => fail("should be 'right")
+              case Left(_) =>
+                fail("should be 'right")
               case Right(diff) =>
                 val expected = Cell.I32(22)
 
                 diff must contain theSameElementsAs List(
-                  Diff.Updated("locals/a", aStruct, expected),
+                  Diff.Updated(Path.parse("locals.a"), aStruct, expected),
                 )
       }
 
-      "modify cell by its path cannot be made if the path is too long" in {
-        val aStruct = Cell.Struct(
-          "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0)),
-        )
-
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
-
+      "fail to modify if the path is too long" in {
         val errOrUpd = locals.tryUpdate(Path(List("a", "b", "y", "z")), Cell.I32(12))
         errOrUpd match
-          case Left(t)  => t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
-          case Right(_) => fail("should be 'left")
+          case Left(t) =>
+            t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
+          case Right(_) =>
+            fail("should be 'left")
       }
 
-      "modify cell by its path cannot be made if the path is empty" in {
-        val aStruct = Cell.Struct(
-          "x" -> Cell.I32(0),
-          "b" -> Cell.Struct("y" -> Cell.I32(0)),
-        )
-
-        val globals = Area("globals", Map("a" -> Cell.I32(10)))
-        val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
-
+      "fail to modify if the path is empty" in {
         val errOrUpd = locals.tryUpdate(Path.empty, Cell.I32(12))
         errOrUpd match
-          case Left(t)  => t.getMessage.contains("Path to update a Cell is empty") mustBe (true)
-          case Right(_) => fail("should be 'left")
+          case Left(t) =>
+            t.getMessage.contains("Path to update a Cell is empty") mustBe (true)
+          case Right(_) =>
+            fail("should be 'left")
+      }
+    }
+
+    "update by path" should {
+      val aStruct = Cell.Struct(
+        "x" -> Cell.I32(0),
+        "b" -> Cell.Struct("y" -> Cell.I32(0)),
+      )
+
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
+
+      /**
+       * {{{
+       *   struct A {
+       *     int x;
+       *     B b;
+       *   };
+       *   struct B { int y; };
+       *
+       *   A a;
+       *
+       *   a.b.y = 2; // here 'a.b.y' is a path
+       * }}}
+       */
+      "modify cell by its path" in {
+        val maybeUpdated = locals.update(Path(List("a", "b", "y")), Cell.I32(12))
+        maybeUpdated match
+          case None =>
+            fail("should be 'some'")
+          case Some(updated) =>
+            Area.diff(locals, updated) match
+              case Left(_) => fail("should be 'right")
+              case Right(diff) =>
+                val newStruct = Cell.Struct(
+                  "x" -> Cell.I32(0),
+                  "b" -> Cell.Struct("y" -> Cell.I32(12)),
+                )
+
+                diff must contain theSameElementsAs List(
+                  Diff.Updated(Path.parse("locals.a"), aStruct, newStruct),
+                )
+      }
+    }
+
+    "pop" should {
+      val aStruct = Cell.Struct(
+        "x" -> Cell.I32(0),
+        "b" -> Cell.Struct("y" -> Cell.I32(0)),
+      )
+
+      val globals = Area("globals", Map("a" -> Cell.I32(10)))
+      val locals  = Area("locals", Map("a" -> aStruct), Some(globals))
+
+      "return the parent" in {
+        val actual = locals.pop()
+
+        actual mustBe (Some(globals))
       }
     }
 
@@ -427,7 +465,7 @@ final class AreaSpec extends TestSpec:
 
         val keys = updated.map(_.key)
 
-        keys must contain allElementsOf List("parent/1", "parent/3", "parent/4")
+        keys must contain allElementsOf List(Path.parse("parent.1"), Path.parse("parent.3"), Path.parse("parent.4"))
       }
     }
 
