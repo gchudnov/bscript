@@ -1,3 +1,3 @@
 package com.github.gchudnov.bscript.lang.const
 
-final case class NullVal() extends Const
+case object NullVal extends Const

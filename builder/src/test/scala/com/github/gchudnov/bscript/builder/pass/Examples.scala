@@ -358,7 +358,7 @@ object Examples:
    */
   val ex13: Example =
     val t = Block.of(
-      VarDecl("x", Auto(), ConstLit(NullVal()))
+      VarDecl("x", Auto(), ConstLit(NullVal))
     )
     Example("ex13", t)
 
@@ -374,7 +374,7 @@ object Examples:
    */
   val ex14: Example =
     val t = Block.of(
-      VarDecl("x", TypeId("i32"), ConstLit(NullVal()))
+      VarDecl("x", TypeId("i32"), ConstLit(NullVal))
     )
     Example("ex14", t)
 

@@ -9,25 +9,27 @@ sealed trait Cell
 
 object Cell:
 
-  case object Nothing                               extends Cell
-  case object Void                                  extends Cell
-  final case class Bool(value: Boolean)             extends Cell
-  final case class I32(value: Int)                  extends Cell
-  final case class I64(value: Long)                extends Cell
-  final case class F32(value: Float)              extends Cell
-  final case class F64(value: Double)            extends Cell
-  final case class Dec(value: BigDecimal)       extends Cell
-  final case class Str(alue: String)               extends Cell
-  final case class Date(value: LocalDate)           extends Cell
-  final case class DateTime(value: OffsetDateTime)  extends Cell
-  final case class Vec(value: List[Cell])           extends Cell
-  final case class Struct(value: Map[String, Cell]) extends Cell
+  case object Nothing                                                   extends Cell
+  case object Void                                                      extends Cell
+  final case class Bool(value: Boolean)                                 extends Cell
+  final case class U8(value: Byte)                                      extends Cell
+  final case class I16(value: Short)                                    extends Cell
+  final case class I32(value: Int)                                      extends Cell
+  final case class I64(value: Long)                                     extends Cell
+  final case class F32(value: Float)                                    extends Cell
+  final case class F64(value: Double)                                   extends Cell
+  final case class Dec(value: BigDecimal)                               extends Cell
+  final case class Chr(value: Char)                                     extends Cell
+  final case class Str(value: String)                                   extends Cell
+  final case class Date(value: LocalDate)                               extends Cell
+  final case class DateTime(value: OffsetDateTime)                      extends Cell
+  final case class Vec(value: List[Cell])                               extends Cell
+  final case class Struct(value: Map[String, Cell])                     extends Cell
   final case class Method(value: List[Cell] => Either[Throwable, Cell]) extends Cell
 
   object Struct:
     def apply(values: (String, Cell)*): Cell =
       Struct(values.toMap)
-
 
   lazy val nothing: Cell =
     Nothing
@@ -37,6 +39,12 @@ object Cell:
 
   def bool(value: Boolean): Cell =
     Bool(value)
+
+  def u8(value: Byte): Cell =
+    U8(value)
+
+  def i16(value: Short): Cell =
+    I16(value)
 
   def i32(value: Int): Cell =
     I32(value)
@@ -52,6 +60,9 @@ object Cell:
 
   def decimal(value: BigDecimal): Cell =
     Dec(value)
+
+  def chr(value: Char): Cell =
+    Chr(value)
 
   def str(value: String): Cell =
     Str(value)
@@ -105,13 +116,17 @@ object Cell:
     iterateDiff(Path(List(name)), before, after)
 
   /**
-    * Caclulate the difference between two lists of cells.
-    *
-    * @param ns Path
-    * @param b List of cells
-    * @param a List of cells
-    * @return The list of changes.
-    */
+   * Caclulate the difference between two lists of cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   List of cells
+   * @param a
+   *   List of cells
+   * @return
+   *   The list of changes.
+   */
   private def diffList(ns: Path, b: List[Cell], a: List[Cell]): List[Diff.Change[Path, Cell]] =
     val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
@@ -128,15 +143,18 @@ object Cell:
 
     rs.result()
 
-
   /**
-    * Calculate the difference between two maps of cells.
-    *
-    * @param ns Path
-    * @param b Map of cells
-    * @param a Map of cells
-    * @return The list of changes.
-    */
+   * Calculate the difference between two maps of cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   Map of cells
+   * @param a
+   *   Map of cells
+   * @return
+   *   The list of changes.
+   */
   private def diffMap(ns: Path, b: Map[String, Cell], a: Map[String, Cell]): List[Diff.Change[Path, Cell]] =
     val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
@@ -153,13 +171,17 @@ object Cell:
     rs.result()
 
   /**
-    * Calculate the difference between two cells.
-    *
-    * @param ns Path
-    * @param b Maybe Cell
-    * @param a Maybe Cell
-    * @return The list of changes.
-    */
+   * Calculate the difference between two cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   Maybe Cell
+   * @param a
+   *   Maybe Cell
+   * @return
+   *   The list of changes.
+   */
   private def iterateDiff(ns: Path, b: Option[Cell], a: Option[Cell]): List[Diff.Change[Path, Cell]] =
     (b, a) match
       case (Some(Struct(ba)), Some(Struct(aa))) =>
@@ -188,21 +210,24 @@ object Cell:
 
     def asStruct: Either[Throwable, Struct] = cell match
       case struct: Struct => Right(struct)
-      case other              => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Struct"))
+      case other          => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Struct"))
 
     def asBool: Either[Throwable, Bool] = cell match
       case bool: Bool => Right(bool)
-      case other       => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Bool"))
+      case other      => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Bool"))
 
-    def asAny: Either[Throwable, Any] = cell match
+    def asAnyValue: Either[Throwable, Any] = cell match
       case _: Nothing.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing
       case _: Void.type    => Right(().asInstanceOf[Any])
       case Bool(value)     => Right(value.asInstanceOf[Any])
+      case U8(value)       => Right(value.asInstanceOf[Any])
+      case I16(value)      => Right(value.asInstanceOf[Any])
       case I32(value)      => Right(value.asInstanceOf[Any])
-      case I64(value)     => Right(value.asInstanceOf[Any])
-      case F32(value)    => Right(value.asInstanceOf[Any])
-      case F64(value)   => Right(value.asInstanceOf[Any])
-      case Dec(value)  => Right(value.asInstanceOf[Any])
+      case I64(value)      => Right(value.asInstanceOf[Any])
+      case F32(value)      => Right(value.asInstanceOf[Any])
+      case F64(value)      => Right(value.asInstanceOf[Any])
+      case Dec(value)      => Right(value.asInstanceOf[Any])
+      case Chr(value)      => Right(value.asInstanceOf[Any])
       case Str(value)      => Right(value.asInstanceOf[Any])
       case Date(value)     => Right(value.asInstanceOf[Any])
       case DateTime(value) => Right(value.asInstanceOf[Any])
@@ -216,11 +241,14 @@ object Cell:
         case _: Nothing.type => s"\"nothing\""
         case _: Void.type    => s"\"void\""
         case Bool(value)     => s"\"bool(${value})\""
+        case U8(value)       => s"\"u8(${value})\""
+        case I16(value)      => s"\"i16(${value})\""
         case I32(value)      => s"\"i32(${value})\""
-        case I64(value)     => s"\"i64(${value})\""
-        case F32(value)    => s"\"f32(${value})\""
-        case F64(value)   => s"\"f64(${value})\""
-        case Dec(value)  => s"\"dec(${value})\""
+        case I64(value)      => s"\"i64(${value})\""
+        case F32(value)      => s"\"f32(${value})\""
+        case F64(value)      => s"\"f64(${value})\""
+        case Dec(value)      => s"\"dec(${value})\""
+        case Chr(value)      => s"\"chr(${value})\""
         case Str(value)      => s"\"str(${value})\""
         case Date(value)     => s"\"date(${value.toString})\""
         case DateTime(value) => s"\"datetime(${value.toString})\""

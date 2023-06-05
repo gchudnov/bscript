@@ -15,8 +15,8 @@ private[interpret] final class Folder() extends AstFolder[PassState] {
       case x: Block =>
         foldOverAST(s, x)
 
-      case x @ ConstLit(const) =>
-        foldOverAST(s, x)
+      case ConstLit(const) =>
+        s.copy(retValue = ConstConv.toCell(const))
 }
 
 private[interpret] object Folder {
