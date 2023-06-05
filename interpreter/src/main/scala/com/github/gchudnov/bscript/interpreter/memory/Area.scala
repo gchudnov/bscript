@@ -197,6 +197,17 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
         Right(value)
 
   /**
+   * Push a new memory area
+   *
+   * @param name
+   *   name of the new area
+   * @return
+   *   new area
+   */
+  def push(name: String): Area =
+    Area(name = name, members = Map.empty[String, Cell], parent = Some(this))
+
+  /**
    * Drop current memory area and return a parent one
    *
    * @return

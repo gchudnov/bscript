@@ -44,5 +44,11 @@ final class BaseNSpec extends TestSpec:
         Base26.decode("z") mustBe (25L)
         Base26.decode("ba") mustBe (26L)
       }
+
+      "increment" in {
+        Base26.inc("a") mustBe ("b")
+        Base26.inc("z") mustBe ("ba")
+        Base26.inc("ba") mustBe ("bb")
+      }
     }
   }

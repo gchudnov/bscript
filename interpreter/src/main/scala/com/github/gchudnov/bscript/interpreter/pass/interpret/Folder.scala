@@ -13,8 +13,9 @@ private[interpret] final class Folder() extends AstFolder[PassState] {
     ast match
 
       case Block(exprs) =>
-        // TODO: get the name of this block
-        ???
+        exprs.foldLeft(s.pushArea())((acc, expr) => {
+          foldOverAST(acc, expr)
+        }).popArea()
 
       case ConstLit(const) =>
         s.copy(retValue = ConstConv.toCell(const))
@@ -24,20 +25,6 @@ private[interpret] object Folder {
   def make(): Folder =
     new Folder()
 }
-
-//   override def visit(s: InterpretState, n: Block): Either[Throwable, InterpretState] =
-//     for
-//       s1 <- n.statements
-//               .foldLeft(Right(s.copy(memSpace = MemorySpace(n.symbol.name, Some(s.memSpace)), retValue = VoidCell)): Either[Throwable, InterpretState]) { (acc, stmt) =>
-//                 acc match
-//                   case Left(err) =>
-//                     Left(err)
-//                   case Right(sx) =>
-//                     stmt.visit(sx, this)
-//               }
-//       ms <- s1.memSpace.tryPop()
-//     yield s1.copy(memSpace = ms)
-
 
 
 // private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends TreeVisitor[InterpretState, InterpretState]:

@@ -36,6 +36,18 @@ sealed trait BaseN:
 
     iterate(0L, s.toList)
 
+  /**
+   * Increment a BaseN-encoded string
+   *
+   * @param s
+   *   BaseN-encoded string
+   * @return
+   *   BaseN-encoded string
+   */
+  def inc(s: String): String =
+    val x = decode(s)
+    encode(x + 1L)
+
 /**
  * Base 26
  */
