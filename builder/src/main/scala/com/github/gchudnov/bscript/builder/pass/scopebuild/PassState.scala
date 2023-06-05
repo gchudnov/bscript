@@ -13,12 +13,15 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 
 /**
-  * Pass State
-  *
-  * @param cursor
-  * @param scopeSymbols
-  * @param scopeAsts
-  */
+ * Pass State
+ *
+ * @param cursor
+ *   forest cursor, icnluding the current scope
+ * @param scopeSymbols
+ *   scope symbols
+ * @param scopeAsts
+ *   scope ASTs
+ */
 private[scopebuild] final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
   def push(): PassState =
@@ -51,7 +54,7 @@ object PassState:
     PassState(
       cursor,
       scopeSymbols,
-      scopeAsts
+      scopeAsts,
     )
 
   def from(s: InState): PassState =
@@ -62,5 +65,5 @@ object PassState:
       ast = ast,
       forest = s.cursor.forest,
       scopeSymbols = s.scopeSymbols,
-      scopeAsts = s.scopeAsts
+      scopeAsts = s.scopeAsts,
     )

@@ -24,4 +24,4 @@ sealed trait ConstConv:
       case StrVal(v)      => Cell.Str(v)
       case VoidVal        => Cell.Void
 
-object ConstConv extends ConstConv
+private[interpret] object ConstConv extends ConstConv

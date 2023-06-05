@@ -19,6 +19,15 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
     members.isEmpty
 
   /**
+   * Checks if the memory area is not empty
+   *
+   * @return
+   *   true if the memory area is not empty, false otherwise
+   */
+  def nonEmpty: Boolean =
+    !isEmpty
+
+  /**
    * Get a Cell by its id
    *
    * If the cell is not found in the current memory area, it will be searched in the parent one.

@@ -2,6 +2,10 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.TestSpec
 
+/**
+  * Forest Cursor Specification
+  * 
+  */
 final class ForestCursorSpec extends TestSpec:
 
   final case class Node(name: String)

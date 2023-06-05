@@ -25,7 +25,7 @@ final case class Block(exprs: List[Expr]) extends Expr
 
 object Block:
 
-  val empty: Block =
+  lazy val empty: Block =
     new Block(exprs = List.empty[Expr])
 
   def of(exprs: Expr*): Block =
