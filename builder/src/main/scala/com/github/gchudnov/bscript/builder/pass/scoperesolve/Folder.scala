@@ -15,9 +15,15 @@ private[builder] final class Folder() extends AstFolder[PassState]:
 
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match
-      case x: Access =>
-        // foldOverAST(a, x)
-        ???
+      // case x: Access =>
+      //   // foldOverAST(a, x)
+      //   ???
+
+      case x @ VarDecl(name, vType, expr) =>
+        foldOverAST(s.resolveVarDecl(name, vType, x), x)
+
+
+
       // case x: Assign =>
       //   foldOverAST(a, x)
       case x: Block =>
@@ -42,8 +48,6 @@ private[builder] final class Folder() extends AstFolder[PassState]:
       //   foldOverAST(a.define(SStruct(name)).push(), x).pop()
       // case x @ Var(sym) =>
       //   foldOverAST(a, x)
-      // case x @ VarDecl(name, vType, expr) =>
-      //   foldOverAST(s.resolveVarDecl(name, vType, x), x)
       // case x @ Vec(_, elementType) =>
       //   foldOverAST(a, x)
 

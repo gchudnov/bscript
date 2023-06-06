@@ -23,7 +23,7 @@ sealed trait Builder:
     for
       buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
       buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast))
+      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.scopeSymbols, buildOutState.scopeAsts, buildOutState.ast))
       resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
       typeCheckStateIn  <- nonFatalCatch.either(TypeCheckInState.from(resolveOutState.ast))
       typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))

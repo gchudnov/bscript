@@ -41,13 +41,33 @@ final class TypeCheckPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            ()
+            () // TODO: find what to test
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)
       }
     }
 
+    "var is defined" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "put it in a scope" in {
+        val t = Examples.ex1
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            () // TODO: find what to test
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+    }
   }
 
   /**
@@ -65,7 +85,7 @@ final class TypeCheckPassSpec extends TestSpec:
     for
       buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
       buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast))
+      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.scopeSymbols, buildOutState.scopeAsts, buildOutState.ast))
       resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
       typeCheckStateIn  <- nonFatalCatch.either(InState.from(resolveOutState.ast))
       typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))

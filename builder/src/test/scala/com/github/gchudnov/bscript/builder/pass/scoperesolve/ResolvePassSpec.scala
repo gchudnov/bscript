@@ -40,7 +40,7 @@ final class ResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            ()
+            () // TODO: add the assertion
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)
@@ -57,6 +57,8 @@ final class ResolvePassSpec extends TestSpec:
        */
       "resolve scopes" in {
         val t = Examples.ex1
+
+        // TODO: make the test pass
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -1102,7 +1104,7 @@ final class ResolvePassSpec extends TestSpec:
     for
       buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
       buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast))
+      resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.scopeSymbols, buildOutState.scopeAsts, buildOutState.ast))
       resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
     yield resolveOutState
 

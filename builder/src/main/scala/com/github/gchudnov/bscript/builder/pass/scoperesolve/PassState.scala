@@ -15,15 +15,38 @@ import com.github.gchudnov.bscript.lang.util.Casting
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
-
+import com.github.gchudnov.bscript.builder.BuilderException
 
 private[scoperesolve] final case class PassState(
   // forest: Forest[Scope],
-  // scopeSymbols: ScopeSymbols,
-  // scopeAsts: ScopeAsts,
+  scopeSymbols: ScopeSymbols,
+  scopeAsts: ScopeAsts,
   // varTypes: VarTypes
 ):
   import Casting.*
+
+  /**
+   * Resolve variable declaration:
+   *   - resolve the name
+   *   - resolve the type
+   *
+   * @param name
+   *   variable name to resolve IN the scope
+   * @param vType
+   *   variable type to resolve IN & UP the scope
+   * @param ast
+   *   AST to resolve in
+   * @return
+   *   state with resolved variable and type
+   */
+  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
+    for {
+      scope <- tryScopeFor(ast)
+      resolvedName <- tryResolveIn(name, scope)
+    } yield ()
+    ???
+
+    // TODO: finish the implementation ^^^
 
   // def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
   //   // val (sVar, sType) = (for
@@ -37,14 +60,48 @@ private[scoperesolve] final case class PassState(
   //   // new BasicScopeResolver(forest, scopeSymbols, scopeAsts, varTypes.decl(sVar, sType))
   //   ???
 
-  // /**
-  //  * Get scope for the given AST
-  //  *
-  //  * @param ast
-  //  * @return
-  //  */
-  // private[scoperesolve] def scopeFor(ast: AST): Option[Scope] =
-  //   scopeAsts.scope(ast)
+  /**
+   * Get scope for the given AST
+   *
+   * @param ast
+   * @return
+   */
+  private[scoperesolve] def scopeFor(ast: AST): Option[Scope] =
+    scopeAsts.scope(ast)
+
+  /**
+   * Get scope for the given AST
+   *
+   * @param ast
+   *   AST to resolve in
+   * @return
+   *   resolved scope
+   */
+  private[scoperesolve] def tryScopeFor(ast: AST): Either[Throwable, Scope] =
+    scopeFor(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
+
+  /**
+   * Resolve the reference to the symbol in the given scope only.
+   *
+   * @param sym
+   *   symbol reference
+   * @return
+   *   resolved symbol
+   */
+  private[scoperesolve] def resolveIn(name: String, in: Scope): Option[Symbol] =
+    scopeSymbols
+      .symbols(in)
+      .find(_.name == name)
+
+  /**
+    * Resolve the reference to the symbol in the given scope only.
+    *
+    * @param name symbol reference
+    * @param in scope to resolve in
+    * @return resolved symbol
+    */
+  private[scoperesolve] def tryResolveIn(name: String, in: Scope): Either[Throwable, Symbol] =
+    resolveIn(name, in).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved in scope '${in}'"))
 
   // /**
   //  * Resolve the reference to a symbol, going up the scope hierarchy.
@@ -60,26 +117,13 @@ private[scoperesolve] final case class PassState(
   //     .find(_.name == name)
   //     .orElse(forest.parentOf(start).flatMap(parent => resolveUp(name, parent)))
 
-  // /**
-  //  * Resolve the reference to the symbol in the given scope only.
-  //  *
-  //  * @param sym
-  //  *   symbol reference
-  //  * @return
-  //  *   resolved symbol
-  //  */
-  // private[scoperesolve] def resolveIn(name: String, in: Scope): Option[Symbol] =
-  //   scopeSymbols
-  //     .symbols(in)
-  //     .find(_.name == name)
-
 object PassState:
 
-  lazy val empty: PassState =
-    PassState()
-
   def from(s: InState): PassState =
-    empty
+    PassState(
+      scopeSymbols = s.scopeSymbols,
+      scopeAsts = s.scopeAsts,
+    )
 
   def into(s: PassState, ast: AST): OutState =
     OutState(
