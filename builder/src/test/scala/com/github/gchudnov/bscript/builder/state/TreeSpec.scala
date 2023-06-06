@@ -275,13 +275,13 @@ final class TreeSpec extends TestSpec:
 
     "same name of the node" should {
 
-      // TODO: do we want to allow OR add an assert to notify of duplicates and avoid swallowing them?
-
       /**
+       * It is allowed to have the same name if the node is not the same.
+       * 
        * {{{
-       *        b0                              b0
-       *       /  \                             |
-       *     b1'  b1''  <-- false, it will be:  b1
+       *        b0
+       *       /  \ 
+       *     b1'  b1'' 
        * }}}
        */
       "is a duplicate and not allowed" in {
@@ -297,7 +297,7 @@ final class TreeSpec extends TestSpec:
           .link(b1, b0)
           .link(b2, b0)
 
-        t1.vertexSize mustBe (2)
+        t1.vertexSize mustBe (3)
         t1.contains(b0) mustBe(true)
         t1.contains(b1) mustBe(true)
         t1.contains(b2) mustBe(true)

@@ -627,11 +627,14 @@ final class BuildPassSpec extends TestSpec:
       "initialize with an anonymous struct" in {
         val t = Examples.ex18
 
+        // TODO: failing
+
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
             outState.symbolsByName("a").size mustBe (1)
           case Left(t) => 
+            println(t)
             fail("Should be 'right", t)
       }
     }
