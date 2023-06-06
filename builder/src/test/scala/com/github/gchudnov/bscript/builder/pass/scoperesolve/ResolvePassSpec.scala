@@ -1104,7 +1104,7 @@ final class ResolvePassSpec extends TestSpec:
     for
       buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
       buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.scopeSymbols, buildOutState.scopeAsts, buildOutState.ast))
+      resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
       resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
     yield resolveOutState
 

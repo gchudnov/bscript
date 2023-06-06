@@ -85,7 +85,7 @@ final class TypeCheckPassSpec extends TestSpec:
     for
       buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
       buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.scopeSymbols, buildOutState.scopeAsts, buildOutState.ast))
+      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
       resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
       typeCheckStateIn  <- nonFatalCatch.either(InState.from(resolveOutState.ast))
       typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))

@@ -18,7 +18,7 @@ import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 import com.github.gchudnov.bscript.builder.BuilderException
 
 private[scoperesolve] final case class PassState(
-  // forest: Forest[Scope],
+  scopeTree: Tree[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts,
   // varTypes: VarTypes
@@ -40,10 +40,11 @@ private[scoperesolve] final case class PassState(
    *   state with resolved variable and type
    */
   def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
-    for {
-      scope <- tryScopeFor(ast)
+    for
+      scope        <- tryScopeFor(ast)
       resolvedName <- tryResolveIn(name, scope)
-    } yield ()
+    // TODO: resolve type
+    yield ()
     ???
 
     // TODO: finish the implementation ^^^
@@ -94,33 +95,53 @@ private[scoperesolve] final case class PassState(
       .find(_.name == name)
 
   /**
-    * Resolve the reference to the symbol in the given scope only.
-    *
-    * @param name symbol reference
-    * @param in scope to resolve in
-    * @return resolved symbol
-    */
+   * Resolve the reference to the symbol in the given scope only.
+   *
+   * @param name
+   *   symbol reference
+   * @param in
+   *   scope to resolve in
+   * @return
+   *   resolved symbol
+   */
   private[scoperesolve] def tryResolveIn(name: String, in: Scope): Either[Throwable, Symbol] =
     resolveIn(name, in).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved in scope '${in}'"))
 
-  // /**
-  //  * Resolve the reference to a symbol, going up the scope hierarchy.
-  //  *
-  //  * @param sym
-  //  *   symbol reference
-  //  * @return
-  //  *   resolved symbol
-  //  */
-  // private[scoperesolve] def resolveUp(name: String, start: Scope): Option[Symbol] =
-  //   scopeSymbols
-  //     .symbols(start)
-  //     .find(_.name == name)
-  //     .orElse(forest.parentOf(start).flatMap(parent => resolveUp(name, parent)))
+  /**
+   * Resolve the reference to a symbol, going up the scope hierarchy.
+   *
+   * @param sym
+   *   symbol reference
+   * @return
+   *   resolved symbol
+   */
+  private[scoperesolve] def resolveUp(name: String, start: Scope): Option[Symbol] =
+    scopeSymbols
+      .symbols(start)
+      .find(_.name == name)
+      .orElse(scopeTree.parentOf(start).flatMap(parent => resolveUp(name, parent)))
 
+  /**
+   * Resolve the reference to a symbol, going up the scope hierarchy.
+   *
+   * @param name
+   *   symbol reference
+   * @param start
+   *   scope to start from
+   * @return
+   *   resolved symbol
+   */
+  private[scoperesolve] def tryResolveUp(name: String, start: Scope): Either[Throwable, Symbol] =
+    resolveUp(name, start).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved up in scope '${start}'"))
+
+
+
+    
 object PassState:
 
   def from(s: InState): PassState =
     PassState(
+      scopeTree = s.scopeTree,
       scopeSymbols = s.scopeSymbols,
       scopeAsts = s.scopeAsts,
     )
