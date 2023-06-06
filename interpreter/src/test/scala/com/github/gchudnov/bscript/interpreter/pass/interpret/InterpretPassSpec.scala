@@ -108,10 +108,34 @@ final class InterpretPassSpec extends TestSpec:
             println(t)
             fail("Should be 'right", t)
       }
+    }
 
+    "declaration" should {
+
+      /**
+       * Variable Declaration
+       *
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "interpret x = 0" in {
+        val t = Examples.ex1
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            outState.retValue mustBe (Cell.Void)
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
     }
 
   }
+
+  // TODO: add a function that converts a type: int -> long
 
   private def eval(ast0: AST): Either[Throwable, OutState] =
     val interpretPass = new PassImpl()

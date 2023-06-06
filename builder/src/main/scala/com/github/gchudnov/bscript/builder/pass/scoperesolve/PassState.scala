@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.builder.state.ScopeRef
-import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.builder.state.Tree
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.state.VarTypes

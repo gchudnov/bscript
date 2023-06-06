@@ -5,8 +5,8 @@ import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
-import com.github.gchudnov.bscript.builder.state.Forest
-import com.github.gchudnov.bscript.builder.state.ForestCursor
+import com.github.gchudnov.bscript.builder.state.Tree
+import com.github.gchudnov.bscript.builder.state.TreeCursor
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.ast.AST
@@ -22,23 +22,23 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
  * @param scopeAsts
  *   scope ASTs
  */
-private[scopebuild] final case class PassState(cursor: ForestCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
+private[scopebuild] final case class PassState(scopeCursor: TreeCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
   def push(): PassState =
-    this.copy(cursor = cursor.push())
+    this.copy(scopeCursor = scopeCursor.push())
 
   def pop(): PassState =
-    this.copy(cursor = cursor.pop())
+    this.copy(scopeCursor = scopeCursor.back())
 
   def define(symbol: Symbol): PassState =
-    cursor.current match
+    scopeCursor.at match
       case Some(scope) =>
         this.copy(scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol))
       case None =>
         throw new BuilderException(s"Cannot define '${symbol}' without any scope. Invoke .push() to create a scope first.")
 
   def bind(ast: AST): PassState =
-    cursor.current match
+    scopeCursor.at match
       case Some(scope) =>
         this.copy(scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
       case None =>
@@ -47,7 +47,7 @@ private[scopebuild] final case class PassState(cursor: ForestCursor[Scope], scop
 object PassState:
 
   lazy val empty: PassState =
-    val cursor       = ForestCursor.empty[Scope](it => ScopeRef(it))
+    val cursor       = TreeCursor.empty[Scope](it => ScopeRef(it))
     val scopeSymbols = ScopeSymbols.empty
     val scopeAsts    = ScopeAsts.empty
 
@@ -63,7 +63,7 @@ object PassState:
   def into(s: PassState, ast: AST): OutState =
     OutState(
       ast = ast,
-      forest = s.cursor.forest,
+      scopeTree = s.scopeCursor.tree,
       scopeSymbols = s.scopeSymbols,
       scopeAsts = s.scopeAsts,
     )

@@ -1,12 +1,13 @@
 package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.TestSpec
+import com.github.gchudnov.bscript.builder.state.Tree
 
-final class ForestSpec extends TestSpec:
+final class TreeSpec extends TestSpec:
 
   private final case class Node(name: String)
 
-  "ForestSpec" when {
+  "TreeSpec" when {
 
     /**
      * {{{
@@ -14,12 +15,10 @@ final class ForestSpec extends TestSpec:
      * }}}
      */
     "empty" should {
-      "construct an empty forest" in {
-        val t0 = Forest.empty[Node]
+      "construct an empty tree" in {
+        val t0 = Tree.empty[Node]
 
-        t0.size mustBe (0)
-        t0.vertices.size mustBe (0)
-        t0.edges.size mustBe (0)
+        t0.vertexSize mustBe (0)
       }
     }
 
@@ -29,58 +28,74 @@ final class ForestSpec extends TestSpec:
      * }}}
      */
     "a new node is added" should {
-      "be located in the forest" in {
+      "be located in the tree" in {
         val b0 = Node("b0")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
 
-        t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(b0)
-        t1.edges.size mustBe (0)
+        t1.vertexSize mustBe (1)
+        t1.contains(b0) mustBe(true)
       }
     }
 
     "a new node added multiple times" should {
+
+      /**
+       * {{{
+       *      b0
+       * }}}
+       */
       "results in one node" in {
         val b0 = Node("b0")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b0)
 
-        t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(b0)
-        t1.edges.size mustBe (0)
+        t1.vertexSize mustBe (1)
+        t1.contains(b0) mustBe(true)
       }
 
+      /**
+       * {{{
+       *      b0
+       *     /  \
+       *    b1  b2
+       * }}}
+       */
       "results in the same tree" in {
         val b0 = Node("b0")
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b0)
 
-        t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(b0)
-        t1.edges.size mustBe (0)
+        t1.vertexSize mustBe (1)
+        t1.contains(b0) mustBe(true)
 
         val t2 = t1
           .add(b1)
           .add(b2)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
+          .link(b1, b0)
+          .link(b2, b0)
+          .link(b1, b0)
+          .link(b2, b0)
 
-        t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(b0, b1, b2)
-        t2.edges.size mustBe (2)
+        t2.vertexSize mustBe (3)
+
+        t2.contains(b0) mustBe(true)
+        t2.contains(b1) mustBe(true)
+        t2.contains(b2) mustBe(true)
+
+        t2.parentOf(b0) mustBe (None)
+        t2.parentOf(b1) mustBe (Some(b0))
+        t2.parentOf(b2) mustBe (Some(b0))
       }
     }
 
@@ -97,17 +112,24 @@ final class ForestSpec extends TestSpec:
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = Forest
+        val t1 = 
+          Tree
           .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
+          .link(b1, b0)
+          .link(b2, b0)
 
-        t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(b0, b1, b2)
-        t1.edges.size mustBe (2)
+        t1.vertexSize mustBe (3)
+
+        t1.contains(b0) mustBe(true)
+        t1.contains(b1) mustBe(true)
+        t1.contains(b2) mustBe(true)
+
+        t1.parentOf(b0) mustBe (None)
+        t1.parentOf(b1) mustBe (Some(b0))
+        t1.parentOf(b2) mustBe (Some(b0))
       }
     }
 
@@ -127,33 +149,27 @@ final class ForestSpec extends TestSpec:
         val b2 = Node("b2")
         val b3 = Node("b3")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
           .add(b3)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
-          .linkParent(b3, b2)
+          .link(b1, b0)
+          .link(b2, b0)
+          .link(b3, b2)
 
-        t1.vertices.size mustBe (4)
-        t1.vertices must contain allElementsOf List(b0, b1, b2, b3)
-        t1.edges.size mustBe (3)
+        t1.vertexSize mustBe (4)
 
-        val p1 = t1.parentOf(b3)
-        p1 mustBe (Some(b2))
+        t1.contains(b0) mustBe(true)
+        t1.contains(b1) mustBe(true)
+        t1.contains(b2) mustBe(true)
+        t1.contains(b3) mustBe(true)
 
-        val p2 = t1.parentOf(b2)
-        p2 mustBe (Some(b0))
-
-        val p3 = t1.parentOf(b1)
-        p3 mustBe (Some(b0))
-
-        p2 mustBe (p3)
-
-        val p4 = t1.parentOf(b0)
-        p4 mustBe (None)
+        t1.parentOf(b0) mustBe (None)
+        t1.parentOf(b1) mustBe (Some(b0))
+        t1.parentOf(b2) mustBe (Some(b0))
+        t1.parentOf(b3) mustBe (Some(b2))
       }
     }
 
@@ -166,31 +182,31 @@ final class ForestSpec extends TestSpec:
      *                     b1
      * }}}
      */
-    "linkParent" should {
+    "link" should {
       "allow to relink" in {
         val b0 = Node("b0")
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
+          .link(b1, b0)
+          .link(b2, b0)
 
-        t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(b0, b1, b2)
-        t1.edges.size mustBe (2)
+        t1.vertexSize mustBe (3)
+
+        t1.parentOf(b0) mustBe (None)
         t1.parentOf(b1) mustBe (Some(b0))
+        t1.parentOf(b2) mustBe (Some(b0))
 
-        val t2 = t1.linkParent(b1, b2)
+        val t2 = t1.link(b1, b2)
 
-        t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(b0, b1, b2)
-        t2.edges.size mustBe (2)
-        t2.parentOf(b1) mustBe (Some(b2))
+        t2.parentOf(b0) mustBe (None)
+        t2.parentOf(b1) mustBe (Some(b0))
+        t2.parentOf(b2) mustBe (Some(b1))
       }
     }
 
@@ -209,25 +225,28 @@ final class ForestSpec extends TestSpec:
         val b2 = Node("b2")
         val b3 = Node("b3")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
+          .link(b1, b0)
+          .link(b2, b0)
 
-        t1.vertices.size mustBe (3)
-        t1.vertices must contain allElementsOf List(b0, b1, b2)
-        t1.edges.size mustBe (2)
+        t1.vertexSize mustBe (3)
+
+        t1.parentOf(b0) mustBe (None)
+        t1.parentOf(b1) mustBe (Some(b0))
+        t1.parentOf(b2) mustBe (Some(b0))
 
         val t2 = t1
-          .add(b3)
+          .add(b3) // NOTE: this add is optional
           .replace(b1, b3)
 
-        t2.vertices.size mustBe (3)
-        t2.vertices must contain allElementsOf List(b0, b3, b2)
-        t2.edges.size mustBe (2)
+        t1.parentOf(b0) mustBe (None)
+        t1.parentOf(b1) mustBe (None)
+        t1.parentOf(b2) mustBe (Some(b0))
+        t1.parentOf(b3) mustBe (Some(b0))
       }
 
       /**
@@ -239,23 +258,24 @@ final class ForestSpec extends TestSpec:
         val b0 = Node("b0")
         val b1 = Node("b1")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
 
-        t1.vertices.size mustBe (1)
-        t1.vertices must contain allElementsOf List(b0)
-        t1.edges.size mustBe (0)
+        t1.vertexSize mustBe (1)
+        t1.contains(b0) mustBe(true)
 
         val t2 = t1.replace(b0, b1)
 
-        t2.vertices.size mustBe (1)
-        t2.vertices must contain allElementsOf List(b1)
-        t2.edges.size mustBe (0)
+        t2.vertexSize mustBe (1)
+        t2.contains(b0) mustBe(false)
+        t2.contains(b1) mustBe(true)
       }
     }
 
     "same name of the node" should {
+
+      // TODO: do we want to allow OR add an assert to notify of duplicates and avoid swallowing them?
 
       /**
        * {{{
@@ -269,17 +289,18 @@ final class ForestSpec extends TestSpec:
         val b1 = Node("b1") // (1) |
         val b2 = Node("b1") // (2) |
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
+          .link(b1, b0)
+          .link(b2, b0)
 
-        t1.vertices.size mustBe (2)
-        t1.vertices must contain allElementsOf List(b0, b1)
-        t1.edges.size mustBe (1)
+        t1.vertexSize mustBe (2)
+        t1.contains(b0) mustBe(true)
+        t1.contains(b1) mustBe(true)
+        t1.contains(b2) mustBe(true)
       }
     }
 
@@ -300,15 +321,15 @@ final class ForestSpec extends TestSpec:
         val b2 = Node("b2")
         val b3 = Node("b3")
 
-        val t1 = Forest
+        val t1 = Tree
           .empty[Node]
           .add(b0)
           .add(b1)
           .add(b2)
           .add(b3)
-          .linkParent(b1, b0)
-          .linkParent(b2, b0)
-          .linkParent(b3, b2)
+          .link(b1, b0)
+          .link(b2, b0)
+          .link(b3, b2)
 
         val expected = List(b3, b2, b0)
         val actual   = t1.path(b3)

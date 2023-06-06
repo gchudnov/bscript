@@ -38,7 +38,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -59,7 +59,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) =>
@@ -84,7 +84,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 3 // root + main(args) + block inside
+            outState.scopeSize mustBe 3 // root + main(args) + block inside
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) =>
@@ -106,7 +106,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 3 // root + main(args) + block inside
+            outState.scopeSize mustBe 3 // root + main(args) + block inside
             outState.symbolsByName("x").size mustBe (2)
 
           case Left(t) =>
@@ -133,7 +133,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 5
+            outState.scopeSize mustBe 5
             outState.symbolsByName("offsetDateTime").size mustBe (1)
             outState.symbolsByName("fieldOfDateTime").size mustBe (1)
 
@@ -403,7 +403,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
             outState.symbolsByName("i").size mustBe (1)
             outState.symbolsByName("j").size mustBe (1)
             outState.symbolsByName("k").size mustBe (1)
@@ -426,7 +426,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
             outState.symbolsByName("a").size mustBe (1)
           case Left(t) =>
             fail("Should be 'right", t)
@@ -446,7 +446,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
             outState.symbolsByName("a").size mustBe (1)
           case Left(t) => 
             fail("Should be 'right", t)
@@ -466,7 +466,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) =>
@@ -487,7 +487,7 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.forestSize mustBe 1
+            outState.scopeSize mustBe 1
             outState.symbolsByName("x").size mustBe (1)
 
           case Left(t) =>

@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
-import com.github.gchudnov.bscript.builder.state.Forest
+import com.github.gchudnov.bscript.builder.state.Tree
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.builder.util.Ptr
@@ -50,7 +50,7 @@ final class PassStateSpec extends TestSpec:
 
         val expected = OutState(
           ast = ast0,
-          forest = Forest(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
+          scopeTree = Tree.from(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
           scopeSymbols = ScopeSymbols.empty,
           scopeAsts = ScopeAsts.empty
         )
@@ -65,7 +65,7 @@ final class PassStateSpec extends TestSpec:
 
         val expected = OutState(
           ast = ast0,
-          forest = Forest(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
+          scopeTree = Tree.from(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
           scopeSymbols = ScopeSymbols(Map(ScopeRef("a") -> Set(Ptr(sym))), Map(Ptr(sym) -> ScopeRef("a"))),
           scopeAsts = ScopeAsts.empty
         )
