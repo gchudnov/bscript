@@ -12,13 +12,11 @@ private[interpret] final class Folder() extends AstFolder[PassState] {
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match
 
-      case Block(exprs) =>
-        exprs.foldLeft(s.pushArea())((acc, expr) => {
-          foldOverAST(acc, expr)
-        }).popArea()
+      case x : Block =>
+        foldOverAST(s.pushArea(), x).popArea()
 
-      case ConstLit(const) =>
-        s.copy(retValue = ConstConv.toCell(const))
+      case x @ ConstLit(const) =>
+        foldOverAST(s.withRetValue(ConstConv.toCell(const)), x)
 }
 
 private[interpret] object Folder {

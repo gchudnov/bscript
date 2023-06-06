@@ -23,7 +23,7 @@ import scala.util.control.Exception.*
 // import java.time.LocalDate
 // import java.time.OffsetDateTime
 
-final class InterpretPassSpec extends TestSpec {
+final class InterpretPassSpec extends TestSpec:
 
   "InterpretPass" when {
 
@@ -53,13 +53,12 @@ final class InterpretPassSpec extends TestSpec {
   private def eval(ast0: AST): Either[Throwable, OutState] =
     val interpretPass = new PassImpl()
 
-    for {
-      b <- Builder.build(ast0)
+    for
+      b                 <- Builder.build(ast0)
       (ast1, buildState) = b
-      in = InState.from(ast1)
-      out <- nonFatalCatch.either(interpretPass.run(in))
-    } yield out
-}
+      in                 = InState.from(ast1)
+      out               <- nonFatalCatch.either(interpretPass.run(in))
+    yield out
 
 //   private def eval(ast0: AST): Either[Throwable, InterpretState] =
 //     val types         = Types.make(typeNames)
@@ -79,9 +78,6 @@ final class InterpretPassSpec extends TestSpec {
 //       })
 
 // object InterpretVisitorSpec {}
-
-
-
 
 // final class InterpretVisitorSpec extends TestSpec:
 

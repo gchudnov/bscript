@@ -35,6 +35,17 @@ private[interpret] final case class PassState(
   def popArea(): PassState =
     this.copy(area = area.pop().get)
 
+  /**
+   * Sets the return value.
+   *
+   * @param value
+   *   return value
+   * @return
+   *   a new state with the return value
+   */
+  def withRetValue(value: Cell): PassState =
+    this.copy(retValue = value)
+
 object PassState:
 
   def from(in: InState): PassState =
