@@ -123,6 +123,8 @@ final class InterpretPassSpec extends TestSpec:
       "interpret x = 0" in {
         val t = Examples.ex1
 
+        // TODO: allow it: VarDecl(x,TypeId(i32),ConstLit(IntVal(0)))
+
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>

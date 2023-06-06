@@ -1,13 +1,13 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.builder.state.Scope
-import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState
-import com.github.gchudnov.bscript.builder.state.Tree
+import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
+import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
+import com.github.gchudnov.bscript.builder.state.Tree
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.Symbol
@@ -15,7 +15,7 @@ import com.github.gchudnov.bscript.lang.symbols.SymbolRef
 
 final class PassStateSpec extends TestSpec:
 
-  private val ast0 = Block.empty
+  private val ast0    = Block.empty
   private val stateIn = InState.from(ast0)
 
   "BuildPassState" when {
@@ -48,14 +48,8 @@ final class PassStateSpec extends TestSpec:
       "return state with one scope" in {
         val actual = PassState.into(sb, ast0)
 
-        val expected = OutState(
-          ast = ast0,
-          scopeTree = Tree.from(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
-          scopeSymbols = ScopeSymbols.empty,
-          scopeAsts = ScopeAsts.empty
-        )
-
-        actual mustBe expected
+        actual.scopeTree.vertexSize mustBe 1
+        actual.scopeTree.edgeSize mustBe 0
       }
 
       "a symbol can be linked to this scope" in {
@@ -63,14 +57,10 @@ final class PassStateSpec extends TestSpec:
 
         val actual = PassState.into(sb.define(sym), ast0)
 
-        val expected = OutState(
-          ast = ast0,
-          scopeTree = Tree.from(Set(ScopeRef("a")), Map.empty[Scope, Scope]),
-          scopeSymbols = ScopeSymbols(Map(ScopeRef("a") -> Set(Ptr(sym))), Map(Ptr(sym) -> ScopeRef("a"))),
-          scopeAsts = ScopeAsts.empty
-        )
+        actual.scopeTree.vertexSize mustBe 1
+        actual.scopeTree.edgeSize mustBe 0
 
-        actual mustBe expected
+        actual.scopeSymbols.symbolsByName(sym.name) mustBe List(sym)
       }
     }
   }

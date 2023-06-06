@@ -17,6 +17,11 @@ sealed trait Tree[A]:
   def vertexSize: Int
 
   /**
+   * Get the number of edges in the tree
+   */
+  def edgeSize: Int
+
+  /**
    * Checks whether the tree is empty
    *
    * @return
@@ -105,6 +110,15 @@ final case class BasicTree[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A]
    */
   override def vertexSize: Int =
     vertices.size
+
+  /**
+   * Get the number of edges in the tree
+   *
+   * @return
+   *   number of edges
+   */
+  override def edgeSize: Int =
+    edges.size
 
   /**
    * Checks whether the tree is empty
