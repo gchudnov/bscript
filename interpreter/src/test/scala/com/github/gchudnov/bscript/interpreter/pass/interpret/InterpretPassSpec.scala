@@ -46,6 +46,69 @@ final class InterpretPassSpec extends TestSpec:
             println(t)
             fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   2
+       *   3
+       * }}}
+       */
+      "interpret several integers" in {
+        val t = Examples.ex22
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            outState.retValue mustBe (Cell.I32(3))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   2
+       *   {
+       *     3
+       *   }
+       * }}}
+       */
+      "interpret several integers when block is inside a block" in {
+        val t = Examples.ex23
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            outState.retValue mustBe (Cell.I32(3))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   2
+       *   {
+       *     3
+       *   }
+       *   4
+       * }}}
+       */
+      "interpret several integers when the last value is outside of a block" in {
+        val t = Examples.ex24
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(outState) =>
+            outState.retValue mustBe (Cell.I32(4))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
     }
 
   }

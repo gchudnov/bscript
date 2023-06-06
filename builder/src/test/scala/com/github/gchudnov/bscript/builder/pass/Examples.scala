@@ -29,7 +29,7 @@ object Examples:
    */
   val ex1: Example =
     val t = Block.of(
-      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
     )
     Example("ex1", t)
 
@@ -51,13 +51,13 @@ object Examples:
         MethodType(
           List.empty[TypeDecl],
           List.empty[VarDecl],
-          TypeId(TypeName.i32)
+          TypeId(TypeName.i32),
         ),
         Block.of(
           VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-          Assign(Id("x"), ConstLit(IntVal(3)))
-        )
-      )
+          Assign(Id("x"), ConstLit(IntVal(3))),
+        ),
+      ),
     )
     Example("ex2", t)
 
@@ -79,13 +79,13 @@ object Examples:
         MethodType(
           List.empty[TypeDecl],
           List(VarDecl("x", TypeId(TypeName.i32))),
-          TypeId(TypeName.i32)
+          TypeId(TypeName.i32),
         ),
         Block.of(
           VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-          Assign(Id("x"), ConstLit(IntVal(3)))
-        )
-      )
+          Assign(Id("x"), ConstLit(IntVal(3))),
+        ),
+      ),
     )
     Example("ex3", t)
 
@@ -114,13 +114,13 @@ object Examples:
           List(
             VarDecl("value", TypeId(TypeName.datetime)),
             VarDecl("offset", TypeId(TypeName.i32)),
-            VarDecl("unit", TypeId(TypeName.str))
+            VarDecl("unit", TypeId(TypeName.str)),
           ),
-          TypeId(TypeName.datetime)
+          TypeId(TypeName.datetime),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime))
-        )
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.datetime)),
+        ),
       ),
       MethodDecl(
         "fieldOfDateTime",
@@ -128,14 +128,14 @@ object Examples:
           List.empty[TypeDecl],
           List(
             VarDecl("value", TypeId(TypeName.datetime)),
-            VarDecl("unit", TypeId(TypeName.str))
+            VarDecl("unit", TypeId(TypeName.str)),
           ),
-          TypeId(TypeName.i32)
+          TypeId(TypeName.i32),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
-        )
-      )
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32)),
+        ),
+      ),
     )
     Example("ex4", t)
 
@@ -158,15 +158,15 @@ object Examples:
           List.empty[TypeDecl],
           List(
             VarDecl("lhs", TypeId(TypeName.i32)),
-            VarDecl("rhs", TypeId(TypeName.i32))
+            VarDecl("rhs", TypeId(TypeName.i32)),
           ),
-          TypeId(TypeName.i32)
+          TypeId(TypeName.i32),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
-        )
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32)),
+        ),
       ),
-      Call(Id("+"), List(ConstLit(IntVal(2)), ConstLit(IntVal(3))))
+      Call(Id("+"), List(ConstLit(IntVal(2)), ConstLit(IntVal(3)))),
     )
     Example("ex5", t)
 
@@ -189,15 +189,15 @@ object Examples:
           List.empty[TypeDecl],
           List(
             VarDecl("lhs", TypeId(TypeName.f64)),
-            VarDecl("rhs", TypeId(TypeName.i32))
+            VarDecl("rhs", TypeId(TypeName.i32)),
           ),
-          TypeId(TypeName.f64)
+          TypeId(TypeName.f64),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64))
-        )
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.f64)),
+        ),
       ),
-      Call(Id("+"), List(ConstLit(DoubleVal(1.0)), ConstLit(IntVal(3))))
+      Call(Id("+"), List(ConstLit(DoubleVal(1.0)), ConstLit(IntVal(3)))),
     )
     Example("ex6", t)
 
@@ -220,15 +220,15 @@ object Examples:
           List.empty[TypeDecl],
           List(
             VarDecl("lhs", TypeId(TypeName.i32)),
-            VarDecl("rhs", TypeId(TypeName.i32))
+            VarDecl("rhs", TypeId(TypeName.i32)),
           ),
-          TypeId(TypeName.i32)
+          TypeId(TypeName.i32),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32))
-        )
+          Compiled(callback = Compiled.identity, retType = TypeId(TypeName.i32)),
+        ),
       ),
-      Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
+      Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3)))),
     )
     Example("ex7", t)
 
@@ -251,15 +251,15 @@ object Examples:
           List(TypeDecl("T")),
           List(
             VarDecl("lhs", TypeId("T")),
-            VarDecl("rhs", TypeId("T"))
+            VarDecl("rhs", TypeId("T")),
           ),
-          TypeId("T")
+          TypeId("T"),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId("T"))
-        )
+          Compiled(callback = Compiled.identity, retType = TypeId("T")),
+        ),
       ),
-      Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3))))
+      Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3)))),
     )
     Example("ex8", t)
 
@@ -282,15 +282,15 @@ object Examples:
           List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
           List(
             VarDecl("lhs", TypeId("T")),
-            VarDecl("rhs", TypeId("U"))
+            VarDecl("rhs", TypeId("U")),
           ),
-          TypeId("R")
+          TypeId("R"),
         ),
         Block.of(
-          Compiled(callback = Compiled.identity, retType = TypeId("R"))
-        )
+          Compiled(callback = Compiled.identity, retType = TypeId("R")),
+        ),
       ),
-      Call(Id("+"), List(ConstLit(IntVal(4)), ConstLit(IntVal(3))))
+      Call(Id("+"), List(ConstLit(IntVal(4)), ConstLit(IntVal(3)))),
     )
     Example("ex9", t)
 
@@ -310,7 +310,7 @@ object Examples:
     val t = Block.of(
       VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(9))),
       VarDecl("j", TypeId(TypeName.f32), ConstLit(FloatVal(0.0f))),
-      VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), ConstLit(IntVal(2)))))
+      VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), ConstLit(IntVal(2))))),
     )
     Example("ex10", t)
 
@@ -326,7 +326,7 @@ object Examples:
    */
   val ex11: Example =
     val t = Block.of(
-      VarDecl("a", Auto(), CollectionLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
+      VarDecl("a", Auto(), CollectionLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3))))),
     )
     Example("ex11", t)
 
@@ -342,7 +342,7 @@ object Examples:
    */
   val ex12: Example =
     val t = Block.of(
-      VarDecl("a", VecType(TypeId(TypeName.i32)), CollectionLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3)))))
+      VarDecl("a", VecType(TypeId(TypeName.i32)), CollectionLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3))))),
     )
     Example("ex12", t)
 
@@ -358,7 +358,7 @@ object Examples:
    */
   val ex13: Example =
     val t = Block.of(
-      VarDecl("x", Auto(), ConstLit(NullVal))
+      VarDecl("x", Auto(), ConstLit(NullVal)),
     )
     Example("ex13", t)
 
@@ -374,7 +374,7 @@ object Examples:
    */
   val ex14: Example =
     val t = Block.of(
-      VarDecl("x", TypeId("i32"), ConstLit(NullVal))
+      VarDecl("x", TypeId("i32"), ConstLit(NullVal)),
     )
     Example("ex14", t)
 
@@ -399,16 +399,16 @@ object Examples:
           List.empty[TypeDecl],
           List(
             VarDecl("format", TypeId(TypeName.str)),
-            VarDecl("value", Auto())
+            VarDecl("value", Auto()),
           ),
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
-        Block.empty
+        Block.empty,
       ),
       Block.of(
-        VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+        VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       ),
-      Call(Id("printf"), List(ConstLit(StrVal("%d")), Id("z"))) // z is no longer visible; Will be an error in Phase #2
+      Call(Id("printf"), List(ConstLit(StrVal("%d")), Id("z"))), // z is no longer visible; Will be an error in Phase #2
     )
     Example("ex15", t)
 
@@ -438,29 +438,29 @@ object Examples:
         MethodType(
           List.empty[TypeDecl],
           List.empty[VarDecl],
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
         Block.of(
           VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(0))),
           Block.of(
-            VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
+            VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0))),
           ),
           Block.of(
-            VarDecl("j", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-          )
-        )
+            VarDecl("j", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+          ),
+        ),
       ),
       MethodDecl(
         "g",
         MethodType(
           List.empty[TypeDecl],
           List.empty[VarDecl],
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
         Block.of(
-          VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0)))
-        )
-      )
+          VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+        ),
+      ),
     )
     Example("ex16", t)
 
@@ -502,17 +502,17 @@ object Examples:
         MethodType(
           List.empty[TypeDecl],
           List.empty[VarDecl],
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
         Block.of(
           StructDecl("D", StructType(List.empty[TypeDecl], List(VarDecl("i", TypeId(TypeName.i32))))),
           VarDecl("d", TypeId("D")),
           Assign(
             Access(Id("d"), Id("i")),
-            Access(Access(Id("a"), Id("b")), Id("y"))
-          )
-        )
-      )
+            Access(Access(Id("a"), Id("b")), Id("y")),
+          ),
+        ),
+      ),
     )
     Example("ex17", t)
 
@@ -551,13 +551,13 @@ object Examples:
               ConstLit(StrVal("b")),
               CollectionLit(
                 TypeId("B"),
-                List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2))))
-              )
-            )
-          )
-        )
+                List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2)))),
+              ),
+            ),
+          ),
+        ),
       ),
-      Id("a")
+      Id("a"),
     )
     Example("ex18", t)
 
@@ -582,36 +582,36 @@ object Examples:
         MethodType(
           List.empty[TypeDecl],
           List(VarDecl("x", TypeId(TypeName.i32))),
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
         Block.of(
-          VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(2)))
-        )
+          VarDecl("z", TypeId(TypeName.i32), ConstLit(IntVal(2))),
+        ),
       ),
       MethodDecl(
         "f",
         MethodType(
           List.empty[TypeDecl],
           List(VarDecl("x", TypeId(TypeName.i32))),
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
         Block.of(
           VarDecl("y", TypeId(TypeName.i32), ConstLit(IntVal(1))),
-          Call(Id("g"), List(Call(Id("*"), List(ConstLit(IntVal(2)), Id("x")))))
-        )
+          Call(Id("g"), List(Call(Id("*"), List(ConstLit(IntVal(2)), Id("x"))))),
+        ),
       ),
       MethodDecl(
         "main",
         MethodType(
           List.empty[TypeDecl],
           List.empty[VarDecl],
-          TypeId(TypeName.void)
+          TypeId(TypeName.void),
         ),
         Block.of(
-          Call(Id("f"), List(ConstLit(IntVal(3))))
-        )
+          Call(Id("f"), List(ConstLit(IntVal(3)))),
+        ),
       ),
-      Call(Id("main"), List.empty[Expr])
+      Call(Id("main"), List.empty[Expr]),
     )
     Example("ex19", t)
 
@@ -656,6 +656,61 @@ object Examples:
    */
   val ex21: Example =
     val t = Block.of(
-      ConstLit(IntVal(2))
+      ConstLit(IntVal(2)),
     )
     Example("ex21", t)
+
+  /**
+   * Const literal -- Integers in a block
+   * {{{
+   *   // globals
+   *   2
+   *   3
+   * }}}
+   */
+  val ex22: Example =
+    val t = Block.of(
+      ConstLit(IntVal(2)),
+      ConstLit(IntVal(3)),
+    )
+    Example("ex22", t)
+
+  /**
+   * Const literal -- nested block
+   * {{{
+   *   // globals
+   *   2
+   *   {
+   *     3
+   *   }
+   * }}}
+   */
+  val ex23: Example =
+    val t = Block.of(
+      ConstLit(IntVal(2)),
+      Block.of(
+        ConstLit(IntVal(3)),
+      ),
+    )
+    Example("ex23", t)
+
+  /**
+   * Const literal -- last value is not in a block
+   * {{{
+   *   // globals
+   *   2
+   *   {
+   *     3
+   *   }
+   *   4
+   * }}}
+   */
+  val ex24: Example =
+    val t = Block.of(
+      ConstLit(IntVal(2)),
+      Block.of(
+        ConstLit(IntVal(3)),
+      ),
+      ConstLit(IntVal(4)),
+    )
+    Example("ex24", t)
