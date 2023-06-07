@@ -15,12 +15,12 @@ sealed trait ScopeAsts:
   def asts(scope: Scope): List[AST]
 
 /**
- * Scope-Ast Dictionary
+ * A Basic Scope-Ast Dictionary
  *
  * @param keyValues
  * @param valueKey
  */
-final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
+private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
   override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =
     BasicScopeAsts(keyValues = keyValues, valueKey = valueKey)
 
