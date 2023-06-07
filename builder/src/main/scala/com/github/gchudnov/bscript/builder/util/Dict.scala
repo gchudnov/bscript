@@ -15,7 +15,7 @@ abstract class Dict[K, V, D <: Dict[K, V, D]]:
   protected def keyValues: Map[K, Set[V]]
   protected def valueKey: Map[V, K]
 
-  def clone(keyValues: Map[K, Set[V]], valueKey: Map[V, K]): D
+  protected def clone(keyValues: Map[K, Set[V]], valueKey: Map[V, K]): D
 
   protected def addKey(key: K): D =
     clone(keyValues = this.keyValues + (key -> Set.empty[V]), valueKey = valueKey)

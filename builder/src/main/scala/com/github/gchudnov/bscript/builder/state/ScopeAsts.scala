@@ -6,14 +6,23 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 
 /**
-  * Scope-Ast Dictionary
-  *
-  * @param keyValues
-  * @param valueKey
+  * A dictionary of Scope -> AST mappings
   */
-final case class ScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], ScopeAsts]:
-  override def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): ScopeAsts =
-    ScopeAsts(keyValues = keyValues, valueKey = valueKey)
+sealed trait ScopeAsts:
+  def addScope(scope: Scope): ScopeAsts
+  def link(scope: Scope, ast: AST): ScopeAsts
+  def scope(ast: AST): Option[Scope]
+  def asts(scope: Scope): List[AST]
+
+/**
+ * Scope-Ast Dictionary
+ *
+ * @param keyValues
+ * @param valueKey
+ */
+final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
+  override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =
+    BasicScopeAsts(keyValues = keyValues, valueKey = valueKey)
 
   def addScope(scope: Scope): ScopeAsts =
     addKey(scope)
@@ -29,4 +38,4 @@ final case class ScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[P
 
 object ScopeAsts:
   val empty: ScopeAsts =
-    ScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
+    BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])

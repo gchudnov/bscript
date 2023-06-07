@@ -45,6 +45,7 @@ private[scoperesolve] final case class PassState(
       resolvedName <- tryResolveIn(name, scope)
     // TODO: resolve type
     yield ()
+
     ???
 
     // TODO: finish the implementation ^^^
@@ -134,9 +135,15 @@ private[scoperesolve] final case class PassState(
   private[scoperesolve] def tryResolveUp(name: String, start: Scope): Either[Throwable, Symbol] =
     resolveUp(name, start).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved up in scope '${start}'"))
 
+  // TODO: resolve types, implement it; add tests
+
+  // TODO: check `VarTypes(dict: Map[Ptr[SVar], Type])` and how is it being used
+
+  // TODO: add more interfacs to use instead of case clases that open the implementation
+
+  // TODO: state should be interface-based as well?
 
 
-    
 object PassState:
 
   def from(s: InState): PassState =
