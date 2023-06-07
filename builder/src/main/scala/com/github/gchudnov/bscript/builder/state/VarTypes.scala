@@ -13,5 +13,5 @@ final case class VarTypes(dict: Map[Ptr[SVar], Type]):
     VarTypes(dict + (Ptr(s) -> t))
 
 object VarTypes:
-  val empty: VarTypes =
+  lazy val empty: VarTypes =
     VarTypes(Map.empty[Ptr[SVar], Type])

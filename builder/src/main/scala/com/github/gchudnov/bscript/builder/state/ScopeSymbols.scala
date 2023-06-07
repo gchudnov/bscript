@@ -14,7 +14,7 @@ sealed trait ScopeSymbols {
 }
 
 object ScopeSymbols:
-  val empty: ScopeSymbols =
+  lazy val empty: ScopeSymbols =
     BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
 
 /**

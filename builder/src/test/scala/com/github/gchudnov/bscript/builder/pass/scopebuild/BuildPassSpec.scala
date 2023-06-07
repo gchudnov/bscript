@@ -589,19 +589,19 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.scopesBySymbol(SymbolRef("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            outState.scopesBySymbol(SymbolRef("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            outState.scopesBySymbol(SymbolRef("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            outState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            outState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            outState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
 
-            outState.scopesBySymbol(SymbolRef("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            outState.scopesBySymbol(SymbolRef("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
-            outState.scopesBySymbol(SymbolRef("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
+            outState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            outState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
+            outState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
 
-            outState.scopesBySymbol(SymbolRef("A")).map(_.name) must contain theSameElementsAs (List("a"))
-            outState.scopesBySymbol(SymbolRef("B")).map(_.name) must contain theSameElementsAs (List("a"))
-            outState.scopesBySymbol(SymbolRef("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
-            outState.scopesBySymbol(SymbolRef("a")).map(_.name) must contain theSameElementsAs (List("a"))
-            outState.scopesBySymbol(SymbolRef("f")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
+            outState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
+            outState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
 
           case Left(t) =>
             fail("Should be 'right", t)
