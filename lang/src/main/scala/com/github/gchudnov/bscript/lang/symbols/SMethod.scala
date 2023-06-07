@@ -1,3 +1,3 @@
 package com.github.gchudnov.bscript.lang.symbols
 
-final case class SMethod(name: String) extends Symbol
+final case class SMethod(name: String) extends Symbol with Type
