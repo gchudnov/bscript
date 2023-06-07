@@ -6,13 +6,17 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 
 /**
-  * A dictionary of Scope -> AST mappings
-  */
+ * A dictionary of Scope -> AST mappings
+ */
 sealed trait ScopeAsts:
   def addScope(scope: Scope): ScopeAsts
   def link(scope: Scope, ast: AST): ScopeAsts
   def scope(ast: AST): Option[Scope]
   def asts(scope: Scope): List[AST]
+
+object ScopeAsts:
+  val empty: ScopeAsts =
+    BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
 
 /**
  * A Basic Scope-Ast Dictionary
@@ -35,7 +39,3 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
 
   def asts(scope: Scope): List[AST] =
     values(scope).map(_.value)
-
-object ScopeAsts:
-  val empty: ScopeAsts =
-    BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
