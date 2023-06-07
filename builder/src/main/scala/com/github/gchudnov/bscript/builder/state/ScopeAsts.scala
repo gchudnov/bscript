@@ -15,7 +15,7 @@ sealed trait ScopeAsts:
   def asts(scope: Scope): List[AST]
 
 object ScopeAsts:
-  val empty: ScopeAsts =
+  lazy val empty: ScopeAsts =
     BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
 
 /**
