@@ -10,7 +10,7 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  * @param args
  *   type arguments
  */
-final case class AppliedType(t: Type, args: List[Type])
+final case class AppliedType(t: Type, args: List[Type]) extends Type
 
 /*
 Map[Int, String]
