@@ -5,15 +5,27 @@ import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 
+sealed trait ScopeSymbols {
+  def addScope(scope: Scope): ScopeSymbols
+  def link(scope: Scope, sym: Symbol): ScopeSymbols
+  def scope(ast: Symbol): Option[Scope]
+  def symbols(scope: Scope): List[Symbol]
+  def symbolsByName(name: String): List[Symbol]
+}
+
+object ScopeSymbols:
+  val empty: ScopeSymbols =
+    BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
+
 /**
   * Scope-Symbol Dictionary
   *
   * @param keyValues
   * @param valueKey
   */
-final case class ScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]) extends Dict[Scope, Ptr[Symbol], ScopeSymbols]:
-  override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): ScopeSymbols =
-    ScopeSymbols(keyValues = keyValues, valueKey = valueKey)
+private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]) extends Dict[Scope, Ptr[Symbol], BasicScopeSymbols] with ScopeSymbols:
+  override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): BasicScopeSymbols =
+    BasicScopeSymbols(keyValues = keyValues, valueKey = valueKey)
 
   def addScope(scope: Scope): ScopeSymbols =
     addKey(scope)
@@ -29,7 +41,3 @@ final case class ScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey:
 
   def symbolsByName(name: String): List[Symbol] =
     valueKey.keySet.toList.collect { case Ptr[Symbol](sym) if sym.name == name => sym }
-
-object ScopeSymbols:
-  val empty: ScopeSymbols =
-    ScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
