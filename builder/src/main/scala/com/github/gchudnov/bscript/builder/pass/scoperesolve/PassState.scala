@@ -14,6 +14,8 @@ import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.lang.ast.types.TypeId
+import com.github.gchudnov.bscript.lang.symbols.SType
 
 private[scoperesolve] final case class PassState(
   scopeTree: Tree[Scope],
@@ -41,6 +43,7 @@ private[scoperesolve] final case class PassState(
     for
       scope        <- tryScopeFor(ast)
       resolvedName <- tryResolveIn(name, scope)
+      resolvedType <- tryResolveUp(vType, scope)
     // TODO: resolve type
     yield ()
 
@@ -132,6 +135,26 @@ private[scoperesolve] final case class PassState(
    */
   private[scoperesolve] def tryResolveUp(name: String, start: Scope): Either[Throwable, Symbol] =
     resolveUp(name, start).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved up in scope '${start}'"))
+
+  /**
+    * Resolve the reference to a type, going up the scope hierarchy.
+    *
+    * @param vType type reference
+    * @param start scope to start from
+    * @return resolved type
+    */
+  private[scoperesolve] def resolveUp(vType: TypeAST, start: Scope): Option[Type] = {
+    vType match {
+      case TypeId(name) =>
+        SType.parse(name) 
+      case _  =>
+        None
+    }
+  }
+
+  private[scoperesolve] def tryResolveUp(vType: TypeAST, start: Scope): Either[Throwable, Type] =
+    resolveUp(vType, start).toRight(new BuilderException(s"TypeAST '${vType}' cannot be resolved up in scope '${start}'"))
+
 
   // TODO: resolve types, implement it; add tests
 
