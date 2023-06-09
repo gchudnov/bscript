@@ -17,6 +17,11 @@ private[interpret] final class Folder() extends AstFolder[PassState] {
 
       case x @ ConstLit(const) =>
         foldOverAST(s.withRetValue(ConstConv.toCell(const)), x)
+
+      case other =>
+        throw new MatchError(s"Unsupported AST type in Interpret-Folder: ${other}")
+
+
 }
 
 private[interpret] object Folder {

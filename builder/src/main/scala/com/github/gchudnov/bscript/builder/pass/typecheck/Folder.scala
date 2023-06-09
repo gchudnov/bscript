@@ -24,6 +24,10 @@ private[builder] final class Folder() extends AstFolder[PassState]:
       case x @ ConstLit(const) =>
         foldOverAST(s, x)
 
+      case other =>
+        throw new MatchError(s"Unsupported AST type in TypeCheck-Folder: ${other}")
+
+
 private[builder] object Folder:
 
   def make(): Folder =
