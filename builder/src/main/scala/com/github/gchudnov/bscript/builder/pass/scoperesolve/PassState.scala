@@ -21,7 +21,7 @@ private[scoperesolve] final case class PassState(
   scopeTree: Tree[Scope],
   scopeSymbols: ScopeSymbols,
   scopeAsts: ScopeAsts,
-  // varTypes: VarTypes
+  varTypes: VarTypes,
 ):
   import Casting.*
 
@@ -40,14 +40,32 @@ private[scoperesolve] final case class PassState(
    *   state with resolved variable and type
    */
   def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
-    for
+    val errOrState = for
       scope        <- tryScopeFor(ast)
       resolvedName <- tryResolveIn(name, scope)
       resolvedType <- tryResolveUp(vType, scope)
-    // TODO: resolve type
-    yield ()
+      nameSVar     <- resolvedName.asSVar
+      s1            = this.copy(varTypes = varTypes.decl(nameSVar, resolvedType))
+    yield s1
+    errOrState.toTry.get
 
-    ???
+  /**
+   * Resolve type
+   *
+   * @param astType
+   *   type to resolve UP the scope
+   * @param ast
+   *   AST to resolve in
+   * @return
+   *   state with resolved type
+   */
+  def resolveType(astType: TypeAST, ast: AST): PassState =
+    val errOrState = for
+      scope        <- tryScopeFor(astType)
+      resolvedType <- tryResolveUp(astType, scope)
+      s1            = this
+    yield s1
+    errOrState.toTry.get
 
     // TODO: finish the implementation ^^^
 
@@ -137,24 +155,24 @@ private[scoperesolve] final case class PassState(
     resolveUp(name, start).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved up in scope '${start}'"))
 
   /**
-    * Resolve the reference to a type, going up the scope hierarchy.
-    *
-    * @param vType type reference
-    * @param start scope to start from
-    * @return resolved type
-    */
-  private[scoperesolve] def resolveUp(vType: TypeAST, start: Scope): Option[Type] = {
-    vType match {
+   * Resolve the reference to a type, going up the scope hierarchy.
+   *
+   * @param vType
+   *   type reference
+   * @param start
+   *   scope to start from
+   * @return
+   *   resolved type
+   */
+  private[scoperesolve] def resolveUp(vType: TypeAST, start: Scope): Option[Type] =
+    vType match
       case TypeId(name) =>
-        SType.parse(name) 
-      case _  =>
+        SType.parse(name)
+      case _ =>
         None
-    }
-  }
 
   private[scoperesolve] def tryResolveUp(vType: TypeAST, start: Scope): Either[Throwable, Type] =
     resolveUp(vType, start).toRight(new BuilderException(s"TypeAST '${vType}' cannot be resolved up in scope '${start}'"))
-
 
   // TODO: resolve types, implement it; add tests
 
@@ -164,7 +182,6 @@ private[scoperesolve] final case class PassState(
 
   // TODO: state should be interface-based as well?
 
-
 object PassState:
 
   def from(s: InState): PassState =
@@ -172,6 +189,7 @@ object PassState:
       scopeTree = s.scopeTree,
       scopeSymbols = s.scopeSymbols,
       scopeAsts = s.scopeAsts,
+      varTypes = VarTypes.empty,
     )
 
   def into(s: PassState, ast: AST): OutState =

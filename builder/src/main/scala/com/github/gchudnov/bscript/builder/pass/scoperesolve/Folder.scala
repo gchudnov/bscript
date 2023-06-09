@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
@@ -40,6 +41,9 @@ private[builder] final class Folder() extends AstFolder[PassState]:
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
+        foldOverAST(s, x)
+
+      case x @ TypeId(name) =>
         foldOverAST(s, x)
 
       // case x @ MethodDecl(retType, name, _, _) =>

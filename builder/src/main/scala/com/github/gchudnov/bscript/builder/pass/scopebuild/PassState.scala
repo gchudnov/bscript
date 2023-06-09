@@ -28,21 +28,21 @@ private[scopebuild] final case class PassState(scopeCursor: TreeCursor[Scope], s
     this.copy(scopeCursor = scopeCursor.push())
 
   def pop(): PassState =
-    this.copy(scopeCursor = scopeCursor.back())
+    this.copy(scopeCursor = scopeCursor.pop())
 
   def define(symbol: Symbol): PassState =
     scopeCursor.at match
       case Some(scope) =>
         this.copy(scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol))
       case None =>
-        throw new BuilderException(s"Cannot define '${symbol}' without any scope. Invoke .push() to create a scope first.")
+        throw new BuilderException(s"Cannot define Symbol '${symbol}' without a current scope. Invoke .push() to create a scope first.")
 
   def bind(ast: AST): PassState =
     scopeCursor.at match
       case Some(scope) =>
         this.copy(scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
       case None =>
-        throw new BuilderException(s"Cannot define '${ast}' without any scope. Invoke .push() to create a scope first.")
+        throw new BuilderException(s"Cannot bind AST '${ast}' to Scope without a current scope. Invoke .push() to create a scope first.")
 
 object PassState:
 

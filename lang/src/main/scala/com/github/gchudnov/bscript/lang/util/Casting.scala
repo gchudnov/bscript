@@ -84,7 +84,7 @@ object Casting:
     //       case s: SStruct => Right(s)
     //       case _          => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SStruct"))
 
-    def symbolKind: String = sym match
+    private def symbolKind: String = sym match
       case _: SVar    => "SVar"
       case _: SMethod => "SMethod"
       case _: SStruct => "SStruct"

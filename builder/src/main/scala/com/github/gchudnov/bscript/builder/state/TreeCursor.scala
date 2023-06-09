@@ -31,7 +31,7 @@ sealed trait TreeCursor[A]:
    * @return
    *   A new tree cursor
    */
-  def back(): TreeCursor[A]
+  def pop(): TreeCursor[A]
 
   /**
    * Get the current value the cursor points to
@@ -95,7 +95,7 @@ final case class BasicTreeCursor[A <: AnyRef](
    * @return
    *   A new tree cursor
    */
-  override def back(): TreeCursor[A] =
+  override def pop(): TreeCursor[A] =
     this.copy(
       current = this.current.flatMap(c => this.tree.parentOf(c)),
       level = this.level - 1,

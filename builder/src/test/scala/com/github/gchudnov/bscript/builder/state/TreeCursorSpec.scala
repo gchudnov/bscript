@@ -47,7 +47,7 @@ final class TreeCursorSpec extends TestSpec:
       "add a node at layer 0" in {
         val c = TreeCursor.empty(a => Node(a))
 
-        val actual = c.push().back()
+        val actual = c.push().pop()
 
         actual.tree.vertexSize mustBe (1)
         actual.at mustBe None
@@ -102,7 +102,7 @@ final class TreeCursorSpec extends TestSpec:
       "add nodes at layer 0 only" in {
         val c = TreeCursor.empty(a => Node(a))
 
-        val actual = c.push().back().push().back().push().back()
+        val actual = c.push().pop().push().pop().push().pop()
 
         actual.tree.vertexSize mustBe (3)
         actual.at mustBe None
@@ -121,7 +121,7 @@ final class TreeCursorSpec extends TestSpec:
       "add nodes at layers 0, 1" in {
         val c = TreeCursor.empty(a => Node(a))
 
-        val actual = c.push().push().back().push().back().push().back()
+        val actual = c.push().push().pop().push().pop().push().pop()
 
         actual.tree.vertexSize mustBe (4)
         actual.at mustBe Some(Node("a"))
