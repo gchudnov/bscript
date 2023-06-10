@@ -59,6 +59,8 @@ final class TypeCheckPassSpec extends TestSpec:
       "put it in a scope" in {
         val t = Examples.ex1
 
+        // TODO: impl ^^^
+
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>

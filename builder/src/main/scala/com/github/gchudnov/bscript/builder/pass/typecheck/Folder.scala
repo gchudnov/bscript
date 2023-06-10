@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.builder.pass.typecheck
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 
@@ -9,6 +10,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
 import com.github.gchudnov.bscript.builder.pass.typecheck.PassState
 
 import scala.annotation.tailrec
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 /**
   * Fold the AST to do type checking.
@@ -18,15 +20,24 @@ private[builder] final class Folder() extends AstFolder[PassState]:
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match
 
+      case x @ VarDecl(name, vType, expr) =>
+        foldAST(foldAST(s, vType), expr)
+          .setEvalType(x, Type.void)
+          .assertCanAssign(expr, vType)
+
+        // TODO: we should try to reassign evalType for AUTO?
+
       case x: Block =>
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
         foldOverAST(s, x)
 
+      case x @ TypeId(name) =>
+        foldOverAST(s, x)
+
       case other =>
         throw new MatchError(s"Unsupported AST type in TypeCheck-Folder: ${other}")
-
 
 private[builder] object Folder:
 

@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.builder.state
 import com.github.gchudnov.bscript.lang.symbols.SVar
 import com.github.gchudnov.bscript.lang.symbols.Type
 import com.github.gchudnov.bscript.builder.util.Ptr
+import com.github.gchudnov.bscript.builder.state.{VarTypes, BasicVarTypes}
 
 trait VarTypes:
   def decl(s: SVar, t: Type): VarTypes

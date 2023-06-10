@@ -15,14 +15,18 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 /**
  * Pass State
  *
- * @param cursor
+ * @param scopeCursor
  *   forest cursor, icnluding the current scope
  * @param scopeSymbols
  *   scope symbols
  * @param scopeAsts
  *   scope ASTs
  */
-private[scopebuild] final case class PassState(scopeCursor: TreeCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
+private[scopebuild] final case class PassState(
+  scopeCursor: TreeCursor[Scope], 
+  scopeSymbols: ScopeSymbols, 
+  scopeAsts: ScopeAsts,
+):
 
   def push(): PassState =
     this.copy(scopeCursor = scopeCursor.push())

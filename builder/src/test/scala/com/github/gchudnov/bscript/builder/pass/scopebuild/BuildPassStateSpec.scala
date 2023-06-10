@@ -12,6 +12,7 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.lang.symbols.SType
+import com.github.gchudnov.bscript.lang.symbols.Type
 
 final class PassStateSpec extends TestSpec:
 
@@ -32,7 +33,7 @@ final class PassStateSpec extends TestSpec:
 
     "no scope was pushed" should {
       "prohibit symbol definition" in {
-        val sym = SType.bool
+        val sym = Type.bool
 
         intercept[BuilderException] {
           PassState.from(stateIn).define(sym)
@@ -53,7 +54,7 @@ final class PassStateSpec extends TestSpec:
       }
 
       "a symbol can be linked to this scope" in {
-        val sym = SType.f32
+        val sym = Type.f32
 
         val actual = PassState.into(sb.define(sym), ast0)
 

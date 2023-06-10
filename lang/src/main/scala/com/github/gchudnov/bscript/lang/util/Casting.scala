@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.util
 
 import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.{ SMethod, SStruct, SVar, Symbol, Type }
 
 object Casting:
@@ -38,6 +39,13 @@ object Casting:
   //   def asStructVal: Either[AstException, StructVal] = ast match
   //     case x: StructVal => Right(x)
   //     case _            => Left(new AstException(s"Cannot cast AST to StructVal"))
+
+  // TypeAST
+  extension (typeAst: TypeAST)
+    def asTypeId: Either[AstException, TypeId] = typeAst match
+      case x: TypeId => Right(x)
+      case _       => Left(new AstException(s"Cannot cast AST to TypeId"))
+
 
   // // Scope
   // extension (scope: Scope)
