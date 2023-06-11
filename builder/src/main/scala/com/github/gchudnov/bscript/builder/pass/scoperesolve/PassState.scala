@@ -21,67 +21,74 @@ private[scoperesolve] final case class PassState(
 ):
   import Casting.*
 
-  /**
-   * Resolve variable declaration:
-   *   - resolve the name
-   *   - resolve the type
-   *
-   * @param name
-   *   variable name to resolve IN the scope
-   * @param vType
-   *   variable type to resolve IN & UP the scope
-   * @param ast
-   *   AST to resolve in
-   * @return
-   *   state with resolved variable and type
-   */
-  def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
-    val errOrState = for
-      scope        <- scopeAsts.scope(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
-      resolvedName <- scopeSymbols.resolveIn(name, scope).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved in scope '${scope}'"))
-      resolvedType <- scopeSymbols.resolveUp(vType, scope)
-      nameSVar     <- resolvedName.asSVar
-      s1            = this.copy(varTypes = varTypes.decl(nameSVar, resolvedType))
-    yield s1
-    errOrState.toTry.get
-
   // /**
-  //   * Resolve type declaration
-  //   *
-  //   * @param name
-  //   * @param from
-  //   * @return
-  //   */
-  // def resolveTypeDecl(name: String, from: AST): PassState =
-  //   val errOrState = for {
-  //     scope        <- scopeAsts.scope(from).toRight(new BuilderException(s"Scope for AST '${from}' cannot be found"))
+  //  * Resolve variable declaration:
+  //  *   - resolve the name
+  //  *   - resolve the type
+  //  *
+  //  * @param name
+  //  *   variable name to resolve IN the scope
+  //  * @param vType
+  //  *   variable type to resolve IN & UP the scope
+  //  * @param ast
+  //  *   AST to resolve in
+  //  * @return
+  //  *   state with resolved variable and type
+  //  */
+  // def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
+  //   val errOrState = for
+  //     scope        <- scopeAsts.scope(ast).toRight(new BuilderException(s"Scope for AST '${ast}' cannot be found"))
   //     resolvedName <- scopeSymbols.resolveIn(name, scope).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved in scope '${scope}'"))
-  //   } yield this
+  //     resolvedType <- scopeSymbols.resolveUp(vType, scope)
+  //     nameSVar     <- resolvedName.asSVar
+  //     s1            = this.copy(varTypes = varTypes.decl(nameSVar, resolvedType))
+  //   yield s1
   //   errOrState.toTry.get
 
-  def findVarDecl(varDecl: VarDecl): Either[Throwable, SVar] =
-    val errOrState = for
-      scope        <- scopeAsts.scope(varDecl).toRight(new BuilderException(s"Scope for AST '${varDecl}' cannot be found"))
-      resolvedName <- scopeSymbols.resolveIn(varDecl.name, scope).toRight(new BuilderException(s"Symbol '${varDecl.name}' cannot be resolved in scope '${scope}'"))
-      typeId       <- varDecl.vType.asTypeId
-      resolvedType <- scopeSymbols.resolveUp(typeId.name, scope, scopeTree).toRight(new BuilderException(s"Symbol '${typeId.name}' cannot be resolved up in scope '${scope}'"))
-      nameSVar     <- resolvedName.asSVar
-      s1            = this.copy(varTypes = varTypes.decl(nameSVar, resolvedType))
-    yield s1
-    errOrState.toTry.get
+  // // /**
+  // //   * Resolve type declaration
+  // //   *
+  // //   * @param name
+  // //   * @param from
+  // //   * @return
+  // //   */
+  // // def resolveTypeDecl(name: String, from: AST): PassState =
+  // //   val errOrState = for {
+  // //     scope        <- scopeAsts.scope(from).toRight(new BuilderException(s"Scope for AST '${from}' cannot be found"))
+  // //     resolvedName <- scopeSymbols.resolveIn(name, scope).toRight(new BuilderException(s"Symbol '${name}' cannot be resolved in scope '${scope}'"))
+  // //   } yield this
+  // //   errOrState.toTry.get
+
+  // def findVarDecl(varDecl: VarDecl): Either[Throwable, SVar] =
+  //   val errOrState = for
+  //     scope        <- scopeAsts.scope(varDecl).toRight(new BuilderException(s"Scope for AST '${varDecl}' cannot be found"))
+  //     resolvedName <- scopeSymbols.resolveIn(varDecl.name, scope).toRight(new BuilderException(s"Symbol '${varDecl.name}' cannot be resolved in scope '${scope}'"))
+  //     typeId       <- varDecl.vType.asTypeId
+  //     resolvedType <- scopeSymbols.resolveUp(typeId.name, scope, scopeTree).toRight(new BuilderException(s"Symbol '${typeId.name}' cannot be resolved up in scope '${scope}'"))
+  //     nameSVar     <- resolvedName.asSVar
+  //     s1            = this.copy(varTypes = varTypes.decl(nameSVar, resolvedType))
+  //   yield s1
+  //   errOrState.toTry.get
 
   /**
     * Find type declaration: MethodDecl, StructDecl, or TypeDecl, starting from the current scopt
     *
     * @return
     */
-  def resolveTypeId(typeId: TypeId): Either[Throwable, Symbol & Type] =
+  def resolveTypeAST(typeId: TypeAST): Either[Throwable, Symbol & Type] =
     for {
       scope        <- scopeAsts.scope(typeId).toRight(new BuilderException(s"Scope for AST '${typeId}' cannot be found"))
       resolvedName <- scopeSymbols.resolveUp(typeId.name, scope, scopeTree).toRight(new BuilderException(s"Symbol '${typeId.name}' cannot be resolved up in scope '${scope}'"))
     } yield ()
     ???
 
+    // TODO: finish implementation
+
+    // TODO: we need to store observed types?
+
+    // TODO: check how AST in Scala 3 + Go is implemented
+
+    // TODO: in Go 
 
 
   // /**

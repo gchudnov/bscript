@@ -2403,4 +2403,371 @@ func main() {
    174  .  Comments: nil
    175  }
 
+///////////////////////////////////////////////////
+package main
+
+import (
+	"fmt"
+)
+
+type B struct {
+    K3 string
+}
+
+var b B
+
+func main() {
+    fmt.Println(b)
+}
+
+
+
+Dump
+     0  *ast.File {
+     1  .  Doc: nil
+     2  .  Package: foo:1:1
+     3  .  Name: *ast.Ident {
+     4  .  .  NamePos: foo:1:9
+     5  .  .  Name: "main"
+     6  .  .  Obj: nil
+     7  .  }
+     8  .  Decls: []ast.Decl (len = 4) {
+     9  .  .  0: *ast.GenDecl {
+    10  .  .  .  Doc: nil
+    11  .  .  .  TokPos: foo:3:1
+    12  .  .  .  Tok: import
+    13  .  .  .  Lparen: foo:3:8
+    14  .  .  .  Specs: []ast.Spec (len = 1) {
+    15  .  .  .  .  0: *ast.ImportSpec {
+    16  .  .  .  .  .  Doc: nil
+    17  .  .  .  .  .  Name: nil
+    18  .  .  .  .  .  Path: *ast.BasicLit {
+    19  .  .  .  .  .  .  ValuePos: foo:4:2
+    20  .  .  .  .  .  .  Kind: STRING
+    21  .  .  .  .  .  .  Value: "\"fmt\""
+    22  .  .  .  .  .  }
+    23  .  .  .  .  .  Comment: nil
+    24  .  .  .  .  .  EndPos: -
+    25  .  .  .  .  }
+    26  .  .  .  }
+    27  .  .  .  Rparen: foo:5:1
+    28  .  .  }
+    29  .  .  1: *ast.GenDecl {
+    30  .  .  .  Doc: nil
+    31  .  .  .  TokPos: foo:7:1
+    32  .  .  .  Tok: type
+    33  .  .  .  Lparen: -
+    34  .  .  .  Specs: []ast.Spec (len = 1) {
+    35  .  .  .  .  0: *ast.TypeSpec {
+    36  .  .  .  .  .  Doc: nil
+    37  .  .  .  .  .  Name: *ast.Ident {
+    38  .  .  .  .  .  .  NamePos: foo:7:6
+    39  .  .  .  .  .  .  Name: "B"
+    40  .  .  .  .  .  .  Obj: *ast.Object {
+    41  .  .  .  .  .  .  .  Kind: type
+    42  .  .  .  .  .  .  .  Name: "B"
+    43  .  .  .  .  .  .  .  Decl: *(obj @ 35)
+    44  .  .  .  .  .  .  .  Data: nil
+    45  .  .  .  .  .  .  .  Type: nil
+    46  .  .  .  .  .  .  }
+    47  .  .  .  .  .  }
+    48  .  .  .  .  .  Assign: -
+    49  .  .  .  .  .  Type: *ast.StructType {
+    50  .  .  .  .  .  .  Struct: foo:7:8
+    51  .  .  .  .  .  .  Fields: *ast.FieldList {
+    52  .  .  .  .  .  .  .  Opening: foo:7:15
+    53  .  .  .  .  .  .  .  List: []*ast.Field (len = 1) {
+    54  .  .  .  .  .  .  .  .  0: *ast.Field {
+    55  .  .  .  .  .  .  .  .  .  Doc: nil
+    56  .  .  .  .  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+    57  .  .  .  .  .  .  .  .  .  .  0: *ast.Ident {
+    58  .  .  .  .  .  .  .  .  .  .  .  NamePos: foo:8:5
+    59  .  .  .  .  .  .  .  .  .  .  .  Name: "K3"
+    60  .  .  .  .  .  .  .  .  .  .  .  Obj: *ast.Object {
+    61  .  .  .  .  .  .  .  .  .  .  .  .  Kind: var
+    62  .  .  .  .  .  .  .  .  .  .  .  .  Name: "K3"
+    63  .  .  .  .  .  .  .  .  .  .  .  .  Decl: *(obj @ 54)
+    64  .  .  .  .  .  .  .  .  .  .  .  .  Data: nil
+    65  .  .  .  .  .  .  .  .  .  .  .  .  Type: nil
+    66  .  .  .  .  .  .  .  .  .  .  .  }
+    67  .  .  .  .  .  .  .  .  .  .  }
+    68  .  .  .  .  .  .  .  .  .  }
+    69  .  .  .  .  .  .  .  .  .  Type: *ast.Ident {
+    70  .  .  .  .  .  .  .  .  .  .  NamePos: foo:8:8
+    71  .  .  .  .  .  .  .  .  .  .  Name: "string"
+    72  .  .  .  .  .  .  .  .  .  .  Obj: nil
+    73  .  .  .  .  .  .  .  .  .  }
+    74  .  .  .  .  .  .  .  .  .  Tag: nil
+    75  .  .  .  .  .  .  .  .  .  Comment: nil
+    76  .  .  .  .  .  .  .  .  }
+    77  .  .  .  .  .  .  .  }
+    78  .  .  .  .  .  .  .  Closing: foo:9:1
+    79  .  .  .  .  .  .  }
+    80  .  .  .  .  .  .  Incomplete: false
+    81  .  .  .  .  .  }
+    82  .  .  .  .  .  Comment: nil
+    83  .  .  .  .  }
+    84  .  .  .  }
+    85  .  .  .  Rparen: -
+    86  .  .  }
+    87  .  .  2: *ast.GenDecl {
+    88  .  .  .  Doc: nil
+    89  .  .  .  TokPos: foo:11:1
+    90  .  .  .  Tok: var
+    91  .  .  .  Lparen: -
+    92  .  .  .  Specs: []ast.Spec (len = 1) {
+    93  .  .  .  .  0: *ast.ValueSpec {
+    94  .  .  .  .  .  Doc: nil
+    95  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+    96  .  .  .  .  .  .  0: *ast.Ident {
+    97  .  .  .  .  .  .  .  NamePos: foo:11:5
+    98  .  .  .  .  .  .  .  Name: "b"
+    99  .  .  .  .  .  .  .  Obj: *ast.Object {
+   100  .  .  .  .  .  .  .  .  Kind: var
+   101  .  .  .  .  .  .  .  .  Name: "b"
+   102  .  .  .  .  .  .  .  .  Decl: *(obj @ 93)
+   103  .  .  .  .  .  .  .  .  Data: 0
+   104  .  .  .  .  .  .  .  .  Type: nil
+   105  .  .  .  .  .  .  .  }
+   106  .  .  .  .  .  .  }
+   107  .  .  .  .  .  }
+   108  .  .  .  .  .  Type: *ast.Ident {
+   109  .  .  .  .  .  .  NamePos: foo:11:7
+   110  .  .  .  .  .  .  Name: "B"
+   111  .  .  .  .  .  .  Obj: *(obj @ 40)
+   112  .  .  .  .  .  }
+   113  .  .  .  .  .  Values: nil
+   114  .  .  .  .  .  Comment: nil
+   115  .  .  .  .  }
+   116  .  .  .  }
+   117  .  .  .  Rparen: -
+   118  .  .  }
+   119  .  .  3: *ast.FuncDecl {
+   120  .  .  .  Doc: nil
+   121  .  .  .  Recv: nil
+   122  .  .  .  Name: *ast.Ident {
+   123  .  .  .  .  NamePos: foo:13:6
+   124  .  .  .  .  Name: "main"
+   125  .  .  .  .  Obj: *ast.Object {
+   126  .  .  .  .  .  Kind: func
+   127  .  .  .  .  .  Name: "main"
+   128  .  .  .  .  .  Decl: *(obj @ 119)
+   129  .  .  .  .  .  Data: nil
+   130  .  .  .  .  .  Type: nil
+   131  .  .  .  .  }
+   132  .  .  .  }
+   133  .  .  .  Type: *ast.FuncType {
+   134  .  .  .  .  Func: foo:13:1
+   135  .  .  .  .  Params: *ast.FieldList {
+   136  .  .  .  .  .  Opening: foo:13:10
+   137  .  .  .  .  .  List: nil
+   138  .  .  .  .  .  Closing: foo:13:11
+   139  .  .  .  .  }
+   140  .  .  .  .  Results: nil
+   141  .  .  .  }
+   142  .  .  .  Body: *ast.BlockStmt {
+   143  .  .  .  .  Lbrace: foo:13:13
+   144  .  .  .  .  List: []ast.Stmt (len = 1) {
+   145  .  .  .  .  .  0: *ast.ExprStmt {
+   146  .  .  .  .  .  .  X: *ast.CallExpr {
+   147  .  .  .  .  .  .  .  Fun: *ast.SelectorExpr {
+   148  .  .  .  .  .  .  .  .  X: *ast.Ident {
+   149  .  .  .  .  .  .  .  .  .  NamePos: foo:14:5
+   150  .  .  .  .  .  .  .  .  .  Name: "fmt"
+   151  .  .  .  .  .  .  .  .  .  Obj: nil
+   152  .  .  .  .  .  .  .  .  }
+   153  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+   154  .  .  .  .  .  .  .  .  .  NamePos: foo:14:9
+   155  .  .  .  .  .  .  .  .  .  Name: "Println"
+   156  .  .  .  .  .  .  .  .  .  Obj: nil
+   157  .  .  .  .  .  .  .  .  }
+   158  .  .  .  .  .  .  .  }
+   159  .  .  .  .  .  .  .  Lparen: foo:14:16
+   160  .  .  .  .  .  .  .  Args: []ast.Expr (len = 1) {
+   161  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   162  .  .  .  .  .  .  .  .  .  NamePos: foo:14:17
+   163  .  .  .  .  .  .  .  .  .  Name: "b"
+   164  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 99)
+   165  .  .  .  .  .  .  .  .  }
+   166  .  .  .  .  .  .  .  }
+   167  .  .  .  .  .  .  .  Ellipsis: -
+   168  .  .  .  .  .  .  .  Rparen: foo:14:18
+   169  .  .  .  .  .  .  }
+   170  .  .  .  .  .  }
+   171  .  .  .  .  }
+   172  .  .  .  .  Rbrace: foo:15:1
+   173  .  .  .  }
+   174  .  .  }
+   175  .  }
+   176  .  Scope: *ast.Scope {
+   177  .  .  Outer: nil
+   178  .  .  Objects: map[string]*ast.Object (len = 3) {
+   179  .  .  .  "main": *(obj @ 125)
+   180  .  .  .  "B": *(obj @ 40)
+   181  .  .  .  "b": *(obj @ 99)
+   182  .  .  }
+   183  .  }
+   184  .  Imports: []*ast.ImportSpec (len = 1) {
+   185  .  .  0: *(obj @ 15)
+   186  .  }
+   187  .  Unresolved: []*ast.Ident (len = 2) {
+   188  .  .  0: *(obj @ 69)
+   189  .  .  1: *(obj @ 148)
+   190  .  }
+   191  .  Comments: nil
+   192  }
+
+
+///////////////////////////////////////////////////
+
+
+package main
+
+import (
+	"fmt"
+)
+
+var b string
+
+func main() {
+    fmt.Println(b)
+}
+
+
+*ast.File {
+     1  .  Doc: nil
+     2  .  Package: foo:1:1
+     3  .  Name: *ast.Ident {
+     4  .  .  NamePos: foo:1:9
+     5  .  .  Name: "main"
+     6  .  .  Obj: nil
+     7  .  }
+     8  .  Decls: []ast.Decl (len = 3) {
+     9  .  .  0: *ast.GenDecl {
+    10  .  .  .  Doc: nil
+    11  .  .  .  TokPos: foo:3:1
+    12  .  .  .  Tok: import
+    13  .  .  .  Lparen: foo:3:8
+    14  .  .  .  Specs: []ast.Spec (len = 1) {
+    15  .  .  .  .  0: *ast.ImportSpec {
+    16  .  .  .  .  .  Doc: nil
+    17  .  .  .  .  .  Name: nil
+    18  .  .  .  .  .  Path: *ast.BasicLit {
+    19  .  .  .  .  .  .  ValuePos: foo:4:2
+    20  .  .  .  .  .  .  Kind: STRING
+    21  .  .  .  .  .  .  Value: "\"fmt\""
+    22  .  .  .  .  .  }
+    23  .  .  .  .  .  Comment: nil
+    24  .  .  .  .  .  EndPos: -
+    25  .  .  .  .  }
+    26  .  .  .  }
+    27  .  .  .  Rparen: foo:5:1
+    28  .  .  }
+    29  .  .  1: *ast.GenDecl {
+    30  .  .  .  Doc: nil
+    31  .  .  .  TokPos: foo:7:1
+    32  .  .  .  Tok: var
+    33  .  .  .  Lparen: -
+    34  .  .  .  Specs: []ast.Spec (len = 1) {
+    35  .  .  .  .  0: *ast.ValueSpec {
+    36  .  .  .  .  .  Doc: nil
+    37  .  .  .  .  .  Names: []*ast.Ident (len = 1) {
+    38  .  .  .  .  .  .  0: *ast.Ident {
+    39  .  .  .  .  .  .  .  NamePos: foo:7:5
+    40  .  .  .  .  .  .  .  Name: "b"
+    41  .  .  .  .  .  .  .  Obj: *ast.Object {
+    42  .  .  .  .  .  .  .  .  Kind: var
+    43  .  .  .  .  .  .  .  .  Name: "b"
+    44  .  .  .  .  .  .  .  .  Decl: *(obj @ 35)
+    45  .  .  .  .  .  .  .  .  Data: 0
+    46  .  .  .  .  .  .  .  .  Type: nil
+    47  .  .  .  .  .  .  .  }
+    48  .  .  .  .  .  .  }
+    49  .  .  .  .  .  }
+    50  .  .  .  .  .  Type: *ast.Ident {
+    51  .  .  .  .  .  .  NamePos: foo:7:7
+    52  .  .  .  .  .  .  Name: "string"
+    53  .  .  .  .  .  .  Obj: nil
+    54  .  .  .  .  .  }
+    55  .  .  .  .  .  Values: nil
+    56  .  .  .  .  .  Comment: nil
+    57  .  .  .  .  }
+    58  .  .  .  }
+    59  .  .  .  Rparen: -
+    60  .  .  }
+    61  .  .  2: *ast.FuncDecl {
+    62  .  .  .  Doc: nil
+    63  .  .  .  Recv: nil
+    64  .  .  .  Name: *ast.Ident {
+    65  .  .  .  .  NamePos: foo:9:6
+    66  .  .  .  .  Name: "main"
+    67  .  .  .  .  Obj: *ast.Object {
+    68  .  .  .  .  .  Kind: func
+    69  .  .  .  .  .  Name: "main"
+    70  .  .  .  .  .  Decl: *(obj @ 61)
+    71  .  .  .  .  .  Data: nil
+    72  .  .  .  .  .  Type: nil
+    73  .  .  .  .  }
+    74  .  .  .  }
+    75  .  .  .  Type: *ast.FuncType {
+    76  .  .  .  .  Func: foo:9:1
+    77  .  .  .  .  Params: *ast.FieldList {
+    78  .  .  .  .  .  Opening: foo:9:10
+    79  .  .  .  .  .  List: nil
+    80  .  .  .  .  .  Closing: foo:9:11
+    81  .  .  .  .  }
+    82  .  .  .  .  Results: nil
+    83  .  .  .  }
+    84  .  .  .  Body: *ast.BlockStmt {
+    85  .  .  .  .  Lbrace: foo:9:13
+    86  .  .  .  .  List: []ast.Stmt (len = 1) {
+    87  .  .  .  .  .  0: *ast.ExprStmt {
+    88  .  .  .  .  .  .  X: *ast.CallExpr {
+    89  .  .  .  .  .  .  .  Fun: *ast.SelectorExpr {
+    90  .  .  .  .  .  .  .  .  X: *ast.Ident {
+    91  .  .  .  .  .  .  .  .  .  NamePos: foo:10:5
+    92  .  .  .  .  .  .  .  .  .  Name: "fmt"
+    93  .  .  .  .  .  .  .  .  .  Obj: nil
+    94  .  .  .  .  .  .  .  .  }
+    95  .  .  .  .  .  .  .  .  Sel: *ast.Ident {
+    96  .  .  .  .  .  .  .  .  .  NamePos: foo:10:9
+    97  .  .  .  .  .  .  .  .  .  Name: "Println"
+    98  .  .  .  .  .  .  .  .  .  Obj: nil
+    99  .  .  .  .  .  .  .  .  }
+   100  .  .  .  .  .  .  .  }
+   101  .  .  .  .  .  .  .  Lparen: foo:10:16
+   102  .  .  .  .  .  .  .  Args: []ast.Expr (len = 1) {
+   103  .  .  .  .  .  .  .  .  0: *ast.Ident {
+   104  .  .  .  .  .  .  .  .  .  NamePos: foo:10:17
+   105  .  .  .  .  .  .  .  .  .  Name: "b"
+   106  .  .  .  .  .  .  .  .  .  Obj: *(obj @ 41)
+   107  .  .  .  .  .  .  .  .  }
+   108  .  .  .  .  .  .  .  }
+   109  .  .  .  .  .  .  .  Ellipsis: -
+   110  .  .  .  .  .  .  .  Rparen: foo:10:18
+   111  .  .  .  .  .  .  }
+   112  .  .  .  .  .  }
+   113  .  .  .  .  }
+   114  .  .  .  .  Rbrace: foo:11:1
+   115  .  .  .  }
+   116  .  .  }
+   117  .  }
+   118  .  Scope: *ast.Scope {
+   119  .  .  Outer: nil
+   120  .  .  Objects: map[string]*ast.Object (len = 2) {
+   121  .  .  .  "b": *(obj @ 41)
+   122  .  .  .  "main": *(obj @ 67)
+   123  .  .  }
+   124  .  }
+   125  .  Imports: []*ast.ImportSpec (len = 1) {
+   126  .  .  0: *(obj @ 15)
+   127  .  }
+   128  .  Unresolved: []*ast.Ident (len = 2) {
+   129  .  .  0: *(obj @ 50)
+   130  .  .  1: *(obj @ 90)
+   131  .  }
+   132  .  Comments: nil
+   133  }
+ 
+
 */
