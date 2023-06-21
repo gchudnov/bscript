@@ -75,6 +75,34 @@ void semantic(tree root) {
    root.checkSymTables();
    global_st.print();
 }
+
+///
+public class symtab_entry {
+   String sym;
+   symtab parent_st, st;
+   boolean isConst;
+   symtab_entry(String s, symtab p, boolean iC) {
+   sym = s; parent_st = p, isConst = iC; }
+   symtab_entry(String s, symtab p, boolean iC, symtab t) {
+   sym = s; parent_st = p; isConst = iC; st = t; }
+}
+
+void insert(String s, Boolean iC, symtab sub) {
+   if (t.containsKey(s)) {
+      j0.semerror("redeclaration of " + s);
+   } else {
+      sub.parent = this;
+      t.put(s, new symtab_entry(s, this, iC, sub));
+   }
+}
+
+void insert(String s, Boolean iC) {
+   if (t.containsKey(s)) {
+      j0.semerror("redeclaration of " + s);
+   } else {
+      t.put(s, new symtab_entry(s, this, iC));
+   }
+}
 ```
 
 Populating (inserting symbols into) symbol tables can be done during the same tree
@@ -93,6 +121,114 @@ through the expression grammar, where expressions have values.
 
 **const functions?** e.g. `constexpr int add(const int, const int) { return a + b; })` -- a function that can be evaluated at compile time
 
+///
+## Types
+Frequently, our compiler will need to do things such as compare the types of two variables to see whether they are compatible.
+Program source code represents types with string data, which is incorporated in our syntax tree.
+
+The type information associated with any name or value in your language can be represented within a new class named `typeinfo`.
+Complex types have additional information as needed. For example, a type whose basetype indicates that it is an array has an additional `element_type`.
+  - For Jzero, we will add `arraytype`, `methodtype`, and `classtype` as subclasses of `typeinfo`.
+  - In addition to the basetype member, the typeinfo class has methods to facilitate debugging. Types need to be able to print themselves in a human-readable format.
+  - arrays
+  - Method types contain a list of zero or more parameters and a return type
+    - `parameters` could be an array of `typeinfo`. A separate class is defined for parameters here to allow languages to include parameter names along with their types to represent methods.
+
+```java
+// arrays
+public class arraytype extends typeinfo {
+   typeinfo element_type;
+   public arraytype(typeinfo t) {
+      basetype = "array"; element_type = t; 
+   }
+}
+
+// Method types contain a list of zero or more parameters and a return type
+public class methodtype extends typeinfo {
+   parameter [] parameters;
+   typeinfo return_type;
+   methodtype(parameter [] p, typeinfo rt){
+      parameters = p; return_type = rt;
+   }
+}
+
+// parameter
+public class parameter {
+   String name;
+   typeinfo param_type;
+   parameter(String s, typeinfo t) { name=s; param_type=t; }
+}
+
+// class
+public class classtype extends typeinfo {
+   String name;
+   symtab st;
+   parameter [] methods;
+   parameter [] fields;
+   typeinfo [] constrs;
+}
+
+// use
+
+class tree { . . .
+   typeinfo typ; . . . }
+
+class symtab_entry { . . .
+   typeinfo typ; . . . }
+```
+
+**Assigning type information to declared variables:**
+Type information is constructed during a tree traversal and then stored with its associated variables in the symbol table.
+
+**Runtime type checks and type inference:**
+A descriptor is a struct that contains a value plus an extra word of memory that encodes its type, called the `d-word`.
+
+**how to perform type checks for the arrays, parameters, and return types of method calls:**
+The recursive call to check_types() on the arrays' element types
+
+**Checking the type at return statements**:
+
+```java
+method populateSymTables()
+   case sym of {
+      . . .
+      "MethodDecl": {
+      stab.insert(kids[1].kids[2].kids[1].tok.text, ,
+      kids[1].stab, kids[1].kids[2].typ)
+      kids[1].stab.insert("return", , ,
+      kids[1].kids[1].typ)
+   }
+
+///
+...
+   Case "ReturnStmt":
+      symtab_entry ste;
+      if ((ste=stab.lookup("return")) == null)
+         j0.semerror("stab did not find a returntype");
+         typeinfo rt = ste.typ;
+         if (kids[0].typ != null)
+         typ = check_types(rt, kids[0].typ);
+      else {
+         if (!rt.str().equals("void"))
+         j0.semerror("void return from non-void method");
+         typ = rt;
+      }
+   break;
+```
+
+**Checking types at instance creation:**
+
+```
+method semantic(root)
+   ...
+   root.mkSymTables(global_st)
+   root.populateSymTables()
+   root.checkSymTables()
+   root.mkcls()
+   root.checktype()
+```
+
+The `mkcls()` method stands for make class. When it sees a class declaration, it looks up the class name and goes through the class symbol table, putting entries into the correct category. There is one list for fields, one for methods, and one for constructors.
 
 
 ## Phases
@@ -105,6 +241,24 @@ through the expression grammar, where expressions have values.
     - Identifying redeclaration errors occurs most naturally while the symbol table is being populated; that is, when an attempt is being made to insert a declaration.
 - **Checking Base Types**
   - is a key aspect of semantic analysis that must be performed before you can generate code.
+  - A byproduct of checking the types is to add type information to the syntax tree.
+  - Determining the type at each syntax tree node
+    - he class for syntax tree nodes has an attribute to store that node's type, if there is one.
+  - Runtime type checks and type inference
+- **Checking method calls**
+  - The parameters and return type of a method are called its **signature**.
+  - the method is looked up in the symbol table and its type is retrieved.
+  - If there are actual parameters in the call, they are checked against the formal parameters via a call to the `cksig()` method.
+- **Checking the type at return statements**
+  - The type of the expressions in the method's return statements must match the type's declared return type.
+    These two locations are quite some distance apart in the syntax tree.
+  - The symbol table is the most convenient way to connect remote locations.
+    - We can insert a dummy symbol into the symbol table that can hold a function's return type.
+      - The dummy symbol named `return` is ideal.
+- **Checking types at instance creation**
+- **Checking types at instance accesses**
+  - Instance accesses refer to references to the fields and methods of an object.
+  - Implicit accesses are handled by regular symbol table lookups in the current scope, which will automatically try to enclose scopes, including the class scope where the current object's class methods and variables can be found.
 
 p.171
 
