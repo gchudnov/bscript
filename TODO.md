@@ -8,6 +8,118 @@ https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919
 https://github.com/faiface/generics/blob/master/go/ast/ast.go
 https://softwareengineering.stackexchange.com/questions/334167/how-are-generics-implemented-in-a-modern-compiler
 
++ books on compiler design
+
+
+-------------
+Creating and populating symbol tables for each scope
+
+A symbol table contains a record of all the names that are declared for a scope. There is
+one symbol table for each scope. A symbol table provides a means of looking up symbols
+by their name to obtain information about them. If a variable was declared, the symbol
+table lookup returns a record with all the information known about that symbol: where
+it was declared, what its data type is, whether it is public or private, and so on. All this
+information can be found in the syntax tree. If we also place it in a table, the goal is to
+access the information directly, from anywhere else that information is needed.
+
+The traditional implementation of a symbol table is a hash table, which provides a very
+fast information lookup. For example, `symtable[sym]`
+
+-------------
+Adding semantic attributes to syntax trees
+
+information is stored in extra fields in tree nodes, commonly called semantic attributes.
+
+scope -> symbolTable
+
+An important method in this class, `symbolTable::insert()`, issues a
+semantic error if the symbol is already in the table. Otherwise, insert() allocates a
+symbol table entry and inserts it.
+
+symbolTable::lookup(scope: String): SymbolTableEntry
+
+SymbolTableEntry -- contains several data fields and no code
+
+SymbolTableEntry::isConst: Boolean -- ???
+
+**Every node in the syntax tree needs to know what symbol table it belongs to.**
+
+```java
+void mkSymTables(symtab curr) {
+   stab = curr;
+   switch (sym) {
+   case "ClassDecl": curr = new symtab("class", curr);
+   break;
+   case "MethodDecl": curr = new symtab("method", curr);
+   break;
+   }
+   for (int i=0; i<nkids; i++) kid[i].mkSymTables(curr);
+}
+```
+
+The root of the entire parse tree starts with a global symbol table with predefined symbols such as `System` and `java`.
+
+`global_st = symtab("global");` a global symbol table
+
+```java
+void semantic(tree root) {
+   symtab out_st, System_st;
+   global_st = symtab("global");
+   out_st = symtab("class");
+   System_st = symtab("class");
+   out_st.insert("println", false);
+   System_st.insert("out", false, out_st);
+   global_st.insert("System", false, System_st);
+   root.mkSymTables(global_st);
+   root.populateSymTables();
+   root.checkSymTables();
+   global_st.print();
+}
+```
+
+Populating (inserting symbols into) symbol tables can be done during the same tree
+traversal in which those symbol tables are created. However, the code is simpler in a
+separate traversal. **Every node knows what symbol table it lives within**. The challenge is to
+identify which nodes introduce symbols.
+
+**isConst** is a classic example of a **synthesized** attribute. Its calculation rules depend
+on whether a node is a leaf (following the base case) or an internal node (using the
+recursion step):
+
+Base case: For tokens, literals are isConst=true and everything else is
+isConst=false.
+• Recursion step: For internal nodes, isConst is computed from children, but only
+through the expression grammar, where expressions have values.
+
+**const functions?** e.g. `constexpr int add(const int, const int) { return a + b; })` -- a function that can be evaluated at compile time
+
+
+
+## Phases
+- **Creating and populating symbol tables for each scope**
+- **Checking for undeclared variables**
+   - To find undeclared variables, check the symbol table on each variable that's used for assignment or dereferencing.
+- **Finding redeclared variables**
+  - report an error if the same variable is declared again in the same scope.
+    - Inserting symbols into the symbol table. A symbol table lookup is performed before insertion. If the symbol is already present, a redeclaration error is reported.
+    - Identifying redeclaration errors occurs most naturally while the symbol table is being populated; that is, when an attempt is being made to insert a declaration.
+- **Checking Base Types**
+  - is a key aspect of semantic analysis that must be performed before you can generate code.
+
+p.171
+
+Symbol + Type -- do we need them at all in our code base?
+
+**Mangling names**
+
+A name such as `foo`, if it is found to be in package scope for a package `bar`, is written out in the generated code as `bar__foo`.
+
+all methods are non-static and method calls always have an implicit first parameter named `self`, which is a reference to the object that the method has been invoked on.
+
+**Testing and debugging symbol tables**
+
+To output the symbol table, you need to output information for the table and then visit all the children, not just look one up by name.
+
 
 
 - TODO: 
