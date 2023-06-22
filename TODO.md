@@ -275,6 +275,41 @@ all methods are non-static and method calls always have an implicit first parame
 To output the symbol table, you need to output information for the table and then visit all the children, not just look one up by name.
 
 
+**Symbol-Table Management**
+- An essential function of a compiler is to record the variabe names used in the source program and collect information about various attributes of each name.
+- The symbol table is a data structure containing a record for each variable name, with elds for the attributes of the name.
+- READ: p278 in `Engineering_a_Compiler_2nd_Edition`.
+
+
+**Building a Symbol Table**
+The symbol table defines two interface routines for the rest of the compiler.
+   1. `LookUp(name)` returns the record stored in the table at h(name) if one
+   exists. Otherwise, it returns a value indicating that name was not
+   found.
+   2. `Insert(name,record)` stores the information in record in the table at
+   h(name). It may expand the table to accommodate the record for name.
+
+**Scope Building**
+The compiler needs a call that initializes a new symbol table for a scope and one that finalizes
+the table for a scope.
+   1. `InitializeScope()` increments the current level and creates a new
+   symbol table for that level. It links the new table to the enclosing level’s
+   table and updates the current level pointer used by LookUp and
+   Insert.
+   2. `FinalizeScope()` changes the current-level pointer so that it points to
+   the table for the scope surrounding the current level and then decrements
+   the current level. If the compiler needs to preserve the level-by-level
+   tables for later use, FinalizeScope can either leave the table intact in
+   memory or write the table to external media and reclaim its space.
+   To account for lexical scoping, the parser calls InitializeScope each time
+   it enters a new lexical scope and FinalizeScope each time it exits a lexical scope.
+
+In reality, compilers build multiple symbol tables that they use for different purposes.
+
+In principle, every procedure call gives rise to a new `ar` (activation record).
+
+
+
 
 - TODO: 
  *      |                +- Decl +- MethodDecl // TODO: refactor declarations (?), see cpp2
