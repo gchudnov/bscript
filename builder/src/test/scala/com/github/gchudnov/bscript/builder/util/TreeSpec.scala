@@ -1,7 +1,7 @@
-package com.github.gchudnov.bscript.builder.state
+package com.github.gchudnov.bscript.builder.util
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.state.Tree
+import com.github.gchudnov.bscript.builder.util.Tree
 
 final class TreeSpec extends TestSpec:
 

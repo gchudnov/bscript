@@ -5,8 +5,5 @@ package com.github.gchudnov.bscript.builder.pass
  *
  * Represents a step of the builder that takes an `In` state and produces an `Out` state.
  */
-trait Pass:
-  type In
-  type Out
-
-  def run(in: In): Out
+trait Pass[I, O]:
+  def run(in: I): O

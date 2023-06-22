@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.pass.scopebuild
 
 import com.github.gchudnov.bscript.builder.state.Scope
-import com.github.gchudnov.bscript.builder.state.Tree
+import com.github.gchudnov.bscript.builder.util.Tree
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 import com.github.gchudnov.bscript.lang.ast.AST

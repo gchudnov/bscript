@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.util.Casting
 import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.builder.util.Tree
 
 /**
   * ScopeResolve pass state
@@ -70,17 +71,17 @@ private[scoperesolve] final case class PassState(
   //   yield s1
   //   errOrState.toTry.get
 
-  /**
-    * Find type declaration: MethodDecl, StructDecl, or TypeDecl, starting from the current scopt
-    *
-    * @return
-    */
-  def resolveTypeAST(typeId: TypeAST): Either[Throwable, Symbol & Type] =
-    for {
-      scope        <- scopeAsts.scope(typeId).toRight(new BuilderException(s"Scope for AST '${typeId}' cannot be found"))
-      resolvedName <- scopeSymbols.resolveUp(typeId.name, scope, scopeTree).toRight(new BuilderException(s"Symbol '${typeId.name}' cannot be resolved up in scope '${scope}'"))
-    } yield ()
-    ???
+  // /**
+  //   * Find type declaration: MethodDecl, StructDecl, or TypeDecl, starting from the current scopt
+  //   *
+  //   * @return
+  //   */
+  // def resolveTypeAST(typeId: TypeAST): Either[Throwable, Symbol & Type] =
+  //   for {
+  //     scope        <- scopeAsts.scope(typeId).toRight(new BuilderException(s"Scope for AST '${typeId}' cannot be found"))
+  //     resolvedName <- scopeSymbols.resolveUp(typeId.name, scope, scopeTree).toRight(new BuilderException(s"Symbol '${typeId.name}' cannot be resolved up in scope '${scope}'"))
+  //   } yield ()
+  //   ???
 
     // TODO: finish implementation
 

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.state
+package com.github.gchudnov.bscript.builder.util
 
 import scala.annotation.tailrec
 import com.github.gchudnov.bscript.builder.util.Ptr

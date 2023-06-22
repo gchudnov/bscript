@@ -5,7 +5,7 @@ import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
 import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
-import com.github.gchudnov.bscript.builder.state.Tree
+import com.github.gchudnov.bscript.builder.util.Tree
 import com.github.gchudnov.bscript.builder.state.TreeCursor
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols

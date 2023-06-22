@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.util.Base26
-import com.github.gchudnov.bscript.builder.state.Tree
+import com.github.gchudnov.bscript.builder.util.Tree
 
 /**
  * Cursors that tracks the current position in the tree

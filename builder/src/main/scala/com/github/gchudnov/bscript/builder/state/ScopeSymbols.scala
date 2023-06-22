@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.builder.util.Dict
 import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
+import com.github.gchudnov.bscript.builder.util.Tree
 
 sealed trait ScopeSymbols {
   def addScope(scope: Scope): ScopeSymbols
