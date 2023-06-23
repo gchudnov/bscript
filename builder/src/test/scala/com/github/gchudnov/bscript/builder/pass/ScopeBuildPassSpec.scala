@@ -79,9 +79,16 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 3 // root + main(args) + block inside
-            // actualState.symbolsByName("x").size mustBe (1)
-            ???
+            actualState.scopeSize mustBe 3 // root + main(args) + block inside
+
+            val symbols = actualState.symbols
+            symbols must contain theSameElementsAs(List(SMethod("main@method<>(): i32"), SVar("x@var")))
+
+            // main and var scopes are not-equal
+            val mainScope = actualState.scopeBySymbol(symbols.head)
+            val varScope = actualState.scopeBySymbol(symbols.last)
+
+            mainScope must not be (varScope)
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -759,20 +766,17 @@ object ScopeBuildPassSpec {
       scopeAsts.scope(ast)
 
     /**
+      * find Scope by Symbol
+      */
+    def scopeBySymbol(sym: Symbol): Option[Scope] =
+      scopeSymbols
+        .scope(sym)
+
+    /**
      * Find all symbols that have the given name
      */
     def symbols: List[Symbol] =
       scopeSymbols.symbols
-
-    // /**
-    //  * Find all scopes that contain symbols with the given name
-    //  * 
-    //  * TODO: ordering???
-    //  */
-    // def scopesBySymbol(sym: Symbol): List[Scope] =
-    //   scopeSymbols
-    //     .symbolsByName(sym.name)
-    //     .flatMap(sym => scopeSymbols.scope(it).map(List(_)).getOrElse(List.empty[Scope]))
   }
 
   def toActualState(s: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): ActualState = 

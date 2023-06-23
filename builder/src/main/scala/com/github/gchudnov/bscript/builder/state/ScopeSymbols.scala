@@ -15,6 +15,7 @@ import com.github.gchudnov.bscript.builder.util.Tree
 sealed trait ScopeSymbols:
   def addScope(scope: Scope): ScopeSymbols
   def link(scope: Scope, sym: Symbol): ScopeSymbols
+  
   def scope(ast: Symbol): Option[Scope]
   def scopes: List[Scope]
   def symbols(scope: Scope): List[Symbol]
