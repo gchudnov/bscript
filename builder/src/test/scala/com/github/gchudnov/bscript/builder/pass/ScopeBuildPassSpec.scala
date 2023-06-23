@@ -58,6 +58,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             actualState.scopeSize mustBe 1
             actualState.symbols must contain theSameElementsAs(List(SVar("x@var")))
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -109,11 +110,12 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 3 // root + main(args) + block inside
+            actualState.scopeSize mustBe 3 // root + main(args) + block inside
             // actualState.symbolsByName("x").size mustBe (2)
-            ???
+            println(actualState.symbols)
 
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
 

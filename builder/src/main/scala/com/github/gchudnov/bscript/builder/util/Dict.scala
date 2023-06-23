@@ -18,6 +18,7 @@ abstract class Dict[K, V, D <: Dict[K, V, D]]:
   protected def clone(keyValues: Map[K, Set[V]], valueKey: Map[V, K]): D
 
   protected def addKey(key: K): D =
+    require(!keyValues.contains(key), s"key ${key} is already present in the dictionary, cannot add it twice.")
     clone(keyValues = this.keyValues + (key -> Set.empty[V]), valueKey = valueKey)
 
   def set(key: K, value: V): D =
