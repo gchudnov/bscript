@@ -3,17 +3,14 @@ package com.github.gchudnov.bscript.builder.util
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.util.Tree
 
-
 final class TreeSpec extends TestSpec:
 
   private final case class Node(name: String)
 
-  private object Node {
-    given nodeShow: Show[Node] = new Show[Node] {
+  private object Node:
+    given nodeShow: Show[Node] = new Show[Node]:
       override def show(a: Node): String =
         s"node(${a.name})"
-    }
-  }
 
   "TreeSpec" when {
 
@@ -44,7 +41,7 @@ final class TreeSpec extends TestSpec:
           .add(b0)
 
         t1.vertexSize mustBe (1)
-        t1.contains(b0) mustBe(true)
+        t1.contains(b0) mustBe (true)
       }
     }
 
@@ -83,7 +80,7 @@ final class TreeSpec extends TestSpec:
           .add(b0)
 
         t1.vertexSize mustBe (1)
-        t1.contains(b0) mustBe(true)
+        t1.contains(b0) mustBe (true)
 
         val t2 = t1
           .add(b1)
@@ -95,9 +92,9 @@ final class TreeSpec extends TestSpec:
 
         t2.vertexSize mustBe (3)
 
-        t2.contains(b0) mustBe(true)
-        t2.contains(b1) mustBe(true)
-        t2.contains(b2) mustBe(true)
+        t2.contains(b0) mustBe (true)
+        t2.contains(b1) mustBe (true)
+        t2.contains(b2) mustBe (true)
 
         t2.parentOf(b0) mustBe (None)
         t2.parentOf(b1) mustBe (Some(b0))
@@ -118,20 +115,20 @@ final class TreeSpec extends TestSpec:
         val b1 = Node("b1")
         val b2 = Node("b2")
 
-        val t1 = 
+        val t1 =
           Tree
-          .empty[Node]
-          .add(b0)
-          .add(b1)
-          .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
+            .empty[Node]
+            .add(b0)
+            .add(b1)
+            .add(b2)
+            .link(b1, b0)
+            .link(b2, b0)
 
         t1.vertexSize mustBe (3)
 
-        t1.contains(b0) mustBe(true)
-        t1.contains(b1) mustBe(true)
-        t1.contains(b2) mustBe(true)
+        t1.contains(b0) mustBe (true)
+        t1.contains(b1) mustBe (true)
+        t1.contains(b2) mustBe (true)
 
         t1.parentOf(b0) mustBe (None)
         t1.parentOf(b1) mustBe (Some(b0))
@@ -167,10 +164,10 @@ final class TreeSpec extends TestSpec:
 
         t1.vertexSize mustBe (4)
 
-        t1.contains(b0) mustBe(true)
-        t1.contains(b1) mustBe(true)
-        t1.contains(b2) mustBe(true)
-        t1.contains(b3) mustBe(true)
+        t1.contains(b0) mustBe (true)
+        t1.contains(b1) mustBe (true)
+        t1.contains(b2) mustBe (true)
+        t1.contains(b3) mustBe (true)
 
         t1.parentOf(b0) mustBe (None)
         t1.parentOf(b1) mustBe (Some(b0))
@@ -202,6 +199,15 @@ final class TreeSpec extends TestSpec:
           .link(b1, b0)
           .link(b2, b0)
 
+        val expectedTree1Str = """
+                                 |{
+                                 |  "vertices": ["node(b0)","node(b1)","node(b2)"],
+                                 |  "edges": [["node(b1)","node(b0)"],["node(b2)","node(b0)"]]
+                                 |}
+                                 |""".stripMargin
+
+        t1.show.trim mustBe (expectedTree1Str.trim)
+
         t1.vertexSize mustBe (3)
 
         t1.parentOf(b0) mustBe (None)
@@ -210,9 +216,18 @@ final class TreeSpec extends TestSpec:
 
         val t2 = t1.link(b1, b2)
 
+        val expectedTree2Str = """
+                                 |{
+                                 |  "vertices": ["node(b0)","node(b1)","node(b2)"],
+                                 |  "edges": [["node(b1)","node(b2)"],["node(b2)","node(b0)"]]
+                                 |}
+                                 |""".stripMargin
+
+        t2.show.trim mustBe (expectedTree2Str.trim)
+
         t2.parentOf(b0) mustBe (None)
-        t2.parentOf(b1) mustBe (Some(b0))
-        t2.parentOf(b2) mustBe (Some(b1))
+        t2.parentOf(b1) mustBe (Some(b2))
+        t2.parentOf(b2) mustBe (Some(b0))
       }
     }
 
@@ -249,10 +264,10 @@ final class TreeSpec extends TestSpec:
           .add(b3) // NOTE: this add is optional
           .replace(b1, b3)
 
-        t1.parentOf(b0) mustBe (None)
-        t1.parentOf(b1) mustBe (None)
-        t1.parentOf(b2) mustBe (Some(b0))
-        t1.parentOf(b3) mustBe (Some(b0))
+        t2.parentOf(b0) mustBe (None)
+        t2.parentOf(b1) mustBe (None)
+        t2.parentOf(b2) mustBe (Some(b0))
+        t2.parentOf(b3) mustBe (Some(b0))
       }
 
       /**
@@ -269,13 +284,13 @@ final class TreeSpec extends TestSpec:
           .add(b0)
 
         t1.vertexSize mustBe (1)
-        t1.contains(b0) mustBe(true)
+        t1.contains(b0) mustBe (true)
 
         val t2 = t1.replace(b0, b1)
 
         t2.vertexSize mustBe (1)
-        t2.contains(b0) mustBe(false)
-        t2.contains(b1) mustBe(true)
+        t2.contains(b0) mustBe (false)
+        t2.contains(b1) mustBe (true)
       }
     }
 
@@ -283,11 +298,11 @@ final class TreeSpec extends TestSpec:
 
       /**
        * It is allowed to have the same name if the node is not the same.
-       * 
+       *
        * {{{
        *        b0
-       *       /  \ 
-       *     b1'  b1'' 
+       *       /  \
+       *     b1'  b1''
        * }}}
        */
       "is a duplicate and not allowed" in {
@@ -304,9 +319,9 @@ final class TreeSpec extends TestSpec:
           .link(b2, b0)
 
         t1.vertexSize mustBe (3)
-        t1.contains(b0) mustBe(true)
-        t1.contains(b1) mustBe(true)
-        t1.contains(b2) mustBe(true)
+        t1.contains(b0) mustBe (true)
+        t1.contains(b1) mustBe (true)
+        t1.contains(b2) mustBe (true)
       }
     }
 
@@ -341,6 +356,15 @@ final class TreeSpec extends TestSpec:
         val actual   = t1.path(b3)
 
         actual mustBe expected
+
+        val expectedT1Str = """
+                              |{
+                              |  "vertices": ["node(b0)","node(b1)","node(b2)","node(b3)"],
+                              |  "edges": [["node(b1)","node(b0)"],["node(b2)","node(b0)"],["node(b3)","node(b2)"]]
+                              |}
+                              |""".stripMargin
+
+        t1.show.trim mustBe (expectedT1Str.trim)
       }
     }
   }
