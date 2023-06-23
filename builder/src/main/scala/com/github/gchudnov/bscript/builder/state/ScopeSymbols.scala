@@ -29,7 +29,7 @@ object ScopeSymbols:
   lazy val empty: ScopeSymbols =
     BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
 
-  private val showSymbol: Show[Symbol] = new Show[Symbol] {
+  given showSymbol: Show[Symbol] = new Show[Symbol] {
     override def show(a: Symbol): String =
       s"symbol(${a.toString})"
   }

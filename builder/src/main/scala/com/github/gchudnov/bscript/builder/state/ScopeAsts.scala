@@ -23,7 +23,7 @@ object ScopeAsts:
   lazy val empty: ScopeAsts =
     BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
 
-  private val showAst: Show[AST] = new Show[AST] {
+  given showAst: Show[AST] = new Show[AST] {
     override def show(a: AST): String =
       s"ast(${a.toString})"
   }

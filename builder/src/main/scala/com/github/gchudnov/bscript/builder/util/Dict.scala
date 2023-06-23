@@ -42,7 +42,7 @@ abstract class Dict[K: Show, V: Show, D <: Dict[K, V, D]]:
     val showK = summon[Show[K]]
     val showV = summon[Show[V]]
 
-    val kvs = keyValues.map { case (k, vs) => s"${showK.show(k)} -> ${vs.toList.map(v => showV.show(v)).mkString("[ ", ", ", " ]")}" }
+    val kvs = keyValues.map { case (k, vs) => s"\"${showK.show(k)}\": ${vs.toList.map(v => "\"" + showV.show(v) + "\"").mkString("[", ",", "]")}" }
 
     val sb = new StringBuilder()
     kvs.foreach(kv => sb.append(kv).append("\n"))
