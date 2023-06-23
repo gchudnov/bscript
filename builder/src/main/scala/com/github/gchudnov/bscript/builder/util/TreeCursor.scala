@@ -1,8 +1,5 @@
 package com.github.gchudnov.bscript.builder.util
 
-import com.github.gchudnov.bscript.builder.util.Base26
-import com.github.gchudnov.bscript.builder.util.Tree
-
 /**
  * Cursors that tracks the current position in the tree
  *
@@ -122,7 +119,7 @@ object BasicTreeCursor:
    *   level
    */
   private def makeName(cs: Vector[Int], n: Int): String =
-    cs.take(n + 1).map(k => Base26.encode(k)).mkString(sep)
+    cs.take(n + 1).map(k => k.toString()).mkString(sep) // k => Base26.encode(k)
 
   /**
    * Increment the counter at the given level
@@ -147,7 +144,7 @@ object TreeCursor:
    * @return
    *   A new tree cursor
    */
-  def empty[A <: AnyRef : Show](aFactory: (String) => A): TreeCursor[A] =
+  def empty[A <: AnyRef: Show](aFactory: (String) => A): TreeCursor[A] =
     BasicTreeCursor(
       tree = Tree.empty[A],
       current = None,

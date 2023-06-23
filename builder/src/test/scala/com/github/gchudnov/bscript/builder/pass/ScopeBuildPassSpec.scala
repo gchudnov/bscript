@@ -47,7 +47,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
             val actualScopeTree = actualState.scopeTree.asString
             val expectedScopeTree = """|{
-                                       |  "vertices": ["scope(a)"],
+                                       |  "vertices": ["scope(0)"],
                                        |  "edges": []
                                        |}
                                        |""".stripMargin
@@ -77,25 +77,27 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbpls = """|{
+                                          |  "scope(0)": ["symbol(SVar(x@var))"]
                                           |}
                                           |""".stripMargin
 
             val actualScopeAsts = actualState.scopeAsts.asString
             val expectedScopeAsts = """|{
+                                       |  "scope(0)": ["ast(TypeId(i32))","ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))))"]
                                        |}
                                        |""".stripMargin
 
             val actualScopeTree = actualState.scopeTree.asString
             val expectedScopeTree = """|{
-                                       |  "vertices": ["scope(a)"],
+                                       |  "vertices": ["scope(0)"],
                                        |  "edges": []
                                        |}
                                        |""".stripMargin
 
             // println(actualState)
-            println(actualScopeSymbols)
-            println(actualScopeAsts)
-            println(actualScopeTree)
+            // println(actualScopeSymbols)
+            // println(actualScopeAsts)
+            // println(actualScopeTree)
 
             actualScopeSymbols mustBe expectedScopeSymbpls
             actualScopeAsts mustBe expectedScopeAsts

@@ -31,7 +31,7 @@ object ScopeAsts:
 
   given showPtrAst: Show[Ptr[AST]] = new Show[Ptr[AST]]:
     override def show(a: Ptr[AST]): String =
-      s"ptr(${showAst.show(a.value)})"
+      s"${showAst.show(a.value)}"
 
 /**
  * A Dictionary of Scope -> AST Implementation

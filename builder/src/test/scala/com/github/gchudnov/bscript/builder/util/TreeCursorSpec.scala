@@ -1,7 +1,6 @@
 package com.github.gchudnov.bscript.builder.util
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.util.TreeCursor
 
 /**
  * Tree Cursor Specification
@@ -31,7 +30,7 @@ final class TreeCursorSpec extends TestSpec:
 
     /**
      * {{{
-     *    a
+     *    0
      * }}}
      */
     "push" should {
@@ -41,7 +40,7 @@ final class TreeCursorSpec extends TestSpec:
         val actual = c.push()
 
         actual.tree.vertexSize mustBe (1)
-        actual.at mustBe Some(Node("a"))
+        actual.at mustBe Some(Node("0"))
       }
     }
 
@@ -75,7 +74,7 @@ final class TreeCursorSpec extends TestSpec:
         val actual = c.push().push()
 
         actual.tree.vertexSize mustBe (2)
-        actual.at mustBe Some(Node("a.a"))
+        actual.at mustBe Some(Node("0.0"))
       }
     }
 
@@ -95,7 +94,7 @@ final class TreeCursorSpec extends TestSpec:
         val actual = c.push().push().push()
 
         actual.tree.vertexSize mustBe (3)
-        actual.at mustBe Some(Node("a.a.a"))
+        actual.at mustBe Some(Node("0.0.0"))
       }
     }
 
@@ -131,7 +130,7 @@ final class TreeCursorSpec extends TestSpec:
         val actual = c.push().push().pop().push().pop().push().pop()
 
         actual.tree.vertexSize mustBe (4)
-        actual.at mustBe Some(Node("a"))
+        actual.at mustBe Some(Node("0"))
       }
     }
   }

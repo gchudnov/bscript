@@ -38,7 +38,7 @@ object ScopeSymbols:
 
   given showPtrSymbol: Show[Ptr[Symbol]] = new Show[Ptr[Symbol]] {
     override def show(a: Ptr[Symbol]): String =
-      s"ptr(${showSymbol.show(a.value)})"
+      s"${showSymbol.show(a.value)}"
   }
 
 /**
