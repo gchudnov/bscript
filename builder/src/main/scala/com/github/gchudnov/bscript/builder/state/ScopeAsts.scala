@@ -1,7 +1,6 @@
 package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.util.Dict
-import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Show
