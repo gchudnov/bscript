@@ -94,32 +94,9 @@ final class ScopeBuildPassSpec extends TestSpec:
                                        |}
                                        |""".stripMargin
 
-            // println(actualState)
-            // println(actualScopeSymbols)
-            // println(actualScopeAsts)
-            // println(actualScopeTree)
-
             actualScopeSymbols mustBe expectedScopeSymbpls
             actualScopeAsts mustBe expectedScopeAsts
             actualScopeTree mustBe expectedScopeTree
-
-/*
-{
-  "scope(a)": ["ptr(symbol(SVar(x@var)))"]
-}
-
-{
-  "scope(a)": ["ptr(ast(TypeId(i32)))","ptr(ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0)))))"]
-}
-
-{
-  "vertices": ["scope(a)"],
-  "edges": []
-}
-*/
-
-            // actualState.scopeSize mustBe 1
-            // actualState.symbols must contain theSameElementsAs (List(SVar("x@var")))
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -144,14 +121,36 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.scopeSize mustBe 3 // root + main(args) + block inside
 
-            val symbols = actualState.symbols
-            symbols must contain theSameElementsAs (List(SMethod("main@method<>(): i32"), SVar("x@var")))
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbpls = """|{
+                                          |  "scope(0)": ["symbol(SMethod(main@method<>(): i32))"]
+                                          |  "scope(0.0.0)": ["symbol(SVar(x@var))"]
+                                          |}
+                                          |""".stripMargin
 
-            // main and var scopes are not-equal
-            val mainScope = actualState.scopeBySymbol(symbols.head)
-            val varScope  = actualState.scopeBySymbol(symbols.last)
+            val actualScopeAsts = actualState.scopeAsts.asString
+            val expectedScopeAsts = """|{
+                                       |  "scope(0)": ["ast(MethodDecl(main,MethodType(List(),List(),TypeId(i32)),Block(List(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))), Assign(Id(x),ConstLit(IntVal(3)))))))"]
+                                       |  "scope(0.0)": ["ast(TypeId(i32))"]
+                                       |  "scope(0.0.0)": ["ast(TypeId(i32))","ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))))"]
+                                       |}
+                                       |""".stripMargin
 
-            mainScope must not be (varScope)
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(0)","scope(0.0)","scope(0.0.0)"],
+                                       |  "edges": [["scope(0.0)","scope(0)"],["scope(0.0.0)","scope(0.0)"]]
+                                       |}
+                                       |""".stripMargin
+
+            // println(actualState)
+            // println(actualScopeSymbols)
+            // println(actualScopeAsts)
+            // println(actualScopeTree)
+
+            actualScopeSymbols mustBe expectedScopeSymbpls
+            actualScopeAsts mustBe expectedScopeAsts
+            actualScopeTree mustBe expectedScopeTree
 
           case Left(t) =>
             fail("Should be 'right", t)
