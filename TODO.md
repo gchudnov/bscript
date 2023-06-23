@@ -3072,3 +3072,77 @@ func main() {
  
 
 */
+
+
+///
+
+            actualState.scopeSize mustBe 3 // root + main(args) + block inside
+
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(main@method<>(): i32))"]
+                                          |  "scope(0.0.0)": ["symbol(SVar(x@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            val actualScopeAsts = actualState.scopeAsts.asString
+            val expectedScopeAsts = """|{
+                                       |  "scope(0)": ["ast(MethodDecl(main,MethodType(List(),List(),TypeId(i32)),Block(List(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))), Assign(Id(x),ConstLit(IntVal(3)))))))"]
+                                       |  "scope(0.0)": ["ast(TypeId(i32))"]
+                                       |  "scope(0.0.0)": ["ast(TypeId(i32))","ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))))"]
+                                       |}
+                                       |""".stripMargin
+
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(0)","scope(0.0)","scope(0.0.0)"],
+                                       |  "edges": [["scope(0.0)","scope(0)"],["scope(0.0.0)","scope(0.0)"]]
+                                       |}
+                                       |""".stripMargin
+
+            // println(actualState)
+            // println(actualScopeSymbols)
+            // println(actualScopeAsts)
+            // println(actualScopeTree)
+
+            actualScopeSymbols mustBe expectedScopeSymbols
+            actualScopeAsts mustBe expectedScopeAsts
+            actualScopeTree mustBe expectedScopeTree
+
+////
+
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(fieldOfDateTime@method<>(datetime, str): i32))","symbol(SMethod(offsetDateTime@method<>(datetime, i32, str): datetime))"]
+                                          |  "scope(0.0)": ["symbol(SVar(offset@var))","symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(0)","scope(0.0)","scope(0.0.0)","scope(0.1)","scope(0.1.1)"],
+                                       |  "edges": [["scope(0.0)","scope(0)"],["scope(0.0.0)","scope(0.0)"],["scope(0.1)","scope(0)"],["scope(0.1.1)","scope(0.1)"]]
+                                       |}
+                                       |""".stripMargin
+
+            println(actualScopeSymbols)
+            println(actualScopeTree)
+
+            actualScopeSymbols mustBe expectedScopeSymbols
+            actualScopeTree mustBe expectedScopeTree
+
+////
+
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(fieldOfDateTime@method<>(datetime, str): i32))","symbol(SMethod(offsetDateTime@method<>(datetime, i32, str): datetime))"]
+                                          |  "scope(0.0)": ["symbol(SVar(offset@var))","symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            println(actualScopeSymbols)
+
+            actualScopeSymbols mustBe expectedScopeSymbols
+            

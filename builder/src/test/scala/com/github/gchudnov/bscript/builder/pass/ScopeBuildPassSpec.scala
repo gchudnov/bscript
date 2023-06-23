@@ -36,7 +36,7 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbpls = """|{
+            val expectedScopeSymbols = """|{
                                           |}
                                           |""".stripMargin
 
@@ -52,7 +52,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                                        |}
                                        |""".stripMargin
 
-            actualScopeSymbols mustBe expectedScopeSymbpls
+            actualScopeSymbols mustBe expectedScopeSymbols
             actualScopeAsts mustBe expectedScopeAsts
             actualScopeTree mustBe expectedScopeTree
 
@@ -76,16 +76,10 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbpls = """|{
+            val expectedScopeSymbols = """|{
                                           |  "scope(0)": ["symbol(SVar(x@var))"]
                                           |}
                                           |""".stripMargin
-
-            val actualScopeAsts = actualState.scopeAsts.asString
-            val expectedScopeAsts = """|{
-                                       |  "scope(0)": ["ast(TypeId(i32))","ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))))"]
-                                       |}
-                                       |""".stripMargin
 
             val actualScopeTree = actualState.scopeTree.asString
             val expectedScopeTree = """|{
@@ -94,8 +88,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                                        |}
                                        |""".stripMargin
 
-            actualScopeSymbols mustBe expectedScopeSymbpls
-            actualScopeAsts mustBe expectedScopeAsts
+            actualScopeSymbols mustBe expectedScopeSymbols
             actualScopeTree mustBe expectedScopeTree
           case Left(t) =>
             fail("Should be 'right", t)
@@ -122,19 +115,11 @@ final class ScopeBuildPassSpec extends TestSpec:
             actualState.scopeSize mustBe 3 // root + main(args) + block inside
 
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbpls = """|{
+            val expectedScopeSymbols = """|{
                                           |  "scope(0)": ["symbol(SMethod(main@method<>(): i32))"]
                                           |  "scope(0.0.0)": ["symbol(SVar(x@var))"]
                                           |}
                                           |""".stripMargin
-
-            val actualScopeAsts = actualState.scopeAsts.asString
-            val expectedScopeAsts = """|{
-                                       |  "scope(0)": ["ast(MethodDecl(main,MethodType(List(),List(),TypeId(i32)),Block(List(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))), Assign(Id(x),ConstLit(IntVal(3)))))))"]
-                                       |  "scope(0.0)": ["ast(TypeId(i32))"]
-                                       |  "scope(0.0.0)": ["ast(TypeId(i32))","ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0))))"]
-                                       |}
-                                       |""".stripMargin
 
             val actualScopeTree = actualState.scopeTree.asString
             val expectedScopeTree = """|{
@@ -143,13 +128,7 @@ final class ScopeBuildPassSpec extends TestSpec:
                                        |}
                                        |""".stripMargin
 
-            // println(actualState)
-            // println(actualScopeSymbols)
-            // println(actualScopeAsts)
-            // println(actualScopeTree)
-
-            actualScopeSymbols mustBe expectedScopeSymbpls
-            actualScopeAsts mustBe expectedScopeAsts
+            actualScopeSymbols mustBe expectedScopeSymbols
             actualScopeTree mustBe expectedScopeTree
 
           case Left(t) =>
@@ -172,11 +151,26 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             actualState.scopeSize mustBe 3 // root + main(args) + block inside
-            // actualState.symbolsByName("x").size mustBe (2)
-            println(actualState.symbols)
+
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(myFunc@method<>(i32): i32))"]
+                                          |  "scope(0.0)": ["symbol(SVar(x@var))"]
+                                          |  "scope(0.0.0)": ["symbol(SVar(x@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(0)","scope(0.0)","scope(0.0.0)"],
+                                       |  "edges": [["scope(0.0)","scope(0)"],["scope(0.0.0)","scope(0.0)"]]
+                                       |}
+                                       |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
+            actualScopeTree mustBe expectedScopeTree
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -200,10 +194,23 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 5
-            // actualState.symbolsByName("offsetDateTime").size mustBe (1)
-            // actualState.symbolsByName("fieldOfDateTime").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(fieldOfDateTime@method<>(datetime, str): i32))","symbol(SMethod(offsetDateTime@method<>(datetime, i32, str): datetime))"]
+                                          |  "scope(0.0)": ["symbol(SVar(offset@var))","symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(0)","scope(0.0)","scope(0.0.0)","scope(0.1)","scope(0.1.1)"],
+                                       |  "edges": [["scope(0.0)","scope(0)"],["scope(0.0.0)","scope(0.0)"],["scope(0.1)","scope(0)"],["scope(0.1.1)","scope(0.1)"]]
+                                       |}
+                                       |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
+            actualScopeTree mustBe expectedScopeTree
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -224,8 +231,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("+").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(+@method<>(i32, i32): i32))"]
+                                          |  "scope(0.0)": ["symbol(SVar(lhs@var))","symbol(SVar(rhs@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -246,8 +259,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("+").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(+@method<>(f64, i32): f64))"]
+                                          |  "scope(0.0)": ["symbol(SVar(lhs@var))","symbol(SVar(rhs@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -268,8 +287,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("+").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(+@method<>(i32, i32): i32))"]
+                                          |  "scope(0.0)": ["symbol(SVar(lhs@var))","symbol(SVar(rhs@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -290,8 +315,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("+").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(+@method<T>(T, T): T))"]
+                                          |  "scope(0.0)": ["symbol(SType(T@type))","symbol(SVar(lhs@var))","symbol(SVar(rhs@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -312,8 +343,14 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("+").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(+@method<R, T, U>(T, U): R))"]
+                                          |  "scope(0.0)": ["symbol(SType(R@type))","symbol(SType(T@type))","symbol(SType(U@type))","symbol(SVar(lhs@var))","symbol(SVar(rhs@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -476,11 +513,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 1
-            // actualState.symbolsByName("i").size mustBe (1)
-            // actualState.symbolsByName("j").size mustBe (1)
-            // actualState.symbolsByName("k").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SVar(i@var))","symbol(SVar(j@var))","symbol(SVar(k@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -500,9 +539,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 1
-            // actualState.symbolsByName("a").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SVar(a@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -521,9 +564,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 1
-            // actualState.symbolsByName("a").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SVar(a@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -542,9 +589,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 1
-            // actualState.symbolsByName("x").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SVar(x@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -564,9 +615,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 1
-            // actualState.symbolsByName("x").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SVar(x@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -590,12 +645,15 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // val blockStatements = actualState.ast.asInstanceOf[Block].exprs
-            // val callExpr        = blockStatements.last.asInstanceOf[Call]
-            // val callScope       = actualState.scopeByAST(callExpr)
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(printf@method<>(str, auto): void))"]
+                                          |  "scope(0.0)": ["symbol(SVar(format@var))","symbol(SVar(value@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(z@var))"]
+                                          |}
+                                          |""".stripMargin
 
-            // callScope.map(_.name) mustBe Some("a")
-            ???
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -623,13 +681,17 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("x").size mustBe (1)
-            // actualState.symbolsByName("y").size mustBe (1)
-            // actualState.symbolsByName("j").size mustBe (1)
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(f@method<>(): void))","symbol(SMethod(g@method<>(): void))","symbol(SVar(x@var))"]
+                                          |  "scope(0.0.0)": ["symbol(SVar(y@var))"]
+                                          |  "scope(0.0.0.0)": ["symbol(SVar(i@var))"]
+                                          |  "scope(0.0.0.1)": ["symbol(SVar(j@var))"]
+                                          |  "scope(0.1.1)": ["symbol(SVar(i@var))"]
+                                          |}
+                                          |""".stripMargin
 
-            // // NOTE: `i` exists in 2 scopes
-            // actualState.symbolsByName("i").size mustBe (2)
-            ???
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -669,20 +731,18 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            ???
-          // actualState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
-          // actualState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
-          // actualState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(f@method<>(): void))","symbol(SStruct(A@struct<> { i32, B, C }))","symbol(SStruct(B@struct<> { i32 }))","symbol(SStruct(C@struct<> { i32 }))","symbol(SVar(a@var))"]
+                                          |  "scope(0.0)": ["symbol(SVar(y@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(z@var))"]
+                                          |  "scope(0.2)": ["symbol(SVar(b@var))","symbol(SVar(c@var))","symbol(SVar(x@var))"]
+                                          |  "scope(0.3.0)": ["symbol(SStruct(D@struct<> { i32 }))","symbol(SVar(d@var))"]
+                                          |  "scope(0.3.0.0)": ["symbol(SVar(i@var))"]
+                                          |}
+                                          |""".stripMargin
 
-          // actualState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
-          // actualState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
-          // actualState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
-
-          // actualState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
-          // actualState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
-          // actualState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
-          // actualState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
-          // actualState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
+            actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -708,15 +768,19 @@ final class ScopeBuildPassSpec extends TestSpec:
       "initialize with an anonymous struct" in {
         val t = Examples.ex18
 
-        // TODO: failing
-
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.symbolsByName("a").size mustBe (1)
-            ???
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SStruct(A@struct<> { i32, str, B }))","symbol(SStruct(B@struct<> { i32 }))","symbol(SVar(a@var))"]
+                                          |  "scope(0.0)": ["symbol(SVar(y@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(b@var))","symbol(SVar(s@var))","symbol(SVar(x@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -741,10 +805,17 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            ???
-          // actualState.symbolsByName("f").size mustBe (1)
-          // actualState.symbolsByName("g").size mustBe (1)
-          // actualState.symbolsByName("main").size mustBe (1)
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(f@method<>(i32): void))","symbol(SMethod(g@method<>(i32): void))","symbol(SMethod(main@method<>(): void))","symbol(SVar(x@var))"]
+                                          |  "scope(0.0)": ["symbol(SVar(x@var))"]
+                                          |  "scope(0.0.0)": ["symbol(SVar(z@var))"]
+                                          |  "scope(0.1)": ["symbol(SVar(x@var))"]
+                                          |  "scope(0.1.1)": ["symbol(SVar(y@var))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
           case Left(t) =>
             fail("Should be 'right", t)
       }
