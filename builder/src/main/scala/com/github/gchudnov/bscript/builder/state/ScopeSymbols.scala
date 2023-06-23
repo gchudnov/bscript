@@ -17,7 +17,7 @@ sealed trait ScopeSymbols:
   def link(scope: Scope, sym: Symbol): ScopeSymbols
   def scope(ast: Symbol): Option[Scope]
   def symbols(scope: Scope): List[Symbol]
-  def symbolsByName(name: String): List[Symbol]
+  def symbols: List[Symbol]
 
   def resolveIn(name: String, in: Scope): Option[Symbol]
   def resolveUp(name: String, start: Scope, scopeTree: Tree[Scope]): Option[Symbol]
@@ -47,8 +47,8 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
   def symbols(scope: Scope): List[Symbol] =
     values(scope).map(_.value)
 
-  def symbolsByName(name: String): List[Symbol] =
-    valueKey.keySet.toList.collect { case Ptr[Symbol](sym) if sym.name == name => sym }
+  def symbols: List[Symbol] =
+    valueKey.keySet.toList.map(_.value)
 
   override def resolveIn(name: String, in: Scope): Option[Symbol] =
     symbols(in)

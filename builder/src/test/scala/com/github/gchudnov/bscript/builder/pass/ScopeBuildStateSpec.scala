@@ -50,7 +50,7 @@ final class ScopeBuildStateSpec extends TestSpec:
         state2.scopeTree.vertexSize mustBe 1
         state2.scopeTree.edgeSize mustBe 0
 
-        state2.scopeSymbols.symbolsByName(sym.name) mustBe List(sym)
+        state2.scopeSymbols.symbols mustBe List(sym)
       }
     }
   }
