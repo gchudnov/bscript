@@ -52,17 +52,17 @@ import com.github.gchudnov.bscript.builder.pass.Pass
  * 
  * NOTE: for (2-PASS) -- see scoperesolve/PassImpl.scala
  */
-private[builder] final class PassImpl() extends Pass:
+private[builder] final class PassImpl() //extends Pass:
 
-  type In  = InState
-  type Out = OutState
+  // type In  = InState
+  // type Out = OutState
 
-  override def run(in: InState): OutState =
-    val folder = Folder.make()
+  // override def run(in: InState): OutState =
+  //   val folder = Folder.make()
 
-    val state0         = PassState.from(in)
-    val state1         = folder.foldAST(state0, in.ast)
+  //   val state0         = PassState.from(in)
+  //   val state1         = folder.foldAST(state0, in.ast)
 
-    val out = PassState.into(state1, in.ast)
+  //   val out = PassState.into(state1, in.ast)
 
-    out
+  //   out

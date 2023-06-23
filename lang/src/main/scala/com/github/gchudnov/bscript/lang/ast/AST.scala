@@ -30,6 +30,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      +- TypeAST -+- Auto
  *                  +- TypeId
  *                  +- VecType
+ *                  +- SetType
  *                  +- MapType
  *                  +- StructType
  *                  +- MethodType

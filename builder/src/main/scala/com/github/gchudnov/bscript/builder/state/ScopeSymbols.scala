@@ -6,7 +6,13 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Tree
 
-sealed trait ScopeSymbols {
+/**
+ * Scope-Symbol Dictionary Interface
+ *
+ *   - A scope can have multiple symbols
+ *   - A symbol can belong to only one scope
+ */
+sealed trait ScopeSymbols:
   def addScope(scope: Scope): ScopeSymbols
   def link(scope: Scope, sym: Symbol): ScopeSymbols
   def scope(ast: Symbol): Option[Scope]
@@ -15,19 +21,17 @@ sealed trait ScopeSymbols {
 
   def resolveIn(name: String, in: Scope): Option[Symbol]
   def resolveUp(name: String, start: Scope, scopeTree: Tree[Scope]): Option[Symbol]
-}
 
 object ScopeSymbols:
   lazy val empty: ScopeSymbols =
     BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
 
 /**
-  * Scope-Symbol Dictionary
-  *
-  * @param keyValues
-  * @param valueKey
+  * Scope-Symbol Dictionary Implementation
   */
-private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]) extends Dict[Scope, Ptr[Symbol], BasicScopeSymbols] with ScopeSymbols:
+private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope])
+    extends Dict[Scope, Ptr[Symbol], BasicScopeSymbols]
+    with ScopeSymbols:
   override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): BasicScopeSymbols =
     BasicScopeSymbols(keyValues = keyValues, valueKey = valueKey)
 
@@ -49,7 +53,6 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
   override def resolveIn(name: String, in: Scope): Option[Symbol] =
     symbols(in)
       .find(_.name == name)
-
 
   override def resolveUp(name: String, start: Scope, scopeTree: Tree[Scope]): Option[Symbol] =
     symbols(start)

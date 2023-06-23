@@ -1,46 +1,45 @@
 package com.github.gchudnov.bscript.builder.pass
 
 import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.interfaces.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
-
-/*
-output:
-    ast: AST,
-  scopeTree: Tree[Scope],
-  scopeSymbols: ScopeSymbols,
-  scopeAsts: ScopeAsts
-
-*/
+import com.github.gchudnov.bscript.builder.BuilderException
 
 /**
  * #1 - Scope Build Pass
-  */
-final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasAST] {
+ *
+ *   - Construct a scope tree.
+ *   - Create and populate symbol tables for each scope.
+ *
+ * A symbol table contains a record of all the names that are declared for a scope.
+ */
+final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST]:
 
-  override def run(in: HasAST): HasScopeTree & HasAST = 
+  override def run(in: HasAST): HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
     val state0 = ScopeBuildState.empty
-    val ast0 = in.ast
+    val ast0   = in.ast
 
     val folder = new ScopeBuildFolder()
 
     val state1 = folder.foldAST(state0, ast0)
 
-    // TODO: produce the output state
+    val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
+      override val ast: AST                   = ast0
+      override val scopeTree: ScopeTree       = state1.scopeCursor.tree
+      override val scopeSymbols: ScopeSymbols = state1.scopeSymbols
+      override val scopeAsts: ScopeAsts       = state1.scopeAsts
 
-    ???
-
-
-}
+    out
 
 /**
-  * Scope Build Folder
-  */
-private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState] {
+ * Scope Build Folder
+ */
+private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
 
   override def foldAST(s: ScopeBuildState, ast: AST): ScopeBuildState =
     ast match
@@ -49,43 +48,43 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState] {
       case x @ Id(name) =>
         foldOverAST(s, x)
 
-      // TODO: a declaration should be unified, see cpp2 tests
       case x @ MethodDecl(name, mType, body) =>
-        foldOverAST(s.define(SMethod(name)).bind(x).push(), x).pop()
+        foldOverAST(s.defineSymbol(SMethod(x.symbolName)).bindAstToScope(x).pushScope(), x).popScope()
       case x @ StructDecl(name, sType) =>
-        foldOverAST(s.define(SStruct(name)).bind(x).push(), x).pop()
+        foldOverAST(s.defineSymbol(SStruct(x.symbolName)).bindAstToScope(x).pushScope(), x).popScope()
       case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(s.define(SVar(name)).bind(x), x)
+        foldOverAST(s.defineSymbol(SVar(x.symbolName)).bindAstToScope(x), x)
       case x @ TypeDecl(name) =>
-        foldOverAST(s.define(SType(name)).bind(x), x)
+        foldOverAST(s.defineSymbol(SType(x.symbolName)).bindAstToScope(x), x)
 
       case x: Annotated =>
         foldOverAST(s, x)
       case x: Assign =>
         foldOverAST(s, x)
       case x: Block =>
-        foldOverAST(s.push(), x).pop()
+        foldOverAST(s.pushScope(), x).popScope()
       case x @ Call(id, args) =>
-        foldOverAST(s.bind(x), x)
+        foldOverAST(s.bindAstToScope(x), x)
       case x @ Compiled(callback, retType) =>
         foldOverAST(s, x)
       case x: If =>
         foldOverAST(s, x)
       case x @ Init() =>
         foldOverAST(s, x)
-      // TODO: define for KeyValue
+      case x @ KeyValue(key, value) =>
+        foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
         foldOverAST(s, x)
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
       case x @ MethodLit(mType, body) =>
-        foldOverAST(s.define(SMethod("anon")).push(), x).pop() // TODO: predefined name is incorrect, instead we should generate a new one ?
+        foldOverAST(s.pushScope(), x).popScope()
 
       case x @ Auto() =>
         foldOverAST(s, x)
       case x @ TypeId(name) =>
-        foldOverAST(s, x).bind(x)
+        foldOverAST(s, x).bindAstToScope(x)
       case x @ VecType(elemType) =>
         foldOverAST(s, x)
       case x @ MapType(keyType, valType) =>
@@ -98,31 +97,42 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState] {
       case other =>
         throw new MatchError(s"Unsupported AST type in Build-Folder: ${other}")
 
-}
-
 /**
-  * Scope Build State
-  *
-  */
-private final case class ScopeBuildState() {
+ * Scope Build State
+ */
+private final case class ScopeBuildState(scopeCursor: TreeCursor[Scope], scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
-  def pushState(): ScopeBuildState =
-    ???
+  def pushScope(): ScopeBuildState =
+    this.copy(scopeCursor = scopeCursor.push())
 
-  def popState(): ScopeBuildState =
-    ???
+  def popScope(): ScopeBuildState =
+    this.copy(scopeCursor = scopeCursor.pop())
 
   def defineSymbol(symbol: Symbol): ScopeBuildState =
-    ???
+    scopeCursor.at match
+      case Some(scope) =>
+        this.copy(scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol))
+      case None =>
+        throw new BuilderException(s"Cannot define symbol '${symbol}' without a current scope. Call .pushScope() to create a scope first.")
 
   def bindAstToScope(ast: AST): ScopeBuildState =
-    ???
-}
+    scopeCursor.at match
+      case Some(scope) =>
+        this.copy(scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
+      case None =>
+        throw new BuilderException(s"Cannot bind AST '${ast}' to a scope without a current scope. Invoke .pushScope() to create a scope first.")
+
+  def scopeTree: ScopeTree =
+    scopeCursor.tree
 
 /**
-  * Scope Build State Companion
-  */
-private object ScopeBuildState {
-  lazy val empty: ScopeBuildState = 
-    ScopeBuildState()
-}
+ * Scope Build State Companion
+ */
+private object ScopeBuildState:
+
+  lazy val empty: ScopeBuildState =
+    ScopeBuildState(
+      scopeCursor = TreeCursor.empty[Scope](it => ScopeRef(it)),
+      scopeSymbols = ScopeSymbols.empty,
+      scopeAsts = ScopeAsts.empty,
+    )

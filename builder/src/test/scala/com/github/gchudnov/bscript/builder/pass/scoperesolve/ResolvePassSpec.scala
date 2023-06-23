@@ -1095,15 +1095,16 @@ final class ResolvePassSpec extends TestSpec:
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
   private def eval(ast0: AST): Either[Throwable, OutState] =
-    val buildPass = new BuildPassImpl()
-    val resolvePass = new PassImpl()
+    ???
+    // val buildPass = new BuildPassImpl()
+    // val resolvePass = new PassImpl()
 
-    for
-      buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
-      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
-      resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
-    yield resolveOutState
+    // for
+    //   buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
+    //   buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+    //   resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
+    //   resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
+    // yield resolveOutState
 
 
 // object ResolvePass:

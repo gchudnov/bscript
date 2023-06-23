@@ -1,11 +1,9 @@
-package com.github.gchudnov.bscript.builder.pass.scopebuild
+package com.github.gchudnov.bscript.builder.pass
 
-import com.github.gchudnov.bscript.builder.state.Scope
+import com.github.gchudnov.bscript.builder.interfaces.*
+import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.pass.Examples
-import com.github.gchudnov.bscript.builder.pass.scopebuild.InState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
@@ -19,11 +17,12 @@ import com.github.gchudnov.bscript.lang.util.Transform
 import scala.util.control.Exception.*
 
 /**
- * BuildPassSpec
+ * Scope Build Pass Tests
  */
-final class BuildPassSpec extends TestSpec:
+final class ScopeBuildPassSpec extends TestSpec:
+  import ScopeBuildPassSpec.*
 
-  "BuildPass" when {
+  "ScopeBuildPass" when {
 
     "const literals" should {
       /**
@@ -512,11 +511,12 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            val blockStatements = outState.ast.asInstanceOf[Block].exprs
-            val callExpr        = blockStatements.last.asInstanceOf[Call]
-            val callScope       = outState.scopeByAST(callExpr)
+            // val blockStatements = outState.ast.asInstanceOf[Block].exprs
+            // val callExpr        = blockStatements.last.asInstanceOf[Call]
+            // val callScope       = outState.scopeByAST(callExpr)
 
-            callScope.map(_.name) mustBe Some("a")
+            // callScope.map(_.name) mustBe Some("a")
+            ???
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -589,19 +589,20 @@ final class BuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(outState) =>
-            outState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            outState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            outState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            ???
+            // outState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            // outState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            // outState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
 
-            outState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            outState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
-            outState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
+            // outState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            // outState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
+            // outState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
 
-            outState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
-            outState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
-            outState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
-            outState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
-            outState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
+            // outState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
+            // outState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
+            // outState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
+            // outState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
+            // outState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -716,10 +717,56 @@ final class BuildPassSpec extends TestSpec:
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
-  private def eval(ast0: AST): Either[Throwable, OutState] =
-    val buildPass = new PassImpl()
+  private def eval(ast0: AST): Either[Throwable, ActualState] = nonFatalCatch.either {
+    val passs = new ScopeBuildPass()
+    val in = new HasAST {
+      val ast = ast0
+    }
+    val out = passs.run(in)
+    val actualState = toActualState(out)
+    actualState
+  }
 
-    for
-      buildStateIn      <- nonFatalCatch.either(InState.from(ast0))
-      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-    yield buildOutState
+object ScopeBuildPassSpec {
+
+  final case class ActualState(
+    scopeTree: ScopeTree,
+    scopeAsts: ScopeAsts,
+    scopeSymbols: ScopeSymbols,
+  ) {
+    /**
+      * Get the number of scopes in the AST
+      */
+    def scopeSize: Int =
+      scopeTree.vertexSize
+
+    /**
+      * Find Scope by AST
+      */
+    def scopeByAST(ast: AST): Option[Scope] =
+      scopeAsts.scope(ast)
+
+    /**
+     * Find all symbols that have the given name
+     */
+    def symbolsByName(name: String): List[Symbol] =
+      scopeSymbols.symbolsByName(name)
+
+    // /**
+    //  * Find all scopes that contain symbols with the given name
+    //  * 
+    //  * TODO: ordering???
+    //  */
+    // def scopesBySymbol(sym: Symbol): List[Scope] =
+    //   scopeSymbols
+    //     .symbolsByName(sym.name)
+    //     .flatMap(sym => scopeSymbols.scope(it).map(List(_)).getOrElse(List.empty[Scope]))
+  }
+
+  def toActualState(s: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): ActualState = 
+    ActualState(
+      scopeTree = s.scopeTree,
+      scopeAsts = s.scopeAsts,
+      scopeSymbols = s.scopeSymbols,
+    )
+}

@@ -1,3 +1,6 @@
 package com.github.gchudnov.bscript.builder.state
 
-final case class ScopeTree()
+import com.github.gchudnov.bscript.builder.util.Tree
+
+type ScopeTree = Tree[Scope]
+

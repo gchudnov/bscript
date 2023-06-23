@@ -6,7 +6,10 @@ import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 
 /**
- * A dictionary of Scope -> AST mappings
+ * A Dictionary of Scope -> AST Interface
+ *
+ *   - a scope can have multiple ASTs
+ *   - an AST can belong to only one scope
  */
 sealed trait ScopeAsts:
   def addScope(scope: Scope): ScopeAsts
@@ -19,10 +22,7 @@ object ScopeAsts:
     BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
 
 /**
- * A Basic Scope-Ast Dictionary
- *
- * @param keyValues
- * @param valueKey
+ * A Dictionary of Scope -> AST Implementation
  */
 private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
   override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =

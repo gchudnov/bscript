@@ -5,4 +5,7 @@ package com.github.gchudnov.bscript.lang.ast.types
  * 
  * It could be either a MethodDecl, StructDecl, or TypeDecl
  */
-final case class TypeId(name: String) extends TypeAST
+final case class TypeId(name: String) extends TypeAST:
+  override def asString: String =
+    name
+

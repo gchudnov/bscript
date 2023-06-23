@@ -25,7 +25,7 @@ sealed trait TreeCursor[A]:
 
   /**
    * Backoff the current element, so that the cursor points to the parent
-   * 
+   *
    * NOTE: when we backoff, the tree is preserved
    *
    * @return
@@ -78,8 +78,8 @@ final case class BasicTreeCursor[A <: AnyRef](
    *   A new tree cursor
    */
   override def push(): TreeCursor[A] =
-    val cs   = incrementCounter(this.level)
-    val name = makeName(cs)
+    val cs   = incCounter(this.counter, this.level)
+    val name = makeName(cs, this.level)
     val a    = aFactory(name)
     val t2   = current.fold(tree.add(a))(c => tree.add(a).link(a, c))
     this.copy(
@@ -110,26 +110,33 @@ final case class BasicTreeCursor[A <: AnyRef](
   override def at: Option[A] =
     this.current
 
+object BasicTreeCursor:
+  private val sep = "."
+
+  /**
+   * Make a name to use for a node
+   *
+   * @param cs
+   *   counter of nodes per level
+   * @param n
+   *   level
+   */
+  private def makeName(cs: Vector[Int], n: Int): String =
+    cs.take(n + 1).map(k => Base26.encode(k)).mkString(sep)
+
   /**
    * Increment the counter at the given level
    *
+   * @param cs
+   *   Counter of nodes per level
    * @param n
    *   Level
    * @return
    *   A new counter
    */
-  private def incrementCounter(n: Int): Vector[Int] =
-    assert(counter.size >= n, s"counter = ${counter.toList}, n = ${n}: trying to increment counter out of bounds, this ia bug in code")
-    if this.counter.size == n then counter.appended(0) else counter.updated(n, counter(n) + 1)
-
-  /**
-   * Make a name to use for a node
-   */
-  private def makeName(cs: Vector[Int]): String =
-    cs.take(level + 1).map(k => Base26.encode(k)).mkString(sep)
-
-object BasicTreeCursor:
-  private val sep = "."
+  private def incCounter(cs: Vector[Int], n: Int): Vector[Int] =
+    assert(cs.size >= n, s"counter = ${cs.toList}, n = ${n}: trying to increment counter out of bounds, this ia bug in code")
+    if cs.size == n then cs.appended(0) else cs.updated(n, cs(n) + 1)
 
 object TreeCursor:
   /**

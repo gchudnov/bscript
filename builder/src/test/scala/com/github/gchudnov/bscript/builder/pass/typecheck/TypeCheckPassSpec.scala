@@ -80,18 +80,19 @@ final class TypeCheckPassSpec extends TestSpec:
    *   - In Phase 3 we check types and promote them as necessary.
    */
   private def eval(ast0: AST): Either[Throwable, OutState] =
-    val buildPass     = new BuildPassImpl()
-    val resolvePass   = new ResolvePassImpl()
-    val typeCheckPass = new PassImpl()
+    ???
+    // val buildPass     = new BuildPassImpl()
+    // val resolvePass   = new ResolvePassImpl()
+    // val typeCheckPass = new PassImpl()
 
-    for
-      buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
-      buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-      resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
-      resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
-      typeCheckStateIn  <- nonFatalCatch.either(InState.from(resolveOutState.ast))
-      typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))
-    yield typeCheckStateOut
+    // for
+    //   buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
+    //   buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+    //   resolveStateIn    <- nonFatalCatch.either(ResolveInState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
+    //   resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
+    //   typeCheckStateIn  <- nonFatalCatch.either(InState.from(resolveOutState.ast))
+    //   typeCheckStateOut <- nonFatalCatch.either(typeCheckPass.run(typeCheckStateIn))
+    // yield typeCheckStateOut
 
 
     

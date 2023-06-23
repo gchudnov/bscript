@@ -19,18 +19,18 @@ import com.github.gchudnov.bscript.builder.pass.Pass
  *
  * 3) I the he third pass over the AST - computes the type of each expression, promotes arithmetic values as necessary.
  */
-private[builder] final class PassImpl() extends Pass:
+private[builder] final class PassImpl() // extends Pass:
 
-  type In = InState
+  // type In = InState
 
-  type Out = OutState
+  // type Out = OutState
 
-  override def run(in: InState): OutState =
-    val folder = Folder.make()
+  // override def run(in: InState): OutState =
+  //   val folder = Folder.make()
 
-    val state0         = PassState.from(in)
-    val state1         = folder.foldAST(state0, in.ast)
+  //   val state0         = PassState.from(in)
+  //   val state1         = folder.foldAST(state0, in.ast)
 
-    val out = PassState.into(state1, in.ast)
+  //   val out = PassState.into(state1, in.ast)
 
-    out
+  //   out
