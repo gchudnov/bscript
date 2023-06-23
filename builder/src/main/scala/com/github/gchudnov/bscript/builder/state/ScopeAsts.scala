@@ -4,6 +4,8 @@ import com.github.gchudnov.bscript.builder.util.Dict
 import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
+import com.github.gchudnov.bscript.builder.util.Show
+import ScopeAsts.given
 
 /**
  * A Dictionary of Scope -> AST Interface
@@ -20,6 +22,16 @@ sealed trait ScopeAsts:
 object ScopeAsts:
   lazy val empty: ScopeAsts =
     BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
+
+  private val showAst: Show[AST] = new Show[AST] {
+    override def show(a: AST): String =
+      s"ast(${a.toString})"
+  }
+
+  given showPtrAst: Show[Ptr[AST]] = new Show[Ptr[AST]] {
+    override def show(a: Ptr[AST]): String =
+      s"ptr(${showAst.show(a.value)})"
+  }
 
 /**
  * A Dictionary of Scope -> AST Implementation

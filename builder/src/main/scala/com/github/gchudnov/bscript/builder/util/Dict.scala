@@ -1,7 +1,5 @@
 package com.github.gchudnov.bscript.builder.util
 
-import com.github.gchudnov.bscript.builder.util.Ptr
-
 /**
  * A dictionary on Keys and Values they are attached to. A key can have many values, but one value is bound to one key only.
  *
@@ -10,7 +8,7 @@ import com.github.gchudnov.bscript.builder.util.Ptr
  * @param valueKey
  *   maps an value to the related key
  */
-abstract class Dict[K, V, D <: Dict[K, V, D]]:
+abstract class Dict[K: Show, V: Show, D <: Dict[K, V, D]]:
 
   protected def keyValues: Map[K, Set[V]]
   protected def valueKey: Map[V, K]
@@ -28,7 +26,7 @@ abstract class Dict[K, V, D <: Dict[K, V, D]]:
 
     clone(
       keyValues = keyValues1,
-      valueKey = valueKey1
+      valueKey = valueKey1,
     )
 
   protected def values(key: K): List[V] =
@@ -36,3 +34,17 @@ abstract class Dict[K, V, D <: Dict[K, V, D]]:
 
   protected def key(value: V): Option[K] =
     valueKey.get(value)
+
+  /**
+   * Represent as a string
+   */
+  def show: String =
+    val showK = summon[Show[K]]
+    val showV = summon[Show[V]]
+
+    val kvs = keyValues.map { case (k, vs) => s"${showK.show(k)} -> ${vs.toList.map(v => showV.show(v)).mkString("[ ", ", ", " ]")}" }
+
+    val sb = new StringBuilder()
+    kvs.foreach(kv => sb.append(kv).append("\n"))
+
+    sb.toString()

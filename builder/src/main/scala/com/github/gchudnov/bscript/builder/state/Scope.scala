@@ -1,5 +1,7 @@
 package com.github.gchudnov.bscript.builder.state
 
+import com.github.gchudnov.bscript.builder.util.Show
+
 /**
  * Scope
  *
@@ -30,3 +32,11 @@ package com.github.gchudnov.bscript.builder.state
  */
 trait Scope:
   def name: String
+
+
+object Scope {
+  given showScope: Show[Scope] = new Show[Scope] {
+    override def show(a: Scope): String =
+      s"scope(${a.name})"
+  }
+}

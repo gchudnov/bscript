@@ -5,6 +5,8 @@ import com.github.gchudnov.bscript.builder.state.Scope
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Tree
+import com.github.gchudnov.bscript.builder.util.Show
+import ScopeSymbols.given
 
 /**
  * Scope-Symbol Dictionary Interface
@@ -26,6 +28,16 @@ sealed trait ScopeSymbols:
 object ScopeSymbols:
   lazy val empty: ScopeSymbols =
     BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
+
+  private val showSymbol: Show[Symbol] = new Show[Symbol] {
+    override def show(a: Symbol): String =
+      s"symbol(${a.toString})"
+  }
+
+  given showPtrSymbol: Show[Ptr[Symbol]] = new Show[Ptr[Symbol]] {
+    override def show(a: Ptr[Symbol]): String =
+      s"ptr(${showSymbol.show(a.value)})"
+  }
 
 /**
   * Scope-Symbol Dictionary Implementation
