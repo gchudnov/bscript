@@ -3,9 +3,17 @@ package com.github.gchudnov.bscript.builder.util
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.util.Tree
 
+
 final class TreeSpec extends TestSpec:
 
   private final case class Node(name: String)
+
+  private object Node {
+    given nodeShow: Show[Node] = new Show[Node] {
+      override def show(a: Node): String =
+        s"node(${a.name})"
+    }
+  }
 
   "TreeSpec" when {
 
@@ -47,16 +55,15 @@ final class TreeSpec extends TestSpec:
        *      b0
        * }}}
        */
-      "results in one node" in {
+      "raise an exception" in {
         val b0 = Node("b0")
 
-        val t1 = Tree
-          .empty[Node]
-          .add(b0)
-          .add(b0)
-
-        t1.vertexSize mustBe (1)
-        t1.contains(b0) mustBe(true)
+        intercept[IllegalArgumentException] {
+          Tree
+            .empty[Node]
+            .add(b0)
+            .add(b0)
+        }
       }
 
       /**
@@ -73,7 +80,6 @@ final class TreeSpec extends TestSpec:
 
         val t1 = Tree
           .empty[Node]
-          .add(b0)
           .add(b0)
 
         t1.vertexSize mustBe (1)

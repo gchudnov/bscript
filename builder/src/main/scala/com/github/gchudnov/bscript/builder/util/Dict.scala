@@ -42,11 +42,13 @@ abstract class Dict[K: Show, V: Show, D <: Dict[K, V, D]]:
     val showK = summon[Show[K]]
     val showV = summon[Show[V]]
 
-    val kvs = keyValues.map { case (k, vs) => s"\"${showK.show(k)}\": ${vs.toList.map(v => "\"" + showV.show(v) + "\"").mkString("[", ",", "]")}" }
+    val kvs = keyValues.toList.map { case (k, vs) => (showK.show(k), vs.toList.map(v => showV.show(v)).sorted) }
+      .sortBy(_._1)
+      .map { case (k, vs) => s"\"${k}\": ${Strings.arrayAsString(vs.map(v => Strings.quoted(v)))}" }
 
     val sb = new StringBuilder()
     sb.append("{\n")
-    kvs.foreach(kv => sb.append("  ").append(kv).append("\n"))
+    kvs.foreach(kv => sb.append(Strings.spaced(1)).append(kv).append("\n"))
     sb.append("}\n")
 
     sb.toString()

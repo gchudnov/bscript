@@ -1,14 +1,21 @@
-package com.github.gchudnov.bscript.builder.state
+package com.github.gchudnov.bscript.builder.util
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.state.TreeCursor
+import com.github.gchudnov.bscript.builder.util.TreeCursor
 
 /**
  * Tree Cursor Specification
  */
 final class TreeCursorSpec extends TestSpec:
 
-  final case class Node(name: String)
+  private final case class Node(name: String)
+
+  private object Node {
+    given nodeShow: Show[Node] = new Show[Node] {
+      override def show(a: Node): String =
+        s"node(${a.name})"
+    }
+  }
 
   "TreeCursorSpec" when {
     "empty" should {

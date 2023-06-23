@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.builder.util.TreeCursor
 
 /**
  * #1 - Scope Build Pass

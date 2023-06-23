@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.state
+package com.github.gchudnov.bscript.builder.util
 
 import com.github.gchudnov.bscript.builder.util.Base26
 import com.github.gchudnov.bscript.builder.util.Tree
@@ -147,7 +147,7 @@ object TreeCursor:
    * @return
    *   A new tree cursor
    */
-  def empty[A <: AnyRef](aFactory: (String) => A): TreeCursor[A] =
+  def empty[A <: AnyRef : Show](aFactory: (String) => A): TreeCursor[A] =
     BasicTreeCursor(
       tree = Tree.empty[A],
       current = None,

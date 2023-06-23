@@ -1,7 +1,6 @@
 package com.github.gchudnov.bscript.builder.util
 
 import scala.annotation.tailrec
-import com.github.gchudnov.bscript.builder.util.Ptr
 
 /**
  * Abstract Tree
@@ -10,7 +9,7 @@ import com.github.gchudnov.bscript.builder.util.Ptr
  *
  * NOTE: it might be used to build a forst as well
  */
-sealed trait Tree[A]:
+sealed trait Tree[A: Show]:
   /**
    * Get the number of vertices in the tree
    */
@@ -95,6 +94,16 @@ sealed trait Tree[A]:
    */
   def path(x: A): List[A]
 
+  /**
+   * Represent the tree as a string
+   */
+  def show: String
+
+  /**
+   * Represent the tree as a string (show synonym)
+   */
+  def asString: String
+
 /**
  * A Tree implementation
  *
@@ -103,7 +112,7 @@ sealed trait Tree[A]:
  * @param edges
  *   (child -> parent) links.
  */
-final case class BasicTree[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A], A]) extends Tree[A]:
+final case class BasicTree[A <: AnyRef: Show](vertices: Set[Ptr[A]], edges: Map[Ptr[A], A]) extends Tree[A]:
 
   /**
    * Get the number of vertices in the tree
@@ -192,15 +201,43 @@ final case class BasicTree[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A]
 
     iterate(List(x), x)
 
+  override def show: String =
+    val showA = summon[Show[A]]
+
+    val sb = new StringBuilder
+    sb.append("{\n")
+
+    val vs = Strings.arrayAsString(
+      vertices.toList
+        .map(v => showA.show(v.value))
+        .sorted
+        .map(it => Strings.quoted(it)),
+    )
+
+    val es = Strings.arrayAsString(
+      edges.toList.map { case (c, p) => (showA.show(c.value), showA.show(p)) }.sorted.map { case (c, p) =>
+        Strings.arrayAsString(List(Strings.quoted(c), Strings.quoted(p)))
+      },
+    )
+
+    sb.append(s"""${Strings.spaced(1)}"vertices": ${vs},\n""")
+    sb.append(s"""${Strings.spaced(1)}"edges": ${es}\n""")
+
+    sb.append("}\n")
+    sb.toString()
+
+  override def asString: String =
+    show
+
 object Tree:
 
-  def empty[A <: AnyRef]: Tree[A] =
+  def empty[A <: AnyRef: Show]: Tree[A] =
     from(
       vertices = Set.empty[A],
       edges = Map.empty[A, A],
     )
 
-  def from[A <: AnyRef](vertices: Set[A], edges: Map[A, A]): Tree[A] =
+  def from[A <: AnyRef: Show](vertices: Set[A], edges: Map[A, A]): Tree[A] =
     BasicTree[A](
       vertices = vertices.map(Ptr(_)),
       edges = edges.map((k, v) => (Ptr[A](k), v)),
