@@ -112,7 +112,8 @@ final class DictSpec extends TestSpec:
         val ss1 = ss.link(k1, v1).link(k1, v2)
 
         val actual = ss1.show
-        val expected = """{
+        val expected = """
+                         |{
                          |  "mykey(a)": ["ptr(myval(myFunc1))","ptr(myval(myFunc1))"]
                          |}
                          |""".stripMargin
@@ -122,7 +123,10 @@ final class DictSpec extends TestSpec:
 
       "print the empty dict" in {
         val actual   = ss.show
-        val expected = ""
+        val expected = """
+                         |{
+                         |}
+                         |""".stripMargin
 
         actual.trim mustBe expected.trim
       }

@@ -25,6 +25,8 @@ sealed trait ScopeSymbols:
   def resolveIn(name: String, in: Scope): Option[Symbol]
   def resolveUp(name: String, start: Scope, scopeTree: Tree[Scope]): Option[Symbol]
 
+  def print: String
+
 object ScopeSymbols:
   lazy val empty: ScopeSymbols =
     BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
@@ -71,3 +73,8 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
     symbols(start)
       .find(_.name == name)
       .orElse(scopeTree.parentOf(start).flatMap(parent => resolveUp(name, parent, scopeTree)))
+
+  override def print: String =
+    val sb = new StringBuilder
+    sb.append("scopeSymbols ").append(this.show)
+    sb.toString

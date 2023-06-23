@@ -22,6 +22,7 @@ final class ScopeBuildPassSpec extends TestSpec:
   "ScopeBuildPass" when {
 
     "const literals" should {
+
       /**
        * {{{
        *   // globals
@@ -34,7 +35,21 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.scopeSize mustBe 1
+            val actualScopeSymbols = actualState.scopeSymbols.print
+            val expectedScopeSymbpls = """|scopeSymbols {
+                                          |}
+                                          |""".stripMargin
+
+            val actualScopeAsts = actualState.scopeAsts.print
+            val expectedScopeAsts = """|scopeAsts {
+                                       |}
+                                       |""".stripMargin
+
+            println(actualState)
+            println(actualScopeAsts)
+
+            actualScopeSymbols mustBe expectedScopeSymbpls
+            actualScopeAsts mustBe expectedScopeAsts
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -56,7 +71,7 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             actualState.scopeSize mustBe 1
-            actualState.symbols must contain theSameElementsAs(List(SVar("x@var")))
+            actualState.symbols must contain theSameElementsAs (List(SVar("x@var")))
           case Left(t) =>
             println(t) // TODO: fix an error:  java.lang.IllegalArgumentException: requirement failed: key ScopeRef(a) is already present in the dictionary, cannot add it twice.
             fail("Should be 'right", t)
@@ -83,11 +98,11 @@ final class ScopeBuildPassSpec extends TestSpec:
             actualState.scopeSize mustBe 3 // root + main(args) + block inside
 
             val symbols = actualState.symbols
-            symbols must contain theSameElementsAs(List(SMethod("main@method<>(): i32"), SVar("x@var")))
+            symbols must contain theSameElementsAs (List(SMethod("main@method<>(): i32"), SVar("x@var")))
 
             // main and var scopes are not-equal
             val mainScope = actualState.scopeBySymbol(symbols.head)
-            val varScope = actualState.scopeBySymbol(symbols.last)
+            val varScope  = actualState.scopeBySymbol(symbols.last)
 
             mainScope must not be (varScope)
 
@@ -463,7 +478,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             // actualState.scopeSize mustBe 1
             // actualState.symbolsByName("a").size mustBe (1)
             ???
-          case Left(t) => 
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
@@ -609,19 +624,19 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             ???
-            // actualState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            // actualState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            // actualState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
+          // actualState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
+          // actualState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
+          // actualState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
 
-            // actualState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            // actualState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
-            // actualState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
+          // actualState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
+          // actualState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
+          // actualState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
 
-            // actualState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
-            // actualState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
-            // actualState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
-            // actualState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
-            // actualState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
+          // actualState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
+          // actualState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
+          // actualState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
+          // actualState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
+          // actualState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -654,7 +669,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             // actualState.symbolsByName("a").size mustBe (1)
             ???
-          case Left(t) => 
+          case Left(t) =>
             println(t)
             fail("Should be 'right", t)
       }
@@ -681,24 +696,25 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             ???
-            // actualState.symbolsByName("f").size mustBe (1)
-            // actualState.symbolsByName("g").size mustBe (1)
-            // actualState.symbolsByName("main").size mustBe (1)
+          // actualState.symbolsByName("f").size mustBe (1)
+          // actualState.symbolsByName("g").size mustBe (1)
+          // actualState.symbolsByName("main").size mustBe (1)
           case Left(t) =>
             fail("Should be 'right", t)
       }
     }
 
     "a complex program" should {
+
       /**
        * {{{
        *   // given a collection of words, create a map of word lengths
        *   def main(): map[str, i32] = {
        *     auto as = ["alice", "bob", "carol"];
-       *   
+       *
        *     val f = [](as: []str) -> map[str, i32] {
        *       val m = map[string, int]{};
-       * 
+       *
        *       val iterate = [](i: i32) -> map[str, i32] {
        *         if len(m) == i {
        *           m;
@@ -707,14 +723,14 @@ final class ScopeBuildPassSpec extends TestSpec:
        *           m = set(m, w, len(w))
        *           iterate(i + 1)
        *         }
-       *       }    
-       *   
+       *       }
+       *
        *       iterate(0);
        *     };
-       *   
+       *
        *     f(as); // returns a map of lengths
        *   }
-       *   
+       *
        *   main();
        * }}}
        */
@@ -740,36 +756,35 @@ final class ScopeBuildPassSpec extends TestSpec:
    */
   private def eval(ast0: AST): Either[Throwable, ActualState] = nonFatalCatch.either {
     val passs = new ScopeBuildPass()
-    val in = new HasAST {
+    val in = new HasAST:
       val ast = ast0
-    }
-    val out = passs.run(in)
+    val out         = passs.run(in)
     val actualState = toActualState(out)
     actualState
   }
 
-object ScopeBuildPassSpec {
+object ScopeBuildPassSpec:
 
   final case class ActualState(
     scopeTree: ScopeTree,
     scopeAsts: ScopeAsts,
     scopeSymbols: ScopeSymbols,
-  ) {
+  ):
     /**
-      * Get the number of scopes in the AST
-      */
+     * Get the number of scopes in the AST
+     */
     def scopeSize: Int =
       scopeTree.vertexSize
 
     /**
-      * Find Scope by AST
-      */
+     * Find Scope by AST
+     */
     def scopeByAST(ast: AST): Option[Scope] =
       scopeAsts.scope(ast)
 
     /**
-      * find Scope by Symbol
-      */
+     * find Scope by Symbol
+     */
     def scopeBySymbol(sym: Symbol): Option[Scope] =
       scopeSymbols
         .scope(sym)
@@ -779,12 +794,10 @@ object ScopeBuildPassSpec {
      */
     def symbols: List[Symbol] =
       scopeSymbols.symbols
-  }
 
-  def toActualState(s: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): ActualState = 
+  def toActualState(s: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): ActualState =
     ActualState(
       scopeTree = s.scopeTree,
       scopeAsts = s.scopeAsts,
       scopeSymbols = s.scopeSymbols,
     )
-}

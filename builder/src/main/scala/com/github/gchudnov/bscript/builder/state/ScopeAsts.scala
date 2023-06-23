@@ -19,19 +19,19 @@ sealed trait ScopeAsts:
   def scope(ast: AST): Option[Scope]
   def asts(scope: Scope): List[AST]
 
+  def print: String
+
 object ScopeAsts:
   lazy val empty: ScopeAsts =
     BasicScopeAsts(keyValues = Map.empty[Scope, Set[Ptr[AST]]], valueKey = Map.empty[Ptr[AST], Scope])
 
-  given showAst: Show[AST] = new Show[AST] {
+  given showAst: Show[AST] = new Show[AST]:
     override def show(a: AST): String =
       s"ast(${a.toString})"
-  }
 
-  given showPtrAst: Show[Ptr[AST]] = new Show[Ptr[AST]] {
+  given showPtrAst: Show[Ptr[AST]] = new Show[Ptr[AST]]:
     override def show(a: Ptr[AST]): String =
       s"ptr(${showAst.show(a.value)})"
-  }
 
 /**
  * A Dictionary of Scope -> AST Implementation
@@ -48,3 +48,8 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
 
   override def asts(scope: Scope): List[AST] =
     values(scope).map(_.value)
+
+  override def print: String =
+    val sb = new StringBuilder
+    sb.append("scopeAsts ").append(this.show)
+    sb.toString
