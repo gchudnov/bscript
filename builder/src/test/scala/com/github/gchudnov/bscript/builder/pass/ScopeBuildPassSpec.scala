@@ -36,17 +36,17 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.print
-            val expectedScopeSymbpls = """|scopeSymbols {
+            val expectedScopeSymbpls = """|"scopeSymbols": {
                                           |}
                                           |""".stripMargin
 
             val actualScopeAsts = actualState.scopeAsts.print
-            val expectedScopeAsts = """|scopeAsts {
+            val expectedScopeAsts = """|"scopeAsts": {
                                        |}
                                        |""".stripMargin
 
-            println(actualState)
-            println(actualScopeAsts)
+            // println(actualState)
+            // println(actualScopeAsts)
 
             actualScopeSymbols mustBe expectedScopeSymbpls
             actualScopeAsts mustBe expectedScopeAsts

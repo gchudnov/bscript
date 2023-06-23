@@ -51,5 +51,5 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
 
   override def print: String =
     val sb = new StringBuilder
-    sb.append("scopeAsts ").append(this.show)
+    sb.append("\"scopeAsts\": ").append(this.show)
     sb.toString

@@ -76,5 +76,5 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
 
   override def print: String =
     val sb = new StringBuilder
-    sb.append("scopeSymbols ").append(this.show)
+    sb.append("\"scopeSymbols\": ").append(this.show)
     sb.toString
