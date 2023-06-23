@@ -2,7 +2,6 @@ package com.github.gchudnov.bscript.builder.pass.scoperesolve
 
 import com.github.gchudnov.bscript.builder.state.ScopeRef
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassState as ScopeBuildState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState as ScopeResolveState
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*

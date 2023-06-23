@@ -111,14 +111,14 @@ private final case class ScopeBuildState(scopeCursor: TreeCursor[Scope], scopeSy
   def defineSymbol(symbol: Symbol): ScopeBuildState =
     scopeCursor.at match
       case Some(scope) =>
-        this.copy(scopeSymbols = scopeSymbols.addScope(scope).link(scope, symbol))
+        this.copy(scopeSymbols = scopeSymbols.link(scope, symbol))
       case None =>
         throw new BuilderException(s"Cannot define symbol '${symbol}' without a current scope. Call .pushScope() to create a scope first.")
 
   def bindAstToScope(ast: AST): ScopeBuildState =
     scopeCursor.at match
       case Some(scope) =>
-        this.copy(scopeAsts = scopeAsts.addScope(scope).link(scope, ast))
+        this.copy(scopeAsts = scopeAsts.link(scope, ast))
       case None =>
         throw new BuilderException(s"Cannot bind AST '${ast}' to a scope without a current scope. Invoke .pushScope() to create a scope first.")
 

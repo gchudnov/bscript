@@ -12,8 +12,8 @@ import com.github.gchudnov.bscript.builder.util.Ptr
  *   - an AST can belong to only one scope
  */
 sealed trait ScopeAsts:
-  def addScope(scope: Scope): ScopeAsts
   def link(scope: Scope, ast: AST): ScopeAsts
+
   def scope(ast: AST): Option[Scope]
   def asts(scope: Scope): List[AST]
 
@@ -27,9 +27,6 @@ object ScopeAsts:
 private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
   override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =
     BasicScopeAsts(keyValues = keyValues, valueKey = valueKey)
-
-  override def addScope(scope: Scope): ScopeAsts =
-    addKey(scope)
 
   override def link(scope: Scope, ast: AST): ScopeAsts =
     set(scope, Ptr(ast))

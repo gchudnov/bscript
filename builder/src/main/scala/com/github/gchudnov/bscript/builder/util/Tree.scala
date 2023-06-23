@@ -149,13 +149,14 @@ final case class BasicTree[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A]
    * Adds a new node to the tree
    */
   override def add(x: A): Tree[A] =
+    require(!vertices.contains(Ptr(x)), s"Cannot add ${x}: node already exists.")
     this.copy(vertices = vertices + Ptr(x))
 
   /**
    * Adds link from node `from` to the node `to` (child -> parent relationship)
    */
   override def link(from: A, parent: A): Tree[A] =
-    assert(vertices.contains(Ptr(from)) && vertices.contains(Ptr(from)), "Cannot link nodes that are not added to the forest")
+    require(vertices.contains(Ptr(from)) && vertices.contains(Ptr(from)), "Cannot link nodes that are not added to the forest")
     this.copy(edges = edges + (Ptr(from) -> parent))
 
   /**
@@ -167,7 +168,7 @@ final case class BasicTree[A <: AnyRef](vertices: Set[Ptr[A]], edges: Map[Ptr[A]
    *   new node
    */
   override def replace(a: A, b: A): Tree[A] =
-    assert(vertices.contains(Ptr(a)), s"Cannot replace ${a} with ${b}: node not found.")
+    require(vertices.contains(Ptr(a)), s"Cannot replace ${a} with ${b}: node not found.")
 
     val newVertices = vertices - Ptr(a) + Ptr(b)
     val newEdges    = edges - Ptr(a) ++ edges.get(Ptr(a)).fold(Map.empty[Ptr[A], A])(other => Map(Ptr(b) -> other))

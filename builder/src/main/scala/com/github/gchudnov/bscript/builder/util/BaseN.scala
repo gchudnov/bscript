@@ -11,7 +11,7 @@ sealed trait BaseN:
   def encode(x: Long): String =
     @tailrec
     def iterate(n: Long, ds: List[Char]): List[Char] =
-      assert(n >= 0, s"'n' cannot be negative, got ${n}")
+      require(n >= 0, s"'n' cannot be negative, got ${n}")
       if n == 0 then ds
       else
         // n > 0

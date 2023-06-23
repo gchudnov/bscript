@@ -13,7 +13,6 @@ import com.github.gchudnov.bscript.builder.util.Tree
  *   - A symbol can belong to only one scope
  */
 sealed trait ScopeSymbols:
-  def addScope(scope: Scope): ScopeSymbols
   def link(scope: Scope, sym: Symbol): ScopeSymbols
   
   def scope(ast: Symbol): Option[Scope]
@@ -36,9 +35,6 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
     with ScopeSymbols:
   override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): BasicScopeSymbols =
     BasicScopeSymbols(keyValues = keyValues, valueKey = valueKey)
-
-  override def addScope(scope: Scope): ScopeSymbols =
-    addKey(scope)
 
   override def link(scope: Scope, sym: Symbol): ScopeSymbols =
     set(scope, Ptr(sym))

@@ -1,15 +1,6 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.builder.pass.scopebuild.InState as BuildInState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
-import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState as ResolveInState
-import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState as ResolveOutState
-import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassImpl as ResolvePassImpl
-import com.github.gchudnov.bscript.builder.pass.typecheck.InState as TypeCheckInState
-import com.github.gchudnov.bscript.builder.pass.typecheck.OutState as TypeCheckOutState
-import com.github.gchudnov.bscript.builder.pass.typecheck.PassImpl as TypeCheckPassImpl
 
 import scala.util.control.Exception.*
 

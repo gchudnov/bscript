@@ -8,9 +8,6 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.pass.scopebuild.InState as BuildInState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.OutState as BuildOutState
-import com.github.gchudnov.bscript.builder.pass.scopebuild.PassImpl as BuildPassImpl
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState as ResolveInState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState as ResolveOutState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassImpl as ResolvePassImpl

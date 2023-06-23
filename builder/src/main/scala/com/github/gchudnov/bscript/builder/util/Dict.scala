@@ -17,14 +17,11 @@ abstract class Dict[K, V, D <: Dict[K, V, D]]:
 
   protected def clone(keyValues: Map[K, Set[V]], valueKey: Map[V, K]): D
 
-  protected def addKey(key: K): D =
-    require(!keyValues.contains(key), s"key ${key} is already present in the dictionary, cannot add it twice.")
-    clone(keyValues = this.keyValues + (key -> Set.empty[V]), valueKey = valueKey)
-
   def set(key: K, value: V): D =
     val vs = keyValues.getOrElse(key, Set.empty[V])
 
-    assert(!vs.contains(value), s"value ${value} is already assigned to the key ${key}, cannot set it twice.")
+    require(!vs.contains(value), s"value ${value} is already assigned to the key ${key}, cannot set it twice.")
+    require(!valueKey.contains(value), s"value ${value} is already assigned to a different key, cannot set it to the key ${key}.")
 
     val keyValues1 = keyValues + (key  -> (vs + value))
     val valueKey1  = valueKey + (value -> key)

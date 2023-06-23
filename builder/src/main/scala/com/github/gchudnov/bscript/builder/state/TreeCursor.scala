@@ -135,7 +135,7 @@ object BasicTreeCursor:
    *   A new counter
    */
   private def incCounter(cs: Vector[Int], n: Int): Vector[Int] =
-    assert(cs.size >= n, s"counter = ${cs.toList}, n = ${n}: trying to increment counter out of bounds, this ia bug in code")
+    require(cs.size >= n, s"counter = ${cs.toList}, n = ${n}: trying to increment counter out of bounds, this ia bug in code")
     if cs.size == n then cs.appended(0) else cs.updated(n, cs(n) + 1)
 
 object TreeCursor:

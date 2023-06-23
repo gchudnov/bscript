@@ -58,7 +58,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             actualState.scopeSize mustBe 1
             actualState.symbols must contain theSameElementsAs(List(SVar("x@var")))
           case Left(t) =>
-            println(t)
+            println(t) // TODO: fix an error:  java.lang.IllegalArgumentException: requirement failed: key ScopeRef(a) is already present in the dictionary, cannot add it twice.
             fail("Should be 'right", t)
       }
     }
