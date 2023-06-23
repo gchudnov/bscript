@@ -4,15 +4,12 @@ import com.github.gchudnov.bscript.builder.interfaces.*
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.pass.Examples
-import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.types.TypeName
-import com.github.gchudnov.bscript.lang.util.Transform
 
 import scala.util.control.Exception.*
 
@@ -36,8 +33,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            outState.scopeSize mustBe 1
+          case Right(actualState) =>
+            actualState.scopeSize mustBe 1
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -57,9 +54,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 1
-            // outState.symbolsByName("x").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 1
+            // actualState.symbolsByName("x").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -83,9 +80,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 3 // root + main(args) + block inside
-            // outState.symbolsByName("x").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 3 // root + main(args) + block inside
+            // actualState.symbolsByName("x").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -106,9 +103,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 3 // root + main(args) + block inside
-            // outState.symbolsByName("x").size mustBe (2)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 3 // root + main(args) + block inside
+            // actualState.symbolsByName("x").size mustBe (2)
             ???
 
           case Left(t) =>
@@ -134,10 +131,10 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 5
-            // outState.symbolsByName("offsetDateTime").size mustBe (1)
-            // outState.symbolsByName("fieldOfDateTime").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 5
+            // actualState.symbolsByName("offsetDateTime").size mustBe (1)
+            // actualState.symbolsByName("fieldOfDateTime").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -158,8 +155,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("+").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("+").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -180,8 +177,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("+").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("+").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -202,8 +199,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("+").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("+").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -224,8 +221,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("+").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("+").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -246,8 +243,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("+").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("+").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -278,8 +275,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(BuildVisitorStateoutState) =>
-      //         outState.astScopes.size mustBe (7)
+      //       case Right(BuildVisitorStateactualState) =>
+      //         actualState.astScopes.size mustBe (7)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
       //   }
@@ -303,8 +300,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(BuildVisitorStateoutState) =>
-      //         outState.astScopes.size mustBe (7)
+      //       case Right(BuildVisitorStateactualState) =>
+      //         actualState.astScopes.size mustBe (7)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
       //   }
@@ -344,8 +341,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(BuildVisitorStateoutState) =>
-      //         outState.astScopes.size mustBe (17)
+      //       case Right(BuildVisitorStateactualState) =>
+      //         actualState.astScopes.size mustBe (17)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
       //   }
@@ -385,8 +382,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t)
       //     errOrRes match
-      //       case Right(BuildVisitorStateoutState) =>
-      //         outState.astScopes.size mustBe (15)
+      //       case Right(BuildVisitorStateactualState) =>
+      //         actualState.astScopes.size mustBe (15)
       //       case Left(t) =>
       //         fail("Should be 'right", t)
       //   }
@@ -410,11 +407,11 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 1
-            // outState.symbolsByName("i").size mustBe (1)
-            // outState.symbolsByName("j").size mustBe (1)
-            // outState.symbolsByName("k").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 1
+            // actualState.symbolsByName("i").size mustBe (1)
+            // actualState.symbolsByName("j").size mustBe (1)
+            // actualState.symbolsByName("k").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -434,9 +431,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 1
-            // outState.symbolsByName("a").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 1
+            // actualState.symbolsByName("a").size mustBe (1)
             ???
           case Left(t) =>
             fail("Should be 'right", t)
@@ -455,9 +452,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 1
-            // outState.symbolsByName("a").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 1
+            // actualState.symbolsByName("a").size mustBe (1)
             ???
           case Left(t) => 
             fail("Should be 'right", t)
@@ -476,9 +473,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 1
-            // outState.symbolsByName("x").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 1
+            // actualState.symbolsByName("x").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -498,9 +495,9 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.scopeSize mustBe 1
-            // outState.symbolsByName("x").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.scopeSize mustBe 1
+            // actualState.symbolsByName("x").size mustBe (1)
             ???
 
           case Left(t) =>
@@ -524,10 +521,10 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // val blockStatements = outState.ast.asInstanceOf[Block].exprs
+          case Right(actualState) =>
+            // val blockStatements = actualState.ast.asInstanceOf[Block].exprs
             // val callExpr        = blockStatements.last.asInstanceOf[Call]
-            // val callScope       = outState.scopeByAST(callExpr)
+            // val callScope       = actualState.scopeByAST(callExpr)
 
             // callScope.map(_.name) mustBe Some("a")
             ???
@@ -557,13 +554,13 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("x").size mustBe (1)
-            // outState.symbolsByName("y").size mustBe (1)
-            // outState.symbolsByName("j").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("x").size mustBe (1)
+            // actualState.symbolsByName("y").size mustBe (1)
+            // actualState.symbolsByName("j").size mustBe (1)
 
             // // NOTE: `i` exists in 2 scopes
-            // outState.symbolsByName("i").size mustBe (2)
+            // actualState.symbolsByName("i").size mustBe (2)
             ???
 
           case Left(t) =>
@@ -603,21 +600,21 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
+          case Right(actualState) =>
             ???
-            // outState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            // outState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
-            // outState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            // actualState.scopesBySymbol(SType("b")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            // actualState.scopesBySymbol(SType("c")).map(_.name) must contain theSameElementsAs (List("a.c"))
+            // actualState.scopesBySymbol(SType("x")).map(_.name) must contain theSameElementsAs (List("a.c"))
 
-            // outState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
-            // outState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
-            // outState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
+            // actualState.scopesBySymbol(SType("y")).map(_.name) must contain theSameElementsAs (List("a.a"))
+            // actualState.scopesBySymbol(SType("z")).map(_.name) must contain theSameElementsAs (List("a.b"))
+            // actualState.scopesBySymbol(SType("i")).map(_.name) must contain theSameElementsAs (List("a.d.a.a"))
 
-            // outState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
-            // outState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
-            // outState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
-            // outState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
-            // outState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
+            // actualState.scopesBySymbol(SType("A")).map(_.name) must contain theSameElementsAs (List("a"))
+            // actualState.scopesBySymbol(SType("B")).map(_.name) must contain theSameElementsAs (List("a"))
+            // actualState.scopesBySymbol(SType("D")).map(_.name) must contain theSameElementsAs (List("a.d.a"))
+            // actualState.scopesBySymbol(SType("a")).map(_.name) must contain theSameElementsAs (List("a"))
+            // actualState.scopesBySymbol(SType("f")).map(_.name) must contain theSameElementsAs (List("a"))
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -647,8 +644,8 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.symbolsByName("a").size mustBe (1)
+          case Right(actualState) =>
+            // actualState.symbolsByName("a").size mustBe (1)
             ???
           case Left(t) => 
             println(t)
@@ -675,11 +672,11 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
+          case Right(actualState) =>
             ???
-            // outState.symbolsByName("f").size mustBe (1)
-            // outState.symbolsByName("g").size mustBe (1)
-            // outState.symbolsByName("main").size mustBe (1)
+            // actualState.symbolsByName("f").size mustBe (1)
+            // actualState.symbolsByName("g").size mustBe (1)
+            // actualState.symbolsByName("main").size mustBe (1)
           case Left(t) =>
             fail("Should be 'right", t)
       }
@@ -721,7 +718,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
+          case Right(actualState) =>
             ()
           case Left(t) =>
             fail("Should be 'right", t)
