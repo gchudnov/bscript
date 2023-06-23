@@ -8,4 +8,4 @@ import com.github.gchudnov.bscript.lang.ast.Expr
   * An abstract declaration
   */
 abstract class Decl extends Expr:
-  def symbolName: String
+  def fullName: String

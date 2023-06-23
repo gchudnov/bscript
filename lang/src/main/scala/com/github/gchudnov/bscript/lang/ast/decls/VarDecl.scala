@@ -16,7 +16,7 @@ import com.github.gchudnov.bscript.lang.ast.*
  * }}}
  */
 final case class VarDecl(name: String, vType: TypeAST, expr: Expr) extends Decl:
-  override def symbolName: String =
+  override def fullName: String =
     s"${name}@var"
 
 

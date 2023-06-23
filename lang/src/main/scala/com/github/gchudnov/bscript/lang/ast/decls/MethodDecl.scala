@@ -7,5 +7,5 @@ import com.github.gchudnov.bscript.lang.ast.*
  * Method Declaration
  */
 final case class MethodDecl(name: String, mType: MethodType, body: Block) extends Decl:
-  def symbolName: String = 
+  def fullName: String = 
     s"${name}@${mType.asString}"

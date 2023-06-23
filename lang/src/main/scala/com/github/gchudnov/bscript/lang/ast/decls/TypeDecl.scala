@@ -11,5 +11,5 @@ package com.github.gchudnov.bscript.lang.ast.decls
  * }}}
  */
 final case class TypeDecl(name: String) extends Decl:
-  override def symbolName: String = 
+  override def fullName: String = 
     s"${name}@type"
