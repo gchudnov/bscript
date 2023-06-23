@@ -45,11 +45,16 @@ final class ScopeBuildPassSpec extends TestSpec:
                                        |}
                                        |""".stripMargin
 
-            // println(actualState)
-            // println(actualScopeAsts)
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(a)"],
+                                       |  "edges": []
+                                       |}
+                                       |""".stripMargin
 
             actualScopeSymbols mustBe expectedScopeSymbpls
             actualScopeAsts mustBe expectedScopeAsts
+            actualScopeTree mustBe expectedScopeTree
 
           case Left(t) =>
             fail("Should be 'right", t)
@@ -70,10 +75,50 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.scopeSize mustBe 1
-            actualState.symbols must contain theSameElementsAs (List(SVar("x@var")))
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbpls = """|{
+                                          |}
+                                          |""".stripMargin
+
+            val actualScopeAsts = actualState.scopeAsts.asString
+            val expectedScopeAsts = """|{
+                                       |}
+                                       |""".stripMargin
+
+            val actualScopeTree = actualState.scopeTree.asString
+            val expectedScopeTree = """|{
+                                       |  "vertices": ["scope(a)"],
+                                       |  "edges": []
+                                       |}
+                                       |""".stripMargin
+
+            // println(actualState)
+            println(actualScopeSymbols)
+            println(actualScopeAsts)
+            println(actualScopeTree)
+
+            actualScopeSymbols mustBe expectedScopeSymbpls
+            actualScopeAsts mustBe expectedScopeAsts
+            actualScopeTree mustBe expectedScopeTree
+
+/*
+{
+  "scope(a)": ["ptr(symbol(SVar(x@var)))"]
+}
+
+{
+  "scope(a)": ["ptr(ast(TypeId(i32)))","ptr(ast(VarDecl(x,TypeId(i32),ConstLit(IntVal(0)))))"]
+}
+
+{
+  "vertices": ["scope(a)"],
+  "edges": []
+}
+*/
+
+            // actualState.scopeSize mustBe 1
+            // actualState.symbols must contain theSameElementsAs (List(SVar("x@var")))
           case Left(t) =>
-            println(t) // TODO: fix an error:  java.lang.IllegalArgumentException: requirement failed: key ScopeRef(a) is already present in the dictionary, cannot add it twice.
             fail("Should be 'right", t)
       }
     }
