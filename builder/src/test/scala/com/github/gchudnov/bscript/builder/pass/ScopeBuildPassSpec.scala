@@ -55,10 +55,8 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            // actualState.scopeSize mustBe 1
-            // actualState.symbolsByName("x").size mustBe (1)
-            ???
-
+            actualState.scopeSize mustBe 1
+            actualState.symbols must contain theSameElementsAs(List(SVar("x@var")))
           case Left(t) =>
             fail("Should be 'right", t)
       }
