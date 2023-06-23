@@ -19,7 +19,6 @@ import com.github.gchudnov.bscript.lang.symbols.Type
   */
 final class ScopeBuildStateSpec extends TestSpec:
 
-  private val ast0  = Block.empty
   private val state0 = ScopeBuildState.empty
 
   "ScopeBuildState" when {

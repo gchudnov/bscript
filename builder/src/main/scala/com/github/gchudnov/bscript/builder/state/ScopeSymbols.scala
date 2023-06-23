@@ -16,6 +16,7 @@ sealed trait ScopeSymbols:
   def addScope(scope: Scope): ScopeSymbols
   def link(scope: Scope, sym: Symbol): ScopeSymbols
   def scope(ast: Symbol): Option[Scope]
+  def scopes: List[Scope]
   def symbols(scope: Scope): List[Symbol]
   def symbols: List[Symbol]
 
@@ -35,19 +36,22 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
   override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): BasicScopeSymbols =
     BasicScopeSymbols(keyValues = keyValues, valueKey = valueKey)
 
-  def addScope(scope: Scope): ScopeSymbols =
+  override def addScope(scope: Scope): ScopeSymbols =
     addKey(scope)
 
-  def link(scope: Scope, sym: Symbol): ScopeSymbols =
+  override def link(scope: Scope, sym: Symbol): ScopeSymbols =
     set(scope, Ptr(sym))
 
-  def scope(ast: Symbol): Option[Scope] =
+  override def scope(ast: Symbol): Option[Scope] =
     key(Ptr(ast))
 
-  def symbols(scope: Scope): List[Symbol] =
+  override def scopes: List[Scope] =
+    keyValues.keySet.toList
+
+  override def symbols(scope: Scope): List[Symbol] =
     values(scope).map(_.value)
 
-  def symbols: List[Symbol] =
+  override def symbols: List[Symbol] =
     valueKey.keySet.toList.map(_.value)
 
   override def resolveIn(name: String, in: Scope): Option[Symbol] =

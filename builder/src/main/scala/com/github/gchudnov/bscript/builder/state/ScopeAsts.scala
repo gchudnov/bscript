@@ -28,14 +28,14 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
   override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =
     BasicScopeAsts(keyValues = keyValues, valueKey = valueKey)
 
-  def addScope(scope: Scope): ScopeAsts =
+  override def addScope(scope: Scope): ScopeAsts =
     addKey(scope)
 
-  def link(scope: Scope, ast: AST): ScopeAsts =
+  override def link(scope: Scope, ast: AST): ScopeAsts =
     set(scope, Ptr(ast))
 
-  def scope(ast: AST): Option[Scope] =
+  override def scope(ast: AST): Option[Scope] =
     key(Ptr(ast))
 
-  def asts(scope: Scope): List[AST] =
+  override def asts(scope: Scope): List[AST] =
     values(scope).map(_.value)
