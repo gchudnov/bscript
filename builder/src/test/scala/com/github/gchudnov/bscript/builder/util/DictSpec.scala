@@ -4,29 +4,26 @@ import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.util.Ptr
 
 /**
-  * Dict Tests
-  */
+ * Dict Tests
+ */
 final class DictSpec extends TestSpec:
 
   final case class MyKey(name: String)
   final case class MyVal(value: String)
 
   object MyKey:
-    given Show[MyKey] = new Show[MyKey] {
+    given Show[MyKey] = new Show[MyKey]:
       override def show(a: MyKey): String =
         s"mykey(${a.name})"
-    }
 
   object MyVal:
-    given Show[MyVal] = new Show[MyVal] {
+    given Show[MyVal] = new Show[MyVal]:
       override def show(a: MyVal): String =
         s"myval(${a.value})"
-    }
 
-    given Show[Ptr[MyVal]] = new Show[Ptr[MyVal]] {
+    given Show[Ptr[MyVal]] = new Show[Ptr[MyVal]]:
       override def show(a: Ptr[MyVal]): String =
         s"ptr(${summon[Show[MyVal]].show(a.value)})"
-    }
 
   final case class MyKeyValDict(keyValues: Map[MyKey, Set[Ptr[MyVal]]], valueKey: Map[Ptr[MyVal], MyKey]) extends Dict[MyKey, Ptr[MyVal], MyKeyValDict]:
     override def clone(keyValues: Map[MyKey, Set[Ptr[MyVal]]], valueKey: Map[Ptr[MyVal], MyKey]): MyKeyValDict =
@@ -114,8 +111,11 @@ final class DictSpec extends TestSpec:
       "print the dict" in {
         val ss1 = ss.link(k1, v1).link(k1, v2)
 
-        val actual   = ss1.show
-        val expected = """"mykey(a)": ["ptr(myval(myFunc1))","ptr(myval(myFunc1))"]"""
+        val actual = ss1.show
+        val expected = """{
+                         |  "mykey(a)": ["ptr(myval(myFunc1))","ptr(myval(myFunc1))"]
+                         |}
+                         |""".stripMargin
 
         actual.trim mustBe expected.trim
       }
