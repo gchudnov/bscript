@@ -29,11 +29,11 @@ final class DictSpec extends TestSpec:
     override def clone(keyValues: Map[MyKey, Set[Ptr[MyVal]]], valueKey: Map[Ptr[MyVal], MyKey]): MyKeyValDict =
       MyKeyValDict(keyValues = keyValues, valueKey = valueKey)
 
-    def link(idx: MyKey, value: MyVal): MyKeyValDict =
-      set(idx, Ptr(value))
+    def link(key: MyKey, value: MyVal): MyKeyValDict =
+      set(key, Ptr(value))
 
-    def indices(idx: MyKey): List[MyVal] =
-      values(idx).map(_.value)
+    def MyVals(key: MyKey): List[MyVal] =
+      values(key).map(_.value)
 
     def myKey(value: MyVal): Option[MyKey] =
       key(Ptr(value))
@@ -70,7 +70,7 @@ final class DictSpec extends TestSpec:
       "locate values after they were linked" in {
         val ss1 = ss.link(k1, v1).link(k1, v2)
 
-        val actual   = ss1.indices(k1)
+        val actual   = ss1.MyVals(k1)
         val expected = List(v1, v2)
 
         actual must contain theSameElementsAs (expected)

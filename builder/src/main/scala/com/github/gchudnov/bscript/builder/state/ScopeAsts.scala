@@ -19,7 +19,7 @@ sealed trait ScopeAsts:
   def scope(ast: AST): Option[Scope]
   def asts(scope: Scope): List[AST]
 
-  def print: String
+  def asString: String
 
 object ScopeAsts:
   lazy val empty: ScopeAsts =
@@ -49,7 +49,5 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
   override def asts(scope: Scope): List[AST] =
     values(scope).map(_.value)
 
-  override def print: String =
-    val sb = new StringBuilder
-    sb.append("\"scopeAsts\": ").append(this.show)
-    sb.toString
+  override def asString: String =
+    show

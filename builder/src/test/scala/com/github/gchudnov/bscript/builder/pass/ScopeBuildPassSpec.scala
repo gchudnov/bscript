@@ -35,13 +35,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val actualScopeSymbols = actualState.scopeSymbols.print
-            val expectedScopeSymbpls = """|"scopeSymbols": {
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbpls = """|{
                                           |}
                                           |""".stripMargin
 
-            val actualScopeAsts = actualState.scopeAsts.print
-            val expectedScopeAsts = """|"scopeAsts": {
+            val actualScopeAsts = actualState.scopeAsts.asString
+            val expectedScopeAsts = """|{
                                        |}
                                        |""".stripMargin
 
