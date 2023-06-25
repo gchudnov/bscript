@@ -9,7 +9,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |        +- Expr +- Ref +- Access
  *      |                |      +- Id
  *      |                |
- *      |                +- Decl +- MethodDecl // TODO: refactor declarations (?), see cpp2, tests
+ *      |                +- Decl +- MethodDecl
  *      |                |       +- StructDecl
  *      |                |       +- VarDecl
  *      |                |       +- TypeDecl
@@ -23,7 +23,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- Init
  *      |                +- KeyValue
  *      |                |
- *      |                +- Lit +- ConstLit
+ *      |                +- Lit +- ConstLit       // contains `Const`
  *      |                       +- CollectionLit
  *      |                       +- MethodLit
  *      |

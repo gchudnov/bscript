@@ -1,7 +1,5 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.types.Type
-
 /**
  * Access a field of a Struct
  *
