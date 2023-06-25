@@ -96,7 +96,7 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
         foldOverAST(s, x)
 
       case other =>
-        throw new MatchError(s"Unsupported AST type in Build-Folder: ${other}")
+        throw new MatchError(s"Unsupported AST type in ScopeBuildFolder: ${other}")
 
 /**
  * Scope Build State

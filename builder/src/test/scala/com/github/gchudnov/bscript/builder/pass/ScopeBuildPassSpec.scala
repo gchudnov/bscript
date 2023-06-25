@@ -7,7 +7,6 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 
 import scala.util.control.Exception.*
-import com.github.gchudnov.bscript.builder.BuilderException
 
 /**
  * Scope Build Pass Tests
