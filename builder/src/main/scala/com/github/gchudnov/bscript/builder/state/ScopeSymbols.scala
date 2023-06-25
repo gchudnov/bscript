@@ -6,6 +6,7 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Tree
 import com.github.gchudnov.bscript.builder.util.Show
 import ScopeSymbols.given
+import com.github.gchudnov.bscript.builder.BuilderException
 
 /**
  * Scope-Symbol Dictionary Interface
@@ -15,7 +16,7 @@ import ScopeSymbols.given
  */
 sealed trait ScopeSymbols:
   def link(scope: Scope, sym: Symbol): ScopeSymbols
-  
+
   def hasLink(scope: Scope, sym: Symbol): Boolean
 
   def scope(sym: Symbol): Option[Scope]
@@ -30,47 +31,45 @@ sealed trait ScopeSymbols:
 
 object ScopeSymbols:
   lazy val empty: ScopeSymbols =
-    BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Ptr[Symbol]]], valueKey = Map.empty[Ptr[Symbol], Scope])
+    BasicScopeSymbols(keyValues = Map.empty[Scope, Set[Symbol]], valueKey = Map.empty[Symbol, Scope])
 
-  given showSymbol: Show[Symbol] = new Show[Symbol] {
+  given showSymbol: Show[Symbol] = new Show[Symbol]:
     override def show(a: Symbol): String =
       s"symbol(${a.toString})"
-  }
 
-  given showPtrSymbol: Show[Ptr[Symbol]] = new Show[Ptr[Symbol]] {
+  given showPtrSymbol: Show[Ptr[Symbol]] = new Show[Ptr[Symbol]]:
     override def show(a: Ptr[Symbol]): String =
-      s"${showSymbol.show(a.value)}"
-  }
+      s"ptr(${showSymbol.show(a.value)})"
 
 /**
-  * Scope-Symbol Dictionary Implementation
-  */
-private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope])
-    extends Dict[Scope, Ptr[Symbol], BasicScopeSymbols]
+ * Scope-Symbol Dictionary Implementation
+ */
+private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]], valueKey: Map[Symbol, Scope])
+    extends Dict[Scope, Symbol, BasicScopeSymbols]
     with ScopeSymbols:
-  override def clone(keyValues: Map[Scope, Set[Ptr[Symbol]]], valueKey: Map[Ptr[Symbol], Scope]): BasicScopeSymbols =
+  override def clone(keyValues: Map[Scope, Set[Symbol]], valueKey: Map[Symbol, Scope]): BasicScopeSymbols =
     BasicScopeSymbols(keyValues = keyValues, valueKey = valueKey)
 
   override def link(scope: Scope, sym: Symbol): ScopeSymbols =
-    set(scope, Ptr(sym))
+    set(scope, sym)
 
   /**
-    * Checks whether the given scope contains the given Symbol.
-    */
+   * Checks whether the given scope contains the given Symbol.
+   */
   override def hasLink(scope: Scope, sym: Symbol): Boolean =
-    contains(scope, Ptr(sym))
+    contains(scope, sym)
 
   override def scope(sym: Symbol): Option[Scope] =
-    key(Ptr(sym))
+    key(sym)
 
   override def scopes: List[Scope] =
     keyValues.keySet.toList
 
   override def symbols(scope: Scope): List[Symbol] =
-    values(scope).map(_.value)
+    values(scope)
 
   override def symbols: List[Symbol] =
-    valueKey.keySet.toList.map(_.value)
+    valueKey.keySet.toList
 
   override def resolveIn(name: String, in: Scope): Option[Symbol] =
     symbols(in)

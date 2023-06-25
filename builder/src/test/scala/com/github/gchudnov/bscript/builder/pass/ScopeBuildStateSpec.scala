@@ -26,7 +26,7 @@ final class ScopeBuildStateSpec extends TestSpec:
       "prohibit symbol definition" in {
         val sym = Type.bool
 
-        intercept[BuilderException] {
+        assertThrows[BuilderException] {
           state0.defineSymbol(sym)
         }
       }

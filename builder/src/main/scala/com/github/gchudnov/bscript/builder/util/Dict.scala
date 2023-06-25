@@ -28,8 +28,7 @@ abstract class Dict[K: Show, V: Show, D <: Dict[K, V, D]]:
   def set(key: K, value: V): D =
     val vs = keyValues.getOrElse(key, Set.empty[V])
 
-    require(!vs.contains(value), s"value ${value} is already assigned to the key ${key}, cannot set it twice.")
-    require(!valueKey.contains(value), s"value ${value} is already assigned to a different key, cannot set it to the key ${key}.")
+    require(!vs.contains(value), s"value ${value} is already assigned to the key ${key}, most likely we do not want to set it twice. Check for bugs in the code.")
 
     val keyValues1 = keyValues + (key  -> (vs + value))
     val valueKey1  = valueKey + (value -> key)

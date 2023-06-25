@@ -55,7 +55,7 @@ final class TreeSpec extends TestSpec:
       "raise an exception" in {
         val b0 = Node("b0")
 
-        intercept[IllegalArgumentException] {
+        assertThrows[IllegalArgumentException] {
           Tree
             .empty[Node]
             .add(b0)

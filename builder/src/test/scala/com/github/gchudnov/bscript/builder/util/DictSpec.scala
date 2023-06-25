@@ -93,16 +93,8 @@ final class DictSpec extends TestSpec:
       }
 
       "value cannot be linked twice to the same key" in {
-        intercept[IllegalArgumentException] {
+        assertThrows[IllegalArgumentException] {
           ss.link(k1, v1).link(k1, v1)
-        }
-      }
-
-      "value can be linked to one key only" in {
-        val ss1 = ss.link(k1, v1)
-
-        intercept[IllegalArgumentException] {
-          ss1.link(k2, v1)
         }
       }
     }
