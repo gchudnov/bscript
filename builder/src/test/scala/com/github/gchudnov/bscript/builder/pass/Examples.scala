@@ -713,3 +713,19 @@ object Examples:
       ConstLit(IntVal(4)),
     )
     Example("ex24", t)
+
+  /**
+   * Variable Declaration -- should fail because of duplicate variable names
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   int x = 1;
+   * }}}
+   */
+  val ex25: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
+    )
+    Example("ex25", t)

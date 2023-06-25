@@ -15,6 +15,8 @@ import ScopeAsts.given
 sealed trait ScopeAsts:
   def link(scope: Scope, ast: AST): ScopeAsts
 
+  def hasLink(scope: Scope, ast: AST): Boolean
+
   def scope(ast: AST): Option[Scope]
   def asts(scope: Scope): List[AST]
 
@@ -41,6 +43,12 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
 
   override def link(scope: Scope, ast: AST): ScopeAsts =
     set(scope, Ptr(ast))
+
+  /**
+    * Checks whether the given scope contains the given AST.
+    */
+  override def hasLink(scope: Scope, ast: AST): Boolean =
+    contains(scope, Ptr(ast))
 
   override def scope(ast: AST): Option[Scope] =
     key(Ptr(ast))

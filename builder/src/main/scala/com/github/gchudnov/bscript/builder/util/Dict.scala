@@ -15,6 +15,16 @@ abstract class Dict[K: Show, V: Show, D <: Dict[K, V, D]]:
 
   protected def clone(keyValues: Map[K, Set[V]], valueKey: Map[V, K]): D
 
+  /**
+   * Set a value for a key.
+   *
+   * @param key
+   *   key
+   * @param value
+   *   value
+   * @return
+   *   a new dictionary with the value set for the key
+   */
   def set(key: K, value: V): D =
     val vs = keyValues.getOrElse(key, Set.empty[V])
 
@@ -29,9 +39,32 @@ abstract class Dict[K: Show, V: Show, D <: Dict[K, V, D]]:
       valueKey = valueKey1,
     )
 
+  /**
+   * Checks whether the value is assigned to the key.
+   *
+   * @param key
+   *   key
+   * @param value
+   *   value
+   * @return
+   *   true if the value is assigned to the key, false otherwise
+   */
+  def contains(key: K, value: V): Boolean =
+    keyValues.get(key).exists(_.contains(value))
+
+  /**
+   * Get values for the given key.
+   */
   protected def values(key: K): List[V] =
     keyValues.getOrElse(key, Set.empty[V]).toList
 
+  /**
+   * Get a key for the given value.
+   * @param value
+   *   value
+   * @return
+   *   a key if the value is assigned to a key, None otherwise
+   */
   protected def key(value: V): Option[K] =
     valueKey.get(value)
 

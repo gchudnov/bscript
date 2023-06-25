@@ -112,16 +112,18 @@ private final case class ScopeBuildState(scopeCursor: TreeCursor[Scope], scopeSy
   def defineSymbol(symbol: Symbol): ScopeBuildState =
     scopeCursor.at match
       case Some(scope) =>
-        this.copy(scopeSymbols = scopeSymbols.link(scope, symbol))
+        if scopeSymbols.hasLink(scope, symbol) then throw new BuilderException(s"Symbol '${symbol}' is already defined in the '${scope}' scope")
+        else this.copy(scopeSymbols = scopeSymbols.link(scope, symbol))
       case None =>
-        throw new BuilderException(s"Cannot define symbol '${symbol}' without a current scope. Call .pushScope() to create a scope first.")
+        throw new BuilderException(s"Cannot define symbol '${symbol}' without a current scope. Call .pushScope() to create a scope first")
 
   def bindAstToScope(ast: AST): ScopeBuildState =
     scopeCursor.at match
       case Some(scope) =>
-        this.copy(scopeAsts = scopeAsts.link(scope, ast))
+        if scopeAsts.hasLink(scope, ast) then throw new BuilderException(s"AST '${ast}' is already bound to the '${scope}' scope")
+        else this.copy(scopeAsts = scopeAsts.link(scope, ast))
       case None =>
-        throw new BuilderException(s"Cannot bind AST '${ast}' to a scope without a current scope. Invoke .pushScope() to create a scope first.")
+        throw new BuilderException(s"Cannot bind AST '${ast}' to a scope without a current scope. Invoke .pushScope() to create a scope first")
 
   def scopeTree: ScopeTree =
     scopeCursor.tree

@@ -90,6 +90,17 @@ final class ScopeBuildPassSpec extends TestSpec:
       }
     }
 
+    "raise an error if declared several times in a scope" in {
+        val t = Examples.ex25
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            ()
+          case Left(t) =>
+            fail("Should be 'right", t)
+    }
+
     "functions" should {
 
       /**

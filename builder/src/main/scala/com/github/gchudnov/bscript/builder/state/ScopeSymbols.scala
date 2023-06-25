@@ -16,7 +16,9 @@ import ScopeSymbols.given
 sealed trait ScopeSymbols:
   def link(scope: Scope, sym: Symbol): ScopeSymbols
   
-  def scope(ast: Symbol): Option[Scope]
+  def hasLink(scope: Scope, sym: Symbol): Boolean
+
+  def scope(sym: Symbol): Option[Scope]
   def scopes: List[Scope]
   def symbols(scope: Scope): List[Symbol]
   def symbols: List[Symbol]
@@ -52,8 +54,14 @@ private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Ptr[
   override def link(scope: Scope, sym: Symbol): ScopeSymbols =
     set(scope, Ptr(sym))
 
-  override def scope(ast: Symbol): Option[Scope] =
-    key(Ptr(ast))
+  /**
+    * Checks whether the given scope contains the given Symbol.
+    */
+  override def hasLink(scope: Scope, sym: Symbol): Boolean =
+    contains(scope, Ptr(sym))
+
+  override def scope(sym: Symbol): Option[Scope] =
+    key(Ptr(sym))
 
   override def scopes: List[Scope] =
     keyValues.keySet.toList
