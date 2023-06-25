@@ -90,15 +90,45 @@ final class ScopeBuildPassSpec extends TestSpec:
       }
     }
 
-    "raise an error if declared several times in a scope" in {
-        val t = Examples.ex25
+    /**
+     * {{{
+     *   // globals
+     *   int x = 0;
+     *   int x = 1;
+     * }}}
+     */
+    "raise an error if a var is declared several times in a scope" in {
+      val t = Examples.ex25
 
-        val errOrRes = eval(t.ast)
-        errOrRes match
-          case Right(_) => 
-            fail("Should be 'left")
-          case Left(t)  => 
-            t.getMessage must include("already defined")
+      val errOrRes = eval(t.ast)
+      errOrRes match
+        case Right(_) =>
+          fail("Should be 'left")
+        case Left(t) =>
+          t.getMessage must include("already defined")
+    }
+
+    /**
+     * {{{
+     *   // globals
+     *   fn main() -> int = {
+     *     0;
+     *   }
+     *
+     *   fn main() -> int = {
+     *     1;
+     *   }
+     * }}}
+     */
+    "raise an error if a method is declared several times in a scope" in {
+      val t = Examples.ex26
+
+      val errOrRes = eval(t.ast)
+      errOrRes match
+        case Right(_) =>
+          fail("Should be 'left")
+        case Left(t) =>
+          t.getMessage must include("already defined")
     }
 
     "functions" should {
@@ -201,12 +231,13 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(fieldOfDateTime@method<>(datetime, str): i32))","symbol(SMethod(offsetDateTime@method<>(datetime, i32, str): datetime))"]
-                                          |  "scope(0.0)": ["symbol(SVar(offset@var))","symbol(SVar(unit@var))","symbol(SVar(value@var))"]
-                                          |  "scope(0.1)": ["symbol(SVar(unit@var))","symbol(SVar(value@var))"]
-                                          |}
-                                          |""".stripMargin
+            val expectedScopeSymbols =
+              """|{
+                 |  "scope(0)": ["symbol(SMethod(fieldOfDateTime@method<>(datetime, str): i32))","symbol(SMethod(offsetDateTime@method<>(datetime, i32, str): datetime))"]
+                 |  "scope(0.0)": ["symbol(SVar(offset@var))","symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                 |  "scope(0.1)": ["symbol(SVar(unit@var))","symbol(SVar(value@var))"]
+                 |}
+                 |""".stripMargin
 
             val actualScopeTree = actualState.scopeTree.asString
             val expectedScopeTree = """|{
@@ -738,15 +769,16 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(f@method<>(): void))","symbol(SStruct(A@struct<> { i32, B, C }))","symbol(SStruct(B@struct<> { i32 }))","symbol(SStruct(C@struct<> { i32 }))","symbol(SVar(a@var))"]
-                                          |  "scope(0.0)": ["symbol(SVar(y@var))"]
-                                          |  "scope(0.1)": ["symbol(SVar(z@var))"]
-                                          |  "scope(0.2)": ["symbol(SVar(b@var))","symbol(SVar(c@var))","symbol(SVar(x@var))"]
-                                          |  "scope(0.3.0)": ["symbol(SStruct(D@struct<> { i32 }))","symbol(SVar(d@var))"]
-                                          |  "scope(0.3.0.0)": ["symbol(SVar(i@var))"]
-                                          |}
-                                          |""".stripMargin
+            val expectedScopeSymbols =
+              """|{
+                 |  "scope(0)": ["symbol(SMethod(f@method<>(): void))","symbol(SStruct(A@struct<> { i32, B, C }))","symbol(SStruct(B@struct<> { i32 }))","symbol(SStruct(C@struct<> { i32 }))","symbol(SVar(a@var))"]
+                 |  "scope(0.0)": ["symbol(SVar(y@var))"]
+                 |  "scope(0.1)": ["symbol(SVar(z@var))"]
+                 |  "scope(0.2)": ["symbol(SVar(b@var))","symbol(SVar(c@var))","symbol(SVar(x@var))"]
+                 |  "scope(0.3.0)": ["symbol(SStruct(D@struct<> { i32 }))","symbol(SVar(d@var))"]
+                 |  "scope(0.3.0.0)": ["symbol(SVar(i@var))"]
+                 |}
+                 |""".stripMargin
 
             actualScopeSymbols mustBe expectedScopeSymbols
 
@@ -812,14 +844,15 @@ final class ScopeBuildPassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(f@method<>(i32): void))","symbol(SMethod(g@method<>(i32): void))","symbol(SMethod(main@method<>(): void))","symbol(SVar(x@var))"]
-                                          |  "scope(0.0)": ["symbol(SVar(x@var))"]
-                                          |  "scope(0.0.0)": ["symbol(SVar(z@var))"]
-                                          |  "scope(0.1)": ["symbol(SVar(x@var))"]
-                                          |  "scope(0.1.1)": ["symbol(SVar(y@var))"]
-                                          |}
-                                          |""".stripMargin
+            val expectedScopeSymbols =
+              """|{
+                 |  "scope(0)": ["symbol(SMethod(f@method<>(i32): void))","symbol(SMethod(g@method<>(i32): void))","symbol(SMethod(main@method<>(): void))","symbol(SVar(x@var))"]
+                 |  "scope(0.0)": ["symbol(SVar(x@var))"]
+                 |  "scope(0.0.0)": ["symbol(SVar(z@var))"]
+                 |  "scope(0.1)": ["symbol(SVar(x@var))"]
+                 |  "scope(0.1.1)": ["symbol(SVar(y@var))"]
+                 |}
+                 |""".stripMargin
 
             actualScopeSymbols mustBe expectedScopeSymbols
           case Left(t) =>

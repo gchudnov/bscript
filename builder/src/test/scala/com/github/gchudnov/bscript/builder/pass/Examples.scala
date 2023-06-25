@@ -729,3 +729,44 @@ object Examples:
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
     )
     Example("ex25", t)
+
+  /**
+   * Method Declaration -- should fail because of duplicate method signatutes
+   *
+   * {{{
+   *   // globals
+   *   fn main() -> int = {
+   *     0;
+   *   }
+   * 
+   *   fn main() -> int = {
+   *     1;
+   *   }
+   * }}}
+   */
+  val ex26: Example =
+    val t = Block.of(
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          ConstLit(IntVal(0)),
+        ),
+      ),
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          ConstLit(IntVal(1)),
+        ),
+      ),
+    )
+    Example("ex26", t)

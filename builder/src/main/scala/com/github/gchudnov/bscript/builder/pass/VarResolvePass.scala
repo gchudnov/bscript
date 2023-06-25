@@ -48,6 +48,8 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
     //     else
     //       s.bindAstToScope(x)
 
+  // TODO: impl it
+
   override def foldAST(s: VarResolveState, ast: AST): VarResolveState =
     ast match
       case x: Access =>
