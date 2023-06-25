@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
+import com.github.gchudnov.bscript.lang.symbols.{ Symbol }
+import com.github.gchudnov.bscript.lang.types.Type
 
 /**
  * Block of code

@@ -1,6 +1,5 @@
-package com.github.gchudnov.bscript.lang.symbols.types
+package com.github.gchudnov.bscript.lang.types
 
-import com.github.gchudnov.bscript.lang.symbols.Type
 
 /**
  * Given type T and a list of types T1,T2..Tn, constructs T[T1,T2,...Tn]
@@ -10,7 +9,7 @@ import com.github.gchudnov.bscript.lang.symbols.Type
  * @param args
  *   type arguments
  */
-final case class AppliedType(t: Type, args: List[Type]) extends Type
+final case class TApplied(t: TType, args: List[TType]) extends TType
 
 /*
 Map[Int, String]

@@ -28,6 +28,8 @@ final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScop
 
     val state1 = folder.foldAST(state0, ast0)
 
+    // TODO: given that we're not changing the state, we do not need to return anything?
+
     val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
       override val ast: AST                   = ast0
       override val scopeTree: ScopeTree       = in.scopeTree
@@ -40,15 +42,6 @@ final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScop
  * Variable Resolve Folder
  */
 private final class VarResolveFolder() extends AstFolder[VarResolveState]:
-
-    //   case x @ Id(name) =>
-    //     val symbol = scopeSymbols.get(name)
-    //     if symbol.isEmpty then
-    //       throw BuilderException(s"Undefined variable: '$name'", x.pos)
-    //     else
-    //       s.bindAstToScope(x)
-
-  // TODO: impl it
 
   override def foldAST(s: VarResolveState, ast: AST): VarResolveState =
     ast match
@@ -113,9 +106,27 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
 /**
  * Var Resolve State
  */
-private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts) {
+private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
-}
+  /**
+   * Resolve id
+   *
+   * @param id
+   *   id
+   * @return
+   *   an updated state
+   */
+  def resolveId(id: Id): VarResolveState =
+    ???
+
+  //   case x @ Id(name) =>
+  //     val symbol = scopeSymbols.get(name)
+  //     if symbol.isEmpty then
+  //       throw BuilderException(s"Undefined variable: '$name'", x.pos)
+  //     else
+  //       s.bindAstToScope(x)
+
+  // TODO: impl it
 
 /**
  * Scope Build State Companion

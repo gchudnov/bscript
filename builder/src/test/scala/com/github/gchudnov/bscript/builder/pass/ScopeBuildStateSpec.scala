@@ -11,7 +11,7 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.lang.symbols.SType
-import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.types.Type
 
 /**
   * Scope Build State Tests

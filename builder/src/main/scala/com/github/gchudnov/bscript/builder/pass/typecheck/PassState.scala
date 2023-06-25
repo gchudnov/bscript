@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.pass.typecheck
 import com.github.gchudnov.bscript.builder.state.EvalTypes
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
-import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.types.Type
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.builder.state.ScopeAsts
 

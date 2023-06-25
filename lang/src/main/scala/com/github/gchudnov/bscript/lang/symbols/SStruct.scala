@@ -1,3 +1,3 @@
 package com.github.gchudnov.bscript.lang.symbols
 
-final case class SStruct(name: String) extends Symbol with Type
+final case class SStruct(name: String) extends Symbol

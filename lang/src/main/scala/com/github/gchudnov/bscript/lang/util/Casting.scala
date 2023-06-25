@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.lang.util
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.types.*
-import com.github.gchudnov.bscript.lang.symbols.{ SMethod, SStruct, SVar, Symbol, Type }
+import com.github.gchudnov.bscript.lang.symbols.{ SMethod, SStruct, SVar, Symbol }
 
 object Casting:
 
@@ -77,10 +77,10 @@ object Casting:
         case s: SVar => Right(s)
         case _       => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to SVar"))
 
-    def asType: Either[AstException, Symbol with Type] =
-      sym match
-        case x: Type => Right(x)
-        case _       => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to Type"))
+    // def asType: Either[AstException, Symbol with Type] =
+    //   sym match
+    //     case x: Type => Right(x)
+    //     case _       => Left(new AstException(s"Cannot cast Symbol ${symbolKind}('${sym.name}') to Type"))
 
     //   def asSMethod: Either[AstException, SMethod] =
     //     sym match
@@ -96,7 +96,7 @@ object Casting:
       case _: SVar    => "SVar"
       case _: SMethod => "SMethod"
       case _: SStruct => "SStruct"
-      case _: Type    => "Type"
+      // case _: Type    => "Type"
       case other      => s"${other.toString()}"
 
   // // Type

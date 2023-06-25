@@ -29,6 +29,8 @@ final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasScopeSymbols &
 
     val state1 = folder.foldAST(state0, ast0)
 
+    // TODO: given that we're not changing the AST, we do not need to return it at all
+
     val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
       override val ast: AST                   = ast0
       override val scopeTree: ScopeTree       = state1.scopeCursor.tree
@@ -48,6 +50,8 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
         foldOverAST(s, x)
       case x @ Id(name) =>
         foldOverAST(s, x)
+
+      // TODO: we want to add name, not only fullName to a symbol
 
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s.defineSymbol(SMethod(x.fullName)).bindAstToScope(x).pushScope(), x).popScope()

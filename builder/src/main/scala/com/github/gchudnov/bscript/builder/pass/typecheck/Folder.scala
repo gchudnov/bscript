@@ -11,6 +11,7 @@ import com.github.gchudnov.bscript.builder.pass.typecheck.PassState
 
 import scala.annotation.tailrec
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
+import com.github.gchudnov.bscript.lang.types.Type
 
 /**
   * Fold the AST to do type checking.

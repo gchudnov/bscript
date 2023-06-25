@@ -12,4 +12,5 @@ package com.github.gchudnov.bscript.lang.symbols
  * 3) Type - To validate operation x+y, for example, we need to know the types of x and y. Dynamically typed languages like Python track type information at run-time. Statically
  * typed languages like C++ and Java track type information at compile time.
  */
-trait Symbol extends Named
+trait Symbol:
+  def name: String

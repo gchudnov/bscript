@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.state
 
-import com.github.gchudnov.bscript.lang.symbols.Type
+import com.github.gchudnov.bscript.lang.types.Type
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.AST
 
