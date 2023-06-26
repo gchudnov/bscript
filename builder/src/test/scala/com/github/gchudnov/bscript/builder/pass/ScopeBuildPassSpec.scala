@@ -64,7 +64,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        val t = Examples.ex1
+        val t = Examples.exVarDef
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -97,7 +97,7 @@ final class ScopeBuildPassSpec extends TestSpec:
      * }}}
      */
     "raise an error if a var is declared several times in a scope" in {
-      val t = Examples.ex25
+      val t = Examples.exDoubleDef
 
       val errOrRes = eval(t.ast)
       errOrRes match

@@ -25,11 +25,45 @@ object Examples:
    *   int x = 0;
    * }}}
    */
-  val ex1: Example =
+  val exVarDef: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
     )
-    Example("ex1", t)
+    Example("exVarDef", t)
+
+  /**
+   * Variable Declaration & Use
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   x = 1;
+   * }}}
+   */
+  val exVarDefUse: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      Assign(Id("x"), ConstLit(IntVal(1))),
+    )
+    Example("exVarDefUse", t)
+
+
+  /**
+   * Variable Declaration -- should fail because of duplicate variable names
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   int x = 1;
+   * }}}
+   */
+  val exDoubleDef: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
+    )
+    Example("exDoubleDef", t)
+
 
   /**
    * Function Declaration
@@ -712,22 +746,6 @@ object Examples:
       ConstLit(IntVal(4)),
     )
     Example("ex24", t)
-
-  /**
-   * Variable Declaration -- should fail because of duplicate variable names
-   *
-   * {{{
-   *   // globals
-   *   int x = 0;
-   *   int x = 1;
-   * }}}
-   */
-  val ex25: Example =
-    val t = Block.of(
-      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
-    )
-    Example("ex25", t)
 
   /**
    * Method Declaration -- should fail because of duplicate method signatutes

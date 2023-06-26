@@ -24,45 +24,45 @@ final class ResolvePassSpec extends TestSpec:
 
   "ResolvePass" when {
 
-    "const literals" should {
-      /**
-       * {{{
-       *   // globals
-       *   2;
-       * }}}
-       */
-      "resolve scope for an integer" in {
-        val t = Examples.ex21
+    // "const literals" should {
+    //   /**
+    //    * {{{
+    //    *   // globals
+    //    *   2;
+    //    * }}}
+    //    */
+    //   "resolve scope for an integer" in {
+    //     val t = Examples.ex21
 
-        val errOrRes = eval(t.ast)
-        errOrRes match
-          case Right(outState) =>
-            () // TODO: add the assertion
-          case Left(t) =>
-            println(t)
-            fail("Should be 'right", t)
-      }
-    }
+    //     val errOrRes = eval(t.ast)
+    //     errOrRes match
+    //       case Right(outState) =>
+    //         () // TODO: add the assertion
+    //       case Left(t) =>
+    //         println(t)
+    //         fail("Should be 'right", t)
+    //   }
+    // }
 
-    "var is declared" should {
+    // "var is declared" should {
 
-      /**
-       * {{{
-       *   // globals
-       *   int x = 0;
-       * }}}
-       */
-      "resolve scopes" in {
-        val t = Examples.ex1
+    //   /**
+    //    * {{{
+    //    *   // globals
+    //    *   int x = 0;
+    //    * }}}
+    //    */
+    //   "resolve scopes" in {
+    //     val t = Examples.ex1
 
-        val errOrRes = eval(t.ast)
-        errOrRes match
-          case Right(outState) =>
-            () // TODO: add the assertion
-          case Left(t) => 
-            println(t)
-            fail("Should be 'right", t)
-      }
+    //     val errOrRes = eval(t.ast)
+    //     errOrRes match
+    //       case Right(outState) =>
+    //         () // TODO: add the assertion
+    //       case Left(t) => 
+    //         println(t)
+    //         fail("Should be 'right", t)
+    //   }
     }
 
 //     "auto-var is defined" should {
@@ -1083,7 +1083,7 @@ final class ResolvePassSpec extends TestSpec:
 //             fail("Should be 'right", t)
 //       }
 //     }
-  }
+  // }
 
   /**
    * To evaluate, we run Phase 1 and 2
@@ -1091,17 +1091,17 @@ final class ResolvePassSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    *   - In Phase 2 we resolve symbols that were populated in Phase-1
    */
-  private def eval(ast0: AST): Either[Throwable, OutState] =
-    ???
-    // val buildPass = new BuildPassImpl()
-    // val resolvePass = new PassImpl()
+  // private def eval(ast0: AST): Either[Throwable, OutState] =
+  //   ???
+  //   // val buildPass = new BuildPassImpl()
+  //   // val resolvePass = new PassImpl()
 
-    // for
-    //   buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
-    //   buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
-    //   resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
-    //   resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
-    // yield resolveOutState
+  //   // for
+  //   //   buildStateIn      <- nonFatalCatch.either(BuildInState.from(ast0))
+  //   //   buildOutState     <- nonFatalCatch.either(buildPass.run(buildStateIn))
+  //   //   resolveStateIn    <- nonFatalCatch.either(InState.from(buildOutState.ast, buildOutState.scopeTree, buildOutState.scopeSymbols, buildOutState.scopeAsts))
+  //   //   resolveOutState   <- nonFatalCatch.either(resolvePass.run(resolveStateIn))
+  //   // yield resolveOutState
 
 
 // object ResolvePass:

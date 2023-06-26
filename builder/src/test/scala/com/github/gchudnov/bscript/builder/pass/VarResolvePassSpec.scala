@@ -34,6 +34,44 @@ final class VarResolvePassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
     }
+
+    "var is defined" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "put it in a scope" in {
+        val t = Examples.exVarDef
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+     /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   x = 1;
+       * }}}
+       */
+      "put it in a scope and use it" in {
+        val t = Examples.exVarDefUse
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
   }
 
   /**

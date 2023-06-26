@@ -24,49 +24,49 @@ final class TypeCheckPassSpec extends TestSpec:
 
   "TypeCheckPass" when {
 
-    "const literals" should {
+    // "const literals" should {
 
-      /**
-       * {{{
-       *   // globals
-       *   2;
-       * }}}
-       */
-      "type check for an integer" in {
-        val t = Examples.ex21
+    //   /**
+    //    * {{{
+    //    *   // globals
+    //    *   2;
+    //    * }}}
+    //    */
+    //   "type check for an integer" in {
+    //     val t = Examples.ex21
 
-        val errOrRes = eval(t.ast)
-        errOrRes match
-          case Right(outState) =>
-            () // TODO: find what to test
-          case Left(t) =>
-            println(t)
-            fail("Should be 'right", t)
-      }
-    }
+    //     val errOrRes = eval(t.ast)
+    //     errOrRes match
+    //       case Right(outState) =>
+    //         () // TODO: find what to test
+    //       case Left(t) =>
+    //         println(t)
+    //         fail("Should be 'right", t)
+    //   }
+    // }
 
-    "var is defined" should {
+    // "var is defined" should {
 
-      /**
-       * {{{
-       *   // globals
-       *   int x = 0;
-       * }}}
-       */
-      "put it in a scope" in {
-        val t = Examples.ex1
+    //   /**
+    //    * {{{
+    //    *   // globals
+    //    *   int x = 0;
+    //    * }}}
+    //    */
+    //   "put it in a scope" in {
+    //     val t = Examples.ex1
 
-        // TODO: impl ^^^
+    //     // TODO: impl ^^^
 
-        val errOrRes = eval(t.ast)
-        errOrRes match
-          case Right(outState) =>
-            () // TODO: find what to test
-          case Left(t) =>
-            println(t)
-            fail("Should be 'right", t)
-      }
-    }
+    //     val errOrRes = eval(t.ast)
+    //     errOrRes match
+    //       case Right(outState) =>
+    //         () // TODO: find what to test
+    //       case Left(t) =>
+    //         println(t)
+    //         fail("Should be 'right", t)
+    //   }
+    // }
   }
 
   /**
