@@ -9,7 +9,6 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.builder.util.TreeCursor
 
 /**
  * #2 - Variable Resolve Pass
@@ -45,8 +44,7 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
         // TODO: here
         foldOverAST(s, x)
       case x @ Id(name) =>
-        // TODO: here
-        foldOverAST(s, x)
+        foldOverAST(s.resolveId(x), x)
 
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s, x)
@@ -113,14 +111,15 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
    *   an updated state
    */
   def resolveId(id: Id): VarResolveState =
+    val name = id.name
+
+    val errOrState = for {
+      scope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
+      // _     <- scopeSymbols.scope(name)
+    } yield ()
+
     ???
 
-  //   case x @ Id(name) =>
-  //     val symbol = scopeSymbols.get(name)
-  //     if symbol.isEmpty then
-  //       throw BuilderException(s"Undefined variable: '$name'", x.pos)
-  //     else
-  //       s.bindAstToScope(x)
 
   // TODO: impl it
 

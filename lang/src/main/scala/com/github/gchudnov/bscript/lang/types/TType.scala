@@ -10,6 +10,10 @@ package com.github.gchudnov.bscript.lang.types
  *        +- TBuiltIn
  *        +- TMethod
  *        +- TStruct
+ *        +
+ *        +- TMap
+ *        +- TSet
+ *        +- TVec
  *        |
  *        +- TApplied          // TODO: not supported at the moment
  *        +- TAndOr -+- TAnd   // TODO: not supported at the moment

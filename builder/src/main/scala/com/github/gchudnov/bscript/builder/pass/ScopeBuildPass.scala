@@ -111,20 +111,18 @@ private final case class ScopeBuildState(scopeCursor: TreeCursor[Scope], scopeSy
     this.copy(scopeCursor = scopeCursor.pop())
 
   def defineSymbol(symbol: Symbol): ScopeBuildState =
-    scopeCursor.at match
-      case Some(scope) =>
-        if scopeSymbols.hasLink(scope, symbol) then throw new BuilderException(s"Symbol '${symbol}' is already defined in the '${scope}' scope")
-        else this.copy(scopeSymbols = scopeSymbols.link(scope, symbol))
-      case None =>
-        throw new BuilderException(s"Cannot define symbol '${symbol}' without a current scope. Call .pushScope() to create a scope first")
+    val errOrState = for
+      scope <- scopeCursor.at.toRight(new BuilderException(s"Cannot define symbol '${symbol}' without a current scope. Call .pushScope() to create a scope first"))
+      _     <- if scopeSymbols.hasLink(scope, symbol) then Left(new BuilderException(s"Symbol '${symbol}' is already defined in the '${scope}' scope")) else Right(())
+    yield this.copy(scopeSymbols = scopeSymbols.link(scope, symbol))
+    errOrState.fold(throw _, identity)
 
   def bindAstToScope(ast: AST): ScopeBuildState =
-    scopeCursor.at match
-      case Some(scope) =>
-        if scopeAsts.hasLink(scope, ast) then throw new BuilderException(s"AST '${ast}' is already bound to the '${scope}' scope")
-        else this.copy(scopeAsts = scopeAsts.link(scope, ast))
-      case None =>
-        throw new BuilderException(s"Cannot bind AST '${ast}' to a scope without a current scope. Invoke .pushScope() to create a scope first")
+    val errOrState = for
+      scope <- scopeCursor.at.toRight(new BuilderException(s"Cannot bind AST '${ast}' to a scope without a current scope. Invoke .pushScope() to create a scope first"))
+      _     <- if scopeAsts.hasLink(scope, ast) then Left(new BuilderException(s"AST '${ast}' is already bound to the '${scope}' scope")) else Right(())
+    yield this.copy(scopeAsts = scopeAsts.link(scope, ast))
+    errOrState.fold(throw _, identity)
 
   def scopeTree: ScopeTree =
     scopeCursor.tree
