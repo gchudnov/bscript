@@ -18,9 +18,9 @@ import com.github.gchudnov.bscript.builder.util.TreeCursor
  *
  * To find undeclared variables, check the symbol table on each variable that's used for assignment or dereferencing.
  */
-final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST]:
+final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, HasScopeTree & HasScopeSymbols & HasScopeAsts]:
 
-  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
+  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): HasScopeTree & HasScopeSymbols & HasScopeAsts  =
     val state0 = VarResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
     val ast0   = in.ast
 
@@ -30,8 +30,7 @@ final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScop
 
     // TODO: given that we're not changing the state, we do not need to return anything?
 
-    val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      override val ast: AST                   = ast0
+    val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts:
       override val scopeTree: ScopeTree       = in.scopeTree
       override val scopeSymbols: ScopeSymbols = in.scopeSymbols
       override val scopeAsts: ScopeAsts       = state1.scopeAsts

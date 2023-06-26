@@ -44,7 +44,6 @@ final class DictSpec extends TestSpec:
   "DictSpec" when {
 
     val k1 = MyKey("a")
-    val k2 = MyKey("b")
 
     val v1 = MyVal("myFunc1")
     val v2 = MyVal("myFunc1")
