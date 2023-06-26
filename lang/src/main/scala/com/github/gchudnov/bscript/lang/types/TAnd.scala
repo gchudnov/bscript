@@ -1,7 +1,11 @@
 package com.github.gchudnov.bscript.lang.types
 
 /**
-  * And type.
+  * And type
+  * 
+  * {{{
+  *   int & string
+  * }}}
   *
   * @param left
   *   left type

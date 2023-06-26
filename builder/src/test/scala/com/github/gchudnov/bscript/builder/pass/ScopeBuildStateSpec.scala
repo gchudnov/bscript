@@ -11,7 +11,6 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.lang.symbols.SType
-import com.github.gchudnov.bscript.lang.types.Type
 
 /**
   * Scope Build State Tests
@@ -24,7 +23,7 @@ final class ScopeBuildStateSpec extends TestSpec:
 
     "no scope was pushed" should {
       "prohibit symbol definition" in {
-        val sym = Type.bool
+        val sym = SType.bool
 
         assertThrows[BuilderException] {
           state0.defineSymbol(sym)
@@ -41,7 +40,7 @@ final class ScopeBuildStateSpec extends TestSpec:
       }
 
       "a symbol can be linked to this scope" in {
-        val sym = Type.f32
+        val sym = SType.f32
 
         val state2 = state1.defineSymbol(sym)
 

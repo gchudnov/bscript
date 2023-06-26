@@ -11,7 +11,7 @@ import com.github.gchudnov.bscript.builder.pass.typecheck.PassState
 
 import scala.annotation.tailrec
 import com.github.gchudnov.bscript.lang.ast.types.TypeAST
-import com.github.gchudnov.bscript.lang.types.Type
+// import com.github.gchudnov.bscript.lang.types.Type
 
 /**
   * Fold the AST to do type checking.
@@ -21,12 +21,12 @@ private[builder] final class Folder() extends AstFolder[PassState]:
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match
 
-      case x @ VarDecl(name, vType, expr) =>
-        foldAST(foldAST(s, vType), expr)
-          .setEvalType(x, Type.void)
-          .assertCanAssign(expr, vType)
+      // case x @ VarDecl(name, vType, expr) =>
+      //   foldAST(foldAST(s, vType), expr)
+      //     .setEvalType(x, Type.void)
+      //     .assertCanAssign(expr, vType)
 
-        // TODO: we should try to reassign evalType for AUTO?
+      //   // TODO: we should try to reassign evalType for AUTO?
 
       case x: Block =>
         foldOverAST(s, x)

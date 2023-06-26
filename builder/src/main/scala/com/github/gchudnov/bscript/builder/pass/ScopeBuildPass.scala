@@ -19,9 +19,9 @@ import com.github.gchudnov.bscript.builder.util.TreeCursor
  *
  * A symbol table contains a record of all the names that are declared for a scope.
  */
-final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST]:
+final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasScopeSymbols & HasScopeAsts]:
 
-  override def run(in: HasAST): HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
+  override def run(in: HasAST): HasScopeTree & HasScopeSymbols & HasScopeAsts =
     val state0 = ScopeBuildState.empty
     val ast0   = in.ast
 
@@ -29,10 +29,7 @@ final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasScopeSymbols &
 
     val state1 = folder.foldAST(state0, ast0)
 
-    // TODO: given that we're not changing the AST, we do not need to return it at all
-
-    val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      override val ast: AST                   = ast0
+    val out = new HasScopeTree with HasScopeSymbols with HasScopeAsts:
       override val scopeTree: ScopeTree       = state1.scopeCursor.tree
       override val scopeSymbols: ScopeSymbols = state1.scopeSymbols
       override val scopeAsts: ScopeAsts       = state1.scopeAsts

@@ -951,7 +951,7 @@ object ScopeBuildPassSpec:
     def symbols: List[Symbol] =
       scopeSymbols.symbols
 
-  def toActualState(s: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): ActualState =
+  def toActualState(s: HasScopeTree & HasScopeSymbols & HasScopeAsts): ActualState =
     ActualState(
       scopeTree = s.scopeTree,
       scopeAsts = s.scopeAsts,

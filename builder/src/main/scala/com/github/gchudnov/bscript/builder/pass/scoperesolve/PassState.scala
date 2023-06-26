@@ -130,21 +130,21 @@ private[scoperesolve] final case class PassState(
   // private[scoperesolve] def tryResolveUp(vType: TypeAST, start: Scope): Either[Throwable, Type] =
   //   resolveUp(vType, start).toRight(new BuilderException(s"TypeAST '${vType}' cannot be resolved up in scope '${start}'"))
 
-object PassState:
+// object PassState:
 
-  def from(s: InState): PassState =
-    PassState(
-      scopeTree = s.scopeTree,
-      scopeSymbols = s.scopeSymbols,
-      scopeAsts = s.scopeAsts,
-      varTypes = VarTypes.empty,
-    )
+//   def from(s: InState): PassState =
+//     PassState(
+//       scopeTree = s.scopeTree,
+//       scopeSymbols = s.scopeSymbols,
+//       scopeAsts = s.scopeAsts,
+//       varTypes = VarTypes.empty,
+//     )
 
-  def into(s: PassState, ast: AST, scopeAsts: ScopeAsts): OutState =
-    OutState(
-      ast = ast,
-      scopeAsts = scopeAsts,
-    )
+//   def into(s: PassState, ast: AST, scopeAsts: ScopeAsts): OutState =
+//     OutState(
+//       ast = ast,
+//       scopeAsts = scopeAsts,
+//     )
 
 
 // def resolveVarDecl(name: String, vType: TypeAST, ast: AST): PassState =
