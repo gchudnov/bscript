@@ -17,7 +17,6 @@ final class ScopeBuildPassSpec extends TestSpec:
   "ScopeBuildPass" when {
 
     "const literals" should {
-
       /**
        * {{{
        *   // globals
@@ -911,11 +910,14 @@ final class ScopeBuildPassSpec extends TestSpec:
    *   - In Phase 1 we build scopes and define symbols in scopes.
    */
   private def eval(ast0: AST): Either[Throwable, ActualState] = nonFatalCatch.either {
-    val passs = new ScopeBuildPass()
-    val in = new HasAST:
+    // #1 build scopes
+    val buildPass = new ScopeBuildPass()
+    val buildIn = new HasAST:
       val ast = ast0
-    val out         = passs.run(in)
-    val actualState = toActualState(out)
+    val buiOut         = buildPass.run(buildIn)
+    
+    // return the actual state
+    val actualState = toActualState(buiOut)
     actualState
   }
 
