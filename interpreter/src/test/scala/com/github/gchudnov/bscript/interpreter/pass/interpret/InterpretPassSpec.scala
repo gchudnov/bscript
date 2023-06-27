@@ -55,7 +55,7 @@ final class InterpretPassSpec extends TestSpec:
        * }}}
        */
       "interpret several integers" in {
-        val t = Examples.ex22
+        val t = Examples.exTwoInts
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -76,7 +76,7 @@ final class InterpretPassSpec extends TestSpec:
        * }}}
        */
       "interpret several integers when block is inside a block" in {
-        val t = Examples.ex23
+        val t = Examples.exBlockNested
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -98,7 +98,7 @@ final class InterpretPassSpec extends TestSpec:
        * }}}
        */
       "interpret several integers when the last value is outside of a block" in {
-        val t = Examples.ex24
+        val t = Examples.exBlockInner
 
         val errOrRes = eval(t.ast)
         errOrRes match

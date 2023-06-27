@@ -196,7 +196,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "raise an error if there are two generic methods but the parameters named with different letterss" in {
-        val t = Examples.ex9
+        val t = Examples.exPlusT
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -224,7 +224,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "define nested scopes" in {
-        val t = Examples.ex2
+        val t = Examples.exFnDecl
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -262,7 +262,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "shadow variables" in {
-        val t = Examples.ex3
+        val t = Examples.exFnVarArgShadow
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -306,7 +306,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "produce several scopes if there are several method declarations" in {
-        val t = Examples.ex4
+        val t = Examples.exTwoMethods
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -344,7 +344,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(int, int): int" in {
-        val t = Examples.ex5
+        val t = Examples.exPlusInt
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -372,7 +372,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(double, int): double" in {
-        val t = Examples.ex6
+        val t = Examples.exPlusDoubleInt
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -400,7 +400,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for `+(int, int): int` with an invalid argument" in {
-        val t = Examples.ex7
+        val t = Examples.exPlusStringInt
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -428,7 +428,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(T, T): T" in {
-        val t = Examples.ex8
+        val t = Examples.exPlusGeneric
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -456,7 +456,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "be invoked for +(T, U): R" in {
-        val t = Examples.ex9
+        val t = Examples.exPlusT
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -626,7 +626,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "be set in a scope" in {
-        val t = Examples.ex10
+        val t = Examples.exMultipleVars
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -652,7 +652,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "auto-defined for collections" in {
-        val t = Examples.ex11
+        val t = Examples.exAutoCol
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -677,7 +677,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "explicitly defined for collections" in {
-        val t = Examples.ex12
+        val t = Examples.exVarCol
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -702,7 +702,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "allow nothing in declaration with auto-type deduction" in {
-        val t = Examples.ex13
+        val t = Examples.exAutoNothing
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -728,7 +728,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "allow nothing in declaration with explicit type" in {
-        val t = Examples.ex14
+        val t = Examples.exIntNothing
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -758,7 +758,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "assign scope to the Call Variable" in {
-        val t = Examples.ex15
+        val t = Examples.exVarNotInScope
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -794,7 +794,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "retain scope information for several nested scopes" in {
-        val t = Examples.ex16
+        val t = Examples.exNestedScopes
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -844,7 +844,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "define related symbols in scopes" in {
-        val t = Examples.ex17
+        val t = Examples.exStruct
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -885,7 +885,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "initialize with an anonymous struct" in {
-        val t = Examples.ex18
+        val t = Examples.exStructInit
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -919,7 +919,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "build scopes" in {
-        val t = Examples.ex19
+        val t = Examples.exSmallApp
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -972,7 +972,7 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "build scopes" in {
-        val t = Examples.ex20
+        val t = Examples.exAdvApp
 
         // TODO: note that the example is not implemented yet
 
