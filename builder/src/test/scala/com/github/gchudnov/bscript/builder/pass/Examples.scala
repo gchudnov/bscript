@@ -828,3 +828,90 @@ object Examples:
       ),
     )
     Example("exDefMethodDiffSig", t)
+
+  /**
+   * Method Declaration -- raise an error if two function definitions with the same name different only in the return type
+   *
+   * {{{
+   *   // globals
+   *   fn main() -> long = {
+   *     0L;
+   *   }
+   * 
+   *   fn main() -> int = {
+   *     1;
+   *   }
+   * }}}
+   */
+  val exDefMethodDiffRetType: Example =
+    val t = Block.of(
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.i64),
+        ),
+        Block.of(
+          ConstLit(LongVal(0)),
+        ),
+      ),
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          ConstLit(IntVal(1)),
+        ),
+      ),
+    )
+    Example("exDefMethodDiffSig", t)
+
+  /**
+   * Generic methods, parameters have different names, should produce an error
+   *
+   * {{{
+   *   fn +[R, T, U](lhs: T, rhs: U) -> R {
+   *     // ...
+   *   }
+   * 
+   *   fn +[X, Y, Z](lhs: Y, rhs: Z) -> X {
+   *     // ...
+   *   }
+   * }}}
+   */
+  val exTwoSameGenericMethods: Example =
+    val t = Block.of(
+      MethodDecl(
+        "+",
+        MethodType(
+          List(TypeDecl("R"), TypeDecl("T"), TypeDecl("U")),
+          List(
+            VarDecl("lhs", TypeId("T")),
+            VarDecl("rhs", TypeId("U")),
+          ),
+          TypeId("R"),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("R")),
+        ),
+      ),
+      MethodDecl(
+        "+",
+        MethodType(
+          List(TypeDecl("X"), TypeDecl("Y"), TypeDecl("Z")),
+          List(
+            VarDecl("lhs", TypeId("Y")),
+            VarDecl("rhs", TypeId("Z")),
+          ),
+          TypeId("X"),
+        ),
+        Block.of(
+          Compiled(callback = Compiled.identity, retType = TypeId("X")),
+        ),
+      ),
+    )
+    Example("exTwoSameGenericMethods", t)

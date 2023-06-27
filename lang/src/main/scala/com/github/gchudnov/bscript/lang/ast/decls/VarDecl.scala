@@ -15,11 +15,7 @@ import com.github.gchudnov.bscript.lang.ast.*
  *   float y = 10;
  * }}}
  */
-final case class VarDecl(name: String, vType: TypeAST, expr: Expr) extends Decl:
-  override def fullName: String =
-    s"${name}@var"
-
-
+final case class VarDecl(name: String, vType: TypeAST, expr: Expr) extends Decl
 
 object VarDecl:
   def apply(name: String, vType: TypeAST): VarDecl =

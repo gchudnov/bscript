@@ -87,83 +87,132 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   int x = 1;
+       * }}}
+       */
+      "raise an error if a var is declared several times in a scope" in {
+        val t = Examples.exDoubleDef
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("already defined")
+      }
+
     }
 
-    /**
-     * {{{
-     *   // globals
-     *   int x = 0;
-     *   int x = 1;
-     * }}}
-     */
-    "raise an error if a var is declared several times in a scope" in {
-      val t = Examples.exDoubleDef
+    "functions" should {
 
-      val errOrRes = eval(t.ast)
-      errOrRes match
-        case Right(_) =>
-          fail("Should be 'left")
-        case Left(t) =>
-          t.getMessage must include("already defined")
-    }
+      /**
+       * {{{
+       *   // globals
+       *   fn main() -> int = {
+       *     0;
+       *   }
+       *
+       *   fn main() -> int = {
+       *     1;
+       *   }
+       * }}}
+       */
+      "raise an error if a method is declared several times with the same signature in a scope" in {
+        val t = Examples.exDefMethodSameSig
 
-    /**
-     * {{{
-     *   // globals
-     *   fn main() -> int = {
-     *     0;
-     *   }
-     *
-     *   fn main() -> int = {
-     *     1;
-     *   }
-     * }}}
-     */
-    "raise an error if a method is declared several times in a scope" in {
-      val t = Examples.exDefMethodSameSig
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("already defined")
+      }
 
-      val errOrRes = eval(t.ast)
-      errOrRes match
-        case Right(_) =>
-          fail("Should be 'left")
-        case Left(t) =>
-          t.getMessage must include("already defined")
-    }
+      /**
+       * {{{
+       *   // globals
+       *   fn main(x: int) -> int = {
+       *     0;
+       *   }
+       * 
+       *   fn main() -> int = {
+       *     1;
+       *   }
+       * }}}
+        */
+      "no error if there are several methods with the same name, but a different signatures" in {
+          val t = Examples.exDefMethodDiffSig
 
-    /**
-     * {{{
-     *   // globals
-     *   fn main(x: int) -> int = {
-     *     0;
-     *   }
-     * 
-     *   fn main() -> int = {
-     *     1;
-     *   }
-     * }}}
-      */
-    "no error if there are several methods with the same name, but a different signature" in {
-        val t = Examples.exDefMethodDiffSig
+          val errOrRes = eval(t.ast)
+          errOrRes match
+            case Right(actualState) =>
+              val actualScopeSymbols = actualState.scopeSymbols.asString
+              val expectedScopeSymbols = """|{
+                                            |  "scope(0)": ["symbol(SMethod(main,<>()))","symbol(SMethod(main,<>(i32)))"]
+                                            |  "scope(0.0)": ["symbol(SVar(x))"]
+                                            |}
+                                            |""".stripMargin
+
+              actualScopeSymbols mustBe expectedScopeSymbols
+            case Left(t) =>
+              fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   fn main() -> long = {
+       *     0L;
+       *   }
+       * 
+       *   fn main() -> int = {
+       *     1;
+       *   }
+       * }}}
+       */
+      "raies an error if there are two methods with the same name, but the signature is different only in the return type" in {
+          val t = Examples.exDefMethodDiffRetType
+
+          val errOrRes = eval(t.ast)
+          errOrRes match
+            case Right(actualState) =>
+              fail("Should be 'left")
+            case Left(t) =>
+              t.getMessage must include("already defined")
+      }
+
+      /**
+       * {{{
+       *   R +[R, T, U](lhs: T, rhs: U) {
+       *     // ...
+       *   }
+       *
+       *   4 + 3
+       * }}}
+       */
+      "raise an error if there are two generic methods but the parameters named with different letterss" in {
+        val t = Examples.ex9
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
-            println(actualScopeSymbols)
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(main,main@method<>(): i32))","symbol(SMethod(main,main@method<>(i32): i32))"]
-                                          |  "scope(0.0)": ["symbol(SVar(x))"]
+                                          |  "scope(0)": ["symbol(SMethod(+,<A, B, C>(B, C)))"]
+                                          |  "scope(0.0)": ["symbol(SType(R))","symbol(SType(T))","symbol(SType(U))","symbol(SVar(lhs))","symbol(SVar(rhs))"]
                                           |}
                                           |""".stripMargin
 
             actualScopeSymbols mustBe expectedScopeSymbols
+
           case Left(t) =>
             fail("Should be 'right", t)
-    }
-
-    // TODO: raise an error if method signature is different in the return type
-
-    "functions" should {
+      }
 
       /**
        * {{{
@@ -184,7 +233,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(main,main@method<>(): i32))"]
+                                          |  "scope(0)": ["symbol(SMethod(main,<>()))"]
                                           |  "scope(0.0.0)": ["symbol(SVar(x))"]
                                           |}
                                           |""".stripMargin
@@ -222,7 +271,7 @@ final class ScopeBuildPassSpec extends TestSpec:
 
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(myFunc,myFunc@method<>(i32): i32))"]
+                                          |  "scope(0)": ["symbol(SMethod(myFunc,<>(i32)))"]
                                           |  "scope(0.0)": ["symbol(SVar(x))"]
                                           |  "scope(0.0.0)": ["symbol(SVar(x))"]
                                           |}
@@ -265,7 +314,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols =
               """|{
-                 |  "scope(0)": ["symbol(SMethod(fieldOfDateTime,fieldOfDateTime@method<>(datetime, str): i32))","symbol(SMethod(offsetDateTime,offsetDateTime@method<>(datetime, i32, str): datetime))"]
+                 |  "scope(0)": ["symbol(SMethod(fieldOfDateTime,<>(datetime, str)))","symbol(SMethod(offsetDateTime,<>(datetime, i32, str)))"]
                  |  "scope(0.0)": ["symbol(SVar(offset))","symbol(SVar(unit))","symbol(SVar(value))"]
                  |  "scope(0.1)": ["symbol(SVar(unit))","symbol(SVar(value))"]
                  |}
@@ -302,7 +351,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(+,+@method<>(i32, i32): i32))"]
+                                          |  "scope(0)": ["symbol(SMethod(+,<>(i32, i32)))"]
                                           |  "scope(0.0)": ["symbol(SVar(lhs))","symbol(SVar(rhs))"]
                                           |}
                                           |""".stripMargin
@@ -330,7 +379,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(+,+@method<>(f64, i32): f64))"]
+                                          |  "scope(0)": ["symbol(SMethod(+,<>(f64, i32)))"]
                                           |  "scope(0.0)": ["symbol(SVar(lhs))","symbol(SVar(rhs))"]
                                           |}
                                           |""".stripMargin
@@ -358,7 +407,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(+,+@method<>(i32, i32): i32))"]
+                                          |  "scope(0)": ["symbol(SMethod(+,<>(i32, i32)))"]
                                           |  "scope(0.0)": ["symbol(SVar(lhs))","symbol(SVar(rhs))"]
                                           |}
                                           |""".stripMargin
@@ -386,7 +435,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(+,+@method<T>(T, T): T))"]
+                                          |  "scope(0)": ["symbol(SMethod(+,<A>(A, A)))"]
                                           |  "scope(0.0)": ["symbol(SType(T))","symbol(SVar(lhs))","symbol(SVar(rhs))"]
                                           |}
                                           |""".stripMargin
@@ -414,7 +463,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(+,+@method<R, T, U>(T, U): R))"]
+                                          |  "scope(0)": ["symbol(SMethod(+,<A, B, C>(B, C)))"]
                                           |  "scope(0.0)": ["symbol(SType(R))","symbol(SType(T))","symbol(SType(U))","symbol(SVar(lhs))","symbol(SVar(rhs))"]
                                           |}
                                           |""".stripMargin
@@ -716,7 +765,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(printf,printf@method<>(str, auto): void))"]
+                                          |  "scope(0)": ["symbol(SMethod(printf,<>(str, auto)))"]
                                           |  "scope(0.0)": ["symbol(SVar(format))","symbol(SVar(value))"]
                                           |  "scope(0.1)": ["symbol(SVar(z))"]
                                           |}
@@ -752,7 +801,7 @@ final class ScopeBuildPassSpec extends TestSpec:
           case Right(actualState) =>
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(f,f@method<>(): void))","symbol(SMethod(g,g@method<>(): void))","symbol(SVar(x))"]
+                                          |  "scope(0)": ["symbol(SMethod(f,<>()))","symbol(SMethod(g,<>()))","symbol(SVar(x))"]
                                           |  "scope(0.0.0)": ["symbol(SVar(y))"]
                                           |  "scope(0.0.0.0)": ["symbol(SVar(i))"]
                                           |  "scope(0.0.0.1)": ["symbol(SVar(j))"]
@@ -803,7 +852,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols =
               """|{
-                 |  "scope(0)": ["symbol(SMethod(f,f@method<>(): void))","symbol(SStruct(A))","symbol(SStruct(B))","symbol(SStruct(C))","symbol(SVar(a))"]
+                 |  "scope(0)": ["symbol(SMethod(f,<>()))","symbol(SStruct(A))","symbol(SStruct(B))","symbol(SStruct(C))","symbol(SVar(a))"]
                  |  "scope(0.0)": ["symbol(SVar(y))"]
                  |  "scope(0.1)": ["symbol(SVar(z))"]
                  |  "scope(0.2)": ["symbol(SVar(b))","symbol(SVar(c))","symbol(SVar(x))"]
@@ -878,7 +927,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             val actualScopeSymbols = actualState.scopeSymbols.asString
             val expectedScopeSymbols =
               """|{
-                 |  "scope(0)": ["symbol(SMethod(f,f@method<>(i32): void))","symbol(SMethod(g,g@method<>(i32): void))","symbol(SMethod(main,main@method<>(): void))","symbol(SVar(x))"]
+                 |  "scope(0)": ["symbol(SMethod(f,<>(i32)))","symbol(SMethod(g,<>(i32)))","symbol(SMethod(main,<>()))","symbol(SVar(x))"]
                  |  "scope(0.0)": ["symbol(SVar(x))"]
                  |  "scope(0.0.0)": ["symbol(SVar(z))"]
                  |  "scope(0.1)": ["symbol(SVar(x))"]

@@ -48,10 +48,8 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
       case x @ Id(name) =>
         foldOverAST(s, x)
 
-      // TODO: we want to add name, not only fullName to a symbol
-
       case x @ MethodDecl(name, mType, body) =>
-        foldOverAST(s.defineSymbol(SMethod(x.name, x.fullName)).bindAstToScope(x).pushScope(), x).popScope()
+        foldOverAST(s.defineSymbol(SMethod(x.name, mType.signature)).bindAstToScope(x).pushScope(), x).popScope()
       case x @ StructDecl(name, sType) =>
         foldOverAST(s.defineSymbol(SStruct(x.name)).bindAstToScope(x).pushScope(), x).popScope()
       case x @ VarDecl(name, vType, expr) =>
