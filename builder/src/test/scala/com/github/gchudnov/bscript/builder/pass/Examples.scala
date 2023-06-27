@@ -686,11 +686,11 @@ object Examples:
    *   2;
    * }}}
    */
-  val ex21: Example =
+  val exInt: Example =
     val t = Block.of(
       ConstLit(IntVal(2)),
     )
-    Example("ex21", t)
+    Example("exInt", t)
 
   /**
    * Const literal -- Integers in a block
