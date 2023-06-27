@@ -19,7 +19,7 @@ import com.github.gchudnov.bscript.builder.BuilderException
  */
 final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, Unit]:
 
-  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): Unit  =
+  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): Unit =
     val state0 = VarResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
     val ast0   = in.ast
 
@@ -111,15 +111,11 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
    *   an updated state
    */
   def resolveId(id: Id): VarResolveState =
-    val name = id.name
-
-    val errOrState = for {
-      scope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
-      // _     <- scopeSymbols.scope(name)
-    } yield ()
-
-    ???
-
+    val errOrState = for
+      idScope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
+      _       <- scopeSymbols.resolveUp(id.name, idScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
+    yield this
+    errOrState.fold(throw _, identity)
 
   // TODO: impl it
 
