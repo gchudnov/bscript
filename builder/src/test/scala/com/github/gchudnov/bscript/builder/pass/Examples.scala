@@ -761,7 +761,7 @@ object Examples:
    *   }
    * }}}
    */
-  val ex26: Example =
+  val exDefMethodSameSig: Example =
     val t = Block.of(
       MethodDecl(
         "main",
@@ -786,4 +786,45 @@ object Examples:
         ),
       ),
     )
-    Example("ex26", t)
+    Example("exDefMethodSameSig", t)
+
+  /**
+   * Method Declaration -- should allow different method signatutes that have the same name
+   *
+   * {{{
+   *   // globals
+   *   fn main(x: int) -> int = {
+   *     0;
+   *   }
+   * 
+   *   fn main() -> int = {
+   *     1;
+   *   }
+   * }}}
+   */
+  val exDefMethodDiffSig: Example =
+    val t = Block.of(
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List(VarDecl("x", TypeId(TypeName.i32))),
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          ConstLit(IntVal(0)),
+        ),
+      ),
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          ConstLit(IntVal(1)),
+        ),
+      ),
+    )
+    Example("exDefMethodDiffSig", t)

@@ -120,7 +120,7 @@ final class ScopeBuildPassSpec extends TestSpec:
      * }}}
      */
     "raise an error if a method is declared several times in a scope" in {
-      val t = Examples.ex26
+      val t = Examples.exDefMethodSameSig
 
       val errOrRes = eval(t.ast)
       errOrRes match
@@ -129,6 +129,39 @@ final class ScopeBuildPassSpec extends TestSpec:
         case Left(t) =>
           t.getMessage must include("already defined")
     }
+
+    /**
+     * {{{
+     *   // globals
+     *   fn main(x: int) -> int = {
+     *     0;
+     *   }
+     * 
+     *   fn main() -> int = {
+     *     1;
+     *   }
+     * }}}
+      */
+    "no error if there are several methods with the same name, but a different signature" in {
+        val t = Examples.exDefMethodDiffSig
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            println(actualScopeSymbols)
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(main,main@method<>(): i32))","symbol(SMethod(main,main@method<>(i32): i32))"]
+                                          |  "scope(0.0)": ["symbol(SVar(x))"]
+                                          |}
+                                          |""".stripMargin
+
+            actualScopeSymbols mustBe expectedScopeSymbols
+          case Left(t) =>
+            fail("Should be 'right", t)
+    }
+
+    // TODO: raise an error if method signature is different in the return type
 
     "functions" should {
 
