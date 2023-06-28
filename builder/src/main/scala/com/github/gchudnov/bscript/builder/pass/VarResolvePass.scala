@@ -131,7 +131,10 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
 
   // TODO: impl it
 
-/**
+  // TODO: given that Sybmol is not unique, we need to create SymbolPtr that consists of Symbol and Scope
+  // TODO: to Id and Access add the method path, that denotes the path to the symbol ["a", "b", "c"]
+
+/**7
  * Scope Build State Companion
  */
 private object VarResolveState:

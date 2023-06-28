@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.lang.ast
 /**
  * Access a field of a Struct
  *
- * To access members of a struct like a.x, we trigger two ref operations. The first ref operation looks up a to figure out what type it is. The second ref then resolves x within
+ * To access members of a struct like `a.x`, we trigger two ref operations. The first ref operation looks up a to figure out what type it is. The second ref then resolves x within
  * a’s scope (upon seeing the . node). We match (possibly nested) member access expressions, e.g.:
  *
  * {{{
@@ -12,10 +12,15 @@ package com.github.gchudnov.bscript.lang.ast
  *
  * Given «expr».x, member need’s «expr»’s type because it must look up x with the scope of «expr».
  */
-final case class Access(a: Ref, b: Id) extends Ref
-
-object Access:
-  private val sep: String = "."
+final case class Access(a: Ref, b: Id) extends Ref:
+  /**
+   * Path to the Id
+   *
+   * @return
+   *   path to the identifier
+   */
+  override def path: List[String] =
+    a.path ++ List(b.name)
 
 /*
   def path: String =
@@ -44,6 +49,5 @@ object Access:
 
       ** Call an overloaded method with the given type and term parameters *
       def overloaded(qualifier: Term, name: String, targs: List[TypeRepr], args: List[Term], returnType: TypeRepr): Term
-
 
  */

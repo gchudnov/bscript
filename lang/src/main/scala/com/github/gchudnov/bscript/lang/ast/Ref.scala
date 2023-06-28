@@ -1,3 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast
 
-abstract class Ref extends Expr
+/**
+  * Identifier, Id or Access
+  */
+abstract class Ref extends Expr:
+  def path: List[String]
