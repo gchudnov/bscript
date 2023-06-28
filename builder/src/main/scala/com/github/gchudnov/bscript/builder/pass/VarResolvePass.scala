@@ -113,8 +113,8 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
    */
   def resolveId(id: Id): VarResolveState =
     val errOrState = for
-      idScope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
-      _       <- scopeSymbols.resolveUp(id.name, idScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
+      startScope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
+      _       <- scopeSymbols.resolveUp(id.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
     yield this
     errOrState.fold(throw _, identity)
 
@@ -132,7 +132,8 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
   // TODO: impl it
 
   // TODO: given that Sybmol is not unique, we need to create SymbolPtr that consists of Symbol and Scope
-  // TODO: to Id and Access add the method path, that denotes the path to the symbol ["a", "b", "c"]
+  
+
 
 /**7
  * Scope Build State Companion

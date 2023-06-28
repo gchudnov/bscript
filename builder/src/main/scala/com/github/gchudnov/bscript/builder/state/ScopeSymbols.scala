@@ -5,8 +5,7 @@ import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Tree
 import com.github.gchudnov.bscript.builder.util.Show
-import ScopeSymbols.given
-import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.builder.state.ScopeSymbols.given
 
 /**
  * Scope-Symbol Dictionary Interface

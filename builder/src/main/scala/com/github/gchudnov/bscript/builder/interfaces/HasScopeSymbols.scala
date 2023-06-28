@@ -1,6 +1,5 @@
 package com.github.gchudnov.bscript.builder.interfaces
 
-import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols
 
 trait HasScopeSymbols:
