@@ -296,7 +296,7 @@ final class TreeSpec extends TestSpec:
     "same name of the node" should {
 
       /**
-       * It is allowed to have the same name if the node is not the same.
+       * It is not allowed to have the same name for the nodes.
        *
        * {{{
        *        b0
@@ -309,18 +309,15 @@ final class TreeSpec extends TestSpec:
         val b1 = Node("b1") // (1) |
         val b2 = Node("b1") // (2) |
 
-        val t1 = Tree
-          .empty[Node]
-          .add(b0)
-          .add(b1)
-          .add(b2)
-          .link(b1, b0)
-          .link(b2, b0)
-
-        t1.vertexSize mustBe (3)
-        t1.contains(b0) mustBe (true)
-        t1.contains(b1) mustBe (true)
-        t1.contains(b2) mustBe (true)
+        assertThrows[IllegalArgumentException] {
+          Tree
+            .empty[Node]
+            .add(b0)
+            .add(b1)
+            .add(b2)
+            .link(b1, b0)
+            .link(b2, b0)
+        }
       }
     }
 
