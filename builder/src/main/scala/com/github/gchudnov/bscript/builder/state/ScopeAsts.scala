@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.state
 
-import com.github.gchudnov.bscript.builder.util.Dict
+import com.github.gchudnov.bscript.builder.util.BiDict
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Show
@@ -37,7 +37,7 @@ object ScopeAsts:
 /**
  * A Dictionary of Scope -> AST Implementation
  */
-private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends Dict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
+private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends BiDict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
   override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =
     BasicScopeAsts(keyValues = keyValues, valueKey = valueKey)
 

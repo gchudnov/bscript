@@ -1,7 +1,6 @@
 package com.github.gchudnov.bscript.builder.util
 
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.util.Ptr
 
 /**
  * Dict Tests
@@ -25,9 +24,9 @@ final class DictSpec extends TestSpec:
       override def show(a: Ptr[MyVal]): String =
         s"ptr(${summon[Show[MyVal]].show(a.value)})"
 
-  final case class MyKeyValDict(keyValues: Map[MyKey, Set[Ptr[MyVal]]], valueKey: Map[Ptr[MyVal], MyKey]) extends Dict[MyKey, Ptr[MyVal], MyKeyValDict]:
-    override def clone(keyValues: Map[MyKey, Set[Ptr[MyVal]]], valueKey: Map[Ptr[MyVal], MyKey]): MyKeyValDict =
-      MyKeyValDict(keyValues = keyValues, valueKey = valueKey)
+  final case class MyKeyValDict(keyValues: Map[MyKey, Set[Ptr[MyVal]]]) extends Dict[MyKey, Ptr[MyVal], MyKeyValDict]:
+    override def clone(keyValues: Map[MyKey, Set[Ptr[MyVal]]]): MyKeyValDict =
+      MyKeyValDict(keyValues = keyValues)
 
     def link(key: MyKey, value: MyVal): MyKeyValDict =
       set(key, Ptr(value))
@@ -35,11 +34,8 @@ final class DictSpec extends TestSpec:
     def MyVals(key: MyKey): List[MyVal] =
       values(key).map(_.value)
 
-    def myKey(value: MyVal): Option[MyKey] =
-      key(Ptr(value))
-
   object MyKeyValDict:
-    val empty: MyKeyValDict = MyKeyValDict(keyValues = Map.empty[MyKey, Set[Ptr[MyVal]]], valueKey = Map.empty[Ptr[MyVal], MyKey])
+    val empty: MyKeyValDict = MyKeyValDict(keyValues = Map.empty[MyKey, Set[Ptr[MyVal]]])
 
   "DictSpec" when {
 
@@ -56,14 +52,12 @@ final class DictSpec extends TestSpec:
         val ss1 = ss.link(k1, v1)
 
         ss1.keyValues must contain theSameElementsAs (List(MyKey("a") -> Set(Ptr(v1))))
-        ss1.valueKey must contain theSameElementsAs (List(Ptr(v1) -> MyKey("a")))
       }
 
       "allows multiple values for the same key" in {
         val ss1 = ss.link(k1, v1).link(k1, v2)
 
         ss1.keyValues must contain theSameElementsAs (List(MyKey("a") -> Set(Ptr(v1), Ptr(v2))))
-        ss1.valueKey must contain theSameElementsAs (List(Ptr(v1) -> MyKey("a"), Ptr(v2) -> MyKey("a")))
       }
 
       "locate values after they were linked" in {
@@ -73,22 +67,6 @@ final class DictSpec extends TestSpec:
         val expected = List(v1, v2)
 
         actual must contain theSameElementsAs (expected)
-      }
-
-      "key can be found by value if the value was linked" in {
-        val ss1 = ss.link(k1, v1)
-
-        val actual   = ss1.myKey(v1)
-        val expected = Some(k1)
-
-        actual mustBe expected
-      }
-
-      "key cannot be found by value if the value was not linked" in {
-        val actual   = ss.myKey(v1)
-        val expected = None
-
-        actual mustBe expected
       }
 
       "value cannot be linked twice to the same key" in {

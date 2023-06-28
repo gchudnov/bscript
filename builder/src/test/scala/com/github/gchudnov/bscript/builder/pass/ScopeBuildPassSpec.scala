@@ -1023,13 +1023,6 @@ object ScopeBuildPassSpec:
       scopeAsts.scope(ast)
 
     /**
-     * find Scope by Symbol
-     */
-    def scopeBySymbol(sym: Symbol): Option[Scope] =
-      scopeSymbols
-        .scope(sym)
-
-    /**
      * Find all symbols that have the given name
      */
     def symbols: List[Symbol] =
