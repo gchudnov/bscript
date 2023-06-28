@@ -33,6 +33,8 @@ final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScop
 
     out
 
+// TODO: after resolving the variable, most likely we need to store it so that we can use it later
+
 /**
  * Variable Resolve Folder
  */
@@ -41,8 +43,7 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
   override def foldAST(s: VarResolveState, ast: AST): VarResolveState =
     ast match
       case x: Access =>
-        // TODO: here
-        foldOverAST(s, x)
+        foldOverAST(s.resolveAccess(x), x)
       case x @ Id(name) =>
         foldOverAST(s.resolveId(x), x)
 
@@ -103,7 +104,7 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
 private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
 
   /**
-   * Resolve id
+   * Resolve Id
    *
    * @param id
    *   id
@@ -116,6 +117,17 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
       _       <- scopeSymbols.resolveUp(id.name, idScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
     yield this
     errOrState.fold(throw _, identity)
+
+  /**
+    * Resolve Access
+    *
+    * @param access
+    *   access
+    * @return
+    *   an updated state
+    */
+  def resolveAccess(access: Access): VarResolveState =
+    ???
 
   // TODO: impl it
 

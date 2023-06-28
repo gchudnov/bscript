@@ -61,7 +61,7 @@ final class VarResolvePassSpec extends TestSpec:
        *   x = 1;
        * }}}
        */
-      "put it in a scope and use it" in {
+      "resolve a referenced variable if it is present" in {
         val t = Examples.exVarDefUse
 
         val errOrRes = eval(t.ast)
@@ -69,6 +69,65 @@ final class VarResolvePassSpec extends TestSpec:
           case Right(actualState) =>
             succeed
           case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+        * {{{
+        *   // globals
+        *   int x = 0;
+        *   y = 1;
+        * }}}
+        */
+      "fail to resolve a referenced variable if it is not present" in {
+        val t = Examples.exVarNotDefined
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("'y' is not found")
+      }
+    }
+
+    "a struct is present" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct B { int y; };
+       *     struct C { int z; };
+       *     struct A {
+       *       int x;
+       *       B b;
+       *       C c;
+       *     };
+       *
+       *     A a;
+       *
+       *     fn f() -> void = {
+       *       struct D {
+       *         int i;
+       *       };
+       *
+       *       D d;
+       *       d.i = a.b.y;
+       *     }
+       *   }
+       * }}}
+        */
+      "resolve references to the fields of the struct" in {
+        val t = Examples.exStruct
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }

@@ -46,7 +46,7 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
       case x: Access =>
         foldOverAST(s, x)
       case x @ Id(name) =>
-        foldOverAST(s, x)
+        foldOverAST(s.bindAstToScope(x), x)
 
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s.defineSymbol(SMethod(x.name, mType.signature)).bindAstToScope(x).pushScope(), x).popScope()

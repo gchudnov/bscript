@@ -47,9 +47,28 @@ object Examples:
     )
     Example("exVarDefUse", t)
 
+  /**
+   * Variable Declaration & Use another one
+   * 
+   * Fail since `y` is not defined
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   y = 1;
+   * }}}
+   */
+  val exVarNotDefined: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      Assign(Id("y"), ConstLit(IntVal(1))),
+    )
+    Example("exVarNotDefined", t)
 
   /**
-   * Variable Declaration -- should fail because of duplicate variable names
+   * Variable Declaration
+   * 
+   * should fail because of duplicate variable names
    *
    * {{{
    *   // globals
@@ -748,7 +767,9 @@ object Examples:
     Example("exBlockInner", t)
 
   /**
-   * Method Declaration -- should fail because of duplicate method signatutes
+   * Method Declaration
+   * 
+   * should fail because of duplicate method signatutes
    *
    * {{{
    *   // globals
@@ -789,7 +810,9 @@ object Examples:
     Example("exDefMethodSameSig", t)
 
   /**
-   * Method Declaration -- should allow different method signatutes that have the same name
+   * Method Declaration
+   * 
+   * should allow different method signatutes that have the same name
    *
    * {{{
    *   // globals
@@ -830,7 +853,9 @@ object Examples:
     Example("exDefMethodDiffSig", t)
 
   /**
-   * Method Declaration -- raise an error if two function definitions with the same name different only in the return type
+   * Method Declaration
+   * 
+   * raise an error if two function definitions with the same name different only in the return type
    *
    * {{{
    *   // globals
@@ -871,7 +896,9 @@ object Examples:
     Example("exDefMethodDiffSig", t)
 
   /**
-   * Generic methods, parameters have different names, should produce an error
+   * Generic methods, parameters have different names
+   * 
+   * should produce an error
    *
    * {{{
    *   fn +[R, T, U](lhs: T, rhs: U) -> R {
