@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.builder.util.BiDict
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.lang.ast.decls.Decl
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Show
 import ScopeAsts.given
@@ -11,6 +12,8 @@ import ScopeAsts.given
  *
  *   - a scope can have multiple ASTs
  *   - an AST can belong to only one scope
+ *
+ * NOTE: ASTs are not unique, so we use Ptr[AST] instead of AST
  */
 sealed trait ScopeAsts:
   def link(scope: Scope, ast: AST): ScopeAsts
@@ -19,6 +22,8 @@ sealed trait ScopeAsts:
 
   def scope(ast: AST): Option[Scope]
   def asts(scope: Scope): List[AST]
+
+  def findDecl(name: String, scope: Scope): List[Decl]
 
   def asString: String
 
@@ -45,8 +50,8 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
     set(scope, Ptr(ast))
 
   /**
-    * Checks whether the given scope contains the given AST.
-    */
+   * Checks whether the given scope contains the given AST.
+   */
   override def hasLink(scope: Scope, ast: AST): Boolean =
     contains(scope, Ptr(ast))
 
@@ -55,6 +60,21 @@ private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST
 
   override def asts(scope: Scope): List[AST] =
     values(scope).map(_.value)
+
+  /**
+   * Find a declaration by name in the given scope
+   *
+   * @param name
+   *   name of the declaration
+   * @param scope
+   *   scope
+   * @return
+   *   declaration
+   */
+  override def findDecl(name: String, scope: Scope): List[Decl] =
+    asts(scope).collect {
+      case x: Decl if x.name == name => x
+    }
 
   override def asString: String =
     show
