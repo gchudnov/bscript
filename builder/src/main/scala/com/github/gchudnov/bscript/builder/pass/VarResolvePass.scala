@@ -13,7 +13,7 @@ import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 
 /**
- * #2 - Variable Resolve Pass
+ * #2 ??? - Variable Resolve Pass TODO: not sure anymore if we need this pass
  *
  *   - Checking for undeclared variables.
  *
@@ -199,7 +199,7 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
     ???
 
 /**
- * 7 Scope Build State Companion
+ * Scope Build State Companion
  */
 private object VarResolveState:
 
