@@ -157,33 +157,46 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
   private def resolveFieldTypeOf(tX: TypeId, y: Id): TypeId =
     ???
 
+  // /**
+  //   * Resolve Type if it is an alias
+  //   *
+  //   * @param x
+  //   *   type AST
+  //   * @return
+  //   *   a list of types
+  //   */
+  // private def resolveTypeAST(x: TypeAST): List[TypeAST] =
+  //   x match {
+  //     case x: TypeId =>
+  //       resolveTypeId(x)
+  //     case other => List(other)
+  //   }
+
+  // private def resolveTypeId(x: TypeId): List[TypeAST] =
+  //   val errOrTypes = for
+  //     startScope <- scopeAsts.scope(x).toRight(BuilderException(s"AST '${x}' is not assigned to a Scope, it is a bug"))
+  //     scopeSym   <- scopeSymbols.resolveUp(x.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
+  //     decls       = scopeAsts.findDecl(scopeSym.symbol.name, scopeSym.scope)
+  //     scopeDecls  = decls.map(d => ScopeDecl(scopeSym.scope, d))
+  //   yield scopeDecls
+  //   errOrTypes.fold(throw _, identity)
+
   /**
    * Resolve Type if x
-   * 
+   *
    * {{{
-   *   x -> X
+   *   x -> struct { ... }
    * }}}
    */
-  private def resolveTypeOf(x: Id): TypeAST =
-    for {
-      startScope <- scopeAsts.scope(x).toRight(BuilderException(s"AST '${x}' is not assigned to a Scope, it is a bug"))
-      scopeSym <- scopeSymbols.resolveUp(x.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
-      decls = scopeAsts.findDecl(scopeSym.symbol.name, scopeSym.scope)
-      _ <- if decls.size > 1 then Left(BuilderException(s"More then one symbol '${x.name}' in the scope")) else Right(())
-      decl <- decls.headOption.toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope"))
-
-      // TODO: ???? ^^^ confusing, trace the logic one more time
-      
-      //.toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
-    } yield ()
+  private def resolveTypeASTOf(x: Id): List[TypeAST] =
+    // val errOrTypes = for
+    //   startScope <- scopeAsts.scope(x).toRight(BuilderException(s"AST '${x}' is not assigned to a Scope, it is a bug"))
+    //   scopeSym   <- scopeSymbols.resolveUp(x.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
+    //   decls       = scopeAsts.findDecl(scopeSym.symbol.name, scopeSym.scope)
+    //   scopeDecls  = decls.map(d => ScopeDecl(scopeSym.scope, d))
+    // yield scopeDecls
+    // errOrTypes.fold(throw _, identity)
     ???
-
-/*
-    val errOrState = for
-      startScope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
-      _       <- scopeSymbols.resolveUp(id.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
-    yield this
- */
 
 /**
  * 7 Scope Build State Companion
@@ -196,3 +209,28 @@ private object VarResolveState:
       scopeSymbols = scopeSymbols,
       scopeAsts = scopeAsts,
     )
+
+
+  // /**
+  //  * Resolve Type if x
+  //  *
+  //  * {{{
+  //  *   x -> X
+  //  * }}}
+  //  */
+
+  // /**
+  //  * Resolve Scope-Declaration if x
+  //  *
+  //  * {{{
+  //  *   x -> (scope, X)
+  //  * }}}
+  //  */
+  // private def resolveDeclsOf(x: Id): List[ScopeDecl] =
+  //   val errOrTypes = for
+  //     startScope <- scopeAsts.scope(x).toRight(BuilderException(s"AST '${x}' is not assigned to a Scope, it is a bug"))
+  //     scopeSym   <- scopeSymbols.resolveUp(x.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
+  //     decls       = scopeAsts.findDecl(scopeSym.symbol.name, scopeSym.scope)
+  //     scopeDecls  = decls.map(d => ScopeDecl(scopeSym.scope, d))
+  //   yield scopeDecls
+  //   errOrTypes.fold(throw _, identity)

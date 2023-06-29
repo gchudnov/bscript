@@ -13,6 +13,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                |       +- StructDecl
  *      |                |       +- VarDecl
  *      |                |       +- TypeDecl
+ *      |                |       +- BuiltInDecl
  *      |                |
  *      |                +- Annotated
  *      |                +- Assign
@@ -23,18 +24,19 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- Init
  *      |                +- KeyValue
  *      |                |
- *      |                +- Lit +- ConstLit       // contains `Const`
+ *      |                +- Lit +- ConstLit
  *      |                       +- CollectionLit
  *      |                       +- MethodLit
  *      |
- *      +- TypeAST -+- Auto
- *                  +- TypeId
- *                  +- VecType
- *                  +- SetType
- *                  +- MapType
- *                  +- StructType
- *                  +- MethodType
- *                  +- GenericType
+ *      +- TypeAST +- Auto
+ *                 +- TypeId
+ *                 +- RealType +- VecType
+ *                             +- SetType
+ *                             +- MapType
+ *                             +- StructType
+ *                             +- MethodType
+ *                             +- GenericType
+ *                             +- BuiltInType
  *
  * Const -+- BoolVal
  *        +- ByteVal

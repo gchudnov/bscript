@@ -10,6 +10,7 @@ import com.github.gchudnov.bscript.lang.ast.lit.CollectionLit
 import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 import com.github.gchudnov.bscript.lang.ast.refs.Ref
+import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
 /* Maps AST
  *
  * Usage:
@@ -41,6 +42,10 @@ trait AstMapper:
         mapAuto(a)
       case a: TypeId =>
         mapTypeId(a)
+      case a: BuiltInType =>
+        mapBuiltInType(a)
+      case a: GenericType =>
+        mapGenericType(a)
       case a: VecType =>
         mapVecType(a)
       case a: MapType =>
@@ -98,6 +103,8 @@ trait AstMapper:
         mapVarDecl(a)
       case a: TypeDecl =>
         mapTypeDecl(a)
+      case a: BuiltInDecl =>
+        mapBuiltInDecl(a)
       case other =>
         throw new MatchError(s"Unsupported Decl: ${other}")
 
@@ -136,8 +143,14 @@ trait AstMapper:
   def mapMethodType(ast: MethodType): MethodType =
     ast.copy(tparams = mapTypeDecls(ast.tparams), params = mapVarDecls(ast.params), retType = mapTypeAST(ast.retType))
 
+  def mapBuiltInType(ast: BuiltInType): BuiltInType =
+    ast
+
   def mapGenericType(ast: GenericType): GenericType =
     ast
+
+  def mapBuiltInDecl(ast: BuiltInDecl): BuiltInDecl =
+    ast.copy(aType = mapBuiltInType(ast.aType))
 
   def mapTypeDecl(ast: TypeDecl): TypeDecl =
     ast.copy(aType = mapGenericType(ast.aType))

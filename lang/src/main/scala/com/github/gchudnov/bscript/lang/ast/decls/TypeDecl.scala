@@ -4,13 +4,10 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.*
 
 /**
- * Type Definition, generics or built-in types
+ * Type Definition for a generic type
  *
  * {{{
- *   T in def func[T](...)`
- *   Int
- *   Float
- *   String
+ *   T in `def func[T](...)`
  * }}}
  */
 final case class TypeDecl(name: String, aType: GenericType) extends Decl

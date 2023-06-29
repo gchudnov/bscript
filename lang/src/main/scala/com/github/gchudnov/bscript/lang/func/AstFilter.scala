@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.ast.lit.CollectionLit
 import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 import com.github.gchudnov.bscript.lang.ast.refs.Ref
+import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
 /**
  * Filters AST
  *
@@ -44,6 +45,10 @@ trait AstFilter:
       case a: Auto =>
         if isKeep(a) then Some(a) else None
       case a: TypeId =>
+        if isKeep(a) then Some(a) else None
+      case a: GenericType =>
+        if isKeep(a) then Some(a) else None
+      case a: BuiltInType =>
         if isKeep(a) then Some(a) else None
       case a: VecType =>
         for
@@ -159,6 +164,8 @@ trait AstFilter:
           varDecl <- if isKeep(a) then Some(a.copy(aType = vType, expr = expr)) else None
         yield varDecl
       case a: TypeDecl =>
+        if isKeep(a) then Some(a) else None
+      case a: BuiltInDecl =>
         if isKeep(a) then Some(a) else None
       case other =>
         throw new MatchError(s"Unsupported Decl: ${other}")

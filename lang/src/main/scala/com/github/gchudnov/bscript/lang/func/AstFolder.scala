@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
 
 /**
  * Folds AST
@@ -33,6 +34,8 @@ trait AstFolder[S]:
         foldAST(foldAST(s, vType), expr)
       case TypeDecl(_, tType) =>
         foldAST(s, tType)
+      case BuiltInDecl(_, bType) =>
+        foldAST(s, bType)
 
       case Annotated(expr, id, tparams, params) =>
         foldAST(foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), id), expr)
@@ -71,6 +74,8 @@ trait AstFolder[S]:
       case MethodType(tparams, params, retType) =>
         foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), retType)
       case GenericType(name) =>
+        s
+      case BuiltInType(name) =>
         s
 
 /*
