@@ -14,7 +14,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
 final case class StructType(
   tfields: List[TypeDecl],
   fields: List[VarDecl],
-) extends TypeAST:
+) extends RealType:
   override def asString: String =
     val tfieldsStr = tfields.zipWithIndex.map { case (t, i) => ('A' + i).toChar.toString }.mkString(", ")
     val fieldsStr  = fields.map(_.aType.asString).mkString(", ")

@@ -9,7 +9,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
   */
 final case class SetType(
   keyType: TypeAST,
-) extends TypeAST:
+) extends RealType:
   override def asString: String =
     s"set<${keyType.asString}>"
 

@@ -17,7 +17,7 @@ final case class MethodType(
   tparams: List[TypeDecl],
   params: List[VarDecl],
   retType: TypeAST,
-) extends TypeAST:
+) extends RealType:
   override def asString: String =
     val tparamsStr = tparams.map(_.name).mkString(", ")
     val paramsStr  = params.map(_.aType.asString).mkString(", ")

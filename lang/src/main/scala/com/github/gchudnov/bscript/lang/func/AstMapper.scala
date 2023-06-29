@@ -42,6 +42,13 @@ trait AstMapper:
         mapAuto(a)
       case a: TypeId =>
         mapTypeId(a)
+      case a: RealType =>
+        mapRealType(a)
+      case other =>
+        throw new MatchError(s"Unsupported TypeAST: ${other}")
+
+  def mapRealType(ast: RealType): RealType =
+    ast match
       case a: BuiltInType =>
         mapBuiltInType(a)
       case a: GenericType =>
@@ -55,7 +62,7 @@ trait AstMapper:
       case a: MethodType =>
         mapMethodType(a)
       case other =>
-        throw new MatchError(s"Unsupported TypeAST: ${other}")
+        throw new MatchError(s"Unsupported RealType: ${other}")
 
   def mapExpr(ast: Expr): Expr =
     ast match

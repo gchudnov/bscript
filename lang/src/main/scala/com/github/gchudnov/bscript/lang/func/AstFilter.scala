@@ -46,6 +46,13 @@ trait AstFilter:
         if isKeep(a) then Some(a) else None
       case a: TypeId =>
         if isKeep(a) then Some(a) else None
+      case a: RealType =>
+        filterRealType(a)
+      case other =>
+        throw new MatchError(s"Unsupported TypeAST: ${other}")
+
+  private def filterRealType(ast: RealType): Option[RealType] =
+    ast match
       case a: GenericType =>
         if isKeep(a) then Some(a) else None
       case a: BuiltInType =>
@@ -74,7 +81,7 @@ trait AstFilter:
           methodType <- if isKeep(a) then Some(a.copy(tparams = tparams, params = params, retType = retType)) else None
         yield methodType
       case other =>
-        throw new MatchError(s"Unsupported TypeAST: ${other}")
+        throw new MatchError(s"Unsupported RealType: ${other}")
 
   private def filterExpr(ast: Expr): Option[Expr] =
     ast match
