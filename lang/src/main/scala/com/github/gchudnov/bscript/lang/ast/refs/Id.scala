@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.lang.ast.refs
 
 final case class Id(name: String) extends Ref:
   /**

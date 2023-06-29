@@ -2,6 +2,8 @@ package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.TestSpec
 import org.scalatest.prop.TableDrivenPropertyChecks.*
+import com.github.gchudnov.bscript.lang.ast.refs.Access
+import com.github.gchudnov.bscript.lang.ast.refs.Id
 
 final class AccessSpec extends TestSpec:
 

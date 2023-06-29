@@ -9,6 +9,8 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.lang.ast.refs.Access
+import com.github.gchudnov.bscript.lang.ast.refs.Id
 
 /**
  * #2 - Variable Resolve Pass
@@ -133,6 +135,19 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
 
   // TODO: given that Sybmol is not unique, we need to create SymbolPtr that consists of Symbol and Scope
   
+  /**
+    * Resolve Acess that contains two Ids: `x.y`
+    *
+    * @param x
+    *  id
+    * @param y
+    *  id
+    * @return
+    *  ???
+    */
+  private def resolveIdId(x: Id, y: Id) = 
+    ???
+
 
 
 /**7

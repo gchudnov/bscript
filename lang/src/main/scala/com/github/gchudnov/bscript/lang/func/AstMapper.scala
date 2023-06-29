@@ -7,6 +7,9 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.const.*
 
 import com.github.gchudnov.bscript.lang.ast.lit.CollectionLit
+import com.github.gchudnov.bscript.lang.ast.refs.Access
+import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.ast.refs.Ref
 /* Maps AST
  *
  * Usage:

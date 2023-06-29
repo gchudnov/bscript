@@ -5,6 +5,8 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.ast.refs.Access
+import com.github.gchudnov.bscript.lang.ast.refs.Id
 
 /**
  * Folds AST

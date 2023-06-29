@@ -6,6 +6,9 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 
 import com.github.gchudnov.bscript.lang.ast.lit.CollectionLit
+import com.github.gchudnov.bscript.lang.ast.refs.Access
+import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.ast.refs.Ref
 /**
  * Filters AST
  *

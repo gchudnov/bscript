@@ -1,4 +1,6 @@
-package com.github.gchudnov.bscript.lang.ast
+package com.github.gchudnov.bscript.lang.ast.refs
+import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.ast.refs.Ref
 
 /**
  * Access a field of a Struct
