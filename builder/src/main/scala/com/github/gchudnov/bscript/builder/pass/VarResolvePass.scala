@@ -55,7 +55,7 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
         foldOverAST(s, x)
       case x @ VarDecl(name, vType, expr) =>
         foldOverAST(s, x)
-      case x @ TypeDecl(name) =>
+      case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
 
       case x: Annotated =>
@@ -96,6 +96,8 @@ private final class VarResolveFolder() extends AstFolder[VarResolveState]:
         foldOverAST(s, x)
       case x @ MethodType(tparams, params, retType) =>
         foldOverAST(s, x)
+      case x @ GenericType(name) =>
+        foldOverAST(s, x)
 
       case other =>
         throw new MatchError(s"Unsupported AST type in VarResolveFolder: ${other}")
@@ -116,42 +118,75 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
   def resolveId(id: Id): VarResolveState =
     val errOrState = for
       startScope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
-      _       <- scopeSymbols.resolveUp(id.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
+      _          <- scopeSymbols.resolveUp(id.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
     yield this
     errOrState.fold(throw _, identity)
 
   /**
-    * Resolve Access
-    *
-    * @param access
-    *   access
-    * @return
-    *   an updated state
-    */
+   * Resolve Access
+   *
+   * 1) XXX
+   *
+   * 2) YYY
+   *
+   * @param access
+   *   access
+   * @return
+   *   an updated state
+   */
   def resolveAccess(access: Access): VarResolveState =
+    (access.a, access.b) match
+      case (x: Id, y: Id) =>
+        ???
+      case (x: Access, y: Id) =>
+        ???
+
     ???
 
   // TODO: impl it
 
   // TODO: given that Sybmol is not unique, we need to create SymbolPtr that consists of Symbol and Scope
-  
+
   /**
-    * Resolve Acess that contains two Ids: `x.y`
-    *
-    * @param x
-    *  id
-    * @param y
-    *  id
-    * @return
-    *  ???
-    */
-  private def resolveIdId(x: Id, y: Id) = 
+   * Resolve Acess that references y in type tX and returns type of y, tY
+   *
+   * {{{
+   *   X.y -> Y
+   * }}}
+   */
+  private def resolveFieldTypeOf(tX: TypeId, y: Id): TypeId =
     ???
 
+  /**
+   * Resolve Type if x
+   * 
+   * {{{
+   *   x -> X
+   * }}}
+   */
+  private def resolveTypeOf(x: Id): TypeAST =
+    for {
+      startScope <- scopeAsts.scope(x).toRight(BuilderException(s"AST '${x}' is not assigned to a Scope, it is a bug"))
+      scopeSym <- scopeSymbols.resolveUp(x.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
+      decls = scopeAsts.findDecl(scopeSym.symbol.name, scopeSym.scope)
+      _ <- if decls.size > 1 then Left(BuilderException(s"More then one symbol '${x.name}' in the scope")) else Right(())
+      decl <- decls.headOption.toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope"))
 
+      // TODO: ???? ^^^ confusing, trace the logic one more time
+      
+      //.toRight(BuilderException(s"Symbol '${x.name}' is not found in the scope tree"))
+    } yield ()
+    ???
 
-/**7
- * Scope Build State Companion
+/*
+    val errOrState = for
+      startScope <- scopeAsts.scope(id).toRight(BuilderException(s"AST '${id}' is not assigned to a Scope, it is a bug"))
+      _       <- scopeSymbols.resolveUp(id.name, startScope, scopeTree).toRight(BuilderException(s"Symbol '${id.name}' is not found in the scope tree"))
+    yield this
+ */
+
+/**
+ * 7 Scope Build State Companion
  */
 private object VarResolveState:
 

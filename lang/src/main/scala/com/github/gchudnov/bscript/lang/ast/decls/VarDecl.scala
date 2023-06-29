@@ -15,11 +15,11 @@ import com.github.gchudnov.bscript.lang.ast.*
  *   float y = 10;
  * }}}
  */
-final case class VarDecl(name: String, vType: TypeAST, expr: Expr) extends Decl
+final case class VarDecl(name: String, aType: TypeAST, expr: Expr) extends Decl
 
 object VarDecl:
-  def apply(name: String, vType: TypeAST): VarDecl =
-    VarDecl(name = name, vType = vType, expr = Init())
+  def apply(name: String, aType: TypeAST): VarDecl =
+    VarDecl(name = name, aType = aType, expr = Init())
 
 /*
 ValDef("a", TypeIdent("Int"), Some(Wildcard())))

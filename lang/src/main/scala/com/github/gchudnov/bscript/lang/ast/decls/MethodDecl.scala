@@ -6,4 +6,4 @@ import com.github.gchudnov.bscript.lang.ast.*
 /**
  * Method Declaration
  */
-final case class MethodDecl(name: String, mType: MethodType, body: Block) extends Decl
+final case class MethodDecl(name: String, aType: MethodType, body: Block) extends Decl

@@ -20,7 +20,7 @@ final case class MethodType(
 ) extends TypeAST:
   override def asString: String =
     val tparamsStr = tparams.map(_.name).mkString(", ")
-    val paramsStr  = params.map(_.vType.asString).mkString(", ")
+    val paramsStr  = params.map(_.aType.asString).mkString(", ")
     s"method<$tparamsStr>($paramsStr): ${retType.asString}"
 
   /**
@@ -30,5 +30,5 @@ final case class MethodType(
     val m = tparams.zipWithIndex.map { case (t, i) => t.name -> ('A' + i).toChar.toString() }.toMap
 
     val tparamsStr = tparams.map(t => m(t.name)).mkString(", ")
-    val paramsStr  = params.map(p => m.getOrElse(p.vType.asString, p.vType.asString)).mkString(", ")
+    val paramsStr  = params.map(p => m.getOrElse(p.aType.asString, p.aType.asString)).mkString(", ")
     s"<$tparamsStr>($paramsStr)"

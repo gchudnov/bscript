@@ -34,6 +34,7 @@ package com.github.gchudnov.bscript.lang.ast
  *                  +- MapType
  *                  +- StructType
  *                  +- MethodType
+ *                  +- GenericType
  *
  * Const -+- BoolVal
  *        +- ByteVal

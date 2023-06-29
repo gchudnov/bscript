@@ -17,5 +17,5 @@ final case class StructType(
 ) extends TypeAST:
   override def asString: String =
     val tfieldsStr = tfields.zipWithIndex.map { case (t, i) => ('A' + i).toChar.toString }.mkString(", ")
-    val fieldsStr  = fields.map(_.vType.asString).mkString(", ")
+    val fieldsStr  = fields.map(_.aType.asString).mkString(", ")
     s"struct<$tfieldsStr> { $fieldsStr }"

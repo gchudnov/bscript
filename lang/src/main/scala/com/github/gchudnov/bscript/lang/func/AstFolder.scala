@@ -31,8 +31,8 @@ trait AstFolder[S]:
         foldAST(s, sType)
       case VarDecl(_, vType, expr) =>
         foldAST(foldAST(s, vType), expr)
-      case TypeDecl(_) =>
-        s
+      case TypeDecl(_, tType) =>
+        foldAST(s, tType)
 
       case Annotated(expr, id, tparams, params) =>
         foldAST(foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), id), expr)
@@ -70,6 +70,8 @@ trait AstFolder[S]:
         fields.foldLeft(foldASTs(s, tfields))(foldAST)
       case MethodType(tparams, params, retType) =>
         foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), retType)
+      case GenericType(name) =>
+        s
 
 /*
 

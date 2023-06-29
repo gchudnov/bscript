@@ -143,20 +143,20 @@ trait AstFilter:
     ast match
       case a: MethodDecl =>
         for
-          mType      <- filterTypeAST(a.mType).map(_.asInstanceOf[MethodType])
+          mType      <- filterTypeAST(a.aType).map(_.asInstanceOf[MethodType])
           body       <- filterExpr(a.body).map(_.asInstanceOf[Block])
-          methodDecl <- if isKeep(a) then Some(a.copy(mType = mType, body = body)) else None
+          methodDecl <- if isKeep(a) then Some(a.copy(aType = mType, body = body)) else None
         yield methodDecl
       case a: StructDecl =>
         for
-          sType      <- filterTypeAST(a.sType).map(_.asInstanceOf[StructType])
-          structDecl <- if isKeep(a) then Some(a.copy(sType = sType)) else None
+          sType      <- filterTypeAST(a.aType).map(_.asInstanceOf[StructType])
+          structDecl <- if isKeep(a) then Some(a.copy(aType = sType)) else None
         yield structDecl
       case a: VarDecl =>
         for
-          vType   <- filterTypeAST(a.vType)
+          vType   <- filterTypeAST(a.aType)
           expr    <- filterExpr(a.expr)
-          varDecl <- if isKeep(a) then Some(a.copy(vType = vType, expr = expr)) else None
+          varDecl <- if isKeep(a) then Some(a.copy(aType = vType, expr = expr)) else None
         yield varDecl
       case a: TypeDecl =>
         if isKeep(a) then Some(a) else None

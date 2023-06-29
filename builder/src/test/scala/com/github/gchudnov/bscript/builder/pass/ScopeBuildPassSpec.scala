@@ -17,6 +17,7 @@ final class ScopeBuildPassSpec extends TestSpec:
   "ScopeBuildPass" when {
 
     "const literals" should {
+
       /**
        * {{{
        *   // globals
@@ -139,28 +140,28 @@ final class ScopeBuildPassSpec extends TestSpec:
        *   fn main(x: int) -> int = {
        *     0;
        *   }
-       * 
+       *
        *   fn main() -> int = {
        *     1;
        *   }
        * }}}
-        */
+       */
       "no error if there are several methods with the same name, but a different signatures" in {
-          val t = Examples.exDefMethodDiffSig
+        val t = Examples.exDefMethodDiffSig
 
-          val errOrRes = eval(t.ast)
-          errOrRes match
-            case Right(actualState) =>
-              val actualScopeSymbols = actualState.scopeSymbols.asString
-              val expectedScopeSymbols = """|{
-                                            |  "scope(0)": ["symbol(SMethod(main,<>()))","symbol(SMethod(main,<>(i32)))"]
-                                            |  "scope(0.0)": ["symbol(SVar(x))"]
-                                            |}
-                                            |""".stripMargin
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val actualScopeSymbols = actualState.scopeSymbols.asString
+            val expectedScopeSymbols = """|{
+                                          |  "scope(0)": ["symbol(SMethod(main,<>()))","symbol(SMethod(main,<>(i32)))"]
+                                          |  "scope(0.0)": ["symbol(SVar(x))"]
+                                          |}
+                                          |""".stripMargin
 
-              actualScopeSymbols mustBe expectedScopeSymbols
-            case Left(t) =>
-              fail("Should be 'right", t)
+            actualScopeSymbols mustBe expectedScopeSymbols
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
 
       /**
@@ -169,49 +170,43 @@ final class ScopeBuildPassSpec extends TestSpec:
        *   fn main() -> long = {
        *     0L;
        *   }
-       * 
+       *
        *   fn main() -> int = {
        *     1;
        *   }
        * }}}
        */
       "raies an error if there are two methods with the same name, but the signature is different only in the return type" in {
-          val t = Examples.exDefMethodDiffRetType
-
-          val errOrRes = eval(t.ast)
-          errOrRes match
-            case Right(actualState) =>
-              fail("Should be 'left")
-            case Left(t) =>
-              t.getMessage must include("already defined")
-      }
-
-      /**
-       * {{{
-       *   R +[R, T, U](lhs: T, rhs: U) {
-       *     // ...
-       *   }
-       *
-       *   4 + 3
-       * }}}
-       */
-      "raise an error if there are two generic methods but the parameters named with different letterss" in {
-        val t = Examples.exPlusT
+        val t = Examples.exDefMethodDiffRetType
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val actualScopeSymbols = actualState.scopeSymbols.asString
-            val expectedScopeSymbols = """|{
-                                          |  "scope(0)": ["symbol(SMethod(+,<A, B, C>(B, C)))"]
-                                          |  "scope(0.0)": ["symbol(SType(R))","symbol(SType(T))","symbol(SType(U))","symbol(SVar(lhs))","symbol(SVar(rhs))"]
-                                          |}
-                                          |""".stripMargin
-
-            actualScopeSymbols mustBe expectedScopeSymbols
-
+            fail("Should be 'left")
           case Left(t) =>
-            fail("Should be 'right", t)
+            t.getMessage must include("already defined")
+      }
+
+      /**
+       * {{{
+       *   fn +[R, T, U](lhs: T, rhs: U) -> R {
+       *     // ...
+       *   }
+       *
+       *   fn +[X, Y, Z](lhs: Y, rhs: Z) -> X {
+       *     // ...
+       *   }
+       * }}}
+       */
+      "raise an error if there are two generic methods that different only in naming" in {
+        val t = Examples.exTwoSameGenericMethods
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("already defined")
       }
 
       /**
@@ -443,6 +438,7 @@ final class ScopeBuildPassSpec extends TestSpec:
             actualScopeSymbols mustBe expectedScopeSymbols
 
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
 
@@ -996,8 +992,8 @@ final class ScopeBuildPassSpec extends TestSpec:
     val buildPass = new ScopeBuildPass()
     val buildIn = new HasAST:
       val ast = ast0
-    val buiOut         = buildPass.run(buildIn)
-    
+    val buiOut = buildPass.run(buildIn)
+
     // return the actual state
     val actualState = toActualState(buiOut)
     actualState

@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.lang.ast.decls
 
 import com.github.gchudnov.bscript.lang.ast.Expr
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 
 // TODO: do we want to add EnumDecl ?
 
@@ -15,3 +16,11 @@ abstract class Decl extends Expr:
    *   name
    */
   def name: String
+
+  /**
+   * AST-Type of the declaration
+   *
+   * @return
+   *   type
+   */
+  def aType: TypeAST

@@ -1,4 +1,5 @@
-// TODO: raise an error if method signature is different in the return type
+
+// TODO: not clear how to handle Decl & TypeAST for built-in types
 
 - TODO: start horizontal execution:
         - evaluate 2

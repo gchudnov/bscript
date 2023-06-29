@@ -1,5 +1,8 @@
 package com.github.gchudnov.bscript.lang.ast.decls
 
+import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.ast.*
+
 /**
  * Type Definition, generics or built-in types
  *
@@ -10,4 +13,8 @@ package com.github.gchudnov.bscript.lang.ast.decls
  *   String
  * }}}
  */
-final case class TypeDecl(name: String) extends Decl
+final case class TypeDecl(name: String, aType: GenericType) extends Decl
+
+object TypeDecl:
+  def apply(name: String): TypeDecl =
+    TypeDecl(name = name, aType = GenericType(name))

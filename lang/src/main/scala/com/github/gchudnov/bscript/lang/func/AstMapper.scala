@@ -124,9 +124,6 @@ trait AstMapper:
   def mapTypeId(ast: TypeId): TypeId =
     ast
 
-  def mapTypeDecl(ast: TypeDecl): TypeDecl =
-    ast
-
   def mapVecType(ast: VecType): VecType =
     ast.copy(elemType = mapTypeAST(ast.elemType))
 
@@ -139,14 +136,20 @@ trait AstMapper:
   def mapMethodType(ast: MethodType): MethodType =
     ast.copy(tparams = mapTypeDecls(ast.tparams), params = mapVarDecls(ast.params), retType = mapTypeAST(ast.retType))
 
+  def mapGenericType(ast: GenericType): GenericType =
+    ast
+
+  def mapTypeDecl(ast: TypeDecl): TypeDecl =
+    ast.copy(aType = mapGenericType(ast.aType))
+
   def mapMethodDecl(ast: MethodDecl): MethodDecl =
-    ast.copy(mType = mapMethodType(ast.mType), body = mapBlock(ast.body))
+    ast.copy(aType = mapMethodType(ast.aType), body = mapBlock(ast.body))
 
   def mapStructDecl(ast: StructDecl): StructDecl =
-    ast.copy(sType = mapStructType(ast.sType))
+    ast.copy(aType = mapStructType(ast.aType))
 
   def mapVarDecl(ast: VarDecl): VarDecl =
-    ast.copy(vType = mapTypeAST(ast.vType), expr = mapExpr(ast.expr))
+    ast.copy(aType = mapTypeAST(ast.aType), expr = mapExpr(ast.expr))
 
   def mapAnnotated(ast: Annotated): Annotated =
     ast.copy(expr = mapExpr(ast.expr), id = mapRef(ast.id), tparams = mapTypeDecls(ast.tparams), params = mapExprs(ast.params))

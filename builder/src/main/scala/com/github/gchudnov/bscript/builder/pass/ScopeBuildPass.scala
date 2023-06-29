@@ -56,7 +56,7 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
         foldOverAST(s.defineSymbol(SStruct(x.name)).bindAstToScope(x).pushScope(), x).popScope()
       case x @ VarDecl(name, vType, expr) =>
         foldOverAST(s.defineSymbol(SVar(x.name)).bindAstToScope(x), x)
-      case x @ TypeDecl(name) =>
+      case x @ TypeDecl(name, tType) =>
         foldOverAST(s.defineSymbol(SType(x.name)).bindAstToScope(x), x)
 
       case x: Annotated =>
@@ -94,6 +94,8 @@ private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
       case x @ StructType(tfields, fields) =>
         foldOverAST(s, x)
       case x @ MethodType(tparams, params, retType) =>
+        foldOverAST(s, x)
+      case x @ GenericType(name) =>
         foldOverAST(s, x)
 
       case other =>
