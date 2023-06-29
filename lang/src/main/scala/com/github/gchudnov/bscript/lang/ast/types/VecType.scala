@@ -7,6 +7,4 @@ package com.github.gchudnov.bscript.lang.ast.types
   */
 final case class VecType(
   elemType: TypeAST
-) extends RealType:
-  override def asString: String =
-    s"vec<${elemType.asString}>"
+) extends RealType

@@ -18,11 +18,6 @@ final case class MethodType(
   params: List[VarDecl],
   retType: TypeAST,
 ) extends RealType:
-  override def asString: String =
-    val tparamsStr = tparams.map(_.name).mkString(", ")
-    val paramsStr  = params.map(_.aType.asString).mkString(", ")
-    s"method<$tparamsStr>($paramsStr): ${retType.asString}"
-
   /**
    * Method signature
    */
@@ -30,5 +25,5 @@ final case class MethodType(
     val m = tparams.zipWithIndex.map { case (t, i) => t.name -> ('A' + i).toChar.toString() }.toMap
 
     val tparamsStr = tparams.map(t => m(t.name)).mkString(", ")
-    val paramsStr  = params.map(p => m.getOrElse(p.aType.asString, p.aType.asString)).mkString(", ")
+    val paramsStr  = params.map(p => m.getOrElse(TypeAST.showTypeAST.show(p.aType), TypeAST.showTypeAST.show(p.aType))).mkString(", ")
     s"<$tparamsStr>($paramsStr)"

@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.builder.util.Dict
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Tree
-import com.github.gchudnov.bscript.builder.util.Show
+import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols.given
 
 /**

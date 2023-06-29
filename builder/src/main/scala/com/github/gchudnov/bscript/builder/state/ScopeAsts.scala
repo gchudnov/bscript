@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.builder.util.BiDict
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.ast.decls.Decl
 import com.github.gchudnov.bscript.builder.util.Ptr
-import com.github.gchudnov.bscript.builder.util.Show
+import com.github.gchudnov.bscript.lang.util.Show
 import ScopeAsts.given
 
 /**

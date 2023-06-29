@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.state
 
-import com.github.gchudnov.bscript.builder.util.Show
+import com.github.gchudnov.bscript.lang.util.Show
 
 /**
  * Scope

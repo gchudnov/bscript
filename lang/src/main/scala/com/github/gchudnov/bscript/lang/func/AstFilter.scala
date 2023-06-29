@@ -10,6 +10,7 @@ import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 import com.github.gchudnov.bscript.lang.ast.refs.Ref
 import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
+
 /**
  * Filters AST
  *
@@ -46,6 +47,11 @@ trait AstFilter:
         if isKeep(a) then Some(a) else None
       case a: TypeId =>
         if isKeep(a) then Some(a) else None
+      case a: ByName =>
+        for
+          aType  <- filterTypeAST(a.aType)
+          byName <- if isKeep(a) then Some(a.copy(aType = aType)) else None
+        yield byName
       case a: RealType =>
         filterRealType(a)
       case other =>
@@ -127,6 +133,11 @@ trait AstFilter:
         yield if1
       case a: Init =>
         if isKeep(a) then Some(a) else None
+      case a: Return =>
+        for
+          expr <- filterExpr(a.expr)
+          ret  <- if isKeep(a) then Some(a.copy(expr = expr)) else None
+        yield ret
       case a: KeyValue =>
         for
           key      <- filterLit(a.key).map(_.asInstanceOf[ConstLit])
@@ -183,8 +194,8 @@ trait AstFilter:
         if isKeep(a) then Some(a) else None
       case a: CollectionLit =>
         for
-          cType  <- filterTypeAST(a.cType)
-          elems   = filterExprs(a.elems)
+          cType    <- filterTypeAST(a.cType)
+          elems     = filterExprs(a.elems)
           groupLit <- if isKeep(a) then Some(a.copy(cType = cType, elems = elems)) else None
         yield groupLit
       case a: MethodLit =>

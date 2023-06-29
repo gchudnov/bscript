@@ -44,6 +44,8 @@ trait AstMapper:
         mapTypeId(a)
       case a: RealType =>
         mapRealType(a)
+      case a: ByName =>
+        mapByName(a)
       case other =>
         throw new MatchError(s"Unsupported TypeAST: ${other}")
 
@@ -84,6 +86,8 @@ trait AstMapper:
         mapIf(a)
       case a: Init =>
         mapInit(a)
+      case a: Return =>
+        mapReturn(a)
       case a: KeyValue =>
         mapKeyValue(a)
       case a: Lit =>
@@ -136,6 +140,9 @@ trait AstMapper:
     ast
 
   def mapTypeId(ast: TypeId): TypeId =
+    ast
+
+  def mapByName(ast: ByName): ByName =
     ast
 
   def mapVecType(ast: VecType): VecType =
@@ -191,6 +198,9 @@ trait AstMapper:
 
   def mapInit(ast: Init): Init =
     ast
+
+  def mapReturn(ast: Return): Return =
+    ast.copy(expr = mapExpr(ast.expr))
 
   def mapKeyValue(ast: KeyValue): KeyValue =
     ast.copy(key = mapConstLit(ast.key), value = mapExpr(ast.value))

@@ -22,6 +22,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- Compiled
  *      |                +- If
  *      |                +- Init
+ *      |                +- Return
  *      |                +- KeyValue
  *      |                |
  *      |                +- Lit +- ConstLit
@@ -30,6 +31,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |
  *      +- TypeAST +- Auto
  *                 +- TypeId
+ *                 +- ByName
  *                 +- RealType +- VecType
  *                             +- SetType
  *                             +- MapType

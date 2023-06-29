@@ -51,6 +51,8 @@ trait AstFolder[S]:
         foldAST(foldAST(foldAST(s, cond), then1), else1)
       case Init() =>
         s
+      case Return(expr) =>
+        foldAST(s, expr)
       case KeyValue(key, value) =>
         foldAST(foldAST(s, value), key)
 
@@ -65,6 +67,8 @@ trait AstFolder[S]:
         s
       case TypeId(name) =>
         s
+      case ByName(expr) =>
+        foldAST(s, expr)
       case VecType(elemType) =>
         foldAST(s, elemType)
       case MapType(keyType, valueType) =>
