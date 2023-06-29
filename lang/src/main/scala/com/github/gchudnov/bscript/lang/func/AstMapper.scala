@@ -11,12 +11,9 @@ import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 import com.github.gchudnov.bscript.lang.ast.refs.Ref
 import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
-/* Maps AST
- *
- * Usage:
- * {{{
- *
- * }}}
+
+/**
+ * Maps AST
  */
 trait AstMapper:
 
