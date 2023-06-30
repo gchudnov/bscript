@@ -2,9 +2,9 @@ package com.github.gchudnov.bscript.lang.util
 
 import com.github.gchudnov.bscript.lang.TestSpec
 
-final class LineOpsSpec extends TestSpec:
+final class LinesSpec extends TestSpec:
 
-  "LineOps" when {
+  "Lines" when {
 
     "padLine" should {
       "pad string" in {

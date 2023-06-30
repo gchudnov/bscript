@@ -1,10 +1,8 @@
 package com.github.gchudnov.bscript.interpreter.util
 
-import java.io.FileOutputStream
-import java.nio.file.Path
 import scala.io.Source
 import scala.util.Using
-import scala.util.control.Exception.allCatch
+
 
 object Resources:
 

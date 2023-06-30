@@ -42,10 +42,46 @@ object Examples:
    *   x;
    * }}}
    */
-  val varDeclareAssignReturn: Example =
+  val varDeclAssignReturn: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       Id("x"),
+    )
+    Example(t)
+
+  /**
+   * X,Y Declaration, Return X
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   long y = 1;
+   *   x;
+   * }}}
+   */
+  val xyDeclReturnX: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("y", TypeId(TypeName.i64), ConstLit(LongVal(1))),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
+   * X,Y Declaration, Return Y
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   long y = 1;
+   *   y;
+   * }}}
+   */
+  val xyDeclReturnY: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("y", TypeId(TypeName.i64), ConstLit(LongVal(1))),
+      Id("y"),
     )
     Example(t)
 

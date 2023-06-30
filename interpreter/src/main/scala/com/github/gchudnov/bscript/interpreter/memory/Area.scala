@@ -74,7 +74,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Right(cell) if the cell is found, Left(error) otherwise
    */
   def tryGet(path: Path): Either[Throwable, Cell] =
-    if path.isEmpty then Left(new MemoryException(s"Path to fetch a Cell is empty"))
+    if path.isEmpty then Left(new MemoryException(s"Cannot find the Cell, path to fetch a Cell is empty"))
     else
       tryGet(path.head)
         .flatMap(c => iterateTryGet(path.tail, c))

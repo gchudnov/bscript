@@ -11,16 +11,19 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.interpreter.InterpreterException
-import com.github.gchudnov.bscript.lang.ast.refs.* 
+import com.github.gchudnov.bscript.lang.ast.refs.*
 import com.github.gchudnov.bscript.interpreter.env.*
 
 /**
-  * Interpret Pass
-  */
-final class InterpretPass extends Pass[HasAST, HasRetValue] {
+ * Interpret Pass
+ */
+final class InterpretPass extends Pass[HasAST, HasRetValue]:
 
   override def run(in: HasAST): HasRetValue =
-    val state0 = InterpretState.from(retValue = Cell.Void)
+    val initRet  = Cell.Void
+    val initArea = Area("#")
+
+    val state0 = InterpretState.from(retValue = initRet, area = initArea)
     val ast0   = in.ast
 
     val folder = new InterpretFolder()
@@ -28,11 +31,10 @@ final class InterpretPass extends Pass[HasAST, HasRetValue] {
     val state1 = folder.foldAST(state0, ast0)
 
     val out = new HasRetValue:
-      override def retValue: Cell = 
+      override def retValue: Cell =
         state1.retValue
 
     out
-}
 
 /**
  * Interpret Resolve Folder
@@ -43,8 +45,9 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
     ast match
       case x: Access =>
         foldOverAST(s, x)
+
       case x @ Id(name) =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).loadRetVal(name) // TODO: DONE, remove the comment
 
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s, x)
@@ -52,15 +55,7 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
 
       case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(s, x).copy(retValue = Cell.Void) /// TODO: save in memory
-      
-/*
-  override def visit(s: InterpretState, n: VarDecl): Either[Throwable, InterpretState] =
-    for
-      s1 <- n.expr.visit(s, this)
-      ms  = s1.memSpace.put(n.name, s1.retValue)
-    yield s1.copy(memSpace = ms, retValue = VoidCell)
-*/
+        foldOverAST(s, x).storeRetVal(name).withRetVal(Cell.Void) // TODO: DONE, remove the comment
 
       case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
@@ -69,10 +64,10 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
       case x: Assign =>
         foldOverAST(s, x)
-      
+
       case x: Block =>
         foldOverAST(s, x)
-      
+
       case x @ Call(id, args) =>
         foldOverAST(s, x)
       case x @ Compiled(callback, retType) =>
@@ -85,7 +80,7 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
-        s.copy(retValue = ConstConv.toCell(const)) // NOTE: DONE
+        s.withRetVal(ConstConv.toCell(const)) // TODO: DONE, remove the comment
 
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
@@ -113,18 +108,51 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
 /**
  * Interpret State
  */
-private final case class InterpretState(retValue: Cell) {
+private final case class InterpretState(retValue: Cell, area: Area):
 
-}
+  /**
+   * Sets the return value.
+   *
+   * @param cell
+   *   the return value
+   * @return
+   *   a new state
+   */
+  def withRetVal(cell: Cell): InterpretState =
+    copy(retValue = cell)
+
+  /**
+    * Load the return-value from the memory area
+    *
+    * @param name
+    *   the name of the value
+    * @return
+    *   a new state
+    */
+  def loadRetVal(name: String): InterpretState =
+    val rv = area.tryGet(name).toTry.get
+    copy(retValue = rv)
+
+  /**
+    * Store the return-value in the memory area
+    *
+    * @param name
+    *   the name of the value
+    * @return
+    *   a new state
+    */
+  def storeRetVal(name: String): InterpretState =
+    copy(area = area.put(name, retValue))
 
 /**
  * Interpret State Companion
  */
 private object InterpretState:
 
-  def from(retValue: Cell): InterpretState =
+  def from(retValue: Cell, area: Area): InterpretState =
     InterpretState(
-      retValue = retValue
+      retValue = retValue,
+      area = area,
     )
 
 // import com.github.gchudnov.bscript.builder.state.Meta
@@ -137,7 +165,6 @@ private object InterpretState:
 // object Stash:
 //   val empty: Stash =
 //     Stash(Map.empty[String, StashEntry])
-
 
 // final case class InterpretState()
 

@@ -133,13 +133,53 @@ final class InterpretPassSpec extends TestSpec:
        *   x;
        * }}}
        */
-      "declare, assign and return" in {
-        val t = Examples.varDeclareAssignReturn
+      "declare x, assign and return" in {
+        val t = Examples.varDeclAssignReturn
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.retValue mustBe (Cell.I32(0)) // TODO: fixme
+            actualState.retValue mustBe (Cell.I32(0))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1;
+       *   x;
+       * }}}
+       */
+      "declare x, y, return x" in {
+        val t = Examples.xyDeclReturnX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(0))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1;
+       *   y;
+       * }}}
+       */
+      "declare x, y, return y" in {
+        val t = Examples.xyDeclReturnY
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I64(1L))
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)
