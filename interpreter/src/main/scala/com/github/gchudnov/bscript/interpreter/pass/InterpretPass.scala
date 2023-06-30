@@ -1,30 +1,35 @@
 package com.github.gchudnov.bscript.interpreter.pass
 
-import com.github.gchudnov.bscript.builder.interfaces.*
+import com.github.gchudnov.bscript.interpreter.util.ConstConv
+import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.lang.func.AstFolder
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.interpreter.InterpreterException
 import com.github.gchudnov.bscript.lang.ast.refs.* 
+import com.github.gchudnov.bscript.interpreter.env.*
 
 /**
   * Interpret Pass
   */
-final class InterpretPass extends Pass[HasAST, Unit] {
+final class InterpretPass extends Pass[HasAST, HasRetValue] {
 
-  override def run(in: HasAST): Unit =
-    val state0 = InterpretState.from()
+  override def run(in: HasAST): HasRetValue =
+    val state0 = InterpretState.from(retValue = Cell.Void)
     val ast0   = in.ast
 
     val folder = new InterpretFolder()
 
     val state1 = folder.foldAST(state0, ast0)
 
-    val out = ()
+    val out = new HasRetValue:
+      override def retValue: Cell = 
+        state1.retValue
 
     out
 }
@@ -54,8 +59,10 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
       case x: Assign =>
         foldOverAST(s, x)
+      
       case x: Block =>
         foldOverAST(s, x)
+      
       case x @ Call(id, args) =>
         foldOverAST(s, x)
       case x @ Compiled(callback, retType) =>
@@ -68,7 +75,8 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
-        foldOverAST(s, x)
+        s.copy(retValue = ConstConv.toCell(const)) // NOTE: DONE
+
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
       case x @ MethodLit(mType, body) =>
@@ -95,7 +103,7 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
 /**
  * Interpret State
  */
-private final case class InterpretState() {
+private final case class InterpretState(retValue: Cell) {
 
 }
 
@@ -104,8 +112,9 @@ private final case class InterpretState() {
  */
 private object InterpretState:
 
-  def from(): InterpretState =
+  def from(retValue: Cell): InterpretState =
     InterpretState(
+      retValue = retValue
     )
 
 // import com.github.gchudnov.bscript.builder.state.Meta

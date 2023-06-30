@@ -1,12 +1,12 @@
-package com.github.gchudnov.bscript.interpreter.pass.interpret
+package com.github.gchudnov.bscript.interpreter.util
 
 import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.interpreter.memory.Cell
 
 /**
-  * Converts an AST-constant to a Cell.
-  */
-sealed trait ConstConv:
+ * Converts an AST-constant to a Cell.
+ */
+private[interpreter] object ConstConv:
   def toCell(c: Const): Cell =
     c match
       case BoolVal(v)     => Cell.Bool(v)
@@ -23,5 +23,3 @@ sealed trait ConstConv:
       case ShortVal(v)    => Cell.I16(v)
       case StrVal(v)      => Cell.Str(v)
       case VoidVal        => Cell.Void
-
-private[interpret] object ConstConv extends ConstConv

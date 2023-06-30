@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.builder.pass.*
-import com.github.gchudnov.bscript.builder.interfaces.*
+import com.github.gchudnov.bscript.builder.env.*
 
 import scala.util.control.Exception.*
 

@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.interpreter.pass
 
-import com.github.gchudnov.bscript.builder.interfaces.*
+import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -10,18 +10,7 @@ import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.TestSpec
 
 import scala.util.control.Exception.*
-
-// import com.github.gchudnov.bscript.builder.Builder
-// import com.github.gchudnov.bscript.interpreter.IGlobals
-// import com.github.gchudnov.bscript.interpreter.IInterpretLaws
-// import com.github.gchudnov.bscript.interpreter.ITypeCheckLaws
-// import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-// import com.github.gchudnov.bscript.interpreter.memory.*
-// import com.github.gchudnov.bscript.lang.ast.*
-// import com.github.gchudnov.bscript.lang.symbols.*
-// import com.github.gchudnov.bscript.lang.types.TypeNames
-// import com.github.gchudnov.bscript.lang.types.Types
-// import com.github.gchudnov.bscript.builder.util.Gen
+import com.github.gchudnov.bscript.interpreter.env.HasRetValue
 
 // import java.time.LocalDate
 // import java.time.OffsetDateTime
@@ -44,32 +33,32 @@ final class InterpretPassSpec extends TestSpec:
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(outState) =>
-            // outState.retValue mustBe (Cell.I32(2))
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(2))
             ()
           case Left(t) =>
             println(t)
             fail("Should be 'right", t)
       }
 
-      //   /**
-      //    * {{{
-      //    *   // globals
-      //    *   2
-      //    *   3
-      //    * }}}
-      //    */
-      //   "interpret several integers" in {
-      //     val t = Examples.exTwoInts
+        /**
+         * {{{
+         *   // globals
+         *   2
+         *   3
+         * }}}
+         */
+        "interpret several integers" in {
+          val t = Examples.exTwoInts
 
-      //     val errOrRes = eval(t.ast)
-      //     errOrRes match
-      //       case Right(outState) =>
-      //         outState.retValue mustBe (Cell.I32(3))
-      //       case Left(t) =>
-      //         println(t)
-      //         fail("Should be 'right", t)
-      //   }
+          val errOrRes = eval(t.ast)
+          errOrRes match
+            case Right(actualState) =>
+              actualState.retValue mustBe (Cell.I32(3))
+            case Left(t) =>
+              println(t)
+              fail("Should be 'right", t)
+        }
 
       //   /**
       //    * {{{
@@ -85,8 +74,8 @@ final class InterpretPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t.ast)
       //     errOrRes match
-      //       case Right(outState) =>
-      //         outState.retValue mustBe (Cell.I32(3))
+      //       case Right(actualState) =>
+      //         actualState.retValue mustBe (Cell.I32(3))
       //       case Left(t) =>
       //         println(t)
       //         fail("Should be 'right", t)
@@ -107,8 +96,8 @@ final class InterpretPassSpec extends TestSpec:
 
       //     val errOrRes = eval(t.ast)
       //     errOrRes match
-      //       case Right(outState) =>
-      //         outState.retValue mustBe (Cell.I32(4))
+      //       case Right(actualState) =>
+      //         actualState.retValue mustBe (Cell.I32(4))
       //       case Left(t) =>
       //         println(t)
       //         fail("Should be 'right", t)
@@ -132,8 +121,8 @@ final class InterpretPassSpec extends TestSpec:
 
     //     val errOrRes = eval(t.ast)
     //     errOrRes match
-    //       case Right(outState) =>
-    //         outState.retValue mustBe (Cell.Void)
+    //       case Right(actualState) =>
+    //         actualState.retValue mustBe (Cell.Void)
     //       case Left(t) =>
     //         println(t)
     //         fail("Should be 'right", t)
@@ -165,10 +154,12 @@ final class InterpretPassSpec extends TestSpec:
 
 object InterpretPassSpec:
   final case class ActualState(
+    retValue: Cell,
   )
 
-  def toActualState(s: Unit): ActualState =
+  def toActualState(s: HasRetValue): ActualState =
     ActualState(
+      retValue = s.retValue
     )
 
 

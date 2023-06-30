@@ -65,10 +65,10 @@ abstract class Expr extends Stat
 
 object AST:
   extension (a: AST)
-    def +:(block: Block): Block =
+    def +:(b: Block): Block =
       a match
         case x: Block =>
-          x ++ block
+          x ++ b
         case x: Expr =>
-          Block(exprs = x +: block.exprs)
+          Block(exprs = x +: b.exprs)
         case _ => sys.error("Cannot prepend non-Expr to Block")

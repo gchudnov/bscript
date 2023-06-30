@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass
 
-import com.github.gchudnov.bscript.builder.interfaces.*
+import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.lang.ast.*

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.interfaces
+package com.github.gchudnov.bscript.builder.env
 
 import com.github.gchudnov.bscript.lang.ast.AST
 

@@ -6,7 +6,6 @@ import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
-import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.builder.TestSpec
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.InState as ResolveInState
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState as ResolveOutState

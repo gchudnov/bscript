@@ -1,7 +1,5 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.symbols.{ Symbol }
-
 /**
  * Block of code
  *

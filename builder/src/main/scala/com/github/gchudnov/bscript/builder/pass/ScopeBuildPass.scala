@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.pass
 
 import com.github.gchudnov.bscript.lang.func.AstFolder
 import com.github.gchudnov.bscript.builder.state.*
-import com.github.gchudnov.bscript.builder.interfaces.*
+import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*

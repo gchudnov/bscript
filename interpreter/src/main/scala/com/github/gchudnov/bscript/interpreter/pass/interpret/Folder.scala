@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.interpreter.pass.interpret
 import com.github.gchudnov.bscript.lang.func.AstFolder
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
+import com.github.gchudnov.bscript.interpreter.util.ConstConv
 
 /**
  * Fold the AST to interpret it
