@@ -9,7 +9,7 @@ object TypeName:
   val nothing: String  = "nothing"
   val void: String     = "void"
   val bool: String     = "bool"
-  val i8: String       = "i8"
+  val u8: String       = "u8"
   val i16: String      = "i16"
   val i32: String      = "i32"
   val i64: String      = "i64"
@@ -25,11 +25,14 @@ object TypeName:
     nothing,
     void,
     bool,
+    u8,
+    i16,
     i32,
     i64,
     f32,
     f64,
     dec,
+    chr,
     str,
     date,
     datetime

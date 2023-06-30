@@ -22,23 +22,23 @@ import scala.util.control.Exception.*
  *
  * During execution, though, we still need scope information to resolve symbols.
  */
-sealed trait Interpreter:
+sealed trait Interpreter
 
-  /**
-   * Interprets AST.
-   *
-   * NOTE: AST must be built *before* the interpretation.
-   */
-  def interpret(ast1: AST, state: BuildState): Either[Throwable, (Cell, InterpretState)] =
-    val interpretPass = new PassImpl()
+  // /**
+  //  * Interprets AST.
+  //  *
+  //  * NOTE: AST must be built *before* the interpretation.
+  //  */
+  // def interpret(ast1: AST, state: BuildState): Either[Throwable, (Cell, InterpretState)] =
+  //   val interpretPass = new PassImpl()
 
-    val in = InState.from(ast1)
+  //   val in = InState.from(ast1)
 
-    for {
-      outState <- nonFatalCatch.either(interpretPass.run(in))
-    } yield outState
+  //   for {
+  //     outState <- nonFatalCatch.either(interpretPass.run(in))
+  //   } yield outState
 
-    ???
+  //   ???
 
 
 

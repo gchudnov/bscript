@@ -8,6 +8,9 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 
 final class CellSpec extends TestSpec:
+
+  val showCell = summon[Show[Cell]]
+
   "Cell" when {
     "merge" should {
 
@@ -353,84 +356,84 @@ final class CellSpec extends TestSpec:
 
       "show nothing" in {
         val cell: Cell = Cell.Nothing
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"nothing""""
         actual mustBe expected
       }
 
       "show void" in {
         val cell: Cell = Cell.Void
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"void""""
         actual mustBe expected
       }
 
       "show bool" in {
         val cell: Cell = Cell.Bool(true)
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"bool(true)""""
         actual mustBe expected
       }
 
       "show i32" in {
         val cell: Cell = Cell.I32(123)
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"i32(123)""""
         actual mustBe expected
       }
 
       "show i64" in {
         val cell: Cell = Cell.I64(456L)
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"i64(456)""""
         actual mustBe expected
       }
 
       "show f32" in {
         val cell: Cell = Cell.F32(12.34f)
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"f32(12.34)""""
         actual mustBe expected
       }
 
       "show f64" in {
         val cell: Cell = Cell.F64(56.78)
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"f64(56.78)""""
         actual mustBe expected
       }
 
       "show dec" in {
         val cell: Cell = Cell.Dec(BigDecimal(1000.28))
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"dec(1000.28)""""
         actual mustBe expected
       }
 
       "show str" in {
         val cell: Cell = Cell.Str("alice")
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"str(alice)""""
         actual mustBe expected
       }
 
       "show date" in {
         val cell: Cell = Cell.Date(LocalDate.parse("2021-10-04"))
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"date(2021-10-04)""""
         actual mustBe expected
       }
 
       "show datetime" in {
         val cell: Cell = Cell.DateTime(OffsetDateTime.parse("2021-10-04T01:00:00+02:00"))
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected   = """"datetime(2021-10-04T01:00+02:00)""""
         actual mustBe expected
       }
 
       "show vec of primitives" in {
         val cell: Cell = Cell.Vec(List[Cell](Cell.I32(1), Cell.I64(1000L), Cell.Str("alice")))
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected = """[
                          |  "i32(1)", 
                          |  "i64(1000)", 
@@ -441,7 +444,7 @@ final class CellSpec extends TestSpec:
 
       "show struct" in {
         val cell: Cell = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Str("alice")))
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected = s"""{
                           |  "a": "i32(1)",
                           |  "b": "str(alice)"
@@ -451,7 +454,7 @@ final class CellSpec extends TestSpec:
 
       "show nested struct" in {
         val cell: Cell = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Struct(Map("c" -> Cell.Str("alice")))))
-        val actual     = cell.show
+        val actual     = showCell.show(cell)
         val expected = s"""{
                           |  "a": "i32(1)",
                           |  "b": {
@@ -468,7 +471,7 @@ final class CellSpec extends TestSpec:
             Cell.Struct(Map("a" -> Cell.I32(2), "b" -> Cell.Str("bob"))),
           ),
         )
-        val actual = cell.show
+        val actual = showCell.show(cell)
         val expected = s"""[
                           |  {
                           |    "a": "i32(1)",

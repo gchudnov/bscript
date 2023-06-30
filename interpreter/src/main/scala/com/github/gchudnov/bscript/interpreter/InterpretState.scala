@@ -12,7 +12,7 @@ package com.github.gchudnov.bscript.interpreter
 //     Stash(Map.empty[String, StashEntry])
 
 
-final case class InterpretState()
+// final case class InterpretState()
 
 // final case class InterpretState(meta: Meta, stash: Stash, memSpace: MemorySpace, retValue: Cell)
 

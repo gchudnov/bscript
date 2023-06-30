@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime }
 
@@ -236,32 +237,31 @@ object Cell:
       case Method(value)   => Right(value.asInstanceOf[Any])
 
   given Show[Cell] with
-    extension (a: Cell)
-      def show: String = a match
-        case _: Nothing.type => s"\"nothing\""
-        case _: Void.type    => s"\"void\""
-        case Bool(value)     => s"\"bool(${value})\""
-        case U8(value)       => s"\"u8(${value})\""
-        case I16(value)      => s"\"i16(${value})\""
-        case I32(value)      => s"\"i32(${value})\""
-        case I64(value)      => s"\"i64(${value})\""
-        case F32(value)      => s"\"f32(${value})\""
-        case F64(value)      => s"\"f64(${value})\""
-        case Dec(value)      => s"\"dec(${value})\""
-        case Chr(value)      => s"\"chr(${value})\""
-        case Str(value)      => s"\"str(${value})\""
-        case Date(value)     => s"\"date(${value.toString})\""
-        case DateTime(value) => s"\"datetime(${value.toString})\""
-        case Vec(value) =>
-          val lineLines = value.map(it => LineOps.split(it.show))
-          val lines     = LineOps.wrap("[", "]", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(", ", lineLines))))
-          LineOps.join(lines)
-        case Struct(value) =>
-          val lineLines = value.toList.map { case (k, v) =>
-            val vLines  = LineOps.split(v.show)
-            val kvLines = LineOps.joinCR(": ", Seq(s"\"${k}\""), vLines)
-            kvLines
-          }
-          val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-          LineOps.join(lines)
-        case Method(value) => s"\"method(${value})\""
+    def show(a: Cell): String = a match
+      case _: Nothing.type => s"\"${TypeName.nothing}\""
+      case _: Void.type    => s"\"${TypeName.void}\""
+      case Bool(value)     => s"\"${TypeName.bool}(${value})\""
+      case U8(value)       => s"\"${TypeName.u8}(${value})\""
+      case I16(value)      => s"\"${TypeName.i16}(${value})\""
+      case I32(value)      => s"\"${TypeName.i32}(${value})\""
+      case I64(value)      => s"\"${TypeName.i64}(${value})\""
+      case F32(value)      => s"\"${TypeName.f32}(${value})\""
+      case F64(value)      => s"\"${TypeName.f64}(${value})\""
+      case Dec(value)      => s"\"${TypeName.dec}(${value})\""
+      case Chr(value)      => s"\"${TypeName.chr}(${value})\""
+      case Str(value)      => s"\"${TypeName.str}(${value})\""
+      case Date(value)     => s"\"${TypeName.date}(${value.toString})\""
+      case DateTime(value) => s"\"${TypeName.datetime}(${value.toString})\""
+      case Vec(value) =>
+        val lineLines = value.map(it => LineOps.split(show(it)))
+        val lines     = LineOps.wrap("[", "]", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(", ", lineLines))))
+        LineOps.join(lines)
+      case Struct(value) =>
+        val lineLines = value.toList.map { case (k, v) =>
+          val vLines  = LineOps.split(show(v))
+          val kvLines = LineOps.joinCR(": ", Seq(s"\"${k}\""), vLines)
+          kvLines
+        }
+        val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
+        LineOps.join(lines)
+      case Method(value) => s"\"method(${value})\""

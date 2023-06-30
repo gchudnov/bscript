@@ -1,21 +1,23 @@
 package com.github.gchudnov.bscript.interpreter.pass.interpret
 
-import com.github.gchudnov.bscript.interpreter.pass.Pass
+class PassImpl {}
 
-/**
-  * Interpret Pass
-  */
-private[interpreter] final class PassImpl() extends Pass:
+// import com.github.gchudnov.bscript.interpreter.pass.Pass
 
-  type In  = InState
-  type Out = OutState
+// /**
+//   * Interpret Pass
+//   */
+// private[interpreter] final class PassImpl() extends Pass:
 
-  override def run(in: InState): OutState =
-    val folder = Folder.make()
+//   type In  = InState
+//   type Out = OutState
 
-    val state0         = PassState.from(in)
-    val state1         = folder.foldAST(state0, in.ast)
+//   override def run(in: InState): OutState =
+//     val folder = Folder.make()
 
-    val out = PassState.into(state1)
+//     val state0         = PassState.from(in)
+//     val state1         = folder.foldAST(state0, in.ast)
 
-    out
+//     val out = PassState.into(state1)
+
+//     out

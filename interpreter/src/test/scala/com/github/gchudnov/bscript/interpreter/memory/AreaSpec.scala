@@ -1,12 +1,15 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.interpreter.TestSpec
+import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.util.Resources
 import com.github.gchudnov.bscript.interpreter.memory.Path
 import com.github.gchudnov.bscript.interpreter.memory.Area
 
 final class AreaSpec extends TestSpec:
+
+  val showArea = summon[Show[Area]]
 
   /**
    * {{{
@@ -581,14 +584,14 @@ final class AreaSpec extends TestSpec:
         val locals  = Area("locals", Map("a" -> xStruct), Some(globals))
 
         val expected = Resources.asString("data/mem-space-2.json").toTry.get
-        val actual   = locals.show
+        val actual   = showArea.show(locals)
 
         actual.trim mustBe (expected.trim)
       }
 
       "display the complex struct" in {
         val expected = Resources.asString("data/mem-space-3.json").toTry.get
-        val actual   = locals.show
+        val actual   = showArea.show(locals)
 
         actual.trim mustBe (expected.trim)
       }

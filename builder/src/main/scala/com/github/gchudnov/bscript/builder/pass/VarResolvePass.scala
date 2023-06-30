@@ -9,8 +9,8 @@ import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.BuilderException
-import com.github.gchudnov.bscript.lang.ast.refs.Access
-import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.ast.refs.* 
+
 
 /**
  * #2 ??? - Variable Resolve Pass TODO: not sure anymore if we need this pass

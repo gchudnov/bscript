@@ -20,20 +20,20 @@ object BGlobals:
 
     val builtInTypes = Block.of(
       // TODO: probably we need to define Std struct and self-annotate it.
-      TypeDecl(TypeName.nothing),
-      TypeDecl(TypeName.void),
-      TypeDecl(TypeName.bool),
-      TypeDecl(TypeName.i8),
-      TypeDecl(TypeName.i16),
-      TypeDecl(TypeName.i32),
-      TypeDecl(TypeName.i64),
-      TypeDecl(TypeName.f32),
-      TypeDecl(TypeName.f64),
-      TypeDecl(TypeName.dec),
-      TypeDecl(TypeName.chr),
-      TypeDecl(TypeName.str),
-      TypeDecl(TypeName.date),
-      TypeDecl(TypeName.datetime),
+      BuiltInDecl(TypeName.nothing),
+      BuiltInDecl(TypeName.void),
+      BuiltInDecl(TypeName.bool),
+      BuiltInDecl(TypeName.u8),
+      BuiltInDecl(TypeName.i16),
+      BuiltInDecl(TypeName.i32),
+      BuiltInDecl(TypeName.i64),
+      BuiltInDecl(TypeName.f32),
+      BuiltInDecl(TypeName.f64),
+      BuiltInDecl(TypeName.dec),
+      BuiltInDecl(TypeName.chr),
+      BuiltInDecl(TypeName.str),
+      BuiltInDecl(TypeName.date),
+      BuiltInDecl(TypeName.datetime),
     )
 
     val builtInMethods = Block.of(

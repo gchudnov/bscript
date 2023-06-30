@@ -3,10 +3,7 @@ package com.github.gchudnov.bscript.interpreter.pass
 /**
  * Pass
  *
- * Represents a step of the builder that takes an `In` state and produces an `Out` state.
+ * Represents a step of the interpreter that takes an `I` state and produces an `O` state.
  */
-trait Pass:
-  type In
-  type Out
-
-  def run(in: In): Out
+private[interpreter] trait Pass[I, O]:
+  def run(in: I): O

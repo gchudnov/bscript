@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.builder.pass
 /**
  * Pass
  *
- * Represents a step of the builder that takes an `In` state and produces an `Out` state.
+ * Represents a step of the builder that takes an `I` state and produces an `O` state.
  */
-trait Pass[I, O]:
+private[builder] trait Pass[I, O]:
   def run(in: I): O
