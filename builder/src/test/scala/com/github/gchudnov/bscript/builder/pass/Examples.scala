@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.lang.ast.refs.Id
 /**
  * A named Example.
  */
-final case class Example(name: String, ast: AST)
+final case class Example(ast: AST)
 
 /**
  * A collection of ASTs for testing purposes.
@@ -27,11 +27,27 @@ object Examples:
    *   int x = 0;
    * }}}
    */
-  val exVarDef: Example =
+  val varDef: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
     )
-    Example("exVarDef", t)
+    Example(t)
+
+  /**
+   * Variable Declaration, Assign and Return
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   x;
+   * }}}
+   */
+  val varDeclareAssignReturn: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      Id("x"),
+    )
+    Example(t)
 
   /**
    * Variable Declaration & Use
@@ -42,12 +58,12 @@ object Examples:
    *   x = 1;
    * }}}
    */
-  val exVarDefUse: Example =
+  val varDefUse: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       Assign(Id("x"), ConstLit(IntVal(1))),
     )
-    Example("exVarDefUse", t)
+    Example(t)
 
   /**
    * Variable Declaration & Use another one
@@ -60,12 +76,12 @@ object Examples:
    *   y = 1;
    * }}}
    */
-  val exVarNotDefined: Example =
+  val varNotDefined: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       Assign(Id("y"), ConstLit(IntVal(1))),
     )
-    Example("exVarNotDefined", t)
+    Example(t)
 
   /**
    * Variable Declaration
@@ -78,12 +94,12 @@ object Examples:
    *   int x = 1;
    * }}}
    */
-  val exDoubleDef: Example =
+  val doubleDef: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
     )
-    Example("exDoubleDef", t)
+    Example(t)
 
 
   /**
@@ -97,7 +113,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exFnDecl: Example =
+  val fnDecl: Example =
     val t = Block.of(
       MethodDecl(
         "main",
@@ -112,7 +128,7 @@ object Examples:
         ),
       ),
     )
-    Example("exFnDecl", t)
+    Example(t)
 
   /**
    * A function with one argument and name shadowing
@@ -125,7 +141,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exFnVarArgShadow: Example =
+  val fnVarArgShadow: Example =
     val t = Block.of(
       MethodDecl(
         "myFunc",
@@ -140,7 +156,7 @@ object Examples:
         ),
       ),
     )
-    Example("exFnVarArgShadow", t)
+    Example(t)
 
   /**
    * Several method declarations
@@ -158,7 +174,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exTwoMethods: Example =
+  val twoMethods: Example =
     val t = Block.of(
       MethodDecl(
         "offsetDateTime",
@@ -190,7 +206,7 @@ object Examples:
         ),
       ),
     )
-    Example("exTwoMethods", t)
+    Example(t)
 
   /**
    * Plus for integers
@@ -203,7 +219,7 @@ object Examples:
    *   2 + 3
    * }}}
    */
-  val exPlusInt: Example =
+  val plusInt: Example =
     val t = Block.of(
       MethodDecl(
         "+",
@@ -221,7 +237,7 @@ object Examples:
       ),
       Call(Id("+"), List(ConstLit(IntVal(2)), ConstLit(IntVal(3)))),
     )
-    Example("exPlusInt", t)
+    Example(t)
 
   /**
    * Plus for different data types
@@ -234,7 +250,7 @@ object Examples:
    *   1.0 + 3
    * }}}
    */
-  val exPlusDoubleInt: Example =
+  val plusDoubleInt: Example =
     val t = Block.of(
       MethodDecl(
         "+",
@@ -252,7 +268,7 @@ object Examples:
       ),
       Call(Id("+"), List(ConstLit(DoubleVal(1.0)), ConstLit(IntVal(3)))),
     )
-    Example("exPlusDoubleInt", t)
+    Example(t)
 
   /**
    * Plus on string and integer
@@ -265,7 +281,7 @@ object Examples:
    *   "abc" + 3  // incorrect, but it is reported later during compilation on the next phases
    * }}}
    */
-  val exPlusStringInt: Example =
+  val plusStringInt: Example =
     val t = Block.of(
       MethodDecl(
         "+",
@@ -283,7 +299,7 @@ object Examples:
       ),
       Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3)))),
     )
-    Example("exPlusStringInt", t)
+    Example(t)
 
   /**
    * Generic plus
@@ -296,7 +312,7 @@ object Examples:
    *   4 + 3
    * }}}
    */
-  val exPlusGeneric: Example =
+  val plusGeneric: Example =
     val t = Block.of(
       MethodDecl(
         "+",
@@ -314,7 +330,7 @@ object Examples:
       ),
       Call(Id("+"), List(ConstLit(StrVal("abc")), ConstLit(IntVal(3)))),
     )
-    Example("exPlusGeneric", t)
+    Example(t)
 
   /**
    * Generic plus with multiple type parameters
@@ -327,7 +343,7 @@ object Examples:
    *   4 + 3
    * }}}
    */
-  val exPlusT: Example =
+  val plusT: Example =
     val t = Block.of(
       MethodDecl(
         "+",
@@ -345,7 +361,7 @@ object Examples:
       ),
       Call(Id("+"), List(ConstLit(IntVal(4)), ConstLit(IntVal(3)))),
     )
-    Example("exPlusT", t)
+    Example(t)
 
   /**
    * Several variables in a scope
@@ -359,13 +375,13 @@ object Examples:
    *   }
    * }}}
    */
-  val exMultipleVars: Example =
+  val multipleVars: Example =
     val t = Block.of(
       VarDecl("i", TypeId(TypeName.i32), ConstLit(IntVal(9))),
       VarDecl("j", TypeId(TypeName.f32), ConstLit(FloatVal(0.0f))),
       VarDecl("k", TypeId(TypeName.i32), Call(Id("+"), List(Id("i"), ConstLit(IntVal(2))))),
     )
-    Example("exMultipleVars", t)
+    Example(t)
 
   /**
    * Collection literal where the type is defined automatically
@@ -377,11 +393,11 @@ object Examples:
    *   }
    * }}}
    */
-  val exAutoCol: Example =
+  val autoCol: Example =
     val t = Block.of(
       VarDecl("a", Auto(), CollectionLit(VecType(Auto()), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3))))),
     )
-    Example("exAutoCol", t)
+    Example(t)
 
   /**
    * Collection literal where the type is passed manually
@@ -393,11 +409,11 @@ object Examples:
    *   }
    * }}}
    */
-  val exVarCol: Example =
+  val varCol: Example =
     val t = Block.of(
       VarDecl("a", VecType(TypeId(TypeName.i32)), CollectionLit(Auto(), List(ConstLit(IntVal(1)), ConstLit(IntVal(2)), ConstLit(IntVal(3))))),
     )
-    Example("exVarCol", t)
+    Example(t)
 
   /**
    * Declare variable and assign it to Null; auto-type deduction
@@ -409,11 +425,11 @@ object Examples:
    *   }
    * }}}
    */
-  val exAutoNothing: Example =
+  val autoNothing: Example =
     val t = Block.of(
       VarDecl("x", Auto(), ConstLit(NullVal)),
     )
-    Example("exAutoNothing", t)
+    Example(t)
 
   /**
    * Declare variable and assign it to Null; manual type specification
@@ -425,11 +441,11 @@ object Examples:
    *   }
    * }}}
    */
-  val exIntNothing: Example =
+  val intNothing: Example =
     val t = Block.of(
       VarDecl("x", TypeId("i32"), ConstLit(NullVal)),
     )
-    Example("exIntNothing", t)
+    Example(t)
 
   /**
    * Several scopes, variable use from the non-available scope
@@ -444,7 +460,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exVarNotInScope: Example =
+  val varNotInScope: Example =
     val t = Block.of(
       MethodDecl(
         "printf",
@@ -463,7 +479,7 @@ object Examples:
       ),
       Call(Id("printf"), List(ConstLit(StrVal("%d")), Id("z"))), // z is no longer visible; Will be an error in Phase #2
     )
-    Example("exVarNotInScope", t)
+    Example(t)
 
   /**
    * Several nested scopes
@@ -483,7 +499,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exNestedScopes: Example =
+  val nestedScopes: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       MethodDecl(
@@ -515,7 +531,7 @@ object Examples:
         ),
       ),
     )
-    Example("exNestedScopes", t)
+    Example(t)
 
   /**
    * Structure definition and usage
@@ -544,7 +560,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exStruct: Example =
+  val struct: Example =
     val t = Block.of(
       StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
       StructDecl("C", StructType(List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.i32))))),
@@ -567,7 +583,7 @@ object Examples:
         ),
       ),
     )
-    Example("exStruct", t)
+    Example(t)
 
   /**
    * Struct initalization
@@ -588,7 +604,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exStructInit: Example =
+  val structInit: Example =
     val t = Block.of(
       StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i32))))),
       StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32)), VarDecl("s", TypeId(TypeName.str)), VarDecl("b", TypeId("B"))))),
@@ -612,7 +628,7 @@ object Examples:
       ),
       Id("a"),
     )
-    Example("exStructInit", t)
+    Example(t)
 
   /**
    * A small program
@@ -627,7 +643,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exSmallApp: Example =
+  val smallApp: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
       MethodDecl(
@@ -666,7 +682,7 @@ object Examples:
       ),
       Call(Id("main"), List.empty[Expr]),
     )
-    Example("exSmallApp", t)
+    Example(t)
 
   /**
    * {{{
@@ -696,9 +712,9 @@ object Examples:
    *   main();
    * }}}
    */
-  val exAdvApp: Example =
+  val advApp: Example =
     val t = Block.empty // TODO: implement
-    Example("exAdvApp", t)
+    Example(t)
 
   /**
    * Const literal -- Integer
@@ -707,11 +723,11 @@ object Examples:
    *   2;
    * }}}
    */
-  val exInt: Example =
+  val intVal: Example =
     val t = Block.of(
       ConstLit(IntVal(2)),
     )
-    Example("exInt", t)
+    Example(t)
 
   /**
    * Const literal -- Integers in a block
@@ -721,12 +737,12 @@ object Examples:
    *   3
    * }}}
    */
-  val exTwoInts: Example =
+  val twoInts: Example =
     val t = Block.of(
       ConstLit(IntVal(2)),
       ConstLit(IntVal(3)),
     )
-    Example("exTwoInts", t)
+    Example(t)
 
   /**
    * Const literal -- nested block
@@ -738,14 +754,14 @@ object Examples:
    *   }
    * }}}
    */
-  val exBlockNested: Example =
+  val blockNested: Example =
     val t = Block.of(
       ConstLit(IntVal(2)),
       Block.of(
         ConstLit(IntVal(3)),
       ),
     )
-    Example("exBlockNested", t)
+    Example(t)
 
   /**
    * Const literal -- last value is not in a block
@@ -758,7 +774,7 @@ object Examples:
    *   4
    * }}}
    */
-  val exBlockInner: Example =
+  val blockInner: Example =
     val t = Block.of(
       ConstLit(IntVal(2)),
       Block.of(
@@ -766,7 +782,7 @@ object Examples:
       ),
       ConstLit(IntVal(4)),
     )
-    Example("exBlockInner", t)
+    Example(t)
 
   /**
    * Method Declaration
@@ -784,7 +800,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exDefMethodSameSig: Example =
+  val defMethodSameSig: Example =
     val t = Block.of(
       MethodDecl(
         "main",
@@ -809,7 +825,7 @@ object Examples:
         ),
       ),
     )
-    Example("exDefMethodSameSig", t)
+    Example(t)
 
   /**
    * Method Declaration
@@ -827,7 +843,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exDefMethodDiffSig: Example =
+  val defMethodDiffSig: Example =
     val t = Block.of(
       MethodDecl(
         "main",
@@ -852,7 +868,7 @@ object Examples:
         ),
       ),
     )
-    Example("exDefMethodDiffSig", t)
+    Example(t)
 
   /**
    * Method Declaration
@@ -870,7 +886,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exDefMethodDiffRetType: Example =
+  val defMethodDiffRetType: Example =
     val t = Block.of(
       MethodDecl(
         "main",
@@ -895,7 +911,7 @@ object Examples:
         ),
       ),
     )
-    Example("exDefMethodDiffSig", t)
+    Example(t)
 
   /**
    * Generic methods, parameters have different names
@@ -912,7 +928,7 @@ object Examples:
    *   }
    * }}}
    */
-  val exTwoSameGenericMethods: Example =
+  val twoSameGenericMethods: Example =
     val t = Block.of(
       MethodDecl(
         "+",
@@ -943,4 +959,4 @@ object Examples:
         ),
       ),
     )
-    Example("exTwoSameGenericMethods", t)
+    Example(t)

@@ -32,7 +32,7 @@ final class TypeCheckPassSpec extends TestSpec:
     //    * }}}
     //    */
     //   "type check for an integer" in {
-    //     val t = Examples.ex21
+    //     val t = Examples.21
 
     //     val errOrRes = eval(t.ast)
     //     errOrRes match
@@ -53,7 +53,7 @@ final class TypeCheckPassSpec extends TestSpec:
     //    * }}}
     //    */
     //   "put it in a scope" in {
-    //     val t = Examples.ex1
+    //     val t = Examples.1
 
     //     // TODO: impl ^^^
 

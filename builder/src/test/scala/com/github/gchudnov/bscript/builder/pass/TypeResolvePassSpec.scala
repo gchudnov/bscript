@@ -24,7 +24,7 @@ final class TypeResolvePassSpec extends TestSpec:
        * }}}
        */
       "build scope for an integer" in {
-        val t = Examples.exInt
+        val t = Examples.intVal
 
         val errOrRes = eval(t.ast)
         errOrRes match

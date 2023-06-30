@@ -24,7 +24,7 @@ final class VarResolvePassSpec extends TestSpec:
        * }}}
        */
       "build scope for an integer" in {
-        val t = Examples.exInt
+        val t = Examples.intVal
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -44,7 +44,7 @@ final class VarResolvePassSpec extends TestSpec:
        * }}}
        */
       "put it in a scope" in {
-        val t = Examples.exVarDef
+        val t = Examples.varDef
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -62,7 +62,7 @@ final class VarResolvePassSpec extends TestSpec:
        * }}}
        */
       "resolve a referenced variable if it is present" in {
-        val t = Examples.exVarDefUse
+        val t = Examples.varDefUse
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -81,7 +81,7 @@ final class VarResolvePassSpec extends TestSpec:
         * }}}
         */
       "fail to resolve a referenced variable if it is not present" in {
-        val t = Examples.exVarNotDefined
+        val t = Examples.varNotDefined
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -120,7 +120,7 @@ final class VarResolvePassSpec extends TestSpec:
        * }}}
         */
       "resolve references to the fields of the struct" in {
-        val t = Examples.exStruct
+        val t = Examples.struct
 
         val errOrRes = eval(t.ast)
         errOrRes match

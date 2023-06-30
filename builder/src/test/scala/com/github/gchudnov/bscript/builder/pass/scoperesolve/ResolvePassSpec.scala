@@ -31,7 +31,7 @@ final class ResolvePassSpec extends TestSpec:
     //    * }}}
     //    */
     //   "resolve scope for an integer" in {
-    //     val t = Examples.ex21
+    //     val t = Examples.21
 
     //     val errOrRes = eval(t.ast)
     //     errOrRes match
@@ -52,7 +52,7 @@ final class ResolvePassSpec extends TestSpec:
     //    * }}}
     //    */
     //   "resolve scopes" in {
-    //     val t = Examples.ex1
+    //     val t = Examples.1
 
     //     val errOrRes = eval(t.ast)
     //     errOrRes match

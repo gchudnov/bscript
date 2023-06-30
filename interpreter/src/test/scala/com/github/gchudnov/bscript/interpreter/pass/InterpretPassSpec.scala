@@ -29,7 +29,7 @@ final class InterpretPassSpec extends TestSpec:
        * }}}
        */
       "interpret an integer" in {
-        val t = Examples.exInt
+        val t = Examples.intVal
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -41,93 +41,110 @@ final class InterpretPassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-        /**
-         * {{{
-         *   // globals
-         *   2
-         *   3
-         * }}}
-         */
-        "interpret several integers" in {
-          val t = Examples.exTwoInts
+      /**
+       * {{{
+       *   // globals
+       *   2
+       *   3
+       * }}}
+       */
+      "interpret several integers" in {
+        val t = Examples.twoInts
 
-          val errOrRes = eval(t.ast)
-          errOrRes match
-            case Right(actualState) =>
-              actualState.retValue mustBe (Cell.I32(3))
-            case Left(t) =>
-              println(t)
-              fail("Should be 'right", t)
-        }
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(3))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
 
-      //   /**
-      //    * {{{
-      //    *   // globals
-      //    *   2
-      //    *   {
-      //    *     3
-      //    *   }
-      //    * }}}
-      //    */
-      //   "interpret several integers when block is inside a block" in {
-      //     val t = Examples.exBlockNested
+      /**
+       * {{{
+       *   // globals
+       *   2
+       *   {
+       *     3
+       *   }
+       * }}}
+       */
+      "interpret several integers when block is inside a block" in {
+        val t = Examples.blockNested
 
-      //     val errOrRes = eval(t.ast)
-      //     errOrRes match
-      //       case Right(actualState) =>
-      //         actualState.retValue mustBe (Cell.I32(3))
-      //       case Left(t) =>
-      //         println(t)
-      //         fail("Should be 'right", t)
-      //   }
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(3))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
 
-      //   /**
-      //    * {{{
-      //    *   // globals
-      //    *   2
-      //    *   {
-      //    *     3
-      //    *   }
-      //    *   4
-      //    * }}}
-      //    */
-      //   "interpret several integers when the last value is outside of a block" in {
-      //     val t = Examples.exBlockInner
+      /**
+       * {{{
+       *   // globals
+       *   2
+       *   {
+       *     3
+       *   }
+       *   4
+       * }}}
+       */
+      "interpret several integers when the last value is outside of a block" in {
+        val t = Examples.blockInner
 
-      //     val errOrRes = eval(t.ast)
-      //     errOrRes match
-      //       case Right(actualState) =>
-      //         actualState.retValue mustBe (Cell.I32(4))
-      //       case Left(t) =>
-      //         println(t)
-      //         fail("Should be 'right", t)
-      //   }
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(4))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
     }
 
-    // "declaration" should {
+    "declaration" should {
 
-    //   /**
-    //    * Variable Declaration
-    //    *
-    //    * {{{
-    //    *   // globals
-    //    *   int x = 0;
-    //    * }}}
-    //    */
-    //   "interpret x = 0" in {
-    //     val t = Examples.ex1
+      /**
+       * Variable Declaration
+       *
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "interpret x = 0" in {
+        val t = Examples.varDef
 
-    //     // TODO: allow it: VarDecl(x,TypeId(i32),ConstLit(IntVal(0)))
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.Void)
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
 
-    //     val errOrRes = eval(t.ast)
-    //     errOrRes match
-    //       case Right(actualState) =>
-    //         actualState.retValue mustBe (Cell.Void)
-    //       case Left(t) =>
-    //         println(t)
-    //         fail("Should be 'right", t)
-    //   }
-    // }
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   x;
+       * }}}
+       */
+      "declare, assign and return" in {
+        val t = Examples.varDeclareAssignReturn
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(0)) // TODO: fixme
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+    }
 
   }
 
@@ -151,7 +168,6 @@ final class InterpretPassSpec extends TestSpec:
     actualState
   }
 
-
 object InterpretPassSpec:
   final case class ActualState(
     retValue: Cell,
@@ -159,9 +175,8 @@ object InterpretPassSpec:
 
   def toActualState(s: HasRetValue): ActualState =
     ActualState(
-      retValue = s.retValue
+      retValue = s.retValue,
     )
-
 
 //   private def eval(ast0: AST): Either[Throwable, InterpretState] =
 //     val types         = Types.make(typeNames)

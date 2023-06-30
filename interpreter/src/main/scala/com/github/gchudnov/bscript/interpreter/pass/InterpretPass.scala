@@ -50,8 +50,18 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
       case x @ StructDecl(name, sType) =>
         foldOverAST(s, x)
+
       case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).copy(retValue = Cell.Void) /// TODO: save in memory
+      
+/*
+  override def visit(s: InterpretState, n: VarDecl): Either[Throwable, InterpretState] =
+    for
+      s1 <- n.expr.visit(s, this)
+      ms  = s1.memSpace.put(n.name, s1.retValue)
+    yield s1.copy(memSpace = ms, retValue = VoidCell)
+*/
+
       case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
 
