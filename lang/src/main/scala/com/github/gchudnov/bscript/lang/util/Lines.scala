@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.lang.util
 
-object LineOps:
+object Lines:
 
   private val NL: String    = System.lineSeparator
   private val SPACE: String = " "

@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.lang.util.Lines
 import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime }
@@ -253,15 +253,15 @@ object Cell:
       case Date(value)     => s"\"${TypeName.date}(${value.toString})\""
       case DateTime(value) => s"\"${TypeName.datetime}(${value.toString})\""
       case Vec(value) =>
-        val lineLines = value.map(it => LineOps.split(show(it)))
-        val lines     = LineOps.wrap("[", "]", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(", ", lineLines))))
-        LineOps.join(lines)
+        val lineLines = value.map(it => Lines.split(show(it)))
+        val lines     = Lines.wrap("[", "]", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(", ", lineLines))))
+        Lines.join(lines)
       case Struct(value) =>
         val lineLines = value.toList.map { case (k, v) =>
-          val vLines  = LineOps.split(show(v))
-          val kvLines = LineOps.joinCR(": ", Seq(s"\"${k}\""), vLines)
+          val vLines  = Lines.split(show(v))
+          val kvLines = Lines.joinCR(": ", Seq(s"\"${k}\""), vLines)
           kvLines
         }
-        val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-        LineOps.join(lines)
+        val lines = Lines.wrap("{", "}", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(",", lineLines))))
+        Lines.join(lines)
       case Method(value) => s"\"method(${value})\""

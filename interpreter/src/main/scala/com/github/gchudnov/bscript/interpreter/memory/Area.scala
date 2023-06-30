@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.lang.util.Lines
 import com.github.gchudnov.bscript.interpreter.memory.*
 
 /**
@@ -270,7 +270,7 @@ object Area:
 
   given Show[Area] with
     def show(a: Area): String =
-      LineOps.join(LineOps.wrap("[", "]", ShowArea.iterate(0, a)))
+      Lines.join(Lines.wrap("[", "]", ShowArea.iterate(0, a)))
 
 private object ShowArea:
   import Cell.given
@@ -289,12 +289,12 @@ private object ShowArea:
     val parentLines = ms.parent.fold(Seq.empty[String])(p => iterate(d - 1, p))
 
     val membersCell: Cell = Cell.Struct(ms.members)
-    val membersCellLines  = LineOps.split(summon[Show[Cell]].show(membersCell))
+    val membersCellLines  = Lines.split(summon[Show[Cell]].show(membersCell))
 
     val nameLines       = Seq(s"\"name\": \"${ms.name}\"")
     val depthLines      = Seq(s"\"depth\": ${d}")
-    val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => LineOps.quote(it.name)).getOrElse("null")}")
-    val membersLines    = LineOps.joinCR(": ", Seq("\"members\""), membersCellLines)
+    val parentNameLines = Seq(s"\"parent\": ${ms.parent.map(it => Lines.quote(it.name)).getOrElse("null")}")
+    val membersLines    = Lines.joinCR(": ", Seq("\"members\""), membersCellLines)
 
     val lineLines = Seq(
       nameLines,
@@ -303,5 +303,5 @@ private object ShowArea:
       membersLines,
     )
 
-    val objLines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-    LineOps.joinVAll(",", Seq(parentLines, objLines))
+    val objLines = Lines.wrap("{", "}", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(",", lineLines))))
+    Lines.joinVAll(",", Seq(parentLines, objLines))

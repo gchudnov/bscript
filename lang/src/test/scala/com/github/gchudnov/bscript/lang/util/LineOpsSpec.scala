@@ -9,7 +9,7 @@ final class LineOpsSpec extends TestSpec:
     "padLine" should {
       "pad string" in {
         val s        = "ABC"
-        val actual   = LineOps.padLine(3, s)
+        val actual   = Lines.padLine(3, s)
         val expected = "   ABC"
 
         actual mustBe expected
@@ -17,7 +17,7 @@ final class LineOpsSpec extends TestSpec:
 
       "pad empty string" in {
         val s        = ""
-        val actual   = LineOps.padLine(3, s)
+        val actual   = Lines.padLine(3, s)
         val expected = "   "
 
         actual mustBe expected
@@ -26,7 +26,7 @@ final class LineOpsSpec extends TestSpec:
       "pad string with a pattern" in {
         val p        = " * "
         val s        = "ABC"
-        val actual   = LineOps.padLine(p, s)
+        val actual   = Lines.padLine(p, s)
         val expected = " * ABC"
         actual mustBe expected
       }
@@ -36,7 +36,7 @@ final class LineOpsSpec extends TestSpec:
       "pad several lines with a pattern" in {
         val p        = " * "
         val ss       = List("ABC", "DEF")
-        val actual   = LineOps.padLines(p, ss)
+        val actual   = Lines.padLines(p, ss)
         val expected = List(" * ABC", " * DEF")
 
         actual mustBe expected
@@ -44,7 +44,7 @@ final class LineOpsSpec extends TestSpec:
 
       "pad several lines" in {
         val ss       = List("ABC", "DEF")
-        val actual   = LineOps.padLines(2, ss)
+        val actual   = Lines.padLines(2, ss)
         val expected = List("  ABC", "  DEF")
 
         actual mustBe expected
@@ -52,7 +52,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the list is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.padLines(2, ss)
+        val actual   = Lines.padLines(2, ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -62,7 +62,7 @@ final class LineOpsSpec extends TestSpec:
     "padTail" should {
       "pad the tail of the collection" in {
         val ss       = List("ABC", "DEF")
-        val actual   = LineOps.padTail(2, ss)
+        val actual   = Lines.padTail(2, ss)
         val expected = List("ABC", "  DEF")
 
         actual mustBe expected
@@ -70,7 +70,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the list is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.padTail(2, ss)
+        val actual   = Lines.padTail(2, ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -80,7 +80,7 @@ final class LineOpsSpec extends TestSpec:
     "tabLine" should {
       "tabulate one line" in {
         val s        = "123"
-        val actual   = LineOps.tabLine(1, s)
+        val actual   = Lines.tabLine(1, s)
         val expected = "  123"
 
         actual mustBe expected
@@ -88,7 +88,7 @@ final class LineOpsSpec extends TestSpec:
 
       "tabulate one line if empty" in {
         val s        = ""
-        val actual   = LineOps.tabLine(1, s)
+        val actual   = Lines.tabLine(1, s)
         val expected = "  "
 
         actual mustBe expected
@@ -98,7 +98,7 @@ final class LineOpsSpec extends TestSpec:
     "tabLines" should {
       "tabulate several line" in {
         val s        = List("123", "456")
-        val actual   = LineOps.tabLines(1, s)
+        val actual   = Lines.tabLines(1, s)
         val expected = List("  123", "  456")
 
         actual mustBe expected
@@ -106,7 +106,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if collection is empty" in {
         val s        = List.empty[String]
-        val actual   = LineOps.tabLines(1, s)
+        val actual   = Lines.tabLines(1, s)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -116,7 +116,7 @@ final class LineOpsSpec extends TestSpec:
     "tabText" should {
       "tabulate multiline text" in {
         val s        = "123\n456"
-        val actual   = LineOps.tabText(1, s)
+        val actual   = Lines.tabText(1, s)
         val expected = "  123\n  456"
 
         actual mustBe expected
@@ -124,7 +124,7 @@ final class LineOpsSpec extends TestSpec:
 
       "tab if text is empty" in {
         val s        = ""
-        val actual   = LineOps.tabText(1, s)
+        val actual   = Lines.tabText(1, s)
         val expected = "  "
 
         actual mustBe expected
@@ -134,7 +134,7 @@ final class LineOpsSpec extends TestSpec:
     "tabTail" should {
       "tabulate tail of the text" in {
         val s        = "123\n456\n789"
-        val actual   = LineOps.tabTail(1, s)
+        val actual   = Lines.tabTail(1, s)
         val expected = "123\n  456\n  789"
 
         actual mustBe expected
@@ -142,7 +142,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the text if empty" in {
         val s        = ""
-        val actual   = LineOps.tabTail(1, s)
+        val actual   = Lines.tabTail(1, s)
         val expected = ""
 
         actual mustBe expected
@@ -150,7 +150,7 @@ final class LineOpsSpec extends TestSpec:
 
       "tabulate tail of the collection" in {
         val ss       = List("123", "456", "789")
-        val actual   = LineOps.tabTail(1, ss)
+        val actual   = Lines.tabTail(1, ss)
         val expected = List("123", "  456", "  789")
 
         actual mustBe expected
@@ -158,7 +158,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the collection if empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.tabTail(1, ss)
+        val actual   = Lines.tabTail(1, ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -168,7 +168,7 @@ final class LineOpsSpec extends TestSpec:
     "prepend" should {
       "prepend a string to the collection" in {
         val ss       = List("123", "456")
-        val actual   = LineOps.prepend("(", ss)
+        val actual   = Lines.prepend("(", ss)
         val expected = List("(123", "456")
 
         actual mustBe expected
@@ -176,7 +176,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the collection is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.prepend("(", ss)
+        val actual   = Lines.prepend("(", ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -186,7 +186,7 @@ final class LineOpsSpec extends TestSpec:
     "append" should {
       "append a string to the collection" in {
         val ss       = List("123", "456")
-        val actual   = LineOps.append(")", ss)
+        val actual   = Lines.append(")", ss)
         val expected = List("123", "456)")
 
         actual mustBe expected
@@ -194,7 +194,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the collection is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.append(")", ss)
+        val actual   = Lines.append(")", ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -204,7 +204,7 @@ final class LineOpsSpec extends TestSpec:
     "wrap" should {
       "wrap a collection in the start and end delimiters" in {
         val ss       = List("123", "456")
-        val actual   = LineOps.wrap("(", ")", ss)
+        val actual   = Lines.wrap("(", ")", ss)
         val expected = List("(123", "456)")
 
         actual mustBe expected
@@ -212,7 +212,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the collection is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.wrap("(", ")", ss)
+        val actual   = Lines.wrap("(", ")", ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -222,7 +222,7 @@ final class LineOpsSpec extends TestSpec:
     "wrapIfMultiline" should {
       "not wrap one line" in {
         val ss       = List("123")
-        val actual   = LineOps.wrapIfMultiline("(", ")", ss)
+        val actual   = Lines.wrapIfMultiline("(", ")", ss)
         val expected = List("123")
 
         actual mustBe expected
@@ -230,7 +230,7 @@ final class LineOpsSpec extends TestSpec:
 
       "wrap several lines" in {
         val ss       = List("123", "456")
-        val actual   = LineOps.wrapIfMultiline("(", ")", ss)
+        val actual   = Lines.wrapIfMultiline("(", ")", ss)
         val expected = List("(123", "456)")
 
         actual mustBe expected
@@ -238,7 +238,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if list is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.wrapIfMultiline("(", ")", ss)
+        val actual   = Lines.wrapIfMultiline("(", ")", ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -248,7 +248,7 @@ final class LineOpsSpec extends TestSpec:
     "wrapIfNonWrapped" should {
       "wrap if not wrapped" in {
         val ss       = List("123")
-        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val actual   = Lines.wrapIfNonWrapped("(", ")", ss)
         val expected = List("(123)")
 
         actual mustBe expected
@@ -256,7 +256,7 @@ final class LineOpsSpec extends TestSpec:
 
       "not wrap if wrapped" in {
         val ss       = List("(123)")
-        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val actual   = Lines.wrapIfNonWrapped("(", ")", ss)
         val expected = List("(123)")
 
         actual mustBe expected
@@ -264,7 +264,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the list is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val actual   = Lines.wrapIfNonWrapped("(", ")", ss)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -272,7 +272,7 @@ final class LineOpsSpec extends TestSpec:
 
       "wrap a seq with an empty string" in {
         val ss       = List("")
-        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val actual   = Lines.wrapIfNonWrapped("(", ")", ss)
         val expected = List("()")
 
         actual mustBe expected
@@ -281,7 +281,7 @@ final class LineOpsSpec extends TestSpec:
       "wrap if a function call" in {
         val ss = List("isDefined(x)")
 
-        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val actual   = Lines.wrapIfNonWrapped("(", ")", ss)
         val expected = List("(isDefined(x))")
 
         actual mustBe expected
@@ -289,7 +289,7 @@ final class LineOpsSpec extends TestSpec:
 
       "not wrap if already wrapped without a content" in {
         val ss       = List("()")
-        val actual   = LineOps.wrapIfNonWrapped("(", ")", ss)
+        val actual   = Lines.wrapIfNonWrapped("(", ")", ss)
         val expected = List("()")
 
         actual mustBe expected
@@ -299,7 +299,7 @@ final class LineOpsSpec extends TestSpec:
     "wrapEmpty" should {
       "wrap in empty lines" in {
         val ss       = List("123", "456")
-        val actual   = LineOps.wrapEmpty(ss)
+        val actual   = Lines.wrapEmpty(ss)
         val expected = List("", "123", "456", "")
 
         actual mustBe expected
@@ -307,7 +307,7 @@ final class LineOpsSpec extends TestSpec:
 
       "wrap if collection is empty" in {
         val ss       = List.empty[String]
-        val actual   = LineOps.wrapEmpty(ss)
+        val actual   = Lines.wrapEmpty(ss)
         val expected = List("", "")
 
         actual mustBe expected
@@ -317,7 +317,7 @@ final class LineOpsSpec extends TestSpec:
     "join" should {
       "join lines" in {
         val ss       = List("123", "456")
-        val actual   = LineOps.join(ss)
+        val actual   = Lines.join(ss)
         val expected = "123\n456"
 
         actual mustBe expected
@@ -326,7 +326,7 @@ final class LineOpsSpec extends TestSpec:
       "join left and right arrays" in {
         val lhs      = List("123", "456", "789")
         val rhs      = List("ABC", "DEF")
-        val actual   = LineOps.join(" = ", lhs, rhs)
+        val actual   = Lines.join(" = ", lhs, rhs)
         val expected = List("123", "456", "789 = ABC", "      DEF")
 
         actual mustBe expected
@@ -335,7 +335,7 @@ final class LineOpsSpec extends TestSpec:
       "join left and right arrays if one-liners" in {
         val lhs      = List("123")
         val rhs      = List("ABC")
-        val actual   = LineOps.join(" = ", lhs, rhs)
+        val actual   = Lines.join(" = ", lhs, rhs)
         val expected = List("123 = ABC")
 
         actual mustBe expected
@@ -344,7 +344,7 @@ final class LineOpsSpec extends TestSpec:
       "return rhs if the lhs is empty" in {
         val lhs      = List.empty[String]
         val rhs      = List("ABC")
-        val actual   = LineOps.join(" = ", lhs, rhs)
+        val actual   = Lines.join(" = ", lhs, rhs)
         val expected = List("ABC")
 
         actual mustBe expected
@@ -353,7 +353,7 @@ final class LineOpsSpec extends TestSpec:
       "return lhs if the rhs is empty" in {
         val lhs      = List("DEF")
         val rhs      = List.empty[String]
-        val actual   = LineOps.join(" = ", lhs, rhs)
+        val actual   = Lines.join(" = ", lhs, rhs)
         val expected = List("DEF")
 
         actual mustBe expected
@@ -362,7 +362,7 @@ final class LineOpsSpec extends TestSpec:
       "no-op if the lhs & rhs are empty" in {
         val lhs      = List.empty[String]
         val rhs      = List.empty[String]
-        val actual   = LineOps.join(" = ", lhs, rhs)
+        val actual   = Lines.join(" = ", lhs, rhs)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -372,7 +372,7 @@ final class LineOpsSpec extends TestSpec:
     "joinAll" should {
       "join one-liners" in {
         val sss      = List(List("123"), List("ABC"))
-        val actual   = LineOps.joinAll(", ", sss)
+        val actual   = Lines.joinAll(", ", sss)
         val expected = List("123, ABC")
 
         actual mustBe expected
@@ -385,7 +385,7 @@ final class LineOpsSpec extends TestSpec:
           List("FGH", "JKL")
         )
 
-        val actual   = LineOps.joinAll(", ", sss)
+        val actual   = Lines.joinAll(", ", sss)
         val expected = List("123", "456, ABC, FGH", "          JKL")
 
         actual mustBe expected
@@ -393,7 +393,7 @@ final class LineOpsSpec extends TestSpec:
 
       "no-op if the list is empty" in {
         val sss      = List.empty[List[String]]
-        val actual   = LineOps.joinAll(", ", sss)
+        val actual   = Lines.joinAll(", ", sss)
         val expected = List.empty[List[String]]
 
         actual mustBe expected
@@ -406,7 +406,7 @@ final class LineOpsSpec extends TestSpec:
           List("FGH", "JKL")
         )
 
-        val actual   = LineOps.joinAll(", ", sss)
+        val actual   = Lines.joinAll(", ", sss)
         val expected = List("123", "456, FGH", "     JKL")
 
         actual mustBe expected
@@ -417,7 +417,7 @@ final class LineOpsSpec extends TestSpec:
       "join arrays with overlap" in {
         val lhs      = List("123", "456")
         val rhs      = List("ABC", "DEF")
-        val actual   = LineOps.joinCR(" = ", lhs, rhs)
+        val actual   = Lines.joinCR(" = ", lhs, rhs)
         val expected = List("123", "456 = ABC", "DEF")
 
         actual mustBe expected
@@ -426,7 +426,7 @@ final class LineOpsSpec extends TestSpec:
       "join one-liners with overlap" in {
         val lhs      = List("123")
         val rhs      = List("ABC")
-        val actual   = LineOps.joinCR(" = ", lhs, rhs)
+        val actual   = Lines.joinCR(" = ", lhs, rhs)
         val expected = List("123 = ABC")
 
         actual mustBe expected
@@ -435,7 +435,7 @@ final class LineOpsSpec extends TestSpec:
       "return rhs if lhs is empty" in {
         val lhs      = List.empty[String]
         val rhs      = List("ABC")
-        val actual   = LineOps.joinCR(" = ", lhs, rhs)
+        val actual   = Lines.joinCR(" = ", lhs, rhs)
         val expected = List("ABC")
 
         actual mustBe expected
@@ -444,7 +444,7 @@ final class LineOpsSpec extends TestSpec:
       "return lhs if rhs is empty" in {
         val lhs      = List("123")
         val rhs      = List.empty[String]
-        val actual   = LineOps.joinCR(" = ", lhs, rhs)
+        val actual   = Lines.joinCR(" = ", lhs, rhs)
         val expected = List("123")
 
         actual mustBe expected
@@ -453,7 +453,7 @@ final class LineOpsSpec extends TestSpec:
       "return empty if lhs & rhs are empty" in {
         val lhs      = List.empty[String]
         val rhs      = List.empty[String]
-        val actual   = LineOps.joinCR(" = ", lhs, rhs)
+        val actual   = Lines.joinCR(" = ", lhs, rhs)
         val expected = List.empty[String]
 
         actual mustBe expected
@@ -466,7 +466,7 @@ final class LineOpsSpec extends TestSpec:
           List("123", "456"),
           List("ABC", "DEF")
         )
-        val actual   = LineOps.joinVAll(",", sss)
+        val actual   = Lines.joinVAll(",", sss)
         val expected = List("123", "456,", "ABC", "DEF")
 
         actual mustBe expected
@@ -478,7 +478,7 @@ final class LineOpsSpec extends TestSpec:
           List.empty[String],
           List("ABC", "DEF")
         )
-        val actual   = LineOps.joinVAll(",", sss)
+        val actual   = Lines.joinVAll(",", sss)
         val expected = List("123", "456,", "ABC", "DEF")
 
         actual mustBe expected
@@ -488,7 +488,7 @@ final class LineOpsSpec extends TestSpec:
     "quote" should {
       "quote a string" in {
         val s        = "ABC"
-        val actual   = LineOps.quote(s)
+        val actual   = Lines.quote(s)
         val expected = """"ABC""""
 
         actual mustBe expected
@@ -496,7 +496,7 @@ final class LineOpsSpec extends TestSpec:
 
       "quote a string if the input is empty" in {
         val s        = ""
-        val actual   = LineOps.quote(s)
+        val actual   = Lines.quote(s)
         val expected = """"""""
 
         actual mustBe expected
@@ -520,7 +520,7 @@ final class LineOpsSpec extends TestSpec:
         val xs = Seq("abc", "def")
         val ys = Seq("ghi", "jkl")
 
-        val actual   = LineOps.joinNL(xs, ys)
+        val actual   = Lines.joinNL(xs, ys)
         val expected = List("abc", "def", "", "ghi", "jkl")
 
         actual mustBe expected
@@ -530,7 +530,7 @@ final class LineOpsSpec extends TestSpec:
         val xs = Seq.empty[String]
         val ys = Seq("ghi", "jkl")
 
-        val actual   = LineOps.joinNL(xs, ys)
+        val actual   = Lines.joinNL(xs, ys)
         val expected = List("ghi", "jkl")
 
         actual mustBe expected
@@ -540,7 +540,7 @@ final class LineOpsSpec extends TestSpec:
         val xs = Seq("abc", "def")
         val ys = Seq.empty[String]
 
-        val actual   = LineOps.joinNL(xs, ys)
+        val actual   = Lines.joinNL(xs, ys)
         val expected = List("abc", "def")
 
         actual mustBe expected
@@ -550,7 +550,7 @@ final class LineOpsSpec extends TestSpec:
         val xs = Seq.empty[String]
         val ys = Seq.empty[String]
 
-        val actual   = LineOps.joinNL(xs, ys)
+        val actual   = Lines.joinNL(xs, ys)
         val expected = Seq.empty[String]
 
         actual mustBe expected
