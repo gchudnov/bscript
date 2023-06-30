@@ -52,67 +52,67 @@ final class InterpretPassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   2
-    //    *   3
-    //    * }}}
-    //    */
-    //   "interpret several integers" in {
-    //     val t = Examples.exTwoInts
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   2
+      //    *   3
+      //    * }}}
+      //    */
+      //   "interpret several integers" in {
+      //     val t = Examples.exTwoInts
 
-    //     val errOrRes = eval(t.ast)
-    //     errOrRes match
-    //       case Right(outState) =>
-    //         outState.retValue mustBe (Cell.I32(3))
-    //       case Left(t) =>
-    //         println(t)
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t.ast)
+      //     errOrRes match
+      //       case Right(outState) =>
+      //         outState.retValue mustBe (Cell.I32(3))
+      //       case Left(t) =>
+      //         println(t)
+      //         fail("Should be 'right", t)
+      //   }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   2
-    //    *   {
-    //    *     3
-    //    *   }
-    //    * }}}
-    //    */
-    //   "interpret several integers when block is inside a block" in {
-    //     val t = Examples.exBlockNested
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   2
+      //    *   {
+      //    *     3
+      //    *   }
+      //    * }}}
+      //    */
+      //   "interpret several integers when block is inside a block" in {
+      //     val t = Examples.exBlockNested
 
-    //     val errOrRes = eval(t.ast)
-    //     errOrRes match
-    //       case Right(outState) =>
-    //         outState.retValue mustBe (Cell.I32(3))
-    //       case Left(t) =>
-    //         println(t)
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t.ast)
+      //     errOrRes match
+      //       case Right(outState) =>
+      //         outState.retValue mustBe (Cell.I32(3))
+      //       case Left(t) =>
+      //         println(t)
+      //         fail("Should be 'right", t)
+      //   }
 
-    //   /**
-    //    * {{{
-    //    *   // globals
-    //    *   2
-    //    *   {
-    //    *     3
-    //    *   }
-    //    *   4
-    //    * }}}
-    //    */
-    //   "interpret several integers when the last value is outside of a block" in {
-    //     val t = Examples.exBlockInner
+      //   /**
+      //    * {{{
+      //    *   // globals
+      //    *   2
+      //    *   {
+      //    *     3
+      //    *   }
+      //    *   4
+      //    * }}}
+      //    */
+      //   "interpret several integers when the last value is outside of a block" in {
+      //     val t = Examples.exBlockInner
 
-    //     val errOrRes = eval(t.ast)
-    //     errOrRes match
-    //       case Right(outState) =>
-    //         outState.retValue mustBe (Cell.I32(4))
-    //       case Left(t) =>
-    //         println(t)
-    //         fail("Should be 'right", t)
-    //   }
+      //     val errOrRes = eval(t.ast)
+      //     errOrRes match
+      //       case Right(outState) =>
+      //         outState.retValue mustBe (Cell.I32(4))
+      //       case Left(t) =>
+      //         println(t)
+      //         fail("Should be 'right", t)
+      //   }
     }
 
     // "declaration" should {
@@ -147,34 +147,21 @@ final class InterpretPassSpec extends TestSpec:
   /**
    * To evaluate, we Build that run Interpret Pass.
    */
-  private def eval(ast0: AST): Either[Throwable, ActualState] = 
-    for {
-      bs <- Builder.build(ast0)
-      (ast1, buildState) = bs
-    } yield ()
+  private def eval(ast0: AST): Either[Throwable, ActualState] = nonFatalCatch.either {
+    val interpretPass = new InterpretPass()
 
-    ???
-    
-  //   nonFatalCatch.either {
-  //   // #1 build
-  //   val buildPass = new ScopeBuildPass()
-  //   val buildIn = new HasAST:
-  //     val ast = ast0
-  //   val buildOut         = buildPass.run(buildIn)
+    val (ast1, buildState) = Builder.build(ast0).toTry.get
 
-  //   // #2 resolve
-  //   val resolvePass = new TypeResolvePass()
-  //   val resolveIn = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-  //     val scopeTree  = buildOut.scopeTree
-  //     val scopeSymbols = buildOut.scopeSymbols
-  //     val scopeAsts = buildOut.scopeAsts
-  //     val ast = ast0
-  //   val resolveOut = resolvePass.run(resolveIn)
+    val interpretIn = new HasAST:
+      val ast = ast1
 
-  //   // return tje actual state
-  //   val actualState = toActualState(resolveOut)
-  //   actualState
-  // }
+    val interpretOut = interpretPass.run(interpretIn)
+
+    val actualState = toActualState(interpretOut)
+
+    actualState
+  }
+
 
 object InterpretPassSpec:
   final case class ActualState(
@@ -183,18 +170,6 @@ object InterpretPassSpec:
   def toActualState(s: Unit): ActualState =
     ActualState(
     )
-
-
-  // private def eval(ast0: AST): Either[Throwable, OutState] =
-  //   val interpretPass = new PassImpl()
-
-  //   for
-  //     b                 <- Builder.build(ast0)
-  //     (ast1, buildState) = b
-  //     in                 = InState.from(ast1)
-  //     out               <- nonFatalCatch.either(interpretPass.run(in))
-  //   yield out
-
 
 
 //   private def eval(ast0: AST): Either[Throwable, InterpretState] =

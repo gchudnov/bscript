@@ -59,7 +59,7 @@ final class TypeResolvePassSpec extends TestSpec:
       val ast = ast0
     val resolveOut = resolvePass.run(resolveIn)
 
-    // return tje actual state
+    // return the actual state
     val actualState = toActualState(resolveOut)
     actualState
   }
