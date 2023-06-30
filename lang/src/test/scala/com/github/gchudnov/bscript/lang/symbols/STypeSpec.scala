@@ -13,7 +13,7 @@ final class STypeSpec extends TestSpec:
           ("nothing", Some(SType.nothing)),
           ("void", Some(SType.void)),
           ("bool", Some(SType.bool)),
-          ("i8", Some(SType.i8)),
+          ("u8",  Some(SType.u8)),
           ("i16", Some(SType.i16)),
           ("i32", Some(SType.i32)),
           ("i64", Some(SType.i64)),
