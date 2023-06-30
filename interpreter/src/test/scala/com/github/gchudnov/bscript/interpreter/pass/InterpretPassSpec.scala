@@ -134,7 +134,7 @@ final class InterpretPassSpec extends TestSpec:
        * }}}
        */
       "declare x, assign and return" in {
-        val t = Examples.varDeclAssignReturn
+        val t = Examples.xDeclReturnX
 
         val errOrRes = eval(t.ast)
         errOrRes match

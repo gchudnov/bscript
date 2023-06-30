@@ -42,7 +42,7 @@ object Examples:
    *   x;
    * }}}
    */
-  val varDeclAssignReturn: Example =
+  val xDeclReturnX: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       Id("x"),
