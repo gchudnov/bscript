@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.builder.pass
+package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
@@ -12,7 +12,12 @@ import com.github.gchudnov.bscript.lang.ast.refs.Id
 /**
  * A named Example.
  */
-final case class Example(ast: AST)
+final case class Example private (ast: AST)
+
+object Example:
+
+  def apply(t: AST): Example =
+    new Example(Prelude.builtInTypes :+ t)
 
 /**
  * A collection of ASTs for testing purposes.
@@ -46,6 +51,38 @@ object Examples:
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Reference undefined variable
+   *
+   * {{{
+   *   // globals
+   *   x;
+   * }}}
+   */
+  val xRefUndefined: Example =
+    val t = Block.of(
+      Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Variable Declaration & Use another one
+   *
+   * Fail since `y` is not defined
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   y = 1;
+   * }}}
+   */
+  val varNotDefined: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      Assign(Id("y"), ConstLit(IntVal(1))),
     )
     Example(t)
 
@@ -86,6 +123,24 @@ object Examples:
     Example(t)
 
   /**
+   * X,Y Declaration, Return Z
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   long y = 1;
+   *   z;           // NOTE: z is not defined
+   * }}}
+   */
+  val xyDeclReturnZ: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("y", TypeId(TypeName.i64), ConstLit(LongVal(1))),
+      Id("z"),
+    )
+    Example(t)
+
+  /**
    * Variable Declaration & Use
    *
    * {{{
@@ -94,7 +149,7 @@ object Examples:
    *   x = 1;
    * }}}
    */
-  val varDefUse: Example =
+  val xDeclAssign: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       Assign(Id("x"), ConstLit(IntVal(1))),
@@ -102,26 +157,8 @@ object Examples:
     Example(t)
 
   /**
-   * Variable Declaration & Use another one
-   * 
-   * Fail since `y` is not defined
-   *
-   * {{{
-   *   // globals
-   *   int x = 0;
-   *   y = 1;
-   * }}}
-   */
-  val varNotDefined: Example =
-    val t = Block.of(
-      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
-      Assign(Id("y"), ConstLit(IntVal(1))),
-    )
-    Example(t)
-
-  /**
    * Variable Declaration
-   * 
+   *
    * should fail because of duplicate variable names
    *
    * {{{
@@ -136,7 +173,6 @@ object Examples:
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(1))),
     )
     Example(t)
-
 
   /**
    * Function Declaration
@@ -667,6 +703,50 @@ object Examples:
     Example(t)
 
   /**
+   * A small structure reference
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     struct A { int x; };
+   *
+   *     A a;
+   *     a;
+   *   }
+   * }}}
+   */
+  val structA: Example =
+    val t = Block.of(
+      StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32))))),
+      VarDecl("a", TypeId("A"), Init()),
+      Id("a"),
+    )
+    Example(t)
+
+  /**
+   * A small structure reference and assignment
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     struct A { int x; };
+   *
+   *     A a;
+   *     a.x = 1;
+   *     a;
+   *   }
+   * }}}
+   */
+  val structAFieldAssignment: Example =
+    val t = Block.of(
+      StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32))))),
+      VarDecl("a", TypeId("A"), Init()),
+      Assign(Access(Id("a"), Id("x")), ConstLit(IntVal(1))),
+      Id("a"),
+    )
+    Example(t)
+
+  /**
    * A small program
    * {{{
    *   // globals
@@ -822,7 +902,7 @@ object Examples:
 
   /**
    * Method Declaration
-   * 
+   *
    * should fail because of duplicate method signatutes
    *
    * {{{
@@ -830,7 +910,7 @@ object Examples:
    *   fn main() -> int = {
    *     0;
    *   }
-   * 
+   *
    *   fn main() -> int = {
    *     1;
    *   }
@@ -865,7 +945,7 @@ object Examples:
 
   /**
    * Method Declaration
-   * 
+   *
    * should allow different method signatutes that have the same name
    *
    * {{{
@@ -873,7 +953,7 @@ object Examples:
    *   fn main(x: int) -> int = {
    *     0;
    *   }
-   * 
+   *
    *   fn main() -> int = {
    *     1;
    *   }
@@ -908,7 +988,7 @@ object Examples:
 
   /**
    * Method Declaration
-   * 
+   *
    * raise an error if two function definitions with the same name different only in the return type
    *
    * {{{
@@ -916,7 +996,7 @@ object Examples:
    *   fn main() -> long = {
    *     0L;
    *   }
-   * 
+   *
    *   fn main() -> int = {
    *     1;
    *   }
@@ -951,14 +1031,14 @@ object Examples:
 
   /**
    * Generic methods, parameters have different names
-   * 
+   *
    * should produce an error
    *
    * {{{
    *   fn +[R, T, U](lhs: T, rhs: U) -> R {
    *     // ...
    *   }
-   * 
+   *
    *   fn +[X, Y, Z](lhs: Y, rhs: Z) -> X {
    *     // ...
    *   }

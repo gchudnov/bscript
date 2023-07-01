@@ -14,12 +14,10 @@ import scala.util.control.Exception.allCatch
 /**
  * Globals for building
  */
-object BGlobals:
+object Prelude:
 
-  def make(): AST =
-
-    val builtInTypes = Block.of(
-      // TODO: probably we need to define Std struct and self-annotate it.
+  val builtInTypes: Block = 
+    Block.of(
       BuiltInDecl(TypeName.nothing),
       BuiltInDecl(TypeName.void),
       BuiltInDecl(TypeName.bool),
@@ -35,6 +33,9 @@ object BGlobals:
       BuiltInDecl(TypeName.date),
       BuiltInDecl(TypeName.datetime),
     )
+
+
+  def make(): AST =
 
     val builtInMethods = Block.of(
       // prints the formatted string to StdOut
@@ -301,3 +302,4 @@ object BGlobals:
     )
 
     builtInTypes ++ builtInMethods
+

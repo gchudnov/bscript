@@ -10,8 +10,7 @@ import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.util.Transform
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.TestSpec
-import com.github.gchudnov.bscript.builder.BGlobals
-import com.github.gchudnov.bscript.builder.pass.Examples
+import com.github.gchudnov.bscript.builder.Examples
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.OutState
 
 import scala.util.control.Exception.*

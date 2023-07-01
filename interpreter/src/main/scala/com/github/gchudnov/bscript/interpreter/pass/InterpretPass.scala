@@ -49,6 +49,8 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
       case x @ Id(name) =>
         foldOverAST(s, x).loadRetVal(name) // TODO: DONE, remove the comment
 
+      case x @ BuiltInDecl(name, bType) =>
+        foldOverAST(s, x)
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s, x)
       case x @ StructDecl(name, sType) =>
@@ -88,6 +90,8 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
 
       case x @ Auto() =>
+        foldOverAST(s, x)
+      case x @ BuiltInType(name) =>
         foldOverAST(s, x)
       case x @ TypeId(name) =>
         foldOverAST(s, x)

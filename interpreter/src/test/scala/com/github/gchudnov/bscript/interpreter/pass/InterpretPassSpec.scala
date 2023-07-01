@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.builder.pass.Examples
+import com.github.gchudnov.bscript.builder.Examples
 import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.TestSpec
@@ -37,7 +37,6 @@ final class InterpretPassSpec extends TestSpec:
             actualState.retValue mustBe (Cell.I32(2))
             ()
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -56,7 +55,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(3))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -77,7 +75,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(3))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -99,7 +96,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(4))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -122,7 +118,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.Void)
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -141,7 +136,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(0))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -161,7 +155,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(0))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -181,9 +174,39 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I64(1L))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1;
+       *   z;
+       * }}}
+       */
+      "declare x, y, return z" in {
+        val t = Examples.xyDeclReturnZ
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("'z' is not found")
+      }
+
+      // "declare x, assign x" in {
+      //   val t = Examples.xDeclAssign
+
+      //   val errOrRes = eval(t.ast)
+      //   errOrRes match
+      //     case Right(actualState) =>
+      //       actualState.retValue mustBe (Cell.I64(1L))
+      //     case Left(t) =>
+      //       println(t)
+      //       fail("Should be 'right", t)
+      // }
     }
 
   }

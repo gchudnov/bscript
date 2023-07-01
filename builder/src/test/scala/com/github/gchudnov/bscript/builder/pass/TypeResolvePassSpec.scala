@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 
 import scala.util.control.Exception.*
+import com.github.gchudnov.bscript.builder.Examples
 
 /**
  * Type Resolve Pass Tests

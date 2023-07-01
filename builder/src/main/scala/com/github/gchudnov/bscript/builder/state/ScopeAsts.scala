@@ -16,6 +16,9 @@ import ScopeAsts.given
  * NOTE: ASTs are not unique, so we use Ptr[AST] instead of AST
  */
 sealed trait ScopeAsts:
+  def isEmpty: Boolean
+  def size: Int
+
   def link(scope: Scope, ast: AST): ScopeAsts
 
   def hasLink(scope: Scope, ast: AST): Boolean
@@ -43,6 +46,13 @@ object ScopeAsts:
  * A Dictionary of Scope -> AST Implementation
  */
 private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends BiDict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
+
+  override def isEmpty: Boolean = 
+    keyValues.isEmpty
+
+  override def size: Int =
+    keyValues.size
+
   override protected def clone(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]): BasicScopeAsts =
     BasicScopeAsts(keyValues = keyValues, valueKey = valueKey)
 

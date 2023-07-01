@@ -26,6 +26,8 @@ trait AstFolder[S]:
       case Id(_) =>
         s
 
+      case BuiltInDecl(_, bType) =>
+        foldAST(s, bType)
       case MethodDecl(name, mType, body) =>
         foldAST(foldAST(s, mType), body)
       case StructDecl(name, sType) =>
@@ -34,8 +36,6 @@ trait AstFolder[S]:
         foldAST(foldAST(s, vType), expr)
       case TypeDecl(_, tType) =>
         foldAST(s, tType)
-      case BuiltInDecl(_, bType) =>
-        foldAST(s, bType)
 
       case Annotated(expr, id, tparams, params) =>
         foldAST(foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), id), expr)
@@ -65,6 +65,8 @@ trait AstFolder[S]:
 
       case Auto() =>
         s
+      case BuiltInType(name) =>
+        s
       case TypeId(name) =>
         s
       case ByName(expr) =>
@@ -78,8 +80,6 @@ trait AstFolder[S]:
       case MethodType(tparams, params, retType) =>
         foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), retType)
       case GenericType(name) =>
-        s
-      case BuiltInType(name) =>
         s
 
 /*

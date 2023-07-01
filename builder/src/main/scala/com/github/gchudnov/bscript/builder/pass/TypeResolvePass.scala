@@ -13,7 +13,7 @@ import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 
 /**
- * #2 - Type Resolve Pass
+ * #3 - Type Resolve Pass
  *
  *   - Resolve types of the AST nodes.
  *
@@ -41,9 +41,19 @@ private final class TypeResolveFolder() extends AstFolder[TypeResolveState]:
     ast match
       case x: Access =>
         foldOverAST(s, x)
-      case x @ Id(name) =>
-        foldOverAST(s, x)
 
+      case x @ Id(name) =>
+        foldOverAST(s, x) // TODO: working here
+
+//   override def visit(s: PassState, n: Var): Either[Throwable, PassState] =
+//     for
+//       scope <- s.meta.scopeFor(n)
+//       sVar  <- s.meta.resolve(n.symbol.name, scope).flatMap(_.asSVar)
+//       n1     = n.copy(symbol = sVar)
+//       ss1    = s.meta.redefineASTScope(n, n
+
+      case x @ BuiltInDecl(name, tType) =>
+        foldOverAST(s, x)
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s, x)
       case x @ StructDecl(name, sType) =>
@@ -93,7 +103,10 @@ private final class TypeResolveFolder() extends AstFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case other =>
-        throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
+        foldOverAST(s, other)
+
+      // case other =>
+      //   throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
 
 /**
  * Type Resolve State

@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass.typecheck
 
-import com.github.gchudnov.bscript.builder.pass.Examples
+import com.github.gchudnov.bscript.builder.Examples
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.builder.BTypeCheckLaws
 import com.github.gchudnov.bscript.lang.symbols.*

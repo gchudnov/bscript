@@ -1,6 +1,3 @@
-
-// TODO: not clear how to handle Decl & TypeAST for built-in types
-
 - TODO: start horizontal execution:
         - evaluate 2
         - evaluate 2 + 2

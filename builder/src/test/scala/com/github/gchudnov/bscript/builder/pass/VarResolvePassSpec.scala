@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 
 import scala.util.control.Exception.*
+import com.github.gchudnov.bscript.builder.Examples
 
 /**
  * Var Resolve Pass Tests
@@ -17,6 +18,7 @@ final class VarResolvePassSpec extends TestSpec:
   "VarResolvePass" when {
 
     "const literals" should {
+
       /**
        * {{{
        *   // globals
@@ -33,6 +35,45 @@ final class VarResolvePassSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+    }
+
+    "var is undefined" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   x;
+       * }}}
+       */
+      "fail to reference the indefined variable" in {
+        val t = Examples.xRefUndefined
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("'x' is not found")
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   y = 1;
+       * }}}
+       */
+      "fail to resolve a referenced variable in assignment" in {
+        val t = Examples.varNotDefined
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("'y' is not found")
+      }
+
     }
 
     "var is defined" should {
@@ -54,7 +95,7 @@ final class VarResolvePassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-     /**
+      /**
        * {{{
        *   // globals
        *   int x = 0;
@@ -62,37 +103,67 @@ final class VarResolvePassSpec extends TestSpec:
        * }}}
        */
       "resolve a referenced variable if it is present" in {
-        val t = Examples.varDefUse
+        val t = Examples.xDeclAssign
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
             succeed
           case Left(t) =>
-            println(t)
+            fail("Should be 'right", t)
+      }
+    }
+
+    "a struct is defined" should {
+
+      /**
+       * A small structure reference
+       *
+       * {{{
+       *   // globals
+       *   {
+       *     struct A { int x; };
+       *
+       *     A a;
+       *     a;
+       *   }
+       * }}}
+       */
+      "resolve references to a struct" in {
+        val t = Examples.structA
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
       /**
-        * {{{
+       * A small structure reference and assignment
+       *
+       * {{{
         *   // globals
-        *   int x = 0;
-        *   y = 1;
-        * }}}
-        */
-      "fail to resolve a referenced variable if it is not present" in {
-        val t = Examples.varNotDefined
+        *   {
+        *     struct A { int x; };
+        *
+        *     A a;
+        *     a.x = 1;
+        *     a;
+        *   }
+       * }}}
+       */
+      "resolve access to a field in a struct" in {
+        val t = Examples.structAFieldAssignment
 
         val errOrRes = eval(t.ast)
         errOrRes match
-          case Right(_) =>
-            fail("Should be 'left")
+          case Right(actualState) =>
+            succeed
           case Left(t) =>
-            t.getMessage must include("'y' is not found")
+            fail("Should be 'right", t)
       }
-    }
-
-    "a struct is present" should {
 
       /**
        * {{{
@@ -119,7 +190,7 @@ final class VarResolvePassSpec extends TestSpec:
        *   }
        * }}}
         */
-      "resolve references to the fields of the struct" in {
+      "resolve references to fields" in {
         val t = Examples.struct
 
         val errOrRes = eval(t.ast)
@@ -127,7 +198,6 @@ final class VarResolvePassSpec extends TestSpec:
           case Right(actualState) =>
             succeed
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -143,15 +213,15 @@ final class VarResolvePassSpec extends TestSpec:
     val buildPass = new ScopeBuildPass()
     val buildIn = new HasAST:
       val ast = ast0
-    val buildOut         = buildPass.run(buildIn)
+    val buildOut = buildPass.run(buildIn)
 
     // #2 resolve
     val resolvePass = new VarResolvePass()
     val resolveIn = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      val scopeTree  = buildOut.scopeTree
+      val scopeTree    = buildOut.scopeTree
       val scopeSymbols = buildOut.scopeSymbols
-      val scopeAsts = buildOut.scopeAsts
-      val ast = ast0
+      val scopeAsts    = buildOut.scopeAsts
+      val ast          = ast0
     val resolveOut = resolvePass.run(resolveIn)
 
     // return the actual state

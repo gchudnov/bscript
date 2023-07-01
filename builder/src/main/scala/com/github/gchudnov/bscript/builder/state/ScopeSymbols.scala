@@ -14,6 +14,9 @@ import com.github.gchudnov.bscript.builder.state.ScopeSymbols.given
  *   - A symbol can belong to only one scope
  */
 sealed trait ScopeSymbols:
+  def isEmpty: Boolean
+  def size: Int
+
   def link(scope: Scope, sym: Symbol): ScopeSymbols
 
   def hasLink(scope: Scope, sym: Symbol): Boolean
@@ -45,6 +48,13 @@ object ScopeSymbols:
 private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]])
     extends Dict[Scope, Symbol, BasicScopeSymbols]
     with ScopeSymbols:
+  
+  override def isEmpty: Boolean = 
+    keyValues.isEmpty
+
+  override def size: Int =
+    keyValues.size
+
   override def clone(keyValues: Map[Scope, Set[Symbol]]): BasicScopeSymbols =
     BasicScopeSymbols(keyValues = keyValues)
 
