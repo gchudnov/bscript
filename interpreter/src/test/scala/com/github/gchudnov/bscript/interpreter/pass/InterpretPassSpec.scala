@@ -196,17 +196,26 @@ final class InterpretPassSpec extends TestSpec:
             t.getMessage must include("'z' is not found")
       }
 
-      // "declare x, assign x" in {
-      //   val t = Examples.xDeclAssign
+      /**
+       * Variable Declaration & Assign, Return Void
+       *
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   x = 1;
+       * }}}
+       */
+      "declare x, assign x, return void" in {
+        val t = Examples.xDeclAssign
 
-      //   val errOrRes = eval(t.ast)
-      //   errOrRes match
-      //     case Right(actualState) =>
-      //       actualState.retValue mustBe (Cell.I64(1L))
-      //     case Left(t) =>
-      //       println(t)
-      //       fail("Should be 'right", t)
-      // }
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.Void)
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
     }
 
   }

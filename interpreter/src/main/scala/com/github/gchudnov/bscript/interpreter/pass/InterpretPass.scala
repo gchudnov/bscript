@@ -64,8 +64,9 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
 
       case x: Annotated =>
         foldOverAST(s, x)
+        
       case x: Assign =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).withRetVal(Cell.Void) // TODO: DONE, remove the comment
 
       case x: Block =>
         foldOverAST(s, x)

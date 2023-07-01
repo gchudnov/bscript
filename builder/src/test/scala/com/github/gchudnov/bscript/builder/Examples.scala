@@ -141,7 +141,7 @@ object Examples:
     Example(t)
 
   /**
-   * Variable Declaration & Use
+   * Variable Declaration & Assign, Return Void
    *
    * {{{
    *   // globals
