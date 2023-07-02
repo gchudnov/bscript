@@ -2,6 +2,9 @@
         - evaluate 2
         - evaluate 2 + 2
 
+  // TODO: add a function that converts a type: int -> long
+
+
 https://toylang.com/
 https://www.freecodecamp.org/news/the-programming-language-pipeline-91d3f449c919/
 

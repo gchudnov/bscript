@@ -520,6 +520,44 @@ object Examples:
     Example(t)
 
   /**
+   * Declare variable and assign it to Null; manual type specification
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     int x = nothing;
+   *     x;
+   *   }
+   * }}}
+   */
+  val intNothingX: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId("i32"), ConstLit(NullVal)),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Allow nothing in assignment
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     int x = 0;
+   *     x = nothing;
+   *     x;
+   *   }
+   * }}}
+   */
+  val assignNothingX: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId("i32"), ConstLit(IntVal(0))),
+      Assign(Id("x"), ConstLit(NullVal)),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
    * Several scopes, variable use from the non-available scope
    *
    * {{{

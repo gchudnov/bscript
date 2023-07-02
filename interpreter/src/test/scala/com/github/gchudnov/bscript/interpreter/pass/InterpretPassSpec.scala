@@ -143,6 +143,47 @@ final class InterpretPassSpec extends TestSpec:
        * {{{
        *   // globals
        *   int x = 0;
+       *   x;
+       * }}}
+       */
+      "declare x, assign to null and return" in {
+        val t = Examples.intNothingX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.Nothing)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * Allow nothing in assignment
+       *
+       * {{{
+       *   // globals
+       *   {
+       *     int x = 0;
+       *     x = nothing;
+       *     x;
+       *   }
+       * }}}
+       */
+      "allow nothing in assignment" in {
+        val t = Examples.assignNothingX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.Nothing)
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
        *   long y = 1;
        *   x;
        * }}}
@@ -220,8 +261,6 @@ final class InterpretPassSpec extends TestSpec:
 
   }
 
-  // TODO: add a function that converts a type: int -> long
-
   /**
    * To evaluate, we Build that run Interpret Pass.
    */
@@ -250,10 +289,6 @@ object InterpretPassSpec:
       retValue = s.retValue,
     )
 
-//   private def eval(ast0: AST): Either[Throwable, InterpretState] =
-//     val types         = Types.make(typeNames)
-//     val typeCheckLaws = ITypeCheckLaws.make(types)
-
 //     Builder
 //       .build(ast0, types, typeCheckLaws)
 //       .flatMap({ astMeta =>
@@ -266,16 +301,6 @@ object InterpretPassSpec:
 
 //         astMeta.ast.visit(interpretState, interpretVisitor)
 //       })
-
-// object InterpretVisitorSpec {}
-
-// final class InterpretVisitorSpec extends TestSpec:
-
-//   private val typeNames: TypeNames = IGlobals.typeNames
-
-//   "InterpretVisitor" when {
-
-//     "there is a program" should {
 
 //       /**
 //        * {{{
@@ -330,50 +355,6 @@ object InterpretPassSpec:
 //     }
 
 //     "variable declaration" should {
-
-//       /**
-//        * {{{
-//        *   // globals
-//        *   {
-//        *     int x = nothing;
-//        *     x;
-//        *   }
-//        * }}}
-//        */
-//       "allow nothing in declaration" in {
-//         val t = Block(
-//           VarDecl(TypeRef(typeNames.i32Type), "x", NothingVal()),
-//           Var(SymbolRef("x"))
-//         )
-
-//         val errOrRes = eval(t)
-//         errOrRes match
-//           case Right(InterpretState(_, _, ms, c)) =>
-//             c mustBe Cell.nothing
-//           case Left(t) =>
-//             fail("Should be 'right", t)
-//       }
-
-//       /**
-//        * {{{
-//        *   // globals
-//        *   {
-//        *     int x = 0;
-//        *     x = nothing;
-//        *     x;
-//        *   }
-//        * }}}
-//        */
-//       "allow nothing in assignment" in {
-//         val t = Block(
-//           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
-//           Assign(Var(SymbolRef("x")), NothingVal()),
-//           Var(SymbolRef("x"))
-//         )
-
-//         val errOrRes = eval(t)
-//         errOrRes.isRight mustBe (true)
-//       }
 
 //       /**
 //        * {{{

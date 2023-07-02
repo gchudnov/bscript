@@ -46,8 +46,8 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
       case x: Access =>
         foldOverAST(s, x)
 
-      case x @ Id(name) =>
-        foldOverAST(s, x).loadRetVal(name) // TODO: DONE, remove the comment
+      case Id(name) =>
+        s.loadRetVal(name) // TODO: DONE, remove the comment
 
       case x @ BuiltInDecl(name, bType) =>
         foldOverAST(s, x)
@@ -56,17 +56,17 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
       case x @ StructDecl(name, sType) =>
         foldOverAST(s, x)
 
-      case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(s, x).storeRetVal(name).withRetVal(Cell.Void) // TODO: DONE, remove the comment
+      case VarDecl(name, vType, expr) =>
+        foldAST(foldAST(s, vType), expr).storeRetVal(name).withRetVal(Cell.Void) // TODO: DONE, remove the comment
 
       case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
 
       case x: Annotated =>
         foldOverAST(s, x)
-        
-      case x: Assign =>
-        foldOverAST(s, x).withRetVal(Cell.Void) // TODO: DONE, remove the comment
+
+      case Assign(lhs, rhs) =>
+        foldAST(foldAST(s, lhs), rhs).storeRetVal(Path(lhs.path)).withRetVal(Cell.Void) // TODO: DONE, remove the comment
 
       case x: Block =>
         foldOverAST(s, x)
@@ -82,7 +82,7 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
       case x @ KeyValue(key, value) =>
         foldOverAST(s, x)
 
-      case x @ ConstLit(const) =>
+      case ConstLit(const) =>
         s.withRetVal(ConstConv.toCell(const)) // TODO: DONE, remove the comment
 
       case x @ CollectionLit(cType, elems) =>
@@ -127,27 +127,37 @@ private final case class InterpretState(retValue: Cell, area: Area):
     copy(retValue = cell)
 
   /**
-    * Load the return-value from the memory area
-    *
-    * @param name
-    *   the name of the value
-    * @return
-    *   a new state
-    */
+   * Load the return-value from the memory area
+   *
+   * @param name
+   *   the name of the value
+   * @return
+   *   a new state
+   */
   def loadRetVal(name: String): InterpretState =
     val rv = area.tryGet(name).toTry.get
     copy(retValue = rv)
 
   /**
-    * Store the return-value in the memory area
-    *
-    * @param name
-    *   the name of the value
-    * @return
-    *   a new state
-    */
+   * Store the return-value in the memory area
+   *
+   * @param name
+   *   the name of the value
+   * @return
+   *   a new state
+   */
   def storeRetVal(name: String): InterpretState =
     copy(area = area.put(name, retValue))
+
+  /**
+   * Store the return-value in the memory area
+   * @param path
+   *   the path of the value
+   * @return
+   *   a new state
+   */
+  def storeRetVal(path: Path): InterpretState =
+    copy(area = area.tryUpdate(path, retValue).toTry.get)
 
 /**
  * Interpret State Companion
