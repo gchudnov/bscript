@@ -259,6 +259,63 @@ final class InterpretPassSpec extends TestSpec:
       }
     }
 
+    "conditions" should {
+
+      /**
+       * IF(true)
+       *
+       * {{{
+       *   // globals
+       *   {
+       *     bool x = true;
+       *     if(x) {
+       *       4;
+       *     } else {
+       *       9;
+       *     }
+       *   }
+       * }}}
+       */
+      "return value from IF-branch" in {
+        val t = Examples.ifTrue
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(4))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * IF(false)
+       *
+       * {{{
+       *   // globals
+       *   {
+       *     bool x = false;
+       *     if(x) {
+       *       4;
+       *     } else {
+       *       9;
+       *     }
+       *   }
+       * }}}
+       */
+      "return value from ELSE-branch" in {
+        val t = Examples.ifTrue
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(9))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+    }
   }
 
   /**
@@ -480,56 +537,6 @@ object InterpretPassSpec:
 //         errOrRes match
 //           case Right(_) => fail("Should be 'left")
 //           case Left(t)  => t.getMessage mustBe (s"Operation if('${typeNames.i64Type}') is not supported")
-//       }
-
-//       /**
-//        * {{{
-//        *   // globals
-//        *   {
-//        *     bool x = true;
-//        *     if(x) {
-//        *       4;
-//        *     } else {
-//        *       9;
-//        *     }
-//        *   }
-//        * }}}
-//        */
-//       "evaluate when there is a var in the condition with blocks" in {
-//         val t = Block(
-//           VarDecl(TypeRef(typeNames.boolType), "x", BoolVal(true)),
-//           If(Var(SymbolRef("x")), Block(IntVal(4)), Some(Block(IntVal(9)))) // NOTE: wrapping blocks for 'then', 'else'
-//         )
-
-//         val errOrRes = eval(t)
-//         errOrRes match
-//           case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(4)
-//           case Left(t)                            => fail("Should be 'right", t)
-//       }
-
-//       /**
-//        * {{{
-//        *   // globals
-//        *   {
-//        *     bool x = false;
-//        *     if(x) {
-//        *       4;
-//        *     } else {
-//        *       9;
-//        *     }
-//        *   }
-//        * }}}
-//        */
-//       "evaluate when there is a var in the condition without blocks" in {
-//         val t = Block(
-//           VarDecl(TypeRef(typeNames.boolType), "x", BoolVal(false)),
-//           If(Var(SymbolRef("x")), IntVal(4), Some(IntVal(9))) // NOTE: NO wrapping blocks for 'then', 'else'
-//         )
-
-//         val errOrRes = eval(t)
-//         errOrRes match
-//           case Right(InterpretState(_, _, ms, c)) => c mustBe IntCell(9)
-//           case Left(t)                            => fail("Should be 'right", t)
 //       }
 
 //       /**

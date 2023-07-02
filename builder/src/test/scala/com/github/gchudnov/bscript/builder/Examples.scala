@@ -1114,3 +1114,47 @@ object Examples:
       ),
     )
     Example(t)
+
+  /**
+   * IF(true)
+   * 
+   * {{{
+   *   // globals
+   *   {
+   *     bool x = true;
+   *     if(x) {
+   *       4;
+   *     } else {
+   *       9;
+   *     }
+   *   }
+   * }}}
+   */
+  val ifTrue: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.bool), ConstLit(BoolVal(true))),
+      If(Id("x"), ConstLit(IntVal(4)), ConstLit(IntVal(9)))
+    )
+    Example(t)
+
+  /**
+   * IF(false)
+   * 
+   * {{{
+   *   // globals
+   *   {
+   *     bool x = false;
+   *     if(x) {
+   *       4;
+   *     } else {
+   *       9;
+   *     }
+   *   }
+   * }}}
+   */
+  val ifFalse: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.bool), ConstLit(BoolVal(false))),
+      If(Id("x"), ConstLit(IntVal(4)), ConstLit(IntVal(9)))
+    )
+    Example(t)
