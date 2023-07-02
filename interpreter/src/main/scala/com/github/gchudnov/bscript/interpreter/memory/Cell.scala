@@ -5,6 +5,8 @@ import com.github.gchudnov.bscript.lang.util.Lines
 import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime }
+import scala.collection.immutable.Set as SSet
+import scala.collection.immutable.Map as SMap
 
 sealed trait Cell
 
@@ -25,8 +27,13 @@ object Cell:
   final case class Date(value: LocalDate)                               extends Cell
   final case class DateTime(value: OffsetDateTime)                      extends Cell
   final case class Vec(value: List[Cell])                               extends Cell
-  final case class Struct(value: Map[String, Cell])                     extends Cell
+  final case class Set(vakue: SSet[Cell])                               extends Cell
+  final case class Map(value: SMap[Cell, Cell])                         extends Cell
+  final case class Struct(value: SMap[String, Cell])                    extends Cell
   final case class Method(value: List[Cell] => Either[Throwable, Cell]) extends Cell
+
+  given Ordering[Cell] =
+    Ordering.by[Cell, String](_.toString)
 
   object Struct:
     def apply(values: (String, Cell)*): Cell =
@@ -80,7 +87,13 @@ object Cell:
   def vec(value: Cell*): Cell =
     Vec(value.toList)
 
-  def struct(value: Map[String, Cell]): Cell =
+  def set(value: Cell*): Cell =
+    Set(value.toSet)
+
+  def map(value: Cell*): Cell =
+    Set(value.toSet)
+
+  def struct(value: SMap[String, Cell]): Cell =
     Struct(value)
 
   def struct(values: (String, Cell)*): Cell =
@@ -100,7 +113,7 @@ object Cell:
     else
       (a, b) match
         case (Struct(ma), Struct(mb)) =>
-          mb.foldLeft(Right(ma): Either[Throwable, Map[String, Cell]]) { case (acc, (k, v)) =>
+          mb.foldLeft(Right(ma): Either[Throwable, SMap[String, Cell]]) { case (acc, (k, v)) =>
             acc match
               case Left(e) => Left(e)
               case Right(mx) =>
@@ -156,20 +169,40 @@ object Cell:
    * @return
    *   The list of changes.
    */
-  private def diffMap(ns: Path, b: Map[String, Cell], a: Map[String, Cell]): List[Diff.Change[Path, Cell]] =
+  private def diffStrMap(ns: Path, b: SMap[String, Cell], a: SMap[String, Cell]): List[Diff.Change[Path, Cell]] =
     val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
-    b.foreach { case (k, vb) =>
+    val beforeTuples = b.toList.sortBy(_._1)
+    val afterTuples  = a.toList.sortBy(_._1)
+
+    beforeTuples.foreach { case (k, vb) =>
       val va = a.get(k)
       rs ++= iterateDiff(ns.append(k), Some(vb), va)
     }
 
-    a.foreach { case (k, va) =>
+    afterTuples.foreach { case (k, va) =>
       val vb = b.get(k)
       if vb.isEmpty then rs ++= iterateDiff(ns.append(k), vb, Some(va))
     }
 
     rs.result()
+
+  /**
+   * Calculate the difference between two maps of cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   Map of cells
+   * @param a
+   *   Map of cells
+   * @return
+   *   The list of changes.
+   */
+  private def diffMap(ns: Path, b: SMap[Cell, Cell], a: SMap[Cell, Cell]): List[Diff.Change[Path, Cell]] =
+    val ba = b.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
+    val aa = b.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
+    diffStrMap(ns, ba, aa)
 
   /**
    * Calculate the difference between two cells.
@@ -186,6 +219,12 @@ object Cell:
   private def iterateDiff(ns: Path, b: Option[Cell], a: Option[Cell]): List[Diff.Change[Path, Cell]] =
     (b, a) match
       case (Some(Struct(ba)), Some(Struct(aa))) =>
+        diffStrMap(ns, ba, aa)
+
+      case (Some(Set(ba)), Some(Set(aa))) =>
+        diffList(ns, ba.toList.sorted, aa.toList.sorted)
+
+      case (Some(Map(ba)), Some(Map(aa))) =>
         diffMap(ns, ba, aa)
 
       case (Some(Vec(ba)), Some(Vec(aa))) =>
@@ -217,7 +256,7 @@ object Cell:
       case bool: Bool => Right(bool)
       case other      => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Bool"))
 
-    def asAnyValue: Either[Throwable, Any] = cell match
+    def asAny: Either[Throwable, Any] = cell match
       case _: Nothing.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing
       case _: Void.type    => Right(().asInstanceOf[Any])
       case Bool(value)     => Right(value.asInstanceOf[Any])
@@ -233,35 +272,48 @@ object Cell:
       case Date(value)     => Right(value.asInstanceOf[Any])
       case DateTime(value) => Right(value.asInstanceOf[Any])
       case Vec(value)      => Right(value.asInstanceOf[Any])
+      case Set(value)      => Right(value.asInstanceOf[Any])
+      case Map(value)      => Right(value.asInstanceOf[Any])
       case Struct(value)   => Right(value.asInstanceOf[Any])
       case Method(value)   => Right(value.asInstanceOf[Any])
 
   given Show[Cell] with
     def show(a: Cell): String = a match
-      case _: Nothing.type => s"\"${TypeName.nothing}\""
-      case _: Void.type    => s"\"${TypeName.void}\""
-      case Bool(value)     => s"\"${TypeName.bool}(${value})\""
-      case U8(value)       => s"\"${TypeName.u8}(${value})\""
-      case I16(value)      => s"\"${TypeName.i16}(${value})\""
-      case I32(value)      => s"\"${TypeName.i32}(${value})\""
-      case I64(value)      => s"\"${TypeName.i64}(${value})\""
-      case F32(value)      => s"\"${TypeName.f32}(${value})\""
-      case F64(value)      => s"\"${TypeName.f64}(${value})\""
-      case Dec(value)      => s"\"${TypeName.dec}(${value})\""
-      case Chr(value)      => s"\"${TypeName.chr}(${value})\""
-      case Str(value)      => s"\"${TypeName.str}(${value})\""
-      case Date(value)     => s"\"${TypeName.date}(${value.toString})\""
-      case DateTime(value) => s"\"${TypeName.datetime}(${value.toString})\""
+      case _: Nothing.type => Lines.quote(s"${TypeName.nothing}")
+      case _: Void.type    => Lines.quote(s"${TypeName.void}")
+      case Bool(value)     => Lines.quote(s"${TypeName.bool}(${value})")
+      case U8(value)       => Lines.quote(s"${TypeName.u8}(${value})")
+      case I16(value)      => Lines.quote(s"${TypeName.i16}(${value})")
+      case I32(value)      => Lines.quote(s"${TypeName.i32}(${value})")
+      case I64(value)      => Lines.quote(s"${TypeName.i64}(${value})")
+      case F32(value)      => Lines.quote(s"${TypeName.f32}(${value})")
+      case F64(value)      => Lines.quote(s"${TypeName.f64}(${value})")
+      case Dec(value)      => Lines.quote(s"${TypeName.dec}(${value})")
+      case Chr(value)      => Lines.quote(s"${TypeName.chr}(${value})")
+      case Str(value)      => Lines.quote(s"${TypeName.str}(${value})")
+      case Date(value)     => Lines.quote(s"${TypeName.date}(${value.toString})")
+      case DateTime(value) => Lines.quote(s"${TypeName.datetime}(${value.toString})")
       case Vec(value) =>
-        val lineLines = value.map(it => Lines.split(show(it)))
-        val lines     = Lines.wrap("[", "]", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(", ", lineLines))))
-        Lines.join(lines)
+        showList(value)
+      case Set(value) =>
+        showList(value.toList.sorted, "{", "}")
+      case Map(value) =>
+        showStruct(value.map((k, v) => (show(k), v)), false)
       case Struct(value) =>
-        val lineLines = value.toList.map { case (k, v) =>
-          val vLines  = Lines.split(show(v))
-          val kvLines = Lines.joinCR(": ", Seq(s"\"${k}\""), vLines)
-          kvLines
-        }
-        val lines = Lines.wrap("{", "}", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(",", lineLines))))
-        Lines.join(lines)
-      case Method(value) => s"\"method(${value})\""
+        showStruct(value)
+      case Method(_) => Lines.quote("method([args] => either[err,value])")
+
+    private def showList(value: List[Cell], start: String = "[", end: String = "]"): String =
+      val lineLines = value.map(it => Lines.split(show(it)))
+      val lines     = Lines.wrap(start, end, Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(", ", lineLines))))
+      Lines.join(lines)
+
+    private def showStruct(value: SMap[String, Cell], quoteKeys: Boolean = true): String =
+      val tuples = value.toList.sortBy(_._1)
+      val lineLines = tuples.map { case (k, v) =>
+        val vLines  = Lines.split(show(v))
+        val kvLines = Lines.joinCR(": ", Seq(if quoteKeys then Lines.quote(k) else k), vLines)
+        kvLines
+      }
+      val lines = Lines.wrap("{", "}", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(",", lineLines))))
+      Lines.join(lines)

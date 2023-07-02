@@ -12,8 +12,8 @@ import com.github.gchudnov.bscript.interpreter.TestSpec
 import scala.util.control.Exception.*
 import com.github.gchudnov.bscript.interpreter.env.HasRetValue
 
-// import java.time.LocalDate
-// import java.time.OffsetDateTime
+import java.time.LocalDate
+import java.time.OffsetDateTime
 
 final class InterpretPassSpec extends TestSpec:
   import InterpretPassSpec.*
@@ -304,7 +304,7 @@ final class InterpretPassSpec extends TestSpec:
        * }}}
        */
       "return value from ELSE-branch" in {
-        val t = Examples.ifTrue
+        val t = Examples.ifFalse
 
         val errOrRes = eval(t.ast)
         errOrRes match

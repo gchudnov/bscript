@@ -50,7 +50,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    * @return
    *   Right(cell) if the cell is found, Left(error) otherwise
    */
-  def tryGet(id: String): Either[Throwable, Cell] =
+  def getOrError(id: String): Either[Throwable, Cell] =
     get(id)
       .toRight(new MemoryException(s"Cannot find the Cell for: '${id}'"))
 
@@ -63,7 +63,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Some(cell) if the cell is found, None otherwise
    */
   def get(path: Path): Option[Cell] =
-    tryGet(path).toOption
+    getOrError(path).toOption
 
   /**
    * Get a Cell by its path
@@ -73,10 +73,10 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    * @return
    *   Right(cell) if the cell is found, Left(error) otherwise
    */
-  def tryGet(path: Path): Either[Throwable, Cell] =
+  def getOrError(path: Path): Either[Throwable, Cell] =
     if path.isEmpty then Left(new MemoryException(s"Cannot find the Cell, path to fetch a Cell is empty"))
     else
-      tryGet(path.head)
+      getOrError(path.head)
         .flatMap(c => iterateTryGet(path.tail, c))
 
   private def iterateTryGet(ps: Path, start: Cell): Either[Throwable, Cell] =
@@ -139,7 +139,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    * @return
    *   Right(area) if the cell is found, Left(error) otherwise
    */
-  def tryUpdate(id: String, value: Cell): Either[Throwable, Area] =
+  def updateOrError(id: String, value: Cell): Either[Throwable, Area] =
     update(id, value)
       .toRight(new MemoryException(s"Cannot find Area for: '${id}'"))
 
@@ -154,7 +154,7 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    *   Some(area) if the cell is found, None otherwise
    */
   def update(path: Path, value: Cell): Option[Area] =
-    tryUpdate(path, value).toOption
+    updateOrError(path, value).toOption
 
   /**
    * Update a cell by path
@@ -166,12 +166,12 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    * @return
    *   Right(area) if the cell is found, Left(error) otherwise
    */
-  def tryUpdate(path: Path, value: Cell): Either[Throwable, Area] =
+  def updateOrError(path: Path, value: Cell): Either[Throwable, Area] =
     if path.isEmpty then Left(new MemoryException(s"Path to update a Cell is empty"))
     else
       get(path.head)
         .toRight(new MemoryException(s"Cannot find Area with variable '${path.head}'"))
-        .flatMap(c => iterateTryUpdate(path.tail, c, value).flatMap(u => tryUpdate(path.head, u)))
+        .flatMap(c => iterateTryUpdate(path.tail, c, value).flatMap(u => updateOrError(path.head, u)))
 
   private def iterateTryUpdate(ps: Path, start: Cell, value: Cell): Either[Throwable, Cell] =
     ps match
@@ -222,9 +222,15 @@ case class Area(name: String, members: Map[String, Cell], parent: Option[Area]):
    * @return
    *   Some(parent) if the parent exists, None otherwise
    */
-  def tryPop(): Either[Throwable, Area] =
+  def popOrError(): Either[Throwable, Area] =
     pop().toRight(new MemoryException(s"Cannot pop a memory area to get the parent area."))
 
+  /**
+   * Return area as a string
+   *
+   * @return
+   *   area as a string
+   */
   override def toString: String =
     val pairs = members.map(it => s"${it._1}: ${it._2}")
     s"[${name}]${pairs.mkString("{", ", ", "}")}"

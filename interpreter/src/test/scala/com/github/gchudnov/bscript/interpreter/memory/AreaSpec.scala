@@ -4,8 +4,6 @@ import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.interpreter.memory.*
 import com.github.gchudnov.bscript.interpreter.util.Resources
-import com.github.gchudnov.bscript.interpreter.memory.Path
-import com.github.gchudnov.bscript.interpreter.memory.Area
 
 final class AreaSpec extends TestSpec:
 
@@ -109,10 +107,10 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "tryGet by name" should {
+    "getOrError by name" should {
 
       "return a cell by its id if the cell exists" in {
-        val errOrCell = globals.tryGet("a")
+        val errOrCell = globals.getOrError("a")
         errOrCell match
           case Left(_) =>
             fail("should be 'right")
@@ -121,7 +119,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "return a cell from a parent if the cell exists" in {
-        val errOrCell = locals.tryGet("b")
+        val errOrCell = locals.getOrError("b")
         errOrCell match
           case Left(_) =>
             fail("should be 'right")
@@ -130,7 +128,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "fail if the cell does not exist" in {
-        val errOrCell = locals.tryGet("xxx")
+        val errOrCell = locals.getOrError("xxx")
         errOrCell match
           case Left(_) =>
             succeed
@@ -188,9 +186,9 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "tryGet by path" should {
+    "getOrError by path" should {
       "return a cell by its path" in {
-        val errOrCell = locals.tryGet(Path(List("a", "b", "y")))
+        val errOrCell = locals.getOrError(Path(List("a", "b", "y")))
         errOrCell match
           case Left(_) =>
             fail("should be 'right")
@@ -261,10 +259,10 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "tryUpdate by name" should {
+    "updateOrError by name" should {
 
       "update the cell by name" in {
-        val errOrUpd = main.tryUpdate("a", Cell.I32(20))
+        val errOrUpd = main.updateOrError("a", Cell.I32(20))
         errOrUpd match
           case Left(_) =>
             fail("should be 'right")
@@ -279,10 +277,10 @@ final class AreaSpec extends TestSpec:
       }
     }
 
-    "tryUpdate by path" should {
+    "updateOrError by path" should {
 
       "modify cell by its path" in {
-        val errOrUpd = locals.tryUpdate(Path(List("a", "b", "y")), Cell.I32(12))
+        val errOrUpd = locals.updateOrError(Path(List("a", "b", "y")), Cell.I32(12))
         errOrUpd match
           case Left(_) =>
             fail("should be 'right")
@@ -307,7 +305,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "modify cell by its path if path has only one part" in {
-        val errOrUpd = locals.tryUpdate(Path(List("a")), Cell.I32(22))
+        val errOrUpd = locals.updateOrError(Path(List("a")), Cell.I32(22))
         errOrUpd match
           case Left(_) =>
             fail("should be 'right")
@@ -324,7 +322,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "modify array" in {
-        val errOrUpd = locals.tryUpdate(Path(List("a", "c", "1")), Cell.I32(22))
+        val errOrUpd = locals.updateOrError(Path(List("a", "c", "1")), Cell.I32(22))
         errOrUpd match
           case Left(_) =>
             fail("should be 'right")
@@ -349,7 +347,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "fail to modify if the path is too long" in {
-        val errOrUpd = locals.tryUpdate(Path(List("a", "b", "y", "z")), Cell.I32(12))
+        val errOrUpd = locals.updateOrError(Path(List("a", "b", "y", "z")), Cell.I32(12))
         errOrUpd match
           case Left(t) =>
             t.getMessage.contains("doesn't have fields to fetch") mustBe (true)
@@ -358,7 +356,7 @@ final class AreaSpec extends TestSpec:
       }
 
       "fail to modify if the path is empty" in {
-        val errOrUpd = locals.tryUpdate(Path.empty, Cell.I32(12))
+        val errOrUpd = locals.updateOrError(Path.empty, Cell.I32(12))
         errOrUpd match
           case Left(t) =>
             t.getMessage.contains("Path to update a Cell is empty") mustBe (true)

@@ -1,8 +1,16 @@
+- TODO: 
+
 - TODO: start horizontal execution:
         - evaluate 2
         - evaluate 2 + 2
 
-  // TODO: add a function that converts a type: int -> long
+- TODO: add a function that converts a type: int -> long
+
+- TODO: replace NULL with NOTHING ??
+
+      // TODO: impl runtime
+      // TODO: then impl in type check to ensure that types are correct before runtime
+      // TODO: use evalType to get the type of the expression
 
 
 https://toylang.com/

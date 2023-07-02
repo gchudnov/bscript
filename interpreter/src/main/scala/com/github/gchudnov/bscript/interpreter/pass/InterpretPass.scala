@@ -66,7 +66,7 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
 
       case Assign(lhs, rhs) =>
-        foldAST(foldAST(s, lhs), rhs).storeRetVal(Path(lhs.path)).withRetVal(Cell.Void) // TODO: DONE, remove the comment
+        foldAST(foldAST(s, lhs), rhs).updateRetVal(Path(lhs.path)).withRetVal(Cell.Void) // TODO: DONE, remove the comment
 
       case x: Block =>
         foldOverAST(s, x)
@@ -75,8 +75,10 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
         foldOverAST(s, x)
       case x @ Compiled(callback, retType) =>
         foldOverAST(s, x)
+
       case x: If =>
-        foldOverAST(s, x)
+        interpretIf(s, x) // TODO: DONE, remove the comment
+
       case x @ Init() =>
         foldOverAST(s, x)
       case x @ KeyValue(key, value) =>
@@ -110,6 +112,23 @@ private final class InterpretFolder() extends AstFolder[InterpretState]:
       case other =>
         throw new MatchError(s"Unsupported AST type in InterpretFolder: ${other}")
 
+  /**
+   * Interpret an if statement.
+   *
+   * @param x
+   *   the if statement
+   * @return
+   *   a new state
+   */
+  private def interpretIf(s: InterpretState, x: If): InterpretState =
+    val s1 = foldAST(s, x.cond)
+    s1.retValue match
+      case Cell.Bool(cond) =>
+        if cond then foldAST(s1, x.then1)
+        else foldAST(s1, x.else1)
+      case other =>
+        throw InterpreterException(s"Condition must be a boolean value, but got: ${other}")
+
 /**
  * Interpret State
  */
@@ -129,35 +148,52 @@ private final case class InterpretState(retValue: Cell, area: Area):
   /**
    * Load the return-value from the memory area
    *
-   * @param name
-   *   the name of the value
+   * @param fromName
+   *   the name of the value to load from
    * @return
    *   a new state
    */
-  def loadRetVal(name: String): InterpretState =
-    val rv = area.tryGet(name).toTry.get
+  def loadRetVal(fromName: String): InterpretState =
+    val rv = area.getOrError(fromName).toTry.get
     copy(retValue = rv)
 
   /**
    * Store the return-value in the memory area
    *
-   * @param name
-   *   the name of the value
+   * @param toName
+   *   the name of the value to save to
    * @return
    *   a new state
    */
-  def storeRetVal(name: String): InterpretState =
-    copy(area = area.put(name, retValue))
+  def storeRetVal(toName: String): InterpretState =
+    copy(area = area.put(toName, retValue))
 
   /**
-   * Store the return-value in the memory area
-   * @param path
-   *   the path of the value
+   * Update the return-value in the memory area
+   *
+   * The assignment possible if:
+   *   - the old value is of the same type as the new value
+   *   - the old value is of type Nothing
+   *   - the new value is of type Nothing
+   *
+   * @param toPath
+   *   the path of the value to store in
    * @return
    *   a new state
    */
-  def storeRetVal(path: Path): InterpretState =
-    copy(area = area.tryUpdate(path, retValue).toTry.get)
+  def updateRetVal(toPath: Path): InterpretState =
+    val errOrArea = for
+      oldValue <- area.getOrError(toPath)
+      _ <- Either.cond(
+             Cell.isSameType(oldValue, retValue) || Cell.isSameType(oldValue, Cell.Nothing) || Cell.isSameType(retValue, Cell.Nothing),
+             (),
+             InterpreterException(s"Cannot update value ${oldValue} with value ${retValue}, types are different"),
+           )
+      newArea <- area.updateOrError(toPath, retValue)
+    yield newArea
+
+    val newArea = errOrArea.toTry.get
+    copy(area = newArea)
 
 /**
  * Interpret State Companion

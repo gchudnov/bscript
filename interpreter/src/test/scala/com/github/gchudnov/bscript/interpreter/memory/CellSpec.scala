@@ -2,10 +2,12 @@ package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.interpreter.memory.Cell
 
 import java.time.LocalDate
 import java.time.OffsetDateTime
+
+import scala.collection.immutable.Set as SSet
+import scala.collection.immutable.Map as SMap
 
 final class CellSpec extends TestSpec:
 
@@ -443,7 +445,7 @@ final class CellSpec extends TestSpec:
       }
 
       "show struct" in {
-        val cell: Cell = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Str("alice")))
+        val cell: Cell = Cell.Struct(SMap("a" -> Cell.I32(1), "b" -> Cell.Str("alice")))
         val actual     = showCell.show(cell)
         val expected = s"""{
                           |  "a": "i32(1)",
@@ -453,7 +455,7 @@ final class CellSpec extends TestSpec:
       }
 
       "show nested struct" in {
-        val cell: Cell = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Struct(Map("c" -> Cell.Str("alice")))))
+        val cell: Cell = Cell.Struct(SMap("a" -> Cell.I32(1), "b" -> Cell.Struct(SMap("c" -> Cell.Str("alice")))))
         val actual     = showCell.show(cell)
         val expected = s"""{
                           |  "a": "i32(1)",
@@ -467,8 +469,8 @@ final class CellSpec extends TestSpec:
       "show vec of structs" in {
         val cell: Cell = Cell.Vec(
           List[Cell](
-            Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Str("alice"))),
-            Cell.Struct(Map("a" -> Cell.I32(2), "b" -> Cell.Str("bob"))),
+            Cell.Struct(SMap("a" -> Cell.I32(1), "b" -> Cell.Str("alice"))),
+            Cell.Struct(SMap("a" -> Cell.I32(2), "b" -> Cell.Str("bob"))),
           ),
         )
         val actual = showCell.show(cell)
@@ -482,6 +484,67 @@ final class CellSpec extends TestSpec:
                           |    "b": "str(bob)"
                           |  }
                           |]""".stripMargin
+        actual mustBe expected
+      }
+
+      "show struct of various types" in {
+        val cell: Cell = Cell.Struct(
+          SMap(
+            "a" -> Cell.I32(1),
+            "b" -> Cell.Struct(SMap("c" -> Cell.Str("alice"))),
+            "d" -> Cell.Vec(List[Cell](Cell.I32(1), Cell.I64(1000L), Cell.Str("alice"))),
+          ),
+        )
+        val actual = showCell.show(cell)
+        val expected = s"""{
+                          |  "a": "i32(1)",
+                          |  "b": {
+                          |    "c": "str(alice)"
+                          |  },
+                          |  "d": [
+                          |    "i32(1)", 
+                          |    "i64(1000)", 
+                          |    "str(alice)"
+                          |  ]
+                          |}""".stripMargin
+        actual mustBe expected
+      }
+
+      "show a set" in {
+        val cell: Cell = Cell.Set(SSet[Cell](Cell.I32(1), Cell.I64(1000L), Cell.Str("alice")))
+        val actual     = showCell.show(cell)
+        val expected = """{
+                         |  "i32(1)", 
+                         |  "i64(1000)", 
+                         |  "str(alice)"
+                         |}""".stripMargin
+        actual mustBe expected
+      }
+
+      "show a map" in {
+        val cell: Cell = Cell.Map(
+          SMap[Cell, Cell](
+            Cell.I32(1)       -> Cell.I32(1),
+            Cell.I64(1000L)   -> Cell.I64(1000L),
+            Cell.Str("alice") -> Cell.Str("alice"),
+          ),
+        )
+        val actual = showCell.show(cell)
+
+        println(actual)
+
+        val expected = """{
+                         |  "i32(1)": "i32(1)",
+                         |  "i64(1000)": "i64(1000)",
+                         |  "str(alice)": "str(alice)"
+                         |}""".stripMargin
+        actual mustBe expected
+      }
+
+      "show a method" in {
+        val cell: Cell = Cell.Method(cs => Right(Cell.Void))
+        val actual     = showCell.show(cell)
+        val expected   = """"method([args] => either[err,value])""""
         actual mustBe expected
       }
     }
