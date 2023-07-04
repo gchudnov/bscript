@@ -48,14 +48,13 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x @ BuiltInDecl(name, tType) =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s, x)
       case x @ StructDecl(name, sType) =>
         foldOverAST(s, x)
-
       case x: VarDecl =>
-        foldOverAST(s, x).assignType(x, BuiltInType(TypeName.void)) // TODO: DONE, remove this comment
+        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
 
       case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
@@ -133,6 +132,25 @@ private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: Sc
   def assignType(ast: AST, t: TypeAST): TypeResolveState =
     copy(evalTypes = evalTypes.assignType(ast, t))
 
+  /**
+   * Assign void type to the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @return
+   *   new state
+   */
+  def assignVoid(ast: AST): TypeResolveState =
+    assignType(ast, BuiltInType(TypeName.void))
+
+  /**
+   * Get type of the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @return
+   *   type
+   */
   def typeOf(ast: AST): TypeAST =
     val ot = evalTypes.typeOf(ast)
     ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug."))
