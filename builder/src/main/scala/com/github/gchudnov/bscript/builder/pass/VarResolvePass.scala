@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass
 
-import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.func.ASTFolder
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.lang.ast.*
@@ -37,7 +37,7 @@ final class VarResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScop
 /**
  * Variable Resolve Folder
  */
-private final class VarResolveFolder() extends AstFolder[VarResolveState]:
+private final class VarResolveFolder() extends ASTFolder[VarResolveState]:
 
   override def foldAST(s: VarResolveState, ast: AST): VarResolveState =
     ast match

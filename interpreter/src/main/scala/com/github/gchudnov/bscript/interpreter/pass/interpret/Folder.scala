@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.interpreter.pass.interpret
 
-import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.func.ASTFolder
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.interpreter.util.ConstConv
@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.interpreter.util.ConstConv
 /**
  * Fold the AST to interpret it
  */
-private[interpret] final class Folder() extends AstFolder[PassState] {
+private[interpret] final class Folder() extends ASTFolder[PassState] {
 
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match

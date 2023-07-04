@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.symbols.*
-import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.func.ASTFolder
 
 import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
 import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState
@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.builder.pass.scoperesolve.PassState
 /**
   * Fold the AST to resolve scopes
   */
-private[builder] final class Folder() extends AstFolder[PassState]:
+private[builder] final class Folder() extends ASTFolder[PassState]:
 
   override def foldAST(s: PassState, ast: AST): PassState =
     ast match

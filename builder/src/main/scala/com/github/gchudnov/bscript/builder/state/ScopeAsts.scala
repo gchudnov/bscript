@@ -45,7 +45,7 @@ object ScopeAsts:
 /**
  * A Dictionary of Scope -> AST Implementation
  */
-private[state] final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends BiDict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
+private final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends BiDict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
 
   override def isEmpty: Boolean = 
     keyValues.isEmpty

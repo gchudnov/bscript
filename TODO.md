@@ -1,4 +1,4 @@
-- TODO: 
+- TODO: add type checking for IF, fail if the types in branches are not matching
 
 - TODO: start horizontal execution:
         - evaluate 2
@@ -21,6 +21,8 @@ https://softwareengineering.stackexchange.com/questions/334167/how-are-generics-
 
 + books on compiler design
 
+
+[Trees.scala](https://github.com/lampepfl/dotty/blob/0a21ecf4fa0e62545c94dd184beb1878b1c7d4fe/compiler/src/dotty/tools/dotc/ast/Trees.scala#L1638)
 
 -------------
 Creating and populating symbol tables for each scope

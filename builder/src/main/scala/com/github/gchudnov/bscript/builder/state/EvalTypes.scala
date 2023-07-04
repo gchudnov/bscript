@@ -1,37 +1,49 @@
 package com.github.gchudnov.bscript.builder.state
 
-import com.github.gchudnov.bscript.lang.types.TType
+import com.github.gchudnov.bscript.lang.ast.types.TypeAST
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.AST
 
-trait EvalTypes {}
+/**
+ * A Dictionary of AST -> Type mappings
+ *
+ * Used to propagate types in the AST so that we can do type checking
+ */
+sealed trait EvalTypes:
+  def isEmpty: Boolean
+  def size: Int
 
-// trait EvalTypes:
-//   def assign(a: AST, t: Type): EvalTypes
+  def assign(a: AST, t: TypeAST): EvalTypes
 
-//   def get(a: AST): Option[Type]
+  def get(a: AST): Option[TypeAST]
 
-//   def apply(a: AST): Type
+  def apply(a: AST): TypeAST
 
-//   def getOrElse(a: AST, default: => Type): Type
+  def getOrElse(a: AST, default: => TypeAST): TypeAST
 
-// object EvalTypes:
-//   lazy val empty: EvalTypes =
-//     BasicEvalTypes(Map.empty[Ptr[AST], Type])
+object EvalTypes:
+  lazy val empty: EvalTypes =
+    BasicEvalTypes(Map.empty[Ptr[AST], TypeAST])
 
-// /**
-//  * A dictionary of AST -> Type mappings
-//  */
-// final case class BasicEvalTypes(dict: Map[Ptr[AST], Type]) extends EvalTypes:
+/**
+ * A dictionary of AST -> Type mappings implementation
+ */
+private final case class BasicEvalTypes(dict: Map[Ptr[AST], TypeAST]) extends EvalTypes:
 
-//   override def assign(a: AST, t: Type): EvalTypes =
-//     BasicEvalTypes(dict + (Ptr(a) -> t))
+  override def isEmpty: Boolean =
+    dict.isEmpty
 
-//   override def get(a: AST): Option[Type] =
-//     dict.get(Ptr(a))
+  override def size: Int =
+    dict.size
 
-//   override def apply(a: AST): Type =
-//     dict(Ptr(a))
+  override def assign(a: AST, t: TypeAST): EvalTypes =
+    BasicEvalTypes(dict + (Ptr(a) -> t))
 
-//   override def getOrElse(a: AST, default: => Type): Type =
-//     dict.getOrElse(Ptr(a), default)
+  override def get(a: AST): Option[TypeAST] =
+    dict.get(Ptr(a))
+
+  override def apply(a: AST): TypeAST =
+    dict(Ptr(a))
+
+  override def getOrElse(a: AST, default: => TypeAST): TypeAST =
+    dict.getOrElse(Ptr(a), default)

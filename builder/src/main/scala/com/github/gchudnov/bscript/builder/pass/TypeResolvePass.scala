@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass
 
-import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.func.ASTFolder
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.lang.ast.*
@@ -11,6 +11,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.const.Const
 
 /**
  * #3 - Type Resolve Pass
@@ -18,9 +19,9 @@ import com.github.gchudnov.bscript.lang.ast.refs.Id
  *   - Resolve types of the AST nodes.
  *
  */
-final class TypeResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, Unit]:
+final class TypeResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, HasEvalTypes]:
 
-  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): Unit =
+  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): HasEvalTypes =
     val state0 = TypeResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
     val ast0   = in.ast
 
@@ -28,14 +29,15 @@ final class TypeResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasSco
 
     val state1 = folder.foldAST(state0, ast0)
 
-    val out = ()
+    val out = new HasEvalTypes:
+      override val evalTypes: EvalTypes = state1.evalTypes
 
     out
 
 /**
  * Type Resolve Folder
  */
-private final class TypeResolveFolder() extends AstFolder[TypeResolveState]:
+private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
   override def foldAST(s: TypeResolveState, ast: AST): TypeResolveState =
     ast match
@@ -43,7 +45,7 @@ private final class TypeResolveFolder() extends AstFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x @ Id(name) =>
-        foldOverAST(s, x) // TODO: working here
+        foldOverAST(s, x)
 
 //   override def visit(s: PassState, n: Var): Either[Throwable, PassState] =
 //     for
@@ -81,7 +83,8 @@ private final class TypeResolveFolder() extends AstFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
-        foldOverAST(s, x)
+        s.assign(x, Const.toTypeAST(const)) // TODO: impl complete
+
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
       case x @ MethodLit(mType, body) =>
@@ -111,8 +114,19 @@ private final class TypeResolveFolder() extends AstFolder[TypeResolveState]:
 /**
  * Type Resolve State
  */
-private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts) {
-
+private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, evalTypes: EvalTypes) {
+  /**
+    * Assign type to the AST node.
+    *
+    * @param ast
+    *   AST node
+    * @param t
+    *   type
+    * @return
+    *   new state
+    */
+  def assign(ast: AST, t: TypeAST): TypeResolveState =
+    copy(evalTypes = evalTypes.assign(ast, t))
 }
 
 /**
@@ -125,4 +139,5 @@ private object TypeResolveState:
       scopeTree = scopeTree,
       scopeSymbols = scopeSymbols,
       scopeAsts = scopeAsts,
+      evalTypes = EvalTypes.empty,
     )

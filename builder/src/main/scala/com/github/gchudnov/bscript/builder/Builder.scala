@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.pass.*
 import com.github.gchudnov.bscript.builder.env.*
 
@@ -33,17 +34,18 @@ object Builder:
    */
   private def buildOutToVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
     new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      val scopeTree    = s.scopeTree
-      val scopeSymbols = s.scopeSymbols
-      val scopeAsts    = s.scopeAsts
-      val ast          = ast0
+      override val scopeTree: ScopeTree    = s.scopeTree
+      override val scopeSymbols: ScopeSymbols = s.scopeSymbols
+      override val scopeAsts: ScopeAsts    = s.scopeAsts
+      override val ast: AST          = ast0
 
   /**
    * Build Out -> Resolve In
    */
-  private def buildOutToTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
-    new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      val scopeTree    = s.scopeTree
-      val scopeSymbols = s.scopeSymbols
-      val scopeAsts    = s.scopeAsts
-      val ast          = ast0
+  private def buildOutToTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasEvalTypes & HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
+    new HasEvalTypes with HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
+      override val scopeTree: ScopeTree    = s.scopeTree
+      override val scopeSymbols: ScopeSymbols = s.scopeSymbols
+      override val scopeAsts: ScopeAsts    = s.scopeAsts
+      override val evalTypes: EvalTypes    = EvalTypes.empty
+      override val ast: AST          = ast0

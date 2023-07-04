@@ -9,7 +9,7 @@ import com.github.gchudnov.bscript.lang.util.Show
 abstract class TypeAST extends AST
 
 object TypeAST:
-  val showTypeAST: Show[TypeAST] = new Show[TypeAST]:
+  given showTypeAST: Show[TypeAST] = new Show[TypeAST]:
     override def show(a: TypeAST): String =
       a match
         case Auto()                      => "auto"

@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.interpreter.pass
 
 import com.github.gchudnov.bscript.interpreter.util.ConstConv
 import com.github.gchudnov.bscript.builder.env.*
-import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.func.ASTFolder
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
@@ -39,7 +39,7 @@ final class InterpretPass extends Pass[HasAST, HasRetValue]:
 /**
  * Interpret Resolve Folder
  */
-private final class InterpretFolder() extends AstFolder[InterpretState]:
+private final class InterpretFolder() extends ASTFolder[InterpretState]:
 
   override def foldAST(s: InterpretState, ast: AST): InterpretState =
     ast match

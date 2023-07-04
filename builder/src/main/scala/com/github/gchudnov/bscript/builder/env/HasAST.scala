@@ -7,4 +7,4 @@ trait HasAST:
 
 object HasAST:
   def apply(a: AST): HasAST = new HasAST:
-    override def ast: AST = a
+    override val ast: AST = a

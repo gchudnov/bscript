@@ -7,4 +7,4 @@ trait HasScopeSymbols:
 
 object HasScopeSymbols:
   def apply(ss: ScopeSymbols): HasScopeSymbols = new HasScopeSymbols:
-    override def scopeSymbols: ScopeSymbols = ss
+    override val scopeSymbols: ScopeSymbols = ss

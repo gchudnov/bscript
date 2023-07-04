@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.builder.pass
 
-import com.github.gchudnov.bscript.lang.func.AstFolder
+import com.github.gchudnov.bscript.lang.func.ASTFolder
 import com.github.gchudnov.bscript.builder.state.*
 import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.lang.ast.*
@@ -40,7 +40,7 @@ final class ScopeBuildPass extends Pass[HasAST, HasScopeTree & HasScopeSymbols &
 /**
  * Scope Build Folder
  */
-private final class ScopeBuildFolder() extends AstFolder[ScopeBuildState]:
+private final class ScopeBuildFolder() extends ASTFolder[ScopeBuildState]:
 
   override def foldAST(s: ScopeBuildState, ast: AST): ScopeBuildState =
     ast match

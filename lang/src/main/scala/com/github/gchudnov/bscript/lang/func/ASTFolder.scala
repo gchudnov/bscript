@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
 /**
  * Folds AST
  */
-trait AstFolder[S]:
+trait ASTFolder[S]:
 
   def foldAST(s: S, ast: AST): S
 

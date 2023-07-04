@@ -21,7 +21,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
  *
  * }}}
  */
-trait AstFilter:
+trait ASTFilter:
 
   def isKeep(ast: AST): Boolean
 

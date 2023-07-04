@@ -15,7 +15,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
 /**
  * Maps AST
  */
-trait AstMapper:
+trait ASTMapper:
 
   def mapAST(ast: AST): AST =
     ast match

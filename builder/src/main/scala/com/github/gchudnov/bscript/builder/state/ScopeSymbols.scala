@@ -45,7 +45,7 @@ object ScopeSymbols:
 /**
  * Scope-Symbol Dictionary Implementation
  */
-private[state] final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]])
+private final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]])
     extends Dict[Scope, Symbol, BasicScopeSymbols]
     with ScopeSymbols:
   

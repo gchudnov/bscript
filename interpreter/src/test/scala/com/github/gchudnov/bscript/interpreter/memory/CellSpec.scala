@@ -354,7 +354,7 @@ final class CellSpec extends TestSpec:
     }
 
     "cell as a string" should {
-      import Cell.{ *, given }
+      import Cell.*
 
       "show nothing" in {
         val cell: Cell = Cell.Nothing
@@ -530,9 +530,6 @@ final class CellSpec extends TestSpec:
           ),
         )
         val actual = showCell.show(cell)
-
-        println(actual)
-
         val expected = """{
                          |  "i32(1)": "i32(1)",
                          |  "i64(1000)": "i64(1000)",
