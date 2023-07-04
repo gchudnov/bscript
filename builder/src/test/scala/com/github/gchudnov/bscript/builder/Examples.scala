@@ -767,7 +767,7 @@ object Examples:
     Example(t)
 
   /**
-   * An emoty struct
+   * An empty struct
    *
    * {{{
    *   // globals
@@ -779,6 +779,22 @@ object Examples:
   val structEmpty: Example =
     val t = Block.of(
       StructDecl("A", StructType(List.empty[TypeDecl], List.empty[VarDecl])),
+    )
+    Example(t)
+
+  /**
+   * An struct with a generic type T
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     struct<T> A { };
+   *   }
+   * }}}
+   */
+  val structT: Example =
+    val t = Block.of(
+      StructDecl("A", StructType(List(TypeDecl("T")), List.empty[VarDecl])),
     )
     Example(t)
 

@@ -18,6 +18,7 @@ import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
 import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
 import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
 import com.github.gchudnov.bscript.lang.ast.decls.StructDecl
+import com.github.gchudnov.bscript.lang.ast.decls.TypeDecl
 
 /**
  * Type Resolve Pass Tests
@@ -177,6 +178,38 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes.isEmpty mustBe false
 
             val node = structDeclFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "generic paramters nodes" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct<T> A { };
+       *   }
+       * }}}
+       */
+      "eval to void" in {
+        val t = Examples.structT
+
+        val typeDeclFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case _: TypeDecl => Some(ast)
+              case _           => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.evalTypes.isEmpty mustBe false
+
+            val node = typeDeclFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
           case Left(t) =>
