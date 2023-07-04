@@ -51,8 +51,6 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = constFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
@@ -81,8 +79,6 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = varDeclFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
@@ -111,8 +107,6 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = builtInDeclFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
@@ -143,8 +137,6 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = fnDeclFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
@@ -175,8 +167,6 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = structDeclFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
@@ -207,8 +197,6 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = typeDeclFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
@@ -237,12 +225,97 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            actualState.evalTypes.isEmpty mustBe false
-
             val node = blockFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
           case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "condition" should {
+      val ifFinder = new ASTFinder:
+        override def findAST(ast: AST): Option[AST] =
+          ast match
+            case _: If => Some(ast)
+            case _     => None
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     if(true) {
+       *       4;
+       *     } else {
+       *       9;
+       *     }
+       *   }
+       * }}}
+       */
+      "deduce type if THEN and ELSE have the same types" in {
+        val t = Examples.ifThenXElseX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val node = ifFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
+
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     if(true) {
+       *       4;
+       *     } else {
+       *       "alice";
+       *     }
+       *   }
+       * }}}
+       *
+       * NOTE: not we return an error, but we could return a union type.
+       */
+      "raise an error if THEN and ELSE have different types" in {
+        val t = Examples.ifThenXElseY
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("Type mismatch in if expression")
+      }
+
+      "deduce type as ELSE-type if THEN-type is nothing" in {
+        val t = Examples.ifThenNothingElseY
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val node = ifFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.str)
+
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      "deduce type as THEN-type if ELSE-type is nothing" in {
+        val t = Examples.ifThenXElseNothing
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val node = ifFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
+
+          case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }

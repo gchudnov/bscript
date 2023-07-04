@@ -222,7 +222,7 @@ object Examples:
           TypeId(TypeName.i32),
         ),
         Block.of(
-          ConstLit(IntVal(3))
+          ConstLit(IntVal(3)),
         ),
       ),
     )
@@ -525,7 +525,7 @@ object Examples:
    */
   val autoNothing: Example =
     val t = Block.of(
-      VarDecl("x", Auto(), ConstLit(NullVal)),
+      VarDecl("x", Auto(), ConstLit(NothingVal)),
     )
     Example(t)
 
@@ -541,7 +541,7 @@ object Examples:
    */
   val intNothing: Example =
     val t = Block.of(
-      VarDecl("x", TypeId("i32"), ConstLit(NullVal)),
+      VarDecl("x", TypeId("i32"), ConstLit(NothingVal)),
     )
     Example(t)
 
@@ -558,7 +558,7 @@ object Examples:
    */
   val intNothingX: Example =
     val t = Block.of(
-      VarDecl("x", TypeId("i32"), ConstLit(NullVal)),
+      VarDecl("x", TypeId("i32"), ConstLit(NothingVal)),
       Id("x"),
     )
     Example(t)
@@ -578,7 +578,7 @@ object Examples:
   val assignNothingX: Example =
     val t = Block.of(
       VarDecl("x", TypeId("i32"), ConstLit(IntVal(0))),
-      Assign(Id("x"), ConstLit(NullVal)),
+      Assign(Id("x"), ConstLit(NothingVal)),
       Id("x"),
     )
     Example(t)
@@ -797,7 +797,6 @@ object Examples:
       StructDecl("A", StructType(List(TypeDecl("T")), List.empty[VarDecl])),
     )
     Example(t)
-
 
   /**
    * A struct with one field
@@ -1176,7 +1175,7 @@ object Examples:
 
   /**
    * IF(true)
-   * 
+   *
    * {{{
    *   // globals
    *   {
@@ -1192,13 +1191,13 @@ object Examples:
   val ifTrue: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.bool), ConstLit(BoolVal(true))),
-      If(Id("x"), ConstLit(IntVal(4)), ConstLit(IntVal(9)))
+      If(Id("x"), ConstLit(IntVal(4)), ConstLit(IntVal(9))),
     )
     Example(t)
 
   /**
    * IF(false)
-   * 
+   *
    * {{{
    *   // globals
    *   {
@@ -1214,6 +1213,86 @@ object Examples:
   val ifFalse: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.bool), ConstLit(BoolVal(false))),
-      If(Id("x"), ConstLit(IntVal(4)), ConstLit(IntVal(9)))
+      If(Id("x"), ConstLit(IntVal(4)), ConstLit(IntVal(9))),
+    )
+    Example(t)
+
+  /**
+   * IF, where THEN and ELSE types are the same
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     if(true) {
+   *       4;
+   *     } else {
+   *       9;
+   *     }
+   *   }
+   * }}}
+   */
+  val ifThenXElseX: Example =
+    val t = Block.of(
+      If(ConstLit(BoolVal(true)), ConstLit(IntVal(4)), ConstLit(IntVal(9))),
+    )
+    Example(t)
+
+  /**
+   * IF, where THEN and ELSE types are different
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     if(true) {
+   *       4;
+   *     } else {
+   *       "alice";
+   *     }
+   *   }
+   * }}}
+   */
+  val ifThenXElseY: Example =
+    val t = Block.of(
+      If(ConstLit(BoolVal(true)), ConstLit(IntVal(4)), ConstLit(StrVal("alice"))),
+    )
+    Example(t)
+
+  /**
+   * IF, where THEN is nothing
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     if(true) {
+   *       ???;
+   *     } else {
+   *       "alice";
+   *     }
+   *   }
+   * }}}
+   */
+  val ifThenNothingElseY: Example =
+    val t = Block.of(
+      If(ConstLit(BoolVal(true)), ConstLit(NothingVal), ConstLit(StrVal("alice"))),
+    )
+    Example(t)
+
+  /**
+   * IF, where ELSE is nothing
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     if(true) {
+   *       4;
+   *     } else {
+   *       "alice";
+   *     }
+   *   }
+   * }}}
+   */
+  val ifThenXElseNothing: Example =
+    val t = Block.of(
+      If(ConstLit(BoolVal(true)), ConstLit(IntVal(4)), ConstLit(NothingVal)),
     )
     Example(t)

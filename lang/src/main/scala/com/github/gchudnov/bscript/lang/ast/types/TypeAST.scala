@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.lang.ast.types
 
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.util.Show
+import com.github.gchudnov.bscript.lang.types.TypeName
 
 /**
  * A Type in the AST
@@ -28,3 +29,23 @@ object TypeAST:
         case GenericType(name) => name
         case BuiltInType(name) => name
         case ByName(expr)      => s"=>${showTypeAST.show(expr)}"
+
+  /**
+   * Checks if the type is nothing
+   */
+  def isNothing(t: TypeAST): Boolean =
+    isBuiltInType(t, TypeName.nothing)
+
+  /**
+   * Checks if the type is void
+   */
+  def isVoid(t: TypeAST): Boolean =
+    isBuiltInType(t, TypeName.void)
+
+  /**
+   * Checks if the type is built-in
+   */
+  private def isBuiltInType(t: TypeAST, name: String): Boolean =
+    t match
+      case BuiltInType(tname) if tname == name => true
+      case _                                   => false

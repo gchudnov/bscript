@@ -70,8 +70,10 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
       case x @ Compiled(callback, retType) =>
         foldOverAST(s, x)
+
       case x: If =>
-        foldOverAST(s, x)
+        resolveIf(s, x) // TODO: DONE, remove this comment
+
       case x @ Init() =>
         foldOverAST(s, x)
       case x @ KeyValue(key, value) =>
@@ -113,6 +115,27 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
     val s1 = foldOverAST(s, b)
     val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignType(b, s1.typeOf(lastExpr)))
     s2
+
+  /**
+   * Resolve type of the if expression
+   *
+   * if (cond) then1 else else1
+   */
+  private def resolveIf(s: TypeResolveState, i: If): TypeResolveState =
+    val s1       = foldOverAST(s, i)
+    val thenType = s1.typeOf(i.then1)
+    val elseType = s1.typeOf(i.else1)
+
+    val s2 =
+      if thenType == elseType then s1.assignType(i, thenType)
+      else if TypeAST.isNothing(thenType) then s1.assignType(i, elseType)
+      else if TypeAST.isNothing(elseType) then s1.assignType(i, thenType)
+      else throw BuilderException(s"Type mismatch in if expression: ${thenType} and ${elseType}")
+    s2
+
+/*
+final case class If(cond: Expr, then1: Expr, else1: Expr) extends Expr
+ */
 
 /**
  * Type Resolve State

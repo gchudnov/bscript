@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.interpreter.util
 
 import com.github.gchudnov.bscript.lang.const.*
 import com.github.gchudnov.bscript.interpreter.memory.Cell
+import com.github.gchudnov.bscript.lang.const.NothingVal
 
 /**
  * Converts an AST-constant to a Cell.
@@ -19,7 +20,7 @@ private[interpreter] object ConstConv:
       case FloatVal(v)    => Cell.F32(v)
       case IntVal(v)      => Cell.I32(v)
       case LongVal(v)     => Cell.I64(v)
-      case NullVal        => Cell.Nothing
+      case NothingVal     => Cell.Nothing
       case ShortVal(v)    => Cell.I16(v)
       case StrVal(v)      => Cell.Str(v)
       case VoidVal        => Cell.Void
