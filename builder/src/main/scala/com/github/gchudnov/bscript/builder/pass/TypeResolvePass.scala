@@ -50,9 +50,9 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x @ BuiltInDecl(name, tType) =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
       case x @ MethodDecl(name, mType, body) =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
       case x @ StructDecl(name, sType) =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
       case x: VarDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
 

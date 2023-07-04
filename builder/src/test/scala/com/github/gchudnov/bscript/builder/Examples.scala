@@ -203,6 +203,32 @@ object Examples:
     Example(t)
 
   /**
+   * Function Declaration that returns a value
+   *
+   * {{{
+   *   // globals
+   *   fn main() -> int = {
+   *     3;
+   *   }
+   * }}}
+   */
+  val fnDecl3: Example =
+    val t = Block.of(
+      MethodDecl(
+        "main",
+        MethodType(
+          List.empty[TypeDecl],
+          List.empty[VarDecl],
+          TypeId(TypeName.i32),
+        ),
+        Block.of(
+          ConstLit(IntVal(3))
+        ),
+      ),
+    )
+    Example(t)
+
+  /**
    * A function with one argument and name shadowing
    *
    * {{{
@@ -741,7 +767,24 @@ object Examples:
     Example(t)
 
   /**
-   * A small structure reference
+   * An emoty struct
+   *
+   * {{{
+   *   // globals
+   *   {
+   *     struct A { };
+   *   }
+   * }}}
+   */
+  val structEmpty: Example =
+    val t = Block.of(
+      StructDecl("A", StructType(List.empty[TypeDecl], List.empty[VarDecl])),
+    )
+    Example(t)
+
+
+  /**
+   * A struct with one field
    *
    * {{{
    *   // globals
