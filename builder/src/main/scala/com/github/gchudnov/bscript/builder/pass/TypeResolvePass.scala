@@ -12,12 +12,12 @@ import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.lang.ast.refs.Access
 import com.github.gchudnov.bscript.lang.ast.refs.Id
 import com.github.gchudnov.bscript.lang.const.Const
+import com.github.gchudnov.bscript.lang.types.TypeName
 
 /**
  * #3 - Type Resolve Pass
  *
  *   - Resolve types of the AST nodes.
- *
  */
 final class TypeResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, HasEvalTypes]:
 
@@ -47,21 +47,16 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x @ Id(name) =>
         foldOverAST(s, x)
 
-//   override def visit(s: PassState, n: Var): Either[Throwable, PassState] =
-//     for
-//       scope <- s.meta.scopeFor(n)
-//       sVar  <- s.meta.resolve(n.symbol.name, scope).flatMap(_.asSVar)
-//       n1     = n.copy(symbol = sVar)
-//       ss1    = s.meta.redefineASTScope(n, n
-
       case x @ BuiltInDecl(name, tType) =>
         foldOverAST(s, x)
       case x @ MethodDecl(name, mType, body) =>
         foldOverAST(s, x)
       case x @ StructDecl(name, sType) =>
         foldOverAST(s, x)
-      case x @ VarDecl(name, vType, expr) =>
-        foldOverAST(s, x)
+
+      case x: VarDecl =>
+        foldOverAST(s, x).assignType(x, BuiltInType(TypeName.void)) // TODO: DONE, remove this comment
+
       case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
 
@@ -69,8 +64,10 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
       case x: Assign =>
         foldOverAST(s, x)
+
       case x: Block =>
-        foldOverAST(s, x)
+        resolveBlock(s, x) // TODO: DONE, remove this comment
+
       case x @ Call(id, args) =>
         foldOverAST(s, x)
       case x @ Compiled(callback, retType) =>
@@ -83,7 +80,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
-        s.assign(x, Const.toTypeAST(const)) // TODO: impl complete
+        s.assignType(x, Const.toTypeAST(const)) // TODO: DONE, remove this comment
 
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
@@ -111,23 +108,34 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       // case other =>
       //   throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
 
+  /**
+   * Resolve type of the block
+   */
+  private def resolveBlock(s: TypeResolveState, b: Block): TypeResolveState =
+    val s1 = foldOverAST(s, b)
+    val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignType(b, s1.typeOf(lastExpr)))
+    s2
+
 /**
  * Type Resolve State
  */
-private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, evalTypes: EvalTypes) {
+private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, evalTypes: EvalTypes):
   /**
-    * Assign type to the AST node.
-    *
-    * @param ast
-    *   AST node
-    * @param t
-    *   type
-    * @return
-    *   new state
-    */
-  def assign(ast: AST, t: TypeAST): TypeResolveState =
-    copy(evalTypes = evalTypes.assign(ast, t))
-}
+   * Assign type to the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @param t
+   *   type
+   * @return
+   *   new state
+   */
+  def assignType(ast: AST, t: TypeAST): TypeResolveState =
+    copy(evalTypes = evalTypes.assignType(ast, t))
+
+  def typeOf(ast: AST): TypeAST =
+    val ot = evalTypes.typeOf(ast)
+    ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug."))
 
 /**
  * Type Resolve State Companion

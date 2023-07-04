@@ -14,6 +14,7 @@ import com.github.gchudnov.bscript.lang.ast.types.BuiltInType
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.func.ASTFinder
 import com.github.gchudnov.bscript.lang.ast.lit.ConstLit
+import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
 
 /**
  * Type Resolve Pass Tests
@@ -50,6 +51,66 @@ final class TypeResolvePassSpec extends TestSpec:
 
             val node = constFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "variable declaration" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "resolve to void" in {
+        val t = Examples.varDef
+
+        val varDeclFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case _: VarDecl => Some(ast)
+              case _          => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.evalTypes.isEmpty mustBe false
+
+            val node = varDeclFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "block takes he type of the last expression" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       * }}}
+       */
+      "in var decl" in {
+        val t = Examples.varDef
+
+        val blockFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case _: Block => Some(ast)
+              case _        => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.evalTypes.isEmpty mustBe false
+
+            val node = blockFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
 
           case Left(t) =>
             fail("Should be 'right", t)

@@ -13,13 +13,11 @@ sealed trait EvalTypes:
   def isEmpty: Boolean
   def size: Int
 
-  def assign(a: AST, t: TypeAST): EvalTypes
+  def assignType(a: AST, t: TypeAST): EvalTypes
 
-  def get(a: AST): Option[TypeAST]
+  def typeOf(a: AST): Option[TypeAST]
 
   def apply(a: AST): TypeAST
-
-  def getOrElse(a: AST, default: => TypeAST): TypeAST
 
 object EvalTypes:
   lazy val empty: EvalTypes =
@@ -36,14 +34,11 @@ private final case class BasicEvalTypes(dict: Map[Ptr[AST], TypeAST]) extends Ev
   override def size: Int =
     dict.size
 
-  override def assign(a: AST, t: TypeAST): EvalTypes =
+  override def assignType(a: AST, t: TypeAST): EvalTypes =
     BasicEvalTypes(dict + (Ptr(a) -> t))
 
-  override def get(a: AST): Option[TypeAST] =
+  override def typeOf(a: AST): Option[TypeAST] =
     dict.get(Ptr(a))
 
   override def apply(a: AST): TypeAST =
     dict(Ptr(a))
-
-  override def getOrElse(a: AST, default: => TypeAST): TypeAST =
-    dict.getOrElse(Ptr(a), default)
