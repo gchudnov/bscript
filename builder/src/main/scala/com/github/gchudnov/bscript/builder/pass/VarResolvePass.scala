@@ -18,9 +18,9 @@ import com.github.gchudnov.bscript.lang.ast.refs.*
  *
  * To find undeclared variables, check the symbol table on each variable that's used for assignment or dereferencing.
  */
-final class VarResolvePass extends Pass[HasReadScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, Unit]:
+final class VarResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbols & HasScopeAsts & HasAST, Unit]:
 
-  override def run(in: HasReadScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): Unit =
+  override def run(in: HasReadScopeTree & HasReadScopeSymbols & HasScopeAsts & HasAST): Unit =
     val state0 = VarResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
     val ast0   = in.ast
 
@@ -55,7 +55,7 @@ private final class VarResolveFolder() extends ASTFolder[VarResolveState]:
 /**
  * Var Resolve State
  */
-private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts):
+private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ScopeAsts):
 
   /**
    * Ensure that TypeId is resolved
@@ -164,7 +164,7 @@ private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols:
  */
 private object VarResolveState:
 
-  def from(scopeTree: ReadScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): VarResolveState =
+  def from(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ScopeAsts): VarResolveState =
     VarResolveState(
       scopeTree = scopeTree,
       scopeSymbols = scopeSymbols,

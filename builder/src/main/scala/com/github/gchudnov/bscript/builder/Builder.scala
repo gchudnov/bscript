@@ -32,20 +32,20 @@ object Builder:
   /**
    * Build Out -> Var Resolve In
    */
-  private def buildOutToVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
-    new HasReadScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      override val scopeTree: ReadScopeTree    = s.scopeTree
-      override val scopeSymbols: ScopeSymbols = s.scopeSymbols
-      override val scopeAsts: ScopeAsts    = s.scopeAsts
-      override val ast: AST          = ast0
+  private def buildOutToVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasScopeAsts & HasAST =
+    new HasReadScopeTree with HasReadScopeSymbols with HasScopeAsts with HasAST:
+      override val scopeTree: ReadScopeTree       = s.scopeTree
+      override val scopeSymbols: ReadScopeSymbols = s.scopeSymbols
+      override val scopeAsts: ScopeAsts           = s.scopeAsts
+      override val ast: AST                       = ast0
 
   /**
    * Build Out -> Resolve In
    */
   private def buildOutToTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasEvalTypes & HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
     new HasEvalTypes with HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
-      override val scopeTree: ScopeTree    = s.scopeTree
+      override val scopeTree: ScopeTree       = s.scopeTree
       override val scopeSymbols: ScopeSymbols = s.scopeSymbols
-      override val scopeAsts: ScopeAsts    = s.scopeAsts
-      override val evalTypes: EvalTypes    = EvalTypes.empty
-      override val ast: AST          = ast0
+      override val scopeAsts: ScopeAsts       = s.scopeAsts
+      override val evalTypes: EvalTypes       = EvalTypes.empty
+      override val ast: AST                   = ast0
