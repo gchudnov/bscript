@@ -60,8 +60,9 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
       case x: Annotated =>
         foldOverAST(s, x)
+
       case x: Assign =>
-        foldOverAST(s, x)
+        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
 
       case x: Block =>
         resolveBlockType(s, x) // TODO: DONE, remove this comment
