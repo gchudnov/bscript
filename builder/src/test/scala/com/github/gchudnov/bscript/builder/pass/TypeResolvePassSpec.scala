@@ -36,7 +36,7 @@ final class TypeResolvePassSpec extends TestSpec:
        *   2;
        * }}}
        */
-      "assing type" in {
+      "resolve the type" in {
         val t = Examples.intVal
 
         val constFinder = new ASTFinder:
@@ -496,13 +496,14 @@ final class TypeResolvePassSpec extends TestSpec:
   }
 
   /**
-   * To evaluate, we run Phases 1, 2.
+   * To evaluate, we run Phases 1, 2 and 3.
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
-   *   - In Phase 2 we resolve types of AST-nodes.
+   *   - In Phase 2 we resolve vars in AST-nodes.
+   *   - In Phase 3 we resolve types of AST-nodes.
    */
   private def eval(ast0: AST): Either[Throwable, ActualState] = nonFatalCatch.either {
-    // #1 build
+    // #1 scope build
     val buildPass = new ScopeBuildPass()
     val buildIn = new HasAST:
       val ast = ast0
@@ -519,7 +520,7 @@ final class TypeResolvePassSpec extends TestSpec:
 
     val _ = varResolvePass.run(varResolveIn)
 
-    // #3 resolve
+    // #3 type resolve
     val typeResolvePass = new TypeResolvePass()
     val typeResolveIn = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
       override val scopeTree: ScopeTree       = buildOut.scopeTree
@@ -527,10 +528,10 @@ final class TypeResolvePassSpec extends TestSpec:
       override val scopeAsts: ScopeAsts       = buildOut.scopeAsts
       override val ast: AST                   = ast0
 
-    val resolveOut = typeResolvePass.run(typeResolveIn)
+    val typeResolveOut = typeResolvePass.run(typeResolveIn)
 
     // return the actual state
-    val actualState = toActualState(resolveOut)
+    val actualState = toActualState(typeResolveOut)
     actualState
   }
 

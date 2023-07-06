@@ -299,6 +299,8 @@ final class InterpretPassSpec extends TestSpec:
       // TODO: there should be TypeCheck phase, impl it, the calculation should fail before Interpret phase
 
       // TODO: impl Init() usage
+
+      // TODO: add test for `int x = 10L`, it should produce an error
     }
 
     "conditions" should {

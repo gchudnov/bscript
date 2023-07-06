@@ -174,10 +174,6 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
     val s1      = s.assignType(typeId, typeAST)
     s1
 
-/*
-final case class If(cond: Expr, then1: Expr, else1: Expr) extends Expr
- */
-
 /**
  * Type Resolve State
  */

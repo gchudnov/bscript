@@ -15,7 +15,9 @@ import com.github.gchudnov.bscript.lang.ast.refs.*
 import com.github.gchudnov.bscript.interpreter.env.*
 
 /**
- * Interpret Pass
+ * #A - Interpret Pass
+ * 
+ * Interpret the AST.
  */
 final class InterpretPass extends Pass[HasAST, HasRetValue]:
 
