@@ -64,7 +64,7 @@ final class TypecheckPassSpec extends TestSpec:
 
     // #2 var resolve
     val varResolvePass = new VarResolvePass()
-    val varResolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasScopeAsts with HasAST:
+    val varResolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ReadScopeTree   = buildOut.scopeTree
       override val scopeSymbols: ReadScopeSymbols = buildOut.scopeSymbols
       override val scopeAsts: ScopeAsts       = buildOut.scopeAsts

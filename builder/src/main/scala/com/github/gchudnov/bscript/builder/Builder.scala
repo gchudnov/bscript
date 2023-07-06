@@ -32,11 +32,11 @@ object Builder:
   /**
    * Build Out -> Var Resolve In
    */
-  private def buildOutToVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasScopeAsts & HasAST =
-    new HasReadScopeTree with HasReadScopeSymbols with HasScopeAsts with HasAST:
+  private def buildOutToVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+    new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ReadScopeTree       = s.scopeTree
       override val scopeSymbols: ReadScopeSymbols = s.scopeSymbols
-      override val scopeAsts: ScopeAsts           = s.scopeAsts
+      override val scopeAsts: ReadScopeAsts       = s.scopeAsts
       override val ast: AST                       = ast0
 
   /**
