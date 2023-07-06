@@ -85,8 +85,8 @@ trait ASTMapper:
         mapInit(a)
       case a: Return =>
         mapReturn(a)
-      case a: KeyValue =>
-        mapKeyValue(a)
+      case a: Pair =>
+        mapPair(a)
       case a: Lit =>
         mapLit(a)
       case other =>
@@ -199,8 +199,8 @@ trait ASTMapper:
   def mapReturn(ast: Return): Return =
     ast.copy(expr = mapExpr(ast.expr))
 
-  def mapKeyValue(ast: KeyValue): KeyValue =
-    ast.copy(key = mapConstLit(ast.key), value = mapExpr(ast.value))
+  def mapPair(ast: Pair): Pair =
+    ast.copy(key = mapExpr(ast.key), value = mapExpr(ast.value))
 
   def mapConstLit(ast: ConstLit): ConstLit =
     ast.copy(const = mapConst(ast.const))

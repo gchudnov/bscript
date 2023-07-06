@@ -81,7 +81,7 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
 
       case x @ Init() =>
         foldOverAST(s, x)
-      case x @ KeyValue(key, value) =>
+      case x @ Pair(key, value) =>
         foldOverAST(s, x)
 
       case ConstLit(const) =>

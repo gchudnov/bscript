@@ -23,7 +23,7 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                +- If
  *      |                +- Init
  *      |                +- Return
- *      |                +- KeyValue
+ *      |                +- Pair
  *      |                |
  *      |                +- Lit +- ConstLit
  *      |                       +- CollectionLit

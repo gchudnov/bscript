@@ -76,7 +76,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
       case x @ Init() =>
         foldOverAST(s, x)
-      case x @ KeyValue(key, value) =>
+      case x @ Pair(key, value) =>
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>

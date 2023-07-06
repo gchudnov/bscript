@@ -782,13 +782,13 @@ object Examples:
         CollectionLit(
           TypeId("A"),
           List(
-            KeyValue(ConstLit(StrVal("x")), ConstLit(IntVal(1))),
-            KeyValue(ConstLit(StrVal("s")), ConstLit(StrVal("alice"))),
-            KeyValue(
+            Pair(ConstLit(StrVal("x")), ConstLit(IntVal(1))),
+            Pair(ConstLit(StrVal("s")), ConstLit(StrVal("alice"))),
+            Pair(
               ConstLit(StrVal("b")),
               CollectionLit(
                 TypeId("B"),
-                List(KeyValue(ConstLit(StrVal("y")), ConstLit(IntVal(2)))),
+                List(Pair(ConstLit(StrVal("y")), ConstLit(IntVal(2)))),
               ),
             ),
           ),

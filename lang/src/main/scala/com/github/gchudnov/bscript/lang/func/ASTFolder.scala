@@ -53,7 +53,7 @@ trait ASTFolder[S]:
         s
       case Return(expr) =>
         foldAST(s, expr)
-      case KeyValue(key, value) =>
+      case Pair(key, value) =>
         foldAST(foldAST(s, value), key)
 
       case ConstLit(const) =>

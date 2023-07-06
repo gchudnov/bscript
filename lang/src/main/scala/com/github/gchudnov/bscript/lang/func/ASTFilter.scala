@@ -138,9 +138,9 @@ trait ASTFilter:
           expr <- filterExpr(a.expr)
           ret  <- if isKeep(a) then Some(a.copy(expr = expr)) else None
         yield ret
-      case a: KeyValue =>
+      case a: Pair =>
         for
-          key      <- filterLit(a.key).map(_.asInstanceOf[ConstLit])
+          key      <- filterExpr(a.value)
           value    <- filterExpr(a.value)
           keyValue <- if isKeep(a) then Some(a.copy(key = key, value = value)) else None
         yield keyValue
