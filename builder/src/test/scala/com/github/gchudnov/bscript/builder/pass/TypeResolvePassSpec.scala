@@ -326,16 +326,12 @@ final class TypeResolvePassSpec extends TestSpec:
       "resolve type for variable declarations without auto" in {
         val t = Examples.xDeclReturnX
 
-        val idFinder = new ASTFinder:
-          override def findAST(ast: AST): Option[AST] =
-            ast match
-              case _: Id => Some(ast)
-              case _     => None
+        val xFinder = idFinder("x")
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val node = idFinder.foldAST(None, t.ast)
+            val node = xFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>
@@ -353,16 +349,12 @@ final class TypeResolvePassSpec extends TestSpec:
       "resolve type if several delarations are present" in {
         val t = Examples.xyDeclReturnY
 
-        val idFinder = new ASTFinder:
-          override def findAST(ast: AST): Option[AST] =
-            ast match
-              case Id(name) if name == "y" => Some(ast)
-              case _                       => None
+        val yFinder = idFinder("y")
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val node = idFinder.foldAST(None, t.ast)
+            val node = yFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i64)
 
           case Left(t) =>
@@ -414,16 +406,12 @@ final class TypeResolvePassSpec extends TestSpec:
       "resolve type with auto-declarations" in {
         val t = Examples.autoDeclReturnX
 
-        val idFinder = new ASTFinder:
-          override def findAST(ast: AST): Option[AST] =
-            ast match
-              case _: Id => Some(ast)
-              case _     => None
+        val xFinder = idFinder("x")
 
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val node = idFinder.foldAST(None, t.ast)
+            val node = xFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>
@@ -442,12 +430,6 @@ final class TypeResolvePassSpec extends TestSpec:
       "resolve type with two auto-declarations" in {
         val t = Examples.autoDecl2ReturnX
 
-        def idFinder(id: String): ASTFinder = new ASTFinder:
-          override def findAST(ast: AST): Option[AST] =
-            ast match
-              case Id(name) if name == id => Some(ast)
-              case _                      => None
-
         val xFinder = idFinder("x")
         val yFinder = idFinder("y")
 
@@ -463,9 +445,53 @@ final class TypeResolvePassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      // TODO: add for Init()
+      /**
+       * {{{
+       *   // globals
+       *   long x = _;
+       *   x;
+       * }}}
+       */
+      "resolve declaration with default initialization" in {
+        val t = Examples.xDeclDfaultReturnX
 
-      // TODO: check if we can improve interpret tests and add more cases
+        val xFinder = idFinder("x")
+
+        val initFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case _: Init => Some(ast)
+              case _       => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val xNode    = xFinder.foldAST(None, t.ast)
+            val initNode = initFinder.foldAST(None, t.ast)
+            actualState.evalTypes(xNode.get) mustBe BuiltInType(TypeName.i64)
+            actualState.evalTypes(initNode.get) mustBe BuiltInType(TypeName.i64)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   auto x = _;
+       *   x;
+       * }}}
+       */
+      "fail to resolve if auto x = init" in {
+        val t = Examples.xDeclAutoInit
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("Auto() = Init() is not supported")
+      }
     }
   }
 
@@ -507,6 +533,12 @@ final class TypeResolvePassSpec extends TestSpec:
     val actualState = toActualState(resolveOut)
     actualState
   }
+
+  def idFinder(id: String): ASTFinder = new ASTFinder:
+    override def findAST(ast: AST): Option[AST] =
+      ast match
+        case Id(name) if name == id => Some(ast)
+        case _                      => None
 
 object TypeResolvePassSpec:
   final case class ActualState(

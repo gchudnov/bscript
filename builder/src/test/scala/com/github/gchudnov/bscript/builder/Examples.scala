@@ -55,6 +55,38 @@ object Examples:
     Example(t)
 
   /**
+   * Variable Default Declaration, Return it
+   *
+   * {{{
+   *   // globals
+   *   long x = _;
+   *   x;
+   * }}}
+   */
+  val xDeclDfaultReturnX: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i64), Init()),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Variable Default Declaration, `Auto = Init()` should fail
+   *
+   * {{{
+   *   // globals
+   *   auto x = _;
+   *   x;
+   * }}}
+   */
+  val xDeclAutoInit: Example =
+    val t = Block.of(
+      VarDecl("x", Auto(), Init()),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
    * Variable Auto-Declaration, Return it
    *
    * {{{

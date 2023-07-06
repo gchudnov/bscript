@@ -74,8 +74,6 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x: If =>
         resolveIfType(s, x) // TODO: DONE, remove this comment
 
-      case x @ Init() =>
-        foldOverAST(s, x)
       case x @ Pair(key, value) =>
         foldOverAST(s, x)
 
@@ -112,14 +110,27 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    */
   private def resolveVarDeclType(s: TypeResolveState, v: VarDecl): TypeResolveState =
     val s1 = foldOverAST(s, v)
+
     val aType = v.aType match
       case Auto() =>
-        s1.typeOf(v.expr)
+        v.expr match
+          case Init() =>
+            throw BuilderException(s"Type of the variable '${v.name}' is not defined; Auto() = Init() is not supported")
+          case other =>
+            s1.typeOf(other)
       case other =>
         s1.typeOf(other)
+    val s2 = s1.assignType(v.aType, aType)
 
-    val s2 = s1.assignType(v.aType, aType).assignVoid(v)
-    s2
+    // handle Init(), take the value from the type of the variable
+    val s3 =
+      v.expr match
+        case Init() =>
+          s2.assignType(v.expr, aType)
+        case _ =>
+          s2
+
+    s3.assignVoid(v)
 
   /**
    * Resolve type of the block
