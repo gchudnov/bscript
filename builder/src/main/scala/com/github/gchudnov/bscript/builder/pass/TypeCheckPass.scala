@@ -19,9 +19,9 @@ import com.github.gchudnov.bscript.lang.types.TypeName
  *
  *   - Checks the types of the AST nodes to see if they are matching.
  */
-final class TypeCheckPass extends Pass[HasAST & HasEvalTypes, Unit]:
+final class TypeCheckPass extends Pass[HasAST & HasReadEvalTypes, Unit]:
 
-  override def run(in: HasAST & HasEvalTypes): Unit =
+  override def run(in: HasAST & HasReadEvalTypes): Unit =
     val state0 = TypeCheckState.from(in.evalTypes)
     val ast0   = in.ast
 
@@ -49,12 +49,12 @@ private final class TypeCheckFolder() extends ASTFolder[TypeCheckState]:
       // case other =>
       //   throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
 
-private final case class TypeCheckState(evalTypes: EvalTypes) {
+private final case class TypeCheckState(evalTypes: ReadEvalTypes) {
   
 }
 
 private object TypeCheckState {
-  def from(evalTypes: EvalTypes): TypeCheckState =
+  def from(evalTypes: ReadEvalTypes): TypeCheckState =
   TypeCheckState(
     evalTypes = evalTypes,
   )

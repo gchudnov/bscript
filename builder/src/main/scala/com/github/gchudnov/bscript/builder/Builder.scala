@@ -13,14 +13,17 @@ object Builder:
     val buildPass       = new ScopeBuildPass()
     val varResolvePass  = new VarResolvePass()
     val typeResolvePass = new TypeResolvePass()
+    val typeCheckPass   = new TypeCheckPass()
 
     for
       buildIn        <- nonFatalCatch.either(toBuildIn(ast0))
       buildOut       <- nonFatalCatch.either(buildPass.run(buildIn))
-      varResolveIn   <- nonFatalCatch.either(buildOutToVarResolveIn(buildOut, ast0))
-      _              <- nonFatalCatch.either(varResolvePass.run(varResolveIn)) // NOTE: at the moment we ignore result of this pass
-      typeResolveIn  <- nonFatalCatch.either(buildOutToTypeResolveIn(buildOut, ast0))
+      varResolveIn   <- nonFatalCatch.either(toVarResolveIn(buildOut, ast0))
+      varResolveOut  <- nonFatalCatch.either(varResolvePass.run(varResolveIn)) // NOTE: at the moment we ignore result of this pass
+      typeResolveIn  <- nonFatalCatch.either(toTypeResolveIn(buildOut, ast0))
       typeResolveOut <- nonFatalCatch.either(typeResolvePass.run(typeResolveIn))
+      typeCheckIn    <- nonFatalCatch.either(toTypeCheckIn(typeResolveOut, ast0))
+      typeCheckOut   <- nonFatalCatch.either(typeCheckPass.run(typeCheckIn)) // NOTE: at the moment we ignore result of this pass
     yield (ast0, BuildState.from(ast0))
 
   /**
@@ -32,7 +35,7 @@ object Builder:
   /**
    * Build Out -> Var Resolve In
    */
-  private def buildOutToVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+  private def toVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
     new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ReadScopeTree       = s.scopeTree
       override val scopeSymbols: ReadScopeSymbols = s.scopeSymbols
@@ -40,11 +43,19 @@ object Builder:
       override val ast: AST                       = ast0
 
   /**
-   * Build Out -> Resolve In
+   * Build Out -> Type Resolve In
    */
-  private def buildOutToTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+  private def toTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
     new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ScopeTree       = s.scopeTree
       override val scopeSymbols: ScopeSymbols = s.scopeSymbols
       override val scopeAsts: ScopeAsts       = s.scopeAsts
       override val ast: AST                   = ast0
+
+  /**
+   * Type Resolve Out -> Type Check In
+   */
+  private def toTypeCheckIn(s: HasEvalTypes, ast0: AST): HasReadEvalTypes & HasAST =
+    new HasReadEvalTypes with HasAST:
+      override val evalTypes: ReadEvalTypes = s.evalTypes
+      override val ast: AST                 = ast0

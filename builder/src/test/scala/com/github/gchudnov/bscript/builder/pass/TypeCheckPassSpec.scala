@@ -84,8 +84,8 @@ final class TypecheckPassSpec extends TestSpec:
 
     // #4 type check
     val typeCheckPass = new TypeCheckPass()
-    val typeCheckIn = new HasEvalTypes with HasAST:
-      override val evalTypes: EvalTypes = typeResolveOut.evalTypes
+    val typeCheckIn = new HasReadEvalTypes with HasAST:
+      override val evalTypes: ReadEvalTypes = typeResolveOut.evalTypes
       override val ast: AST                   = ast0
 
     val typeCheckOut = typeCheckPass.run(typeCheckIn)
