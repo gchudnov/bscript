@@ -5,19 +5,28 @@ import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.lang.ast.AST
 
 /**
- * A Dictionary of AST -> Type mappings
- *
- * Used to propagate types in the AST so that we can do type checking
+ * Read Eval Types
  */
-sealed trait EvalTypes:
+sealed trait ReadEvalTypes:
   def isEmpty: Boolean
   def size: Int
-
-  def assignType(a: AST, t: TypeAST): EvalTypes
 
   def typeOf(a: AST): Option[TypeAST]
 
   def apply(a: AST): TypeAST
+
+/**
+ * Write Eval Types
+ */
+sealed trait WriteEvalTypes:
+  def assignType(a: AST, t: TypeAST): EvalTypes
+
+/**
+ * A Dictionary of AST -> Type mappings
+ *
+ * Used to propagate types in the AST so that we can do type checking
+ */
+sealed trait EvalTypes extends ReadEvalTypes with WriteEvalTypes
 
 object EvalTypes:
   lazy val empty: EvalTypes =
