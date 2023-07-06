@@ -217,7 +217,7 @@ final class VarResolvePassSpec extends TestSpec:
 
     // #2 resolve
     val resolvePass = new VarResolvePass()
-    val resolveIn = new HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
+    val resolveIn = new HasReadScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
       val scopeTree    = buildOut.scopeTree
       val scopeSymbols = buildOut.scopeSymbols
       val scopeAsts    = buildOut.scopeAsts

@@ -4,13 +4,9 @@ import scala.annotation.tailrec
 import com.github.gchudnov.bscript.lang.util.Show
 
 /**
- * Abstract Tree
- *
- * Used to build scope trees.
- *
- * NOTE: it might be used to build a forst as well
+ * Tree Read Catabilities
  */
-sealed trait Tree[A: Show]:
+sealed trait ReadTree[A: Show]:
   /**
    * Get the number of vertices in the tree
    */
@@ -59,6 +55,26 @@ sealed trait Tree[A: Show]:
   def contains(x: A): Boolean
 
   /**
+   * Returns the complete path to root
+   */
+  def path(x: A): List[A]
+
+  /**
+   * Represent the tree as a string
+   */
+  def show: String
+
+  /**
+   * Represent the tree as a string (show synonym)
+   */
+  def asString: String
+
+/**
+ * Tree Write Catabilities
+ */
+sealed trait WriteTree[A: Show]:
+
+  /**
    * Adds a new node to the tree
    *
    * @param x
@@ -90,20 +106,14 @@ sealed trait Tree[A: Show]:
    */
   def replace(a: A, b: A): Tree[A]
 
-  /**
-   * Returns the complete path to root
-   */
-  def path(x: A): List[A]
-
-  /**
-   * Represent the tree as a string
-   */
-  def show: String
-
-  /**
-   * Represent the tree as a string (show synonym)
-   */
-  def asString: String
+/**
+ * Abstract Tree
+ *
+ * Used to build scope trees.
+ *
+ * NOTE: it might be used to build a forst as well
+ */
+sealed trait Tree[A: Show] extends ReadTree[A] with WriteTree[A]
 
 /**
  * A Tree implementation

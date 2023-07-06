@@ -8,18 +8,11 @@ import com.github.gchudnov.bscript.lang.util.Show
 import ScopeAsts.given
 
 /**
- * A Dictionary of Scope -> AST Interface
- *
- *   - a scope can have multiple ASTs
- *   - an AST can belong to only one scope
- *
- * NOTE: ASTs are not unique, so we use Ptr[AST] instead of AST
+ * Read Scope ASTs
  */
-sealed trait ScopeAsts:
+sealed trait ReadScopeAsts:
   def isEmpty: Boolean
   def size: Int
-
-  def link(scope: Scope, ast: AST): ScopeAsts
 
   def hasLink(scope: Scope, ast: AST): Boolean
 
@@ -29,6 +22,22 @@ sealed trait ScopeAsts:
   def findDecl(name: String, scope: Scope): List[Decl]
 
   def asString: String
+
+/**
+ * Write Scope ASTs
+ */
+sealed trait WriteScopeAsts:
+  def link(scope: Scope, ast: AST): ScopeAsts
+
+/**
+ * A Dictionary of Scope -> AST Interface
+ *
+ *   - a scope can have multiple ASTs
+ *   - an AST can belong to only one scope
+ *
+ * NOTE: ASTs are not unique, so we use Ptr[AST] instead of AST
+ */
+sealed trait ScopeAsts extends ReadScopeAsts with WriteScopeAsts
 
 object ScopeAsts:
   lazy val empty: ScopeAsts =
@@ -47,7 +56,7 @@ object ScopeAsts:
  */
 private final case class BasicScopeAsts(keyValues: Map[Scope, Set[Ptr[AST]]], valueKey: Map[Ptr[AST], Scope]) extends BiDict[Scope, Ptr[AST], BasicScopeAsts] with ScopeAsts:
 
-  override def isEmpty: Boolean = 
+  override def isEmpty: Boolean =
     keyValues.isEmpty
 
   override def size: Int =

@@ -4,20 +4,17 @@ import com.github.gchudnov.bscript.builder.util.Dict
 import com.github.gchudnov.bscript.lang.symbols.Symbol
 import com.github.gchudnov.bscript.builder.util.Ptr
 import com.github.gchudnov.bscript.builder.util.Tree
+import com.github.gchudnov.bscript.builder.util.ReadTree
+import com.github.gchudnov.bscript.builder.util.WriteTree
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.builder.state.ScopeSymbols.given
 
 /**
- * Scope-Symbol Dictionary Interface
- *
- *   - A scope can have multiple symbols
- *   - A symbol can belong to only one scope
+ * Read Scope Symbols
  */
-sealed trait ScopeSymbols:
+sealed trait ReadScopeSymbols:
   def isEmpty: Boolean
   def size: Int
-
-  def link(scope: Scope, sym: Symbol): ScopeSymbols
 
   def hasLink(scope: Scope, sym: Symbol): Boolean
 
@@ -26,9 +23,23 @@ sealed trait ScopeSymbols:
   def symbols: List[Symbol]
 
   def resolveIn(name: String, in: Scope): Option[Symbol]
-  def resolveUp(name: String, start: Scope, scopeTree: Tree[Scope]): Option[ScopeSymbol]
+  def resolveUp(name: String, start: Scope, scopeTree: ReadTree[Scope]): Option[ScopeSymbol]
 
   def asString: String
+
+/**
+ * Write ScopeSymbols
+ */
+sealed trait WriteScopeSymbols:
+  def link(scope: Scope, sym: Symbol): ScopeSymbols
+
+/**
+ * Scope-Symbol Dictionary Interface
+ *
+ *   - A scope can have multiple symbols
+ *   - A symbol can belong to only one scope
+ */
+sealed trait ScopeSymbols extends ReadScopeSymbols with WriteScopeSymbols
 
 object ScopeSymbols:
   lazy val empty: ScopeSymbols =
@@ -45,11 +56,9 @@ object ScopeSymbols:
 /**
  * Scope-Symbol Dictionary Implementation
  */
-private final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]])
-    extends Dict[Scope, Symbol, BasicScopeSymbols]
-    with ScopeSymbols:
-  
-  override def isEmpty: Boolean = 
+private final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]]) extends Dict[Scope, Symbol, BasicScopeSymbols] with ScopeSymbols:
+
+  override def isEmpty: Boolean =
     keyValues.isEmpty
 
   override def size: Int =
@@ -80,7 +89,7 @@ private final case class BasicScopeSymbols(keyValues: Map[Scope, Set[Symbol]])
     symbols(in)
       .find(_.name == name)
 
-  override def resolveUp(name: String, start: Scope, scopeTree: Tree[Scope]): Option[ScopeSymbol] =
+  override def resolveUp(name: String, start: Scope, scopeTree: ReadTree[Scope]): Option[ScopeSymbol] =
     resolveIn(name, start)
       .map(sym => ScopeSymbol(start, sym))
       .orElse(scopeTree.parentOf(start).flatMap(parent => resolveUp(name, parent, scopeTree)))
