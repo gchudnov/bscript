@@ -14,11 +14,8 @@ import com.github.gchudnov.bscript.lang.ast.types.BuiltInType
 import com.github.gchudnov.bscript.lang.types.TypeName
 import com.github.gchudnov.bscript.lang.func.ASTFinder
 import com.github.gchudnov.bscript.lang.ast.lit.ConstLit
-import com.github.gchudnov.bscript.lang.ast.decls.VarDecl
-import com.github.gchudnov.bscript.lang.ast.decls.BuiltInDecl
-import com.github.gchudnov.bscript.lang.ast.decls.MethodDecl
-import com.github.gchudnov.bscript.lang.ast.decls.StructDecl
-import com.github.gchudnov.bscript.lang.ast.decls.TypeDecl
+import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.refs.*
 
 /**
  * Type Resolve Pass Tests
@@ -312,6 +309,36 @@ final class TypeResolvePassSpec extends TestSpec:
         errOrRes match
           case Right(actualState) =>
             val node = ifFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
+
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+    }
+
+    "id" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   x;
+       * }}}
+       */
+      "resolve type for variable declarations without auto" in {
+        val t = Examples.xDeclReturnX
+
+        val idFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case _: Id => Some(ast)
+              case _          => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val node = idFinder.foldAST(None, t.ast)
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>

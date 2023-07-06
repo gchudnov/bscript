@@ -140,6 +140,8 @@ private final case class VarResolveState(scopeTree: ScopeTree, scopeSymbols: Sco
 
   /**
    * Resolve TypeId
+   * 
+   * NOTE: it must point to a TypeDecl
    *
    * @param typeId
    *   type id

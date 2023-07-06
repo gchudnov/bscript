@@ -44,18 +44,18 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x: Access =>
         foldOverAST(s, x)
 
-      case x @ Id(name) =>
-        foldOverAST(s, x)
+      case x: Id =>
+        resolveIdType(s, x) // TODO: DONE, remove this comment
 
-      case x @ BuiltInDecl(name, tType) =>
+      case x: BuiltInDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
-      case x @ MethodDecl(name, mType, body) =>
+      case x: MethodDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
-      case x @ StructDecl(name, sType) =>
+      case x: StructDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
       case x: VarDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
-      case x @ TypeDecl(name, tType) =>
+      case x: TypeDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
 
       case x: Annotated =>
@@ -64,7 +64,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x: Block =>
-        resolveBlock(s, x) // TODO: DONE, remove this comment
+        resolveBlockType(s, x) // TODO: DONE, remove this comment
 
       case x @ Call(id, args) =>
         foldOverAST(s, x)
@@ -72,7 +72,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x: If =>
-        resolveIf(s, x) // TODO: DONE, remove this comment
+        resolveIfType(s, x) // TODO: DONE, remove this comment
 
       case x @ Init() =>
         foldOverAST(s, x)
@@ -89,8 +89,8 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
       case x @ Auto() =>
         foldOverAST(s, x)
-      case x @ TypeId(name) =>
-        foldOverAST(s, x)
+      case x: TypeId =>
+        resolveTypeIdType(s, x) // TODO: DONE, remove this comment
       case x @ VecType(elemType) =>
         foldOverAST(s, x)
       case x @ MapType(keyType, valType) =>
@@ -111,7 +111,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
   /**
    * Resolve type of the block
    */
-  private def resolveBlock(s: TypeResolveState, b: Block): TypeResolveState =
+  private def resolveBlockType(s: TypeResolveState, b: Block): TypeResolveState =
     val s1 = foldOverAST(s, b)
     val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignType(b, s1.typeOf(lastExpr)))
     s2
@@ -121,7 +121,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    *
    * if (cond) then1 else else1
    */
-  private def resolveIf(s: TypeResolveState, i: If): TypeResolveState =
+  private def resolveIfType(s: TypeResolveState, i: If): TypeResolveState =
     val s1       = foldOverAST(s, i)
     val thenType = s1.typeOf(i.then1)
     val elseType = s1.typeOf(i.else1)
@@ -133,6 +133,22 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       else throw BuilderException(s"Type mismatch in if expression: ${thenType} and ${elseType}")
     s2
 
+  /**
+   * Resolve Id type
+   */
+  private def resolveIdType(s: TypeResolveState, id: Id): TypeResolveState =
+    val typeAST = s.resolveIdType(id)
+    val s1      = s.assignType(id, typeAST)
+    s1
+
+  /**
+   * Resolve TypeId type
+   */
+  private def resolveTypeIdType(s: TypeResolveState, typeId: TypeId): TypeResolveState =
+    val typeAST = s.resolveTypeIdType(typeId)
+    val s1      = s.assignType(typeId, typeAST)
+    s1
+
 /*
 final case class If(cond: Expr, then1: Expr, else1: Expr) extends Expr
  */
@@ -141,6 +157,8 @@ final case class If(cond: Expr, then1: Expr, else1: Expr) extends Expr
  * Type Resolve State
  */
 private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, evalTypes: EvalTypes):
+  import TypeResolveState.*
+
   /**
    * Assign type to the AST node.
    *
@@ -177,10 +195,97 @@ private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: Sc
     val ot = evalTypes.typeOf(ast)
     ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug."))
 
+  /**
+   * Resolve Id
+   *
+   * @param id
+   *   Id
+   * @return
+   *   the list of scope-decl paris
+   */
+  private def resolveIdDecl(id: Id): Either[Throwable, List[ScopeDecl]] =
+    resolveRefDecl(id)
+
+  /**
+   * Resolve TypeId
+   *
+   * @param typeId
+   *   type id
+   * @return
+   *   An error or the list of scope declarations
+   */
+  private def resolveTypeIdDecl(typeId: TypeId): Either[Throwable, List[ScopeDecl]] =
+    resolveRefDecl(typeId)
+
+  /**
+   * Resolve T Declarations
+   *
+   * @param name
+   *   name of the declaration to resolve
+   * @return
+   *   An error or the list of scope declarations
+   */
+  private def resolveRefDecl[R <: AST: HasName](ref: R): Either[Throwable, List[ScopeDecl]] =
+    for
+      startScope   <- scopeAsts.scope(ref).toRight(BuilderException(s"AST '${ref}' is not assigned to a Scope, it is a bug"))
+      maybeScopeSym = scopeSymbols.resolveUp(summon[HasName[R]].name(ref), startScope, scopeTree)
+      scopeDecls = maybeScopeSym.fold(List.empty[ScopeDecl]) { scopeSym =>
+                     scopeAsts
+                       .findDecl(scopeSym.symbol.name, scopeSym.scope)
+                       .map(d => ScopeDecl(scopeSym.scope, d))
+                   }
+    yield scopeDecls
+
+  /**
+   * Resolve type of the Id
+   *
+   * // TODO: we assume that the type is already resolved, fix this
+   *
+   * @param id
+   *   Id
+   * @return
+   *   type
+   */
+  def resolveIdType(id: Id): TypeAST =
+    val scopeDecls = resolveIdDecl(id).toTry.get
+    val scopeDecl  = scopeDecls.headOption.getOrElse(throw BuilderException(s"The symbol '${id}' is not declared"))
+    val aType = scopeDecl.decl.aType match
+      case x: TypeId =>
+        resolveTypeIdType(x)
+      case other =>
+        other
+    aType
+
+  /**
+   * Resolve type of the TypeId
+   *
+   * // TODO: we assume that the type is already resolved, fix this
+   *
+   * @param typeId
+   *   type id
+   * @return
+   *   type
+   */
+  def resolveTypeIdType(typeId: TypeId): TypeAST =
+    val scopeDecls = resolveTypeIdDecl(typeId).toTry.get
+    val scopeDecl  = scopeDecls.headOption.getOrElse(throw BuilderException(s"The type-symbol '${typeId}' is not declared"))
+    val aType      = scopeDecl.decl.aType
+    aType
+
 /**
  * Type Resolve State Companion
  */
 private object TypeResolveState:
+
+  trait HasName[T]:
+    def name(t: T): String
+
+  object HasName:
+    inline given HasName[Id] with
+      def name(id: Id): String = id.name
+
+    inline given HasName[TypeId] with
+      def name(typeId: TypeId): String = typeId.name
 
   def from(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): TypeResolveState =
     TypeResolveState(

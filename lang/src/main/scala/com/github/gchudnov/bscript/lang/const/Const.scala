@@ -2,7 +2,6 @@ package com.github.gchudnov.bscript.lang.const
 
 import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.types.TypeName
-import com.github.gchudnov.bscript.lang.const.NothingVal
 
 /**
  * Any Constant Variable
