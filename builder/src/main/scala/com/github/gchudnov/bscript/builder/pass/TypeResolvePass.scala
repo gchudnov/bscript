@@ -19,9 +19,9 @@ import com.github.gchudnov.bscript.lang.types.TypeName
  *
  *   - Resolve types of the AST nodes.
  */
-final class TypeResolvePass extends Pass[HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST, HasEvalTypes]:
+final class TypeResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST, HasEvalTypes]:
 
-  override def run(in: HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST): HasEvalTypes =
+  override def run(in: HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST): HasEvalTypes =
     val state0 = TypeResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
     val ast0   = in.ast
 
@@ -177,7 +177,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 /**
  * Type Resolve State
  */
-private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts, evalTypes: EvalTypes):
+private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts, evalTypes: EvalTypes):
   import TypeResolveState.*
 
   /**
@@ -308,7 +308,7 @@ private object TypeResolveState:
     inline given HasName[TypeId] with
       def name(typeId: TypeId): String = typeId.name
 
-  def from(scopeTree: ScopeTree, scopeSymbols: ScopeSymbols, scopeAsts: ScopeAsts): TypeResolveState =
+  def from(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts): TypeResolveState =
     TypeResolveState(
       scopeTree = scopeTree,
       scopeSymbols = scopeSymbols,

@@ -42,10 +42,9 @@ object Builder:
   /**
    * Build Out -> Resolve In
    */
-  private def buildOutToTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasEvalTypes & HasScopeTree & HasScopeSymbols & HasScopeAsts & HasAST =
-    new HasEvalTypes with HasScopeTree with HasScopeSymbols with HasScopeAsts with HasAST:
+  private def buildOutToTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+    new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ScopeTree       = s.scopeTree
       override val scopeSymbols: ScopeSymbols = s.scopeSymbols
       override val scopeAsts: ScopeAsts       = s.scopeAsts
-      override val evalTypes: EvalTypes       = EvalTypes.empty
       override val ast: AST                   = ast0
