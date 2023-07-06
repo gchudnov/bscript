@@ -39,7 +39,7 @@ object Examples:
     Example(t)
 
   /**
-   * Variable Declaration,  Return it
+   * Variable Declaration, Return it
    *
    * {{{
    *   // globals
@@ -67,6 +67,26 @@ object Examples:
     val t = Block.of(
       VarDecl("x", Auto(), ConstLit(IntVal(0))),
       Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Two Variables Auto-Declaration, Return one of them
+   *
+   * {{{
+   *   // globals
+   *   auto x = 0;      // shold be auto-deduced to type: i32
+   *   auto s = "abc";  // shold be auto-deduced to type: str
+   *   x;
+   *   y;
+   * }}}
+   */
+  val autoDecl2ReturnX: Example =
+    val t = Block.of(
+      VarDecl("x", Auto(), ConstLit(IntVal(0))),
+      VarDecl("y", Auto(), ConstLit(StrVal("abc"))),
+      Id("x"),
+      Id("y"),
     )
     Example(t)
 

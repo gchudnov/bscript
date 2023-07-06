@@ -430,7 +430,38 @@ final class TypeResolvePassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      // TODO: fix ^^^^
+      /**
+       * {{{
+       *   // globals
+       *   auto x = 0;      // shold be auto-deduced to type: i32
+       *   auto s = "abc";  // shold be auto-deduced to type: str
+       *   x;
+       *   y;
+       * }}}
+       */
+      "resolve type with two auto-declarations" in {
+        val t = Examples.autoDecl2ReturnX
+
+        def idFinder(id: String): ASTFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case Id(name) if name == id => Some(ast)
+              case _                      => None
+
+        val xFinder = idFinder("x")
+        val yFinder = idFinder("y")
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val xNode = xFinder.foldAST(None, t.ast)
+            val yNode = yFinder.foldAST(None, t.ast)
+            actualState.evalTypes(xNode.get) mustBe BuiltInType(TypeName.i32)
+            actualState.evalTypes(yNode.get) mustBe BuiltInType(TypeName.str)
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
 
       // TODO: add for Init()
 
