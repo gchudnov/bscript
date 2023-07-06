@@ -59,7 +59,7 @@ object Examples:
    *
    * {{{
    *   // globals
-   *   auto x = 0; // type: i32
+   *   auto x = 0; // shold be auto-deduced to type: i32
    *   x;
    * }}}
    */

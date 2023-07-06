@@ -46,7 +46,7 @@ trait ASTMapper:
       case other =>
         throw new MatchError(s"Unsupported TypeAST: ${other}")
 
-  def mapRealType(ast: RealType): RealType =
+  def mapRealType(ast: RealType): TypeAST =
     ast match
       case a: BuiltInType =>
         mapBuiltInType(a)
@@ -133,19 +133,19 @@ trait ASTMapper:
   def mapId(ast: Id): Id =
     ast
 
-  def mapAuto(ast: Auto): Auto =
+  def mapAuto(ast: Auto): TypeAST =
     ast
 
-  def mapTypeId(ast: TypeId): TypeId =
+  def mapTypeId(ast: TypeId): TypeAST =
     ast
 
-  def mapByName(ast: ByName): ByName =
+  def mapByName(ast: ByName): TypeAST =
     ast
 
-  def mapVecType(ast: VecType): VecType =
+  def mapVecType(ast: VecType): TypeAST =
     ast.copy(elemType = mapTypeAST(ast.elemType))
 
-  def mapMapType(ast: MapType): MapType =
+  def mapMapType(ast: MapType): TypeAST =
     ast.copy(keyType = ast.keyType, valueType = ast.valueType)
 
   def mapStructType(ast: StructType): StructType =

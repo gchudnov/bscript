@@ -259,7 +259,6 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -298,7 +297,6 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.str)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -312,7 +310,6 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -342,7 +339,6 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -370,7 +366,6 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i64)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -412,7 +407,7 @@ final class TypeResolvePassSpec extends TestSpec:
       /**
        * {{{
        *   // globals
-       *   auto x = 0; // type: i32
+       *   auto x = 0; // shold be auto-deduced to type: i32
        *   x;
        * }}}
        */
@@ -432,9 +427,14 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
 
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
+
+      // TODO: fix ^^^^
+
+      // TODO: add for Init()
+
+      // TODO: check if we can improve interpret tests and add more cases
     }
   }
 

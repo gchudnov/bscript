@@ -54,7 +54,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x: StructDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
       case x: VarDecl =>
-        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
+        resolveVarDeclType(s, x) // TODO: DONE, remove this comment
       case x: TypeDecl =>
         foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
 
@@ -87,9 +87,6 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x @ MethodLit(mType, body) =>
         foldOverAST(s, x)
 
-      case x @ Auto() =>
-        foldOverAST(s, x)
-      
       case x: TypeId =>
         resolveTypeIdType(s, x) // TODO: DONE, remove this comment
 
@@ -109,6 +106,20 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
       // case other =>
       //   throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
+
+  /**
+   * Resolve the type of VarDecl
+   */
+  private def resolveVarDeclType(s: TypeResolveState, v: VarDecl): TypeResolveState =
+    val s1 = foldOverAST(s, v)
+    val aType = v.aType match
+      case Auto() =>
+        s1.typeOf(v.expr)
+      case other =>
+        s1.typeOf(other)
+
+    val s2 = s1.assignType(v.aType, aType).assignVoid(v)
+    s2
 
   /**
    * Resolve type of the block
@@ -255,7 +266,7 @@ private final case class TypeResolveState(scopeTree: ScopeTree, scopeSymbols: Sc
       case x: TypeId =>
         resolveTypeIdType(x)
       case other =>
-        other
+        typeOf(other)
     aType
 
   /**
