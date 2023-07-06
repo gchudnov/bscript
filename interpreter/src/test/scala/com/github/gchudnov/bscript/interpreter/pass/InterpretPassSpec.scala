@@ -293,10 +293,8 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage must include("XXX")
+            t.getMessage must include("Type mismatch: BuiltInType(i32) != BuiltInType(i64)")
       }
-
-      // TODO: there should be TypeCheck phase, impl it, the calculation should fail before Interpret phase
 
       // TODO: impl Init() usage
 

@@ -40,22 +40,44 @@ private final class TypeCheckFolder() extends ASTFolder[TypeCheckState]:
 
   override def foldAST(s: TypeCheckState, ast: AST): TypeCheckState =
     ast match
-      case x: Access =>
-        foldOverAST(s, x)
+      case x: Assign =>
+        foldOverAST(s, x).checkAssign(x)
 
       case other =>
         foldOverAST(s, other)
 
       // case other =>
-      //   throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
+      //   throw new MatchError(s"Unsupported AST type in TypeCheckFolder: ${other}")
 
-private final case class TypeCheckState(evalTypes: ReadEvalTypes) {
-  
-}
+private final case class TypeCheckState(evalTypes: ReadEvalTypes):
 
-private object TypeCheckState {
+  /**
+   * Get type of the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @return
+   *   type
+   */
+  def typeOf(ast: AST): TypeAST =
+    val ot = evalTypes.typeOf(ast)
+    ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug."))
+
+  /**
+   * Check the types of the Assign operator
+   */
+  def checkAssign(a: Assign): TypeCheckState =
+    val lhsType = typeOf(a.lhs)
+    val rhsType = typeOf(a.rhs)
+
+    if lhsType != rhsType then throw BuilderException(s"Type mismatch: ${lhsType} != ${rhsType} in the assignment")
+
+    if lhsType == Auto then throw BuilderException(s"Cannot assign to Auto type")
+
+    this
+
+private object TypeCheckState:
   def from(evalTypes: ReadEvalTypes): TypeCheckState =
-  TypeCheckState(
-    evalTypes = evalTypes,
-  )
-}
+    TypeCheckState(
+      evalTypes = evalTypes,
+    )
