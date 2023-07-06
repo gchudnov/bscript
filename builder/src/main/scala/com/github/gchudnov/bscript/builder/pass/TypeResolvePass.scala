@@ -89,8 +89,10 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
       case x @ Auto() =>
         foldOverAST(s, x)
+      
       case x: TypeId =>
         resolveTypeIdType(s, x) // TODO: DONE, remove this comment
+
       case x @ VecType(elemType) =>
         foldOverAST(s, x)
       case x @ MapType(keyType, valType) =>

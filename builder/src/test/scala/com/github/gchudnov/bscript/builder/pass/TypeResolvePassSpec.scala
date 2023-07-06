@@ -333,7 +333,97 @@ final class TypeResolvePassSpec extends TestSpec:
           override def findAST(ast: AST): Option[AST] =
             ast match
               case _: Id => Some(ast)
-              case _          => None
+              case _     => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val node = idFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i32)
+
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1;
+       *   y;
+       * }}}
+       */
+      "resolve type if several delarations are present" in {
+        val t = Examples.xyDeclReturnY
+
+        val idFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case Id(name) if name == "y" => Some(ast)
+              case _                       => None
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val node = idFinder.foldAST(None, t.ast)
+            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.i64)
+
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   x;
+       * }}}
+       */
+      "fail to resolve an Id if the var is not declared" in {
+        val t = Examples.xRefUndefined
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("Id 'x' is not found")
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   UnknownType x = 0;
+       *   x;
+       * }}}
+       */
+      "fail to resolve the TypeId if the reference doesn't exist" in {
+        val t = Examples.xDeclUnknownType
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(_) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("TypeId 'UnknownType' is not found")
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   auto x = 0; // type: i32
+       *   x;
+       * }}}
+       */
+      "resolve type with auto-declarations" in {
+        val t = Examples.autoDeclReturnX
+
+        val idFinder = new ASTFinder:
+          override def findAST(ast: AST): Option[AST] =
+            ast match
+              case _: Id => Some(ast)
+              case _     => None
 
         val errOrRes = eval(t.ast)
         errOrRes match

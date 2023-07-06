@@ -39,7 +39,7 @@ object Examples:
     Example(t)
 
   /**
-   * Variable Declaration, Assign and Return
+   * Variable Declaration,  Return it
    *
    * {{{
    *   // globals
@@ -50,6 +50,38 @@ object Examples:
   val xDeclReturnX: Example =
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Variable Auto-Declaration, Return it
+   *
+   * {{{
+   *   // globals
+   *   auto x = 0; // type: i32
+   *   x;
+   * }}}
+   */
+  val autoDeclReturnX: Example =
+    val t = Block.of(
+      VarDecl("x", Auto(), ConstLit(IntVal(0))),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
+   * Variable Declaration, invalid TypeId
+   *
+   * {{{
+   *   // globals
+   *   UnknownType x = 0;
+   *   x;
+   * }}}
+   */
+  val xDeclUnknownType: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId("UnknownType"), ConstLit(IntVal(0))),
       Id("x"),
     )
     Example(t)
