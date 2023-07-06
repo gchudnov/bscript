@@ -110,7 +110,10 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
         foldOverAST(s, x)
 
       case other =>
-        throw new MatchError(s"Unsupported AST type in InterpretFolder: ${other}")
+        foldOverAST(s, other)
+
+      // case other =>
+      //   throw new MatchError(s"Unsupported AST type in InterpretFolder: ${other}")
 
   /**
    * Interpret an if statement.

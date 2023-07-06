@@ -108,7 +108,7 @@ object Examples:
    * {{{
    *   // globals
    *   auto x = 0;      // shold be auto-deduced to type: i32
-   *   auto s = "abc";  // shold be auto-deduced to type: str
+   *   auto y = "abc";  // shold be auto-deduced to type: str
    *   x;
    *   y;
    * }}}
@@ -221,6 +221,24 @@ object Examples:
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       VarDecl("y", TypeId(TypeName.i64), ConstLit(LongVal(1))),
       Id("z"),
+    )
+    Example(t)
+
+  /**
+   * X,Y Declaration, Assignment of uncompatible types
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   long y = 1;
+   *   x = y;       // NOTE: y is not compatible with x
+   * }}}
+   */
+  val xyDeclAssignUncompat: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("y", TypeId(TypeName.i64), ConstLit(LongVal(1))),
+      Assign(Id("x"), Id("y")),
     )
     Example(t)
 

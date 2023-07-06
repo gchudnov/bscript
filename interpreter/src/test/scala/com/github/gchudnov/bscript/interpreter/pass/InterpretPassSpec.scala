@@ -257,6 +257,48 @@ final class InterpretPassSpec extends TestSpec:
             println(t)
             fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   auto x = 0; // shold be auto-deduced to type: i32
+       *   x;
+       * }}}
+       */
+      "declare auto x, return it" in {
+        val t = Examples.autoDeclReturnX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I32(0))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1;
+       *   x = y;       // NOTE: y is not compatible with x
+       * }}}
+       */
+      "assignment of uncompatible types" in {
+        val t = Examples.xyDeclAssignUncompat
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("XXX")
+      }
+
+      // TODO: there should be TypeCheck phase, impl it, the calculation should fail before Interpret phase
+
+      // TODO: impl Init() usage
     }
 
     "conditions" should {

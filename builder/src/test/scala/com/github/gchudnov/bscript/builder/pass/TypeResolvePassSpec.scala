@@ -422,7 +422,7 @@ final class TypeResolvePassSpec extends TestSpec:
        * {{{
        *   // globals
        *   auto x = 0;      // shold be auto-deduced to type: i32
-       *   auto s = "abc";  // shold be auto-deduced to type: str
+       *   auto y = "abc";  // shold be auto-deduced to type: str
        *   x;
        *   y;
        * }}}
