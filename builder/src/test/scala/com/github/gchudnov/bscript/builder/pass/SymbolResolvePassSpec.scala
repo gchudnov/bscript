@@ -10,12 +10,12 @@ import scala.util.control.Exception.*
 import com.github.gchudnov.bscript.builder.Examples
 
 /**
- * Var Resolve Pass Tests
+ * Symbol Resolve Pass Tests
  */
-final class VarResolvePassSpec extends TestSpec:
-  import VarResolvePassSpec.*
+final class SymbolResolvePassSpec extends TestSpec:
+  import SymbolResolvePassSpec.*
 
-  "VarResolvePass" when {
+  "SymbolResolvePass" when {
 
     "const literals" should {
 
@@ -215,8 +215,8 @@ final class VarResolvePassSpec extends TestSpec:
       val ast = ast0
     val buildOut = buildPass.run(buildIn)
 
-    // #2 resolve
-    val resolvePass = new VarResolvePass()
+    // #2 symbol resolve
+    val resolvePass = new SymbolResolvePass()
     val resolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       val scopeTree    = buildOut.scopeTree
       val scopeSymbols = buildOut.scopeSymbols
@@ -229,7 +229,7 @@ final class VarResolvePassSpec extends TestSpec:
     actualState
   }
 
-object VarResolvePassSpec:
+object SymbolResolvePassSpec:
   final case class ActualState(
   )
 

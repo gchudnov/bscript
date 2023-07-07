@@ -44,13 +44,15 @@ final class TypecheckPassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
     }
+
+    // TODO: assignment check test
   }
 
   /**
    * To evaluate, we run Phases 1, 2 and 3.
    *
    *   - In Phase 1 we build scopes and define symbols in scopes.
-   *   - In Phase 2 we resolve vars in AST-nodes.
+   *   - In Phase 2 we resolve symbols in AST-nodes.
    *   - In Phase 3 we resolve types of AST-nodes.
    *   - In Phase 4 we check types of AST-nodes.
    */
@@ -62,15 +64,15 @@ final class TypecheckPassSpec extends TestSpec:
 
     val buildOut = buildPass.run(buildIn)
 
-    // #2 var resolve
-    val varResolvePass = new VarResolvePass()
-    val varResolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
+    // #2 symbol resolve
+    val symResolvePass = new SymbolResolvePass()
+    val symResolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ReadScopeTree   = buildOut.scopeTree
       override val scopeSymbols: ReadScopeSymbols = buildOut.scopeSymbols
       override val scopeAsts: ScopeAsts       = buildOut.scopeAsts
       override val ast: AST                   = ast0
 
-    val _ = varResolvePass.run(varResolveIn)
+    val _ = symResolvePass.run(symResolveIn)
 
     // #3 type resolve
     val typeResolvePass = new TypeResolvePass()

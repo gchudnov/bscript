@@ -11,15 +11,15 @@ object Builder:
 
   def build(ast0: AST): Either[Throwable, (AST, BuildState)] =
     val buildPass       = new ScopeBuildPass()
-    val varResolvePass  = new VarResolvePass()
+    val symResolvePass  = new SymbolResolvePass()
     val typeResolvePass = new TypeResolvePass()
     val typeCheckPass   = new TypeCheckPass()
 
     for
       buildIn        <- nonFatalCatch.either(toBuildIn(ast0))
       buildOut       <- nonFatalCatch.either(buildPass.run(buildIn))
-      varResolveIn   <- nonFatalCatch.either(toVarResolveIn(buildOut, ast0))
-      varResolveOut  <- nonFatalCatch.either(varResolvePass.run(varResolveIn)) // NOTE: at the moment we ignore result of this pass
+      symResolveIn   <- nonFatalCatch.either(toSymResolveIn(buildOut, ast0))
+      symResolveOut  <- nonFatalCatch.either(symResolvePass.run(symResolveIn)) // NOTE: at the moment we ignore result of this pass
       typeResolveIn  <- nonFatalCatch.either(toTypeResolveIn(buildOut, ast0))
       typeResolveOut <- nonFatalCatch.either(typeResolvePass.run(typeResolveIn))
       typeCheckIn    <- nonFatalCatch.either(toTypeCheckIn(typeResolveOut, ast0))
@@ -33,9 +33,9 @@ object Builder:
     HasAST(ast)
 
   /**
-   * Build Out -> Var Resolve In
+   * Build Out -> Symbol Resolve In
    */
-  private def toVarResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+  private def toSymResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
     new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
       override val scopeTree: ReadScopeTree       = s.scopeTree
       override val scopeSymbols: ReadScopeSymbols = s.scopeSymbols

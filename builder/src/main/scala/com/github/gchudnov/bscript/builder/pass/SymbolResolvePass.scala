@@ -12,19 +12,19 @@ import com.github.gchudnov.bscript.builder.BuilderException
 import com.github.gchudnov.bscript.lang.ast.refs.*
 
 /**
- * #2 - Variable Resolve Pass
+ * #2 - Symbol Resolve Pass
  *
- *   - Checking for undeclared variables.
+ *   - Checking for undeclared symbols (variables, types, type parameters).
  *
- * To find undeclared variables, check the symbol table on each variable that's used for assignment or dereferencing.
+ * To find undeclared symbols, check the symbol table on each variable that's used for assignment or dereferencing.
  */
-final class VarResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST, Unit]:
+final class SymbolResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST, Unit]:
 
   override def run(in: HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST): Unit =
-    val state0 = VarResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
+    val state0 = SymbolResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
     val ast0   = in.ast
 
-    val folder = new VarResolveFolder()
+    val folder = new SymbolResolveFolder()
 
     val state1 = folder.foldAST(state0, ast0)
 
@@ -35,11 +35,11 @@ final class VarResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbols &
     out
 
 /**
- * Variable Resolve Folder
+ * Symbol Resolve Folder
  */
-private final class VarResolveFolder() extends ASTFolder[VarResolveState]:
+private final class SymbolResolveFolder() extends ASTFolder[SymbolResolveState]:
 
-  override def foldAST(s: VarResolveState, ast: AST): VarResolveState =
+  override def foldAST(s: SymbolResolveState, ast: AST): SymbolResolveState =
     ast match
       case x: Access =>
         s.ensureAccess(x)
@@ -53,9 +53,9 @@ private final class VarResolveFolder() extends ASTFolder[VarResolveState]:
         foldOverAST(s, other)
 
 /**
- * Var Resolve State
+ * Symbol Resolve State
  */
-private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts):
+private final case class SymbolResolveState(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts):
 
   /**
    * Ensure that TypeId is resolved
@@ -65,7 +65,7 @@ private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols:
    * @return
    *   an updated state
    */
-  def ensureTypeId(typeId: TypeId): VarResolveState =
+  def ensureTypeId(typeId: TypeId): SymbolResolveState =
     val errOrState = for
       scopeDecls <- resolveTypeId(typeId)
       _          <- scopeDecls.headOption.toRight(BuilderException(s"TypeId '${typeId.name}' is not found in the scope tree"))
@@ -80,7 +80,7 @@ private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols:
    * @return
    *   an updated state
    */
-  def ensureId(id: Id): VarResolveState =
+  def ensureId(id: Id): SymbolResolveState =
     val errOrState = for
       maybeScopeSymbol <- resolveId(id)
       _                <- maybeScopeSymbol.toRight(BuilderException(s"Id '${id.name}' is not found in the scope tree"))
@@ -95,7 +95,7 @@ private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols:
    * @return
    *   an updated state
    */
-  def ensureAccess(access: Access): VarResolveState =
+  def ensureAccess(access: Access): SymbolResolveState =
     val errOrState = for
       maybeScopeSymbol <- resolveAccess(access)
       _                <- maybeScopeSymbol.toRight(BuilderException(s"Acccess '${access.path.mkString(".")}' is not found in the scope tree"))
@@ -162,10 +162,10 @@ private final case class VarResolveState(scopeTree: ReadScopeTree, scopeSymbols:
 /**
  * Scope Build State Companion
  */
-private object VarResolveState:
+private object SymbolResolveState:
 
-  def from(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts): VarResolveState =
-    VarResolveState(
+  def from(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts): SymbolResolveState =
+    SymbolResolveState(
       scopeTree = scopeTree,
       scopeSymbols = scopeSymbols,
       scopeAsts = scopeAsts,
