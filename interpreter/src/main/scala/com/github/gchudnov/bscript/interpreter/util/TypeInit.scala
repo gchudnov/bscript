@@ -33,6 +33,7 @@ private[interpreter] object TypeInit:
   )
 
   def init(t: TypeAST): Cell =
+    println(t)
     t match
       case _: Auto =>
         throw new InterpreterException("Auto type is not supported for initialization.")
@@ -77,7 +78,7 @@ private[interpreter] object TypeInit:
   private def initStructType(s: StructType): Cell =
     val m = s.fields.foldLeft(Map.empty[String, Cell]) { case (acc, f) =>
       val name = f.name
-      val t    = f.aType
+      val t    = f.aType // TODO: it must be eval-type
       val c    = init(t)
       acc + (name -> c)
     }

@@ -427,8 +427,11 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.struct(Map("x" -> Cell.i32(0))))
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
+
+      // TODO: add typeResolve test for this use-case to check the evaType of StructType
 
       // TODO: fixme: ^^^^
     }

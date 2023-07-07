@@ -62,7 +62,7 @@ private final case class TypeCheckState(evalTypes: ReadEvalTypes):
    * @return
    *   type
    */
-  def typeOf(ast: AST): TypeAST =
+  def evalTypeOf(ast: AST): TypeAST =
     val ot = evalTypes.typeOf(ast)
     ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug in BScript."))
 
@@ -72,8 +72,8 @@ private final case class TypeCheckState(evalTypes: ReadEvalTypes):
    * NOTE: it is always allowed to assign Nothing to a variable.
    */
   def checkAssign(a: Assign): TypeCheckState =
-    val lhsType = typeOf(a.lhs)
-    val rhsType = typeOf(a.rhs)
+    val lhsType = evalTypeOf(a.lhs)
+    val rhsType = evalTypeOf(a.rhs)
 
     if (lhsType != rhsType) && !TypeAST.isNothing(rhsType) then throw BuilderException(s"Type mismatch: ${lhsType} != ${rhsType} in the assignment")
 
@@ -87,8 +87,8 @@ private final case class TypeCheckState(evalTypes: ReadEvalTypes):
    * NOTE: it is always allowed to assign Nothing to a variable.
    */
   def checkVarDecl(v: VarDecl): TypeCheckState =
-    val aType    = typeOf(v.aType)
-    val exprType = typeOf(v.expr)
+    val aType    = evalTypeOf(v.aType)
+    val exprType = evalTypeOf(v.expr)
 
     if (aType != exprType) && !TypeAST.isNothing(exprType) then throw BuilderException(s"Type mismatch: ${aType} != ${exprType} in the variable declaration")
 

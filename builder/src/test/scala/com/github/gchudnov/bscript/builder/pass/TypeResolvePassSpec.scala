@@ -16,6 +16,7 @@ import com.github.gchudnov.bscript.lang.func.ASTFinder
 import com.github.gchudnov.bscript.lang.ast.lit.ConstLit
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.refs.*
+import com.github.gchudnov.bscript.lang.ast.types.StructType
 
 /**
  * Type Resolve Pass Tests
@@ -143,16 +144,24 @@ final class TypeResolvePassSpec extends TestSpec:
     }
 
     "struct declarations" should {
+        
+      val structTypeFinder = new ASTFinder:
+        override def findAST(ast: AST): Option[AST] =
+          ast match
+            case _: StructType => Some(ast)
+            case _             => None
 
       /**
        * {{{
        *   // globals
        *   {
        *     struct A { };
+       *     A a;
+       *     a
        *   }
        * }}}
        */
-      "eval to void" in {
+      "eval to void and type is resolved" in {
         val t = Examples.structEmpty
 
         val structDeclFinder = new ASTFinder:
@@ -164,15 +173,17 @@ final class TypeResolvePassSpec extends TestSpec:
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val node = structDeclFinder.foldAST(None, t.ast)
-            actualState.evalTypes(node.get) mustBe BuiltInType(TypeName.void)
+            val declNode = structDeclFinder.foldAST(None, t.ast)
+            actualState.evalTypes(declNode.get) mustBe BuiltInType(TypeName.void)
+
+            val typeNode = structTypeFinder.foldAST(None, t.ast)
+            actualState.evalTypes(typeNode.get) mustBe BuiltInType(TypeName.void)
 
           case Left(t) =>
             fail("Should be 'right", t)
       }
-    }
 
-    "generic paramters nodes" should {
+      // TODO: fix it ^^^
 
       /**
        * {{{
@@ -182,7 +193,7 @@ final class TypeResolvePassSpec extends TestSpec:
        *   }
        * }}}
        */
-      "eval to void" in {
+      "eval to void generic structs" in {
         val t = Examples.structT
 
         val typeDeclFinder = new ASTFinder:
@@ -199,6 +210,10 @@ final class TypeResolvePassSpec extends TestSpec:
 
           case Left(t) =>
             fail("Should be 'right", t)
+      }
+
+      "eval type when one field" in {
+
       }
     }
 
@@ -513,10 +528,10 @@ final class TypeResolvePassSpec extends TestSpec:
     // #2 symbol resolve
     val symResolvePass = new SymbolResolvePass()
     val symResolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
-      override val scopeTree: ReadScopeTree   = buildOut.scopeTree
+      override val scopeTree: ReadScopeTree       = buildOut.scopeTree
       override val scopeSymbols: ReadScopeSymbols = buildOut.scopeSymbols
-      override val scopeAsts: ScopeAsts       = buildOut.scopeAsts
-      override val ast: AST                   = ast0
+      override val scopeAsts: ScopeAsts           = buildOut.scopeAsts
+      override val ast: AST                       = ast0
 
     val _ = symResolvePass.run(symResolveIn)
 

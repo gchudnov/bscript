@@ -150,7 +150,7 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
    * Interpret the type initialization.
    */
   private def interpretInit(s: InterpretState, x: Init): InterpretState =
-    val initCell = TypeInit.init(s.typeOf(x))
+    val initCell = TypeInit.init(s.evalTypeOf(x))
     s.withRetVal(initCell)
 
 /**
@@ -166,7 +166,7 @@ private final case class InterpretState(evalTypes: ReadEvalTypes, retValue: Cell
    * @return
    *   type
    */
-  def typeOf(ast: AST): TypeAST =
+  def evalTypeOf(ast: AST): TypeAST =
     val ot = evalTypes.typeOf(ast)
     ot.getOrElse(throw InterpreterException(s"Type of the AST node is not defined: ${ast}, this is a bug in BScript."))
 

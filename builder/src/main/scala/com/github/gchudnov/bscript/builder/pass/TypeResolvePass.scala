@@ -93,8 +93,10 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
       case x @ MapType(keyType, valType) =>
         foldOverAST(s, x)
+      
       case x @ StructType(tfields, fields) =>
         foldOverAST(s, x)
+      
       case x @ MethodType(tparams, params, retType) =>
         foldOverAST(s, x)
       case x @ GenericType(name) =>
@@ -118,9 +120,9 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
           case Init() =>
             throw BuilderException(s"Type of the variable '${v.name}' is not defined; Auto() = Init() is not supported")
           case other =>
-            s1.typeOf(other)
+            s1.evalTypeOf(other)
       case other =>
-        s1.typeOf(other)
+        s1.evalTypeOf(other)
     val s2 = s1.assignType(v.aType, aType)
 
     // handle Init(), take the value from the type of the variable
@@ -138,7 +140,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    */
   private def resolveBlockType(s: TypeResolveState, b: Block): TypeResolveState =
     val s1 = foldOverAST(s, b)
-    val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignType(b, s1.typeOf(lastExpr)))
+    val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignType(b, s1.evalTypeOf(lastExpr)))
     s2
 
   /**
@@ -148,8 +150,8 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    */
   private def resolveIfType(s: TypeResolveState, i: If): TypeResolveState =
     val s1       = foldOverAST(s, i)
-    val thenType = s1.typeOf(i.then1)
-    val elseType = s1.typeOf(i.else1)
+    val thenType = s1.evalTypeOf(i.then1)
+    val elseType = s1.evalTypeOf(i.else1)
 
     val s2 =
       if thenType == elseType then s1.assignType(i, thenType)
@@ -212,7 +214,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
    * @return
    *   type
    */
-  def typeOf(ast: AST): TypeAST =
+  def evalTypeOf(ast: AST): TypeAST =
     val ot = evalTypes.typeOf(ast)
     ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug in BScript."))
 
@@ -274,7 +276,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
       case x: TypeId =>
         resolveTypeIdType(x)
       case other =>
-        typeOf(other)
+        evalTypeOf(other)
     aType
 
   /**
