@@ -45,7 +45,79 @@ final class TypecheckPassSpec extends TestSpec:
       }
     }
 
-    // TODO: assignment check test
+    "variable definition" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1L;
+       *   x;
+       * }}}
+       */
+      "type check if types are matching" in {
+        val t = Examples.xyDeclReturnX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "fail to type-check if the initial value is not matching the type" in {
+        val t = Examples.xyDeclWrongInit
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("XXX")
+      }
+    }
+
+    "assignment" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   int y = 1;
+       *   x = y;
+       * }}}
+       */
+      "type check if types on both sides are matching" in {
+        val t = Examples.xyDeclAssign
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      /**
+       * {{{
+       *   // globals
+       *   int x = 0;
+       *   long y = 1;
+       *   x = y;       // NOTE: y is not compatible with x
+       * }}}
+       */
+      "fail to type check if types on both sides are not matching" in {
+        val t = Examples.xyDeclAssignUncompat
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("Type mismatch: BuiltInType(i32) != BuiltInType(i64)")
+      }
+    }
   }
 
   /**
@@ -67,10 +139,10 @@ final class TypecheckPassSpec extends TestSpec:
     // #2 symbol resolve
     val symResolvePass = new SymbolResolvePass()
     val symResolveIn = new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
-      override val scopeTree: ReadScopeTree   = buildOut.scopeTree
+      override val scopeTree: ReadScopeTree       = buildOut.scopeTree
       override val scopeSymbols: ReadScopeSymbols = buildOut.scopeSymbols
-      override val scopeAsts: ScopeAsts       = buildOut.scopeAsts
-      override val ast: AST                   = ast0
+      override val scopeAsts: ScopeAsts           = buildOut.scopeAsts
+      override val ast: AST                       = ast0
 
     val _ = symResolvePass.run(symResolveIn)
 
@@ -88,7 +160,7 @@ final class TypecheckPassSpec extends TestSpec:
     val typeCheckPass = new TypeCheckPass()
     val typeCheckIn = new HasReadEvalTypes with HasAST:
       override val evalTypes: ReadEvalTypes = typeResolveOut.evalTypes
-      override val ast: AST                   = ast0
+      override val ast: AST                 = ast0
 
     val typeCheckOut = typeCheckPass.run(typeCheckIn)
 

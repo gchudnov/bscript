@@ -160,7 +160,7 @@ object Examples:
    * {{{
    *   // globals
    *   int x = 0;
-   *   y = 1;
+   *   y = 1;     // NOTE: y is not defined
    * }}}
    */
   val varNotDefined: Example =
@@ -171,12 +171,28 @@ object Examples:
     Example(t)
 
   /**
+   * X Declaration with a wrong init-type
+   * 
+   * {{{
+   *   // globals
+   *   int x = "abc";
+   *   x;
+   * }}}
+   */
+  val xyDeclWrongInit: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(StrVal("abc"))),
+      Id("x"),
+    )
+    Example(t)
+
+  /**
    * X,Y Declaration, Return X
    *
    * {{{
    *   // globals
    *   int x = 0;
-   *   long y = 1;
+   *   long y = 1L;
    *   x;
    * }}}
    */
@@ -194,7 +210,7 @@ object Examples:
    * {{{
    *   // globals
    *   int x = 0;
-   *   long y = 1;
+   *   long y = 1L;
    *   y;
    * }}}
    */
@@ -212,7 +228,7 @@ object Examples:
    * {{{
    *   // globals
    *   int x = 0;
-   *   long y = 1;
+   *   long y = 1L;
    *   z;           // NOTE: z is not defined
    * }}}
    */
@@ -238,6 +254,24 @@ object Examples:
     val t = Block.of(
       VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
       VarDecl("y", TypeId(TypeName.i64), ConstLit(LongVal(1))),
+      Assign(Id("x"), Id("y")),
+    )
+    Example(t)
+
+  /**
+   * X,Y Declaration, Assignment of compatible types
+   *
+   * {{{
+   *   // globals
+   *   int x = 0;
+   *   int y = 1;
+   *   x = y;
+   * }}}
+   */
+  val xyDeclAssign: Example =
+    val t = Block.of(
+      VarDecl("x", TypeId(TypeName.i32), ConstLit(IntVal(0))),
+      VarDecl("y", TypeId(TypeName.i32), ConstLit(LongVal(1))),
       Assign(Id("x"), Id("y")),
     )
     Example(t)
