@@ -66,6 +66,13 @@ final class TypecheckPassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
+      /**
+       * {{{
+       *   // globals
+       *   int x = "abc";
+       *   x;
+       * }}}
+       */
       "fail to type-check if the initial value is not matching the type" in {
         val t = Examples.xyDeclWrongInit
 
@@ -77,7 +84,23 @@ final class TypecheckPassSpec extends TestSpec:
             t.getMessage must include("BuiltInType(i32) != BuiltInType(str) in the variable declaration")
       }
 
-      // TODO: Init() should pass the type check
+      /**
+       * {{{
+       *   // globals
+       *   long x = _;
+       *   x;
+       * }}}
+       */
+      "init should pass the type-check" in {
+        val t = Examples.intVal
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            succeed
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
 
     "assignment" should {

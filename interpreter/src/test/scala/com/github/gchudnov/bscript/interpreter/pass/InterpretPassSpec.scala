@@ -296,9 +296,25 @@ final class InterpretPassSpec extends TestSpec:
             t.getMessage must include("Type mismatch: BuiltInType(i32) != BuiltInType(i64)")
       }
 
-      // TODO: impl Init() usage
+      /**
+       * {{{
+       *   // globals
+       *   int x = "abc";
+       *   x;
+       * }}}
+       */
+      "declaration and init of uncompatible types produces an error" in {
+        val t = Examples.xyDeclWrongInit
 
-      // TODO: add test for `int x = 10L`, it should produce an error
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            fail("Should be 'left")
+          case Left(t) =>
+            t.getMessage must include("Type mismatch: BuiltInType(i32) != BuiltInType(str) in the variable declaration")
+      }
+
+      // TODO: impl Init() usage
     }
 
     "conditions" should {

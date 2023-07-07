@@ -246,7 +246,7 @@ object Examples:
    * {{{
    *   // globals
    *   int x = 0;
-   *   long y = 1;
+   *   long y = 1L;
    *   x = y;       // NOTE: y is not compatible with x
    * }}}
    */
