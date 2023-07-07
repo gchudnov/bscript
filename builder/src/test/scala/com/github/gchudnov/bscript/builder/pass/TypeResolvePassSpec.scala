@@ -177,13 +177,11 @@ final class TypeResolvePassSpec extends TestSpec:
             actualState.evalTypes(declNode.get) mustBe BuiltInType(TypeName.void)
 
             val typeNode = structTypeFinder.foldAST(None, t.ast)
-            actualState.evalTypes(typeNode.get) mustBe BuiltInType(TypeName.void)
+            actualState.evalTypes(typeNode.get) mustBe StructType(List.empty[TypeDecl], List.empty[VarDecl])
 
           case Left(t) =>
             fail("Should be 'right", t)
       }
-
-      // TODO: fix it ^^^
 
       /**
        * {{{

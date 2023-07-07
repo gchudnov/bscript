@@ -48,21 +48,21 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         resolveIdType(s, x) // TODO: DONE, remove this comment
 
       case x: BuiltInDecl =>
-        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
+        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
       case x: MethodDecl =>
-        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
+        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
       case x: StructDecl =>
-        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
+        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
       case x: VarDecl =>
         resolveVarDeclType(s, x) // TODO: DONE, remove this comment
       case x: TypeDecl =>
-        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
+        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
 
       case x: Annotated =>
         foldOverAST(s, x)
 
       case x: Assign =>
-        foldOverAST(s, x).assignVoid(x) // TODO: DONE, remove this comment
+        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
 
       case x: Block =>
         resolveBlockType(s, x) // TODO: DONE, remove this comment
@@ -79,7 +79,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>
-        s.assignType(x, Const.toTypeAST(const)) // TODO: DONE, remove this comment
+        s.assignEvalType(x, Const.toTypeAST(const)) // TODO: DONE, remove this comment
 
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
@@ -89,14 +89,16 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
       case x: TypeId =>
         resolveTypeIdType(s, x) // TODO: DONE, remove this comment
 
+      // TODO: impl all types below:
+
       case x @ VecType(elemType) =>
         foldOverAST(s, x)
       case x @ MapType(keyType, valType) =>
         foldOverAST(s, x)
-      
-      case x @ StructType(tfields, fields) =>
-        foldOverAST(s, x)
-      
+
+      case x: StructType =>
+        resolveStructType(s, x) // TODO: DONE, remove this comment
+
       case x @ MethodType(tparams, params, retType) =>
         foldOverAST(s, x)
       case x @ GenericType(name) =>
@@ -123,24 +125,24 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
             s1.evalTypeOf(other)
       case other =>
         s1.evalTypeOf(other)
-    val s2 = s1.assignType(v.aType, aType)
+    val s2 = s1.assignEvalType(v.aType, aType)
 
     // handle Init(), take the value from the type of the variable
     val s3 =
       v.expr match
         case Init() =>
-          s2.assignType(v.expr, aType)
+          s2.assignEvalType(v.expr, aType)
         case _ =>
           s2
 
-    s3.assignVoid(v)
+    s3.assignEvalTypeVoid(v)
 
   /**
    * Resolve type of the block
    */
   private def resolveBlockType(s: TypeResolveState, b: Block): TypeResolveState =
     val s1 = foldOverAST(s, b)
-    val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignType(b, s1.evalTypeOf(lastExpr)))
+    val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignEvalType(b, s1.evalTypeOf(lastExpr)))
     s2
 
   /**
@@ -154,9 +156,9 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
     val elseType = s1.evalTypeOf(i.else1)
 
     val s2 =
-      if thenType == elseType then s1.assignType(i, thenType)
-      else if TypeAST.isNothing(thenType) then s1.assignType(i, elseType)
-      else if TypeAST.isNothing(elseType) then s1.assignType(i, thenType)
+      if thenType == elseType then s1.assignEvalType(i, thenType)
+      else if TypeAST.isNothing(thenType) then s1.assignEvalType(i, elseType)
+      else if TypeAST.isNothing(elseType) then s1.assignEvalType(i, thenType)
       else throw BuilderException(s"Type mismatch in if expression: ${thenType} and ${elseType}")
     s2
 
@@ -165,7 +167,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    */
   private def resolveIdType(s: TypeResolveState, id: Id): TypeResolveState =
     val typeAST = s.resolveIdType(id)
-    val s1      = s.assignType(id, typeAST)
+    val s1      = s.assignEvalType(id, typeAST)
     s1
 
   /**
@@ -173,8 +175,17 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    */
   private def resolveTypeIdType(s: TypeResolveState, typeId: TypeId): TypeResolveState =
     val typeAST = s.resolveTypeIdType(typeId)
-    val s1      = s.assignType(typeId, typeAST)
+    val s1      = s.assignEvalType(typeId, typeAST)
     s1
+
+  /**
+   * Resolve StructType type
+   */
+  private def resolveStructType(s: TypeResolveState, structType: StructType): TypeResolveState =
+    val s1         = foldOverAST(s, structType)
+    val evalFields = structType.fields.map(f => f.copy(aType = s1.evalTypeOf(f.aType)))
+    val evalType   = structType.copy(fields = evalFields)
+    s1.assignEvalType(structType, evalType)
 
 /**
  * Type Resolve State
@@ -192,7 +203,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
    * @return
    *   new state
    */
-  def assignType(ast: AST, t: TypeAST): TypeResolveState =
+  def assignEvalType(ast: AST, t: TypeAST): TypeResolveState =
     copy(evalTypes = evalTypes.assignType(ast, t))
 
   /**
@@ -203,8 +214,8 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
    * @return
    *   new state
    */
-  def assignVoid(ast: AST): TypeResolveState =
-    assignType(ast, BuiltInType(TypeName.void))
+  def assignEvalTypeVoid(ast: AST): TypeResolveState =
+    assignEvalType(ast, BuiltInType(TypeName.void))
 
   /**
    * Get type of the AST node.
