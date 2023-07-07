@@ -24,7 +24,7 @@ object Builder:
       typeResolveOut <- nonFatalCatch.either(typeResolvePass.run(typeResolveIn))
       typeCheckIn    <- nonFatalCatch.either(toTypeCheckIn(typeResolveOut, ast0))
       typeCheckOut   <- nonFatalCatch.either(typeCheckPass.run(typeCheckIn)) // NOTE: at the moment we ignore result of this pass
-    yield (ast0, BuildState.from(ast0))
+    yield (ast0, BuildState.from(typeResolveOut.evalTypes))
 
   /**
    * -> Build In

@@ -314,7 +314,24 @@ final class InterpretPassSpec extends TestSpec:
             t.getMessage must include("Type mismatch: BuiltInType(i32) != BuiltInType(str) in the variable declaration")
       }
 
-      // TODO: impl Init() usage
+      /**
+       * {{{
+       *   // globals
+       *   long x = _;
+       *   x;
+       * }}}
+       */
+      "declaration with init for an integer" in {
+        val t = Examples.xDeclDfaultReturnX
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.I64(0))
+          case Left(t) =>
+            println(t)
+            fail("Should be 'right", t)
+      }
     }
 
     "conditions" should {
@@ -384,12 +401,12 @@ final class InterpretPassSpec extends TestSpec:
 
     val (ast1, buildState) = Builder.build(ast0).toTry.get
 
-    val interpretIn = new HasAST:
-      val ast = ast1
+    val interpretIn = new HasAST with HasReadEvalTypes:
+      override val ast: AST                 = ast1
+      override def evalTypes: ReadEvalTypes = buildState.evalTypes
 
     val interpretOut = interpretPass.run(interpretIn)
-
-    val actualState = toActualState(interpretOut)
+    val actualState  = toActualState(interpretOut)
 
     actualState
   }

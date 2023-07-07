@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
+import com.github.gchudnov.bscript.builder.state.ReadEvalTypes
 // import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SMethod, SStruct, SVar, Symbol, SymbolRef, Type }
 // import com.github.gchudnov.bscript.lang.symbols.types.TypeRef
 // import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
@@ -20,14 +21,14 @@ import com.github.gchudnov.bscript.lang.ast.AST
 // import com.github.gchudnov.bscript.builder.state.ScopeAsts
 
 final case class BuildState(
-  ast: AST
+  evalTypes: ReadEvalTypes,
 )
 
 object BuildState:
 
-  def from(ast: AST): BuildState =
+  def from(evalTypes: ReadEvalTypes): BuildState =
     BuildState(
-      ast
+      evalTypes
     )
 
 

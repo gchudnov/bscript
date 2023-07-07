@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.interpreter.pass
 
 import com.github.gchudnov.bscript.interpreter.util.ConstConv
+import com.github.gchudnov.bscript.interpreter.util.TypeInit
 import com.github.gchudnov.bscript.builder.env.*
 import com.github.gchudnov.bscript.lang.func.ASTFolder
 import com.github.gchudnov.bscript.builder.state.*
@@ -16,16 +17,16 @@ import com.github.gchudnov.bscript.interpreter.env.*
 
 /**
  * #A - Interpret Pass
- * 
+ *
  * Interpret the AST.
  */
-final class InterpretPass extends Pass[HasAST, HasRetValue]:
+final class InterpretPass extends Pass[HasReadEvalTypes & HasAST, HasRetValue]:
 
-  override def run(in: HasAST): HasRetValue =
+  override def run(in: HasReadEvalTypes & HasAST): HasRetValue =
     val initRet  = Cell.Void
     val initArea = Area("#")
 
-    val state0 = InterpretState.from(retValue = initRet, area = initArea)
+    val state0 = InterpretState.from(evalTypes = in.evalTypes, retValue = initRet, area = initArea)
     val ast0   = in.ast
 
     val folder = new InterpretFolder()
@@ -58,8 +59,8 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
       case x @ StructDecl(name, sType) =>
         foldOverAST(s, x)
 
-      case VarDecl(name, vType, expr) =>
-        foldAST(foldAST(s, vType), expr).storeRetVal(name).withRetVal(Cell.Void) // TODO: DONE, remove the comment
+      case x: VarDecl =>
+        interpretVarDecl(s, x) // TODO: DONE, remove the comment
 
       case x @ TypeDecl(name, tType) =>
         foldOverAST(s, x)
@@ -67,8 +68,8 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
       case x: Annotated =>
         foldOverAST(s, x)
 
-      case Assign(lhs, rhs) =>
-        foldAST(foldAST(s, lhs), rhs).updateRetVal(Path(lhs.path)).withRetVal(Cell.Void) // TODO: DONE, remove the comment
+      case x: Assign =>
+        interpretAssign(s, x) // TODO: DONE, remove the comment
 
       case x: Block =>
         foldOverAST(s, x)
@@ -81,8 +82,9 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
       case x: If =>
         interpretIf(s, x) // TODO: DONE, remove the comment
 
-      case x @ Init() =>
-        foldOverAST(s, x)
+      case x: Init =>
+        interpretInit(s, x) // TODO: DONE, remove the comment
+
       case x @ Pair(key, value) =>
         foldOverAST(s, x)
 
@@ -119,11 +121,6 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
 
   /**
    * Interpret an if statement.
-   *
-   * @param x
-   *   the if statement
-   * @return
-   *   a new state
    */
   private def interpretIf(s: InterpretState, x: If): InterpretState =
     val s1 = foldAST(s, x.cond)
@@ -134,10 +131,44 @@ private final class InterpretFolder() extends ASTFolder[InterpretState]:
       case other =>
         throw InterpreterException(s"Condition must be a boolean value, but got: ${other}")
 
+  /**
+   * Interpret an assignment.
+   */
+  private def interpretAssign(s: InterpretState, x: Assign): InterpretState =
+    val s1 = foldAST(s, x.lhs)
+    val s2 = foldAST(s1, x.rhs)
+    s2.updateRetVal(Path(x.lhs.path)).withRetVal(Cell.Void)
+
+  /**
+   * Interpret a variable declaration.
+   */
+  private def interpretVarDecl(s: InterpretState, x: VarDecl): InterpretState =
+    val s1 = foldAST(foldAST(s, x.aType), x.expr)
+    s1.storeRetVal(x.name).withRetVal(Cell.Void)
+
+  /**
+   * Interpret the type initialization.
+   */
+  private def interpretInit(s: InterpretState, x: Init): InterpretState =
+    val initCell = TypeInit.init(s.typeOf(x))
+    s.withRetVal(initCell)
+
 /**
  * Interpret State
  */
-private final case class InterpretState(retValue: Cell, area: Area):
+private final case class InterpretState(evalTypes: ReadEvalTypes, retValue: Cell, area: Area):
+
+  /**
+   * Get type of the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @return
+   *   type
+   */
+  def typeOf(ast: AST): TypeAST =
+    val ot = evalTypes.typeOf(ast)
+    ot.getOrElse(throw InterpreterException(s"Type of the AST node is not defined: ${ast}, this is a bug in BScript."))
 
   /**
    * Sets the return value.
@@ -205,8 +236,9 @@ private final case class InterpretState(retValue: Cell, area: Area):
  */
 private object InterpretState:
 
-  def from(retValue: Cell, area: Area): InterpretState =
+  def from(evalTypes: ReadEvalTypes, retValue: Cell, area: Area): InterpretState =
     InterpretState(
+      evalTypes = evalTypes,
       retValue = retValue,
       area = area,
     )

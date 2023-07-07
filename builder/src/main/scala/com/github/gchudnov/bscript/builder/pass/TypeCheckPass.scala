@@ -64,7 +64,7 @@ private final case class TypeCheckState(evalTypes: ReadEvalTypes):
    */
   def typeOf(ast: AST): TypeAST =
     val ot = evalTypes.typeOf(ast)
-    ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug."))
+    ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug in BScript."))
 
   /**
    * Check the types of the Assign operator
