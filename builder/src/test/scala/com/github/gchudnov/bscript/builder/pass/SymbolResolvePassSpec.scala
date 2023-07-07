@@ -130,7 +130,7 @@ final class SymbolResolvePassSpec extends TestSpec:
        * }}}
        */
       "resolve references to a struct" in {
-        val t = Examples.structA
+        val t = Examples.structOneField
 
         val errOrRes = eval(t.ast)
         errOrRes match
@@ -155,7 +155,7 @@ final class SymbolResolvePassSpec extends TestSpec:
        * }}}
        */
       "resolve access to a field in a struct" in {
-        val t = Examples.structAFieldAssignment
+        val t = Examples.structFieldAssignment
 
         val errOrRes = eval(t.ast)
         errOrRes match

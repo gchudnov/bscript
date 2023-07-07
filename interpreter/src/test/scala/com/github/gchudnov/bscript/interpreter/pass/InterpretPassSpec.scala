@@ -142,11 +142,11 @@ final class InterpretPassSpec extends TestSpec:
       /**
        * {{{
        *   // globals
-       *   int x = 0;
+       *   int x = nothing;
        *   x;
        * }}}
        */
-      "declare x, assign to null and return" in {
+      "declare x, assign to nothing and return" in {
         val t = Examples.intNothingX
 
         val errOrRes = eval(t.ast)
@@ -254,7 +254,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.Void)
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -273,7 +272,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(0))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -329,7 +327,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I64(0))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -359,7 +356,6 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(4))
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
 
@@ -386,10 +382,55 @@ final class InterpretPassSpec extends TestSpec:
           case Right(actualState) =>
             actualState.retValue mustBe (Cell.I32(9))
           case Left(t) =>
-            println(t)
+            fail("Should be 'right", t)
+      }
+    }
+
+    "struct" should {
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct A { };
+       *     A a;
+       *   }
+       * }}}
+       */
+      "init an empty struct" in {
+        val t = Examples.structEmpty
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.struct(Map.empty[String, Cell]))
+          case Left(t) =>
             fail("Should be 'right", t)
       }
 
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct A { int x; };
+       *
+       *     A a;
+       *     a;
+       *   }
+       * }}}
+       */
+      "init a struct with one field" in {
+        val t = Examples.structOneField
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            actualState.retValue mustBe (Cell.struct(Map("x" -> Cell.i32(0))))
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      // TODO: fixme: ^^^^
     }
   }
 

@@ -909,12 +909,16 @@ object Examples:
    *   // globals
    *   {
    *     struct A { };
+   *     A a;
+   *     a
    *   }
    * }}}
    */
   val structEmpty: Example =
     val t = Block.of(
       StructDecl("A", StructType(List.empty[TypeDecl], List.empty[VarDecl])),
+      VarDecl("a", TypeId("A"), Init()),
+      Id("a"),
     )
     Example(t)
 
@@ -947,7 +951,7 @@ object Examples:
    *   }
    * }}}
    */
-  val structA: Example =
+  val structOneField: Example =
     val t = Block.of(
       StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32))))),
       VarDecl("a", TypeId("A"), Init()),
@@ -969,7 +973,7 @@ object Examples:
    *   }
    * }}}
    */
-  val structAFieldAssignment: Example =
+  val structFieldAssignment: Example =
     val t = Block.of(
       StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32))))),
       VarDecl("a", TypeId("A"), Init()),

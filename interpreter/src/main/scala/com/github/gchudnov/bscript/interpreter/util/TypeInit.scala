@@ -71,32 +71,32 @@ private[interpreter] object TypeInit:
 
   /**
    * Initialize the struct type.
+   *
+   * TODO: consider generics
    */
   private def initStructType(s: StructType): Cell =
-    ???
-
-    // TODO: impl
+    val m = s.fields.foldLeft(Map.empty[String, Cell]) { case (acc, f) =>
+      val name = f.name
+      val t    = f.aType
+      val c    = init(t)
+      acc + (name -> c)
+    }
+    Cell.struct(m)
 
   /**
    * Initialize the map type.
    */
   private def initMapType(m: MapType): Cell =
-    ???
-
-  // TODO: impl
+    Cell.map(List.empty[(Cell, Cell)])
 
   /**
    * Initialize the set type.
    */
   private def initSetType(s: SetType): Cell =
-    ???
-
-  // TODO: impl
+    Cell.set(List.empty[Cell])
 
   /**
-    * Initialize the vector type.
-    */
+   * Initialize the vector type.
+   */
   private def initVecType(v: VecType): Cell =
-    ???
-
-    // TODO: impl
+    Cell.vec(List.empty[Cell])

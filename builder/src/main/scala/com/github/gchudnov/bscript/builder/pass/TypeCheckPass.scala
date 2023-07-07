@@ -68,22 +68,29 @@ private final case class TypeCheckState(evalTypes: ReadEvalTypes):
 
   /**
    * Check the types of the Assign operator
+   *
+   * NOTE: it is always allowed to assign Nothing to a variable.
    */
   def checkAssign(a: Assign): TypeCheckState =
     val lhsType = typeOf(a.lhs)
     val rhsType = typeOf(a.rhs)
 
-    if lhsType != rhsType then throw BuilderException(s"Type mismatch: ${lhsType} != ${rhsType} in the assignment")
+    if (lhsType != rhsType) && !TypeAST.isNothing(rhsType) then throw BuilderException(s"Type mismatch: ${lhsType} != ${rhsType} in the assignment")
 
     if lhsType == Auto then throw BuilderException(s"Cannot assign to Auto type")
 
     this
 
+  /**
+   * Check the types of the VarDecl operator
+   *
+   * NOTE: it is always allowed to assign Nothing to a variable.
+   */
   def checkVarDecl(v: VarDecl): TypeCheckState =
     val aType    = typeOf(v.aType)
     val exprType = typeOf(v.expr)
 
-    if aType != exprType then throw BuilderException(s"Type mismatch: ${aType} != ${exprType} in the variable declaration")
+    if (aType != exprType) && !TypeAST.isNothing(exprType) then throw BuilderException(s"Type mismatch: ${aType} != ${exprType} in the variable declaration")
 
     if exprType == Auto then throw BuilderException(s"Cannot assign to Auto type")
 

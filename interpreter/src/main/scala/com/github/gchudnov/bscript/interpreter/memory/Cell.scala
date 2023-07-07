@@ -45,58 +45,61 @@ object Cell:
   lazy val void: Cell =
     Void
 
-  def bool(value: Boolean): Cell =
+  def bool(value: Boolean): Cell.Bool =
     Bool(value)
 
-  def u8(value: Byte): Cell =
+  def u8(value: Byte): Cell.U8 =
     U8(value)
 
-  def i16(value: Short): Cell =
+  def i16(value: Short): Cell.I16 =
     I16(value)
 
-  def i32(value: Int): Cell =
+  def i32(value: Int): Cell.I32 =
     I32(value)
 
-  def i64(value: Long): Cell =
+  def i64(value: Long): Cell.I64 =
     I64(value)
 
-  def f32(value: Float): Cell =
+  def f32(value: Float): Cell.F32 =
     F32(value)
 
-  def f64(value: Double): Cell =
+  def f64(value: Double): Cell.F64 =
     F64(value)
 
-  def decimal(value: BigDecimal): Cell =
+  def decimal(value: BigDecimal): Cell.Dec =
     Dec(value)
 
-  def chr(value: Char): Cell =
+  def chr(value: Char): Cell.Chr =
     Chr(value)
 
-  def str(value: String): Cell =
+  def str(value: String): Cell.Str =
     Str(value)
 
-  def date(value: LocalDate): Cell =
+  def date(value: LocalDate): Cell.Date =
     Date(value)
 
-  def datetime(value: OffsetDateTime): Cell =
+  def datetime(value: OffsetDateTime): Cell.DateTime =
     DateTime(value)
 
-  def vec(value: List[Cell]): Cell =
+  def vec(value: List[Cell]): Cell.Vec =
     Vec(value.toList)
 
-  def vec(value: Cell*): Cell =
+  def vec(value: Cell*): Cell.Vec =
     Vec(value.toList)
 
-  def set(value: Cell*): Cell =
+  def set(value: List[Cell]): Cell.Set =
     Set(value.toSet)
 
-  def map(value: Cell*): Cell =
+  def set(value: Cell*): Cell.Set =
     Set(value.toSet)
 
-  def struct(value: SMap[String, Cell]): Cell =
+  def map(value: List[(Cell, Cell)]): Cell.Map =
+    Map(value.toMap)
+
+  def struct(value: SMap[String, Cell]): Cell.Struct =
     Struct(value)
 
-  def struct(values: (String, Cell)*): Cell =
+  def struct(values: (String, Cell)*): Cell.Struct =
     Struct(values.toMap)
 
   /**
@@ -201,7 +204,7 @@ object Cell:
    */
   private def diffMap(ns: Path, b: SMap[Cell, Cell], a: SMap[Cell, Cell]): List[Diff.Change[Path, Cell]] =
     val ba = b.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
-    val aa = b.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
+    val aa = a.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
     diffStrMap(ns, ba, aa)
 
   /**
