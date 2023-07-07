@@ -40,6 +40,9 @@ private final class TypeCheckFolder() extends ASTFolder[TypeCheckState]:
 
   override def foldAST(s: TypeCheckState, ast: AST): TypeCheckState =
     ast match
+      case x: VarDecl =>
+        foldOverAST(s, x).checkVarDecl(x)
+
       case x: Assign =>
         foldOverAST(s, x).checkAssign(x)
 
@@ -73,6 +76,16 @@ private final case class TypeCheckState(evalTypes: ReadEvalTypes):
     if lhsType != rhsType then throw BuilderException(s"Type mismatch: ${lhsType} != ${rhsType} in the assignment")
 
     if lhsType == Auto then throw BuilderException(s"Cannot assign to Auto type")
+
+    this
+
+  def checkVarDecl(v: VarDecl): TypeCheckState =
+    val aType    = typeOf(v.aType)
+    val exprType = typeOf(v.expr)
+
+    if aType != exprType then throw BuilderException(s"Type mismatch: ${aType} != ${exprType} in the variable declaration")
+
+    if exprType == Auto then throw BuilderException(s"Cannot assign to Auto type")
 
     this
 

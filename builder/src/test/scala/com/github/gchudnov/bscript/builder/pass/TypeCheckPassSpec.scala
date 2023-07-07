@@ -74,8 +74,10 @@ final class TypecheckPassSpec extends TestSpec:
           case Right(actualState) =>
             fail("Should be 'left")
           case Left(t) =>
-            t.getMessage must include("XXX")
+            t.getMessage must include("BuiltInType(i32) != BuiltInType(str) in the variable declaration")
       }
+
+      // TODO: Init() should pass the type check
     }
 
     "assignment" should {
