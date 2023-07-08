@@ -277,7 +277,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
    *   the list of scope-decl paris
    */
   private def resolveIdDecl(id: Id): Either[Throwable, List[ScopeDecl]] =
-    resolveRefDecl(id)
+    resolveAnyIdDecl(id)
 
   /**
    * Resolve TypeId
@@ -288,7 +288,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
    *   An error or the list of scope declarations
    */
   private def resolveTypeIdDecl(typeId: TypeId): Either[Throwable, List[ScopeDecl]] =
-    resolveRefDecl(typeId)
+    resolveAnyIdDecl(typeId)
 
   /**
    * Resolve T Declarations
@@ -298,7 +298,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
    * @return
    *   An error or the list of scope declarations
    */
-  private def resolveRefDecl[R <: AST: HasName](ref: R): Either[Throwable, List[ScopeDecl]] =
+  private def resolveAnyIdDecl[R <: AST: HasName](ref: R): Either[Throwable, List[ScopeDecl]] =
     for
       startScope   <- scopeAsts.scope(ref).toRight(BuilderException(s"AST '${ref}' is not assigned to a Scope, it is a bug"))
       maybeScopeSym = scopeSymbols.resolveUp(summon[HasName[R]].name(ref), startScope, scopeTree)
