@@ -45,27 +45,27 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x: Id =>
-        resolveIdType(s, x) // TODO: DONE, remove this comment
+        resolveIdType(s, x)
 
       case x: BuiltInDecl =>
-        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
+        resolveBuiltInDecl(s, x)
       case x: MethodDecl =>
-        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
+        resolveMethodDecl(s, x)
       case x: StructDecl =>
-        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
+        resolveStructDecl(s, x)
       case x: VarDecl =>
-        resolveVarDeclType(s, x) // TODO: DONE, remove this comment
+        resolveVarDeclType(s, x)
       case x: TypeDecl =>
-        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
+        resolveTypeDecl(s, x)
 
       case x: Annotated =>
         foldOverAST(s, x)
 
       case x: Assign =>
-        foldOverAST(s, x).assignEvalTypeVoid(x) // TODO: DONE, remove this comment
+        resolveAssign(s, x)
 
       case x: Block =>
-        resolveBlockType(s, x) // TODO: DONE, remove this comment
+        resolveBlockType(s, x)
 
       case x @ Call(id, args) =>
         foldOverAST(s, x)
@@ -73,13 +73,13 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x: If =>
-        resolveIfType(s, x) // TODO: DONE, remove this comment
+        resolveIfType(s, x)
 
       case x @ Pair(key, value) =>
         foldOverAST(s, x)
 
-      case x @ ConstLit(const) =>
-        s.assignEvalType(x, Const.toTypeAST(const)) // TODO: DONE, remove this comment
+      case x: ConstLit =>
+        resolveConstLit(s, x)
 
       case x @ CollectionLit(cType, elems) =>
         foldOverAST(s, x)
@@ -87,9 +87,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x: TypeId =>
-        resolveTypeIdType(s, x) // TODO: DONE, remove this comment
-
-      // TODO: impl all types below:
+        resolveTypeIdType(s, x)
 
       case x @ VecType(elemType) =>
         foldOverAST(s, x)
@@ -97,7 +95,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
         foldOverAST(s, x)
 
       case x: StructType =>
-        resolveStructType(s, x) // TODO: DONE, remove this comment
+        resolveStructType(s, x)
 
       case x @ MethodType(tparams, params, retType) =>
         foldOverAST(s, x)
@@ -169,6 +167,47 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
     val typeAST = s.resolveIdType(id)
     val s1      = s.assignEvalType(id, typeAST)
     s1
+
+  /**
+   * Resolve BuiltInDecl type
+   */
+  private def resolveBuiltInDecl(s: TypeResolveState, builtInDecl: BuiltInDecl): TypeResolveState =
+    val s1 = foldOverAST(s, builtInDecl)
+    s1.assignEvalTypeVoid(builtInDecl)
+
+  /**
+   * Resolve MethodDecl type
+   */
+  private def resolveMethodDecl(s: TypeResolveState, methodDecl: MethodDecl): TypeResolveState =
+    val s1 = foldOverAST(s, methodDecl)
+    s1.assignEvalTypeVoid(methodDecl)
+
+  /**
+   * Resolve StructDecl type
+   */
+  private def resolveStructDecl(s: TypeResolveState, structDecl: StructDecl): TypeResolveState =
+    val s1 = foldOverAST(s, structDecl)
+    s1.assignEvalTypeVoid(structDecl)
+
+  /**
+   * Resolve TypeDecl type
+   */
+  private def resolveTypeDecl(s: TypeResolveState, typeDecl: TypeDecl): TypeResolveState =
+    val s1 = foldOverAST(s, typeDecl)
+    s1.assignEvalTypeVoid(typeDecl)
+
+  /**
+   * Resolve Assign type
+   */
+  private def resolveAssign(s: TypeResolveState, assign: Assign): TypeResolveState =
+    val s1 = foldOverAST(s, assign)
+    s1.assignEvalTypeVoid(assign)
+
+  /**
+   * Resolve ConstLit type
+   */
+  private def resolveConstLit(s: TypeResolveState, constLit: ConstLit): TypeResolveState =
+    s.assignEvalType(constLit, Const.toTypeAST(constLit.const))
 
   /**
    * Resolve TypeId type
