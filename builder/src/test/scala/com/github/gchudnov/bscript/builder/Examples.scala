@@ -960,6 +960,28 @@ object Examples:
     Example(t)
 
   /**
+   * {{{
+   *   // globals
+   *   {
+   *     struct A { int x; };
+   *     struct B { long y; A a; };
+   *     struct C { string z; B b; };
+   *     C c;
+   *     c;
+   *   }
+   * }}}
+    */
+  val structNested: Example =
+    val t = Block.of(
+      StructDecl("A", StructType(List.empty[TypeDecl], List(VarDecl("x", TypeId(TypeName.i32))))),
+      StructDecl("B", StructType(List.empty[TypeDecl], List(VarDecl("y", TypeId(TypeName.i64)), VarDecl("a", TypeId("A"))))),
+      StructDecl("C", StructType(List.empty[TypeDecl], List(VarDecl("z", TypeId(TypeName.str)), VarDecl("b", TypeId("B"))))),
+      VarDecl("c", TypeId("C"), Init()),
+      Id("c"),
+    )
+    Example(t)
+
+  /**
    * A small structure reference and assignment
    *
    * {{{

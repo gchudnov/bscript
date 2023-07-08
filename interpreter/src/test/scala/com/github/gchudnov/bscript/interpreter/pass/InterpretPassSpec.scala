@@ -465,19 +465,6 @@ object InterpretPassSpec:
       retValue = s.retValue,
     )
 
-//     Builder
-//       .build(ast0, types, typeCheckLaws)
-//       .flatMap({ astMeta =>
-//         val ms = MemorySpace("globals")
-
-//         val laws = IInterpretLaws.make(types, astMeta.meta)
-
-//         val interpretVisitor = InterpretVisitor.make(laws)
-//         val interpretState   = InterpretState.make(meta = astMeta.meta, Stash.empty, memSpace = ms, retValue = VoidCell)
-
-//         astMeta.ast.visit(interpretState, interpretVisitor)
-//       })
-
 //       /**
 //        * {{{
 //        *   // globals

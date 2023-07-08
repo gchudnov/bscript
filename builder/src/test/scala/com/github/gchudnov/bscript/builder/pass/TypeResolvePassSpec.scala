@@ -144,12 +144,18 @@ final class TypeResolvePassSpec extends TestSpec:
     }
 
     "struct declarations" should {
-        
+
       val structTypeFinder = new ASTFinder:
         override def findAST(ast: AST): Option[AST] =
           ast match
             case _: StructType => Some(ast)
             case _             => None
+
+      def structDeclFinder(name: String) = new ASTFinder:
+        override def findAST(ast: AST): Option[AST] =
+          ast match
+            case x: StructDecl if x.name == name => Some(ast)
+            case _                               => None
 
       /**
        * {{{
@@ -164,16 +170,10 @@ final class TypeResolvePassSpec extends TestSpec:
       "eval to void and type is resolved" in {
         val t = Examples.structEmpty
 
-        val structDeclFinder = new ASTFinder:
-          override def findAST(ast: AST): Option[AST] =
-            ast match
-              case _: StructDecl => Some(ast)
-              case _             => None
-
         val errOrRes = eval(t.ast)
         errOrRes match
           case Right(actualState) =>
-            val declNode = structDeclFinder.foldAST(None, t.ast)
+            val declNode = structDeclFinder("A").foldAST(None, t.ast)
             actualState.evalTypes(declNode.get) mustBe BuiltInType(TypeName.void)
 
             val typeNode = structTypeFinder.foldAST(None, t.ast)
@@ -210,9 +210,85 @@ final class TypeResolvePassSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct A { int x; };
+       *
+       *     A a;
+       *     a;
+       *   }
+       * }}}
+       */
       "eval type when one field" in {
+        val t = Examples.structOneField
 
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val typeNode = structTypeFinder.foldAST(None, t.ast)
+            actualState.evalTypes(typeNode.get) mustBe StructType(List.empty[TypeDecl], List(VarDecl("x", BuiltInType(TypeName.i32))))
+
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
+
+      /**
+       * {{{
+       *   // globals
+       *   {
+       *     struct A { int x; };
+       *     struct B { long y; A a; };
+       *     struct C { string z; B b; };
+       *     C c;
+       *     c;
+       *   }
+       * }}}
+       */
+      "eval nested struct" in {
+        val t = Examples.structNested
+
+        val errOrRes = eval(t.ast)
+        errOrRes match
+          case Right(actualState) =>
+            val declANode = structDeclFinder("A").foldAST(None, t.ast)
+            val declBNode = structDeclFinder("B").foldAST(None, t.ast)
+            val declCNode = structDeclFinder("C").foldAST(None, t.ast)
+
+            val typeANode = declANode.get.asInstanceOf[StructDecl].aType
+            val typeBNode = declBNode.get.asInstanceOf[StructDecl].aType
+            val typeCNode = declCNode.get.asInstanceOf[StructDecl].aType
+
+            // A
+            actualState.evalTypes(typeANode) mustBe StructType(List.empty[TypeDecl], List(VarDecl("x", BuiltInType(TypeName.i32))))
+
+            // B
+            actualState.evalTypes(typeBNode) mustBe StructType(
+              List.empty[TypeDecl],
+              List(
+                VarDecl("y", BuiltInType("i64")),
+                VarDecl(
+                  "a",
+                  StructType(
+                    List.empty[TypeDecl],
+                    List(
+                      VarDecl("x", BuiltInType("i32")),
+                    ),
+                  ),
+                ),
+              ),
+            )
+
+            // // C
+            // actualState.evalTypes(typeCNode) mustBe StructType(List.empty[TypeDecl], List(VarDecl("x", BuiltInType(TypeName.i32))))
+
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      // TODO: impl ^^^
+
     }
 
     "block takes he type of the last expression" should {
