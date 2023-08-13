@@ -1,3 +1,7 @@
+TODO: upd errors:
+- Argument of type '42' is not assignable to parameter of type 'string'
+- Cannot assign to 'x' because it is a constant.
+
 - TODO: add type checking for IF, fail if the types in branches are not matching
 
 - TODO: start horizontal execution:
@@ -20,6 +24,17 @@ https://github.com/faiface/generics/blob/master/go/ast/ast.go
 https://softwareengineering.stackexchange.com/questions/334167/how-are-generics-implemented-in-a-modern-compiler
 
 + books on compiler design
+
+
+Lox
+https://craftinginterpreters.com/contents.html
+https://journal.stuffwithstuff.com/
+https://benhoyt.com/writings/loxlox/
+https://calebschoepp.com/blog/2020/adding-a-list-data-type-to-lox/
+https://github.com/DavidTimms/loxdown
+
+https://chidiwilliams.com/post/notes-on-crafting-interpreters-go/
+
 
 
 [Trees.scala](https://github.com/lampepfl/dotty/blob/0a21ecf4fa0e62545c94dd184beb1878b1c7d4fe/compiler/src/dotty/tools/dotc/ast/Trees.scala#L1638)

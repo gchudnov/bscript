@@ -136,7 +136,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
     s3.assignEvalTypeVoid(v)
 
   /**
-   * Resolve type of the block
+   * Resolve type of the a Block
    */
   private def resolveBlockType(s: TypeResolveState, b: Block): TypeResolveState =
     val s1 = foldOverAST(s, b)
@@ -144,7 +144,7 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
     s2
 
   /**
-   * Resolve type of the if expression
+   * Resolve type of the If-expression
    *
    * if (cond) then1 else else1
    */
@@ -162,10 +162,20 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
 
   /**
    * Resolve Id type
+   * 
+   * Find Decl, get its Type
    */
   private def resolveIdType(s: TypeResolveState, id: Id): TypeResolveState =
     val typeAST = s.resolveIdType(id)
     val s1      = s.assignEvalType(id, typeAST)
+    s1
+
+  /**
+   * Resolve TypeId type
+   */
+  private def resolveTypeIdType(s: TypeResolveState, typeId: TypeId): TypeResolveState =
+    val typeAST = s.resolveTypeIdType(typeId)
+    val s1      = s.assignEvalType(typeId, typeAST)
     s1
 
   /**
@@ -208,14 +218,6 @@ private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
    */
   private def resolveConstLit(s: TypeResolveState, constLit: ConstLit): TypeResolveState =
     s.assignEvalType(constLit, Const.toTypeAST(constLit.const))
-
-  /**
-   * Resolve TypeId type
-   */
-  private def resolveTypeIdType(s: TypeResolveState, typeId: TypeId): TypeResolveState =
-    val typeAST = s.resolveTypeIdType(typeId)
-    val s1      = s.assignEvalType(typeId, typeAST)
-    s1
 
   /**
    * Resolve StructType type
@@ -310,14 +312,32 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
     yield scopeDecls
 
   /**
-   * Resolve type of the Id
-   *
-   * // TODO: we assume that the type is already resolved, fix this
-   *
-   * @param id
-   *   Id
-   * @return
-   *   type
+    * Resolve Eval Type of the Id
+    */
+  def resolveIdEvalType(id: Id): TypeAST  =
+    ???
+
+    // TODO: ^^^ function finds evalType
+
+    // NOTE: evalType -- do we want to preserve the meaning? // EvalType = Scope + TypeAST ???
+    // NOTE: is it worth to make `expandedType` that expands all the references?
+    // NOTE: how in TypeScript ??? check typing there...
+
+    // NOTE: TypeScript = Structural Type System
+    ///      define isSubtypeOf to check if type A is a subtype of B or not.
+    //       Recursive types?
+
+  /**
+    * Resolve Eval Type of the TypeId
+    */
+  def resolveTypeIdEvalType(typeId: TypeId): TypeAST =
+    ???
+
+    // TODO: ^^^ function finds evalType
+
+
+  /**
+   * Resolve Type of the Id
    */
   def resolveIdType(id: Id): TypeAST =
     val scopeDecls = resolveIdDecl(id).toTry.get
@@ -330,14 +350,7 @@ private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols
     aType
 
   /**
-   * Resolve type of the TypeId
-   *
-   * // TODO: we assume that the type is already resolved, fix this
-   *
-   * @param typeId
-   *   type id
-   * @return
-   *   type
+   * Resolve Type of the TypeId
    */
   def resolveTypeIdType(typeId: TypeId): TypeAST =
     val scopeDecls = resolveTypeIdDecl(typeId).toTry.get

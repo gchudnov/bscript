@@ -28,7 +28,11 @@ final class SymbolResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbol
 
     val state1 = folder.foldAST(state0, ast0)
 
-    // TODO: given that we're not changing the state, we do not need to return anything?
+    // TODO: given that we're sesolving pointers here, store so that we can use them later without resolving again
+
+    // TODO: should we allow cycles? A->B->C->A ???
+
+    // TODO: check if we want to replace ScopeSymbol with ScopeDecl ???
 
     val out = ()
 
@@ -45,7 +49,6 @@ private final class SymbolResolveFolder() extends ASTFolder[SymbolResolveState]:
         s.ensureAccess(x)
       case x: Id =>
         s.ensureId(x)
-
       case x: TypeId =>
         s.ensureTypeId(x)
 

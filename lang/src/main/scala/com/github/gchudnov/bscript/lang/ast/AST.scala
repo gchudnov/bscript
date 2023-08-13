@@ -4,7 +4,7 @@ package com.github.gchudnov.bscript.lang.ast
  * {{{
  * AST -+
  *      |
- *      +- Stat -+
+ *      +- Stat -+ // TODO: remove statements
  *      |        |
  *      |        +- Expr +- Ref +- Access
  *      |                |      +- Id
@@ -40,7 +40,7 @@ package com.github.gchudnov.bscript.lang.ast
  *                             +- GenericType
  *                             +- BuiltInType
  *
- * Const -+- BoolVal
+ * Const -+- BoolVal   TODO: add AnyVal ? // instead of many number types, use just one - number
  *        +- ByteVal
  *        +- CharVal
  *        +- DateTimeVal
