@@ -1,0 +1,382 @@
+package com.github.gchudnov.bscript.builder.pass
+
+import com.github.gchudnov.bscript.lang.func.ASTFolder
+import com.github.gchudnov.bscript.builder.state.*
+import com.github.gchudnov.bscript.builder.env.*
+import com.github.gchudnov.bscript.lang.ast.*
+import com.github.gchudnov.bscript.lang.ast.decls.*
+import com.github.gchudnov.bscript.lang.ast.lit.*
+import com.github.gchudnov.bscript.lang.ast.types.*
+import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.builder.BuilderException
+import com.github.gchudnov.bscript.lang.ast.refs.Access
+import com.github.gchudnov.bscript.lang.ast.refs.Id
+import com.github.gchudnov.bscript.lang.const.Const
+import com.github.gchudnov.bscript.lang.types.TypeName
+
+/**
+ * #3 - Type Resolve Pass
+ *
+ *   - Resolve types of the AST nodes.
+ */
+final class TypeResolvePass extends Pass[HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST, HasEvalTypes]:
+
+  override def run(in: HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST): HasEvalTypes =
+    val state0 = TypeResolveState.from(in.scopeTree, in.scopeSymbols, in.scopeAsts)
+    val ast0   = in.ast
+
+    val folder = new TypeResolveFolder()
+
+    val state1 = folder.foldAST(state0, ast0)
+
+    val out = new HasEvalTypes:
+      override val evalTypes: EvalTypes = state1.evalTypes
+
+    out
+
+/**
+ * Type Resolve Folder
+ */
+private final class TypeResolveFolder() extends ASTFolder[TypeResolveState]:
+
+  override def foldAST(s: TypeResolveState, ast: AST): TypeResolveState =
+    ast match
+      case x: Access =>
+        foldOverAST(s, x)
+
+      case x: Id =>
+        resolveIdType(s, x)
+
+      case x: BuiltInDecl =>
+        resolveBuiltInDecl(s, x)
+      case x: MethodDecl =>
+        resolveMethodDecl(s, x)
+      case x: StructDecl =>
+        resolveStructDecl(s, x)
+      case x: VarDecl =>
+        resolveVarDeclType(s, x)
+      case x: TypeDecl =>
+        resolveTypeDecl(s, x)
+
+      case x: Annotated =>
+        foldOverAST(s, x)
+
+      case x: Assign =>
+        resolveAssign(s, x)
+
+      case x: Block =>
+        resolveBlockType(s, x)
+
+      case x @ Call(id, args) =>
+        foldOverAST(s, x)
+      case x @ Compiled(callback, retType) =>
+        foldOverAST(s, x)
+
+      case x: If =>
+        resolveIfType(s, x)
+
+      case x @ Pair(key, value) =>
+        foldOverAST(s, x)
+
+      case x: ConstLit =>
+        resolveConstLit(s, x)
+
+      case x @ CollectionLit(cType, elems) =>
+        foldOverAST(s, x)
+      case x @ MethodLit(mType, body) =>
+        foldOverAST(s, x)
+
+      case x: TypeId =>
+        resolveTypeIdType(s, x)
+
+      case x @ VecType(elemType) =>
+        foldOverAST(s, x)
+      case x @ MapType(keyType, valType) =>
+        foldOverAST(s, x)
+
+      case x: StructType =>
+        resolveStructType(s, x)
+
+      case x @ MethodType(tparams, params, retType) =>
+        foldOverAST(s, x)
+      case x @ GenericType(name) =>
+        foldOverAST(s, x)
+
+      case other =>
+        foldOverAST(s, other)
+
+      // case other =>
+      //   throw new MatchError(s"Unsupported AST type in TypeResolveFolder: ${other}")
+
+  /**
+   * Resolve the type of VarDecl
+   */
+  private def resolveVarDeclType(s: TypeResolveState, v: VarDecl): TypeResolveState =
+    val s1 = foldOverAST(s, v)
+
+    val aType = v.aType match
+      case Auto() =>
+        v.expr match
+          case Init() =>
+            throw BuilderException(s"Type of the variable '${v.name}' is not defined; Auto() = Init() is not supported")
+          case other =>
+            s1.evalTypeOf(other)
+      case other =>
+        s1.evalTypeOf(other)
+    val s2 = s1.assignEvalType(v.aType, aType)
+
+    // handle Init(), take the value from the type of the variable
+    val s3 =
+      v.expr match
+        case Init() =>
+          s2.assignEvalType(v.expr, aType)
+        case _ =>
+          s2
+
+    s3.assignEvalTypeVoid(v)
+
+  /**
+   * Resolve type of the a Block
+   */
+  private def resolveBlockType(s: TypeResolveState, b: Block): TypeResolveState =
+    val s1 = foldOverAST(s, b)
+    val s2 = b.exprs.lastOption.fold(s1)(lastExpr => s1.assignEvalType(b, s1.evalTypeOf(lastExpr)))
+    s2
+
+  /**
+   * Resolve type of the If-expression
+   *
+   * if (cond) then1 else else1
+   */
+  private def resolveIfType(s: TypeResolveState, i: If): TypeResolveState =
+    val s1       = foldOverAST(s, i)
+    val thenType = s1.evalTypeOf(i.then1)
+    val elseType = s1.evalTypeOf(i.else1)
+
+    val s2 =
+      if thenType == elseType then s1.assignEvalType(i, thenType)
+      else if TypeAST.isNothing(thenType) then s1.assignEvalType(i, elseType)
+      else if TypeAST.isNothing(elseType) then s1.assignEvalType(i, thenType)
+      else throw BuilderException(s"Type mismatch in if expression: ${thenType} and ${elseType}")
+    s2
+
+  /**
+   * Resolve Id type
+   * 
+   * Find Decl, get its Type
+   */
+  private def resolveIdType(s: TypeResolveState, id: Id): TypeResolveState =
+    val typeAST = s.resolveIdType(id)
+    val s1      = s.assignEvalType(id, typeAST)
+    s1
+
+  /**
+   * Resolve TypeId type
+   */
+  private def resolveTypeIdType(s: TypeResolveState, typeId: TypeId): TypeResolveState =
+    val typeAST = s.resolveTypeIdType(typeId)
+    val s1      = s.assignEvalType(typeId, typeAST)
+    s1
+
+  /**
+   * Resolve BuiltInDecl type
+   */
+  private def resolveBuiltInDecl(s: TypeResolveState, builtInDecl: BuiltInDecl): TypeResolveState =
+    val s1 = foldOverAST(s, builtInDecl)
+    s1.assignEvalTypeVoid(builtInDecl)
+
+  /**
+   * Resolve MethodDecl type
+   */
+  private def resolveMethodDecl(s: TypeResolveState, methodDecl: MethodDecl): TypeResolveState =
+    val s1 = foldOverAST(s, methodDecl)
+    s1.assignEvalTypeVoid(methodDecl)
+
+  /**
+   * Resolve StructDecl type
+   */
+  private def resolveStructDecl(s: TypeResolveState, structDecl: StructDecl): TypeResolveState =
+    val s1 = foldOverAST(s, structDecl)
+    s1.assignEvalTypeVoid(structDecl)
+
+  /**
+   * Resolve TypeDecl type
+   */
+  private def resolveTypeDecl(s: TypeResolveState, typeDecl: TypeDecl): TypeResolveState =
+    val s1 = foldOverAST(s, typeDecl)
+    s1.assignEvalTypeVoid(typeDecl)
+
+  /**
+   * Resolve Assign type
+   */
+  private def resolveAssign(s: TypeResolveState, assign: Assign): TypeResolveState =
+    val s1 = foldOverAST(s, assign)
+    s1.assignEvalTypeVoid(assign)
+
+  /**
+   * Resolve ConstLit type
+   */
+  private def resolveConstLit(s: TypeResolveState, constLit: ConstLit): TypeResolveState =
+    s.assignEvalType(constLit, Const.toTypeAST(constLit.const))
+
+  /**
+   * Resolve StructType type
+   */
+  private def resolveStructType(s: TypeResolveState, structType: StructType): TypeResolveState =
+    val s1         = foldOverAST(s, structType)
+    val evalFields = structType.fields.map(f => f.copy(aType = s1.evalTypeOf(f.aType)))
+    val evalType   = structType.copy(fields = evalFields)
+    s1.assignEvalType(structType, evalType)
+
+/**
+ * Type Resolve State
+ */
+private final case class TypeResolveState(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts, evalTypes: EvalTypes):
+  import TypeResolveState.*
+
+  /**
+   * Assign type to the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @param t
+   *   type
+   * @return
+   *   new state
+   */
+  def assignEvalType(ast: AST, t: TypeAST): TypeResolveState =
+    copy(evalTypes = evalTypes.assignType(ast, t))
+
+  /**
+   * Assign void type to the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @return
+   *   new state
+   */
+  def assignEvalTypeVoid(ast: AST): TypeResolveState =
+    assignEvalType(ast, BuiltInType(TypeName.void))
+
+  /**
+   * Get type of the AST node.
+   *
+   * @param ast
+   *   AST node
+   * @return
+   *   type
+   */
+  def evalTypeOf(ast: AST): TypeAST =
+    val ot = evalTypes.typeOf(ast)
+    ot.getOrElse(throw BuilderException(s"Type of the AST node is not defined: ${ast}, this is a bug in BScript."))
+
+  /**
+   * Resolve Id
+   *
+   * @param id
+   *   Id
+   * @return
+   *   the list of scope-decl paris
+   */
+  private def resolveIdDecl(id: Id): Either[Throwable, List[ScopeDecl]] =
+    resolveAnyIdDecl(id)
+
+  /**
+   * Resolve TypeId
+   *
+   * @param typeId
+   *   type id
+   * @return
+   *   An error or the list of scope declarations
+   */
+  private def resolveTypeIdDecl(typeId: TypeId): Either[Throwable, List[ScopeDecl]] =
+    resolveAnyIdDecl(typeId)
+
+  /**
+   * Resolve T Declarations
+   *
+   * @param name
+   *   name of the declaration to resolve
+   * @return
+   *   An error or the list of scope declarations
+   */
+  private def resolveAnyIdDecl[R <: AST: HasName](ref: R): Either[Throwable, List[ScopeDecl]] =
+    for
+      startScope   <- scopeAsts.scope(ref).toRight(BuilderException(s"AST '${ref}' is not assigned to a Scope, it is a bug"))
+      maybeScopeSym = scopeSymbols.resolveUp(summon[HasName[R]].name(ref), startScope, scopeTree)
+      scopeDecls = maybeScopeSym.fold(List.empty[ScopeDecl]) { scopeSym =>
+                     scopeAsts
+                       .findDecl(scopeSym.symbol.name, scopeSym.scope)
+                       .map(d => ScopeDecl(scopeSym.scope, d))
+                   }
+    yield scopeDecls
+
+  /**
+    * Resolve Eval Type of the Id
+    */
+  def resolveIdEvalType(id: Id): TypeAST  =
+    ???
+
+    // TODO: ^^^ function finds evalType
+
+    // NOTE: evalType -- do we want to preserve the meaning? // EvalType = Scope + TypeAST ???
+    // NOTE: is it worth to make `expandedType` that expands all the references?
+    // NOTE: how in TypeScript ??? check typing there...
+
+    // NOTE: TypeScript = Structural Type System
+    ///      define isSubtypeOf to check if type A is a subtype of B or not.
+    //       Recursive types?
+
+  /**
+    * Resolve Eval Type of the TypeId
+    */
+  def resolveTypeIdEvalType(typeId: TypeId): TypeAST =
+    ???
+
+    // TODO: ^^^ function finds evalType
+
+
+  /**
+   * Resolve Type of the Id
+   */
+  def resolveIdType(id: Id): TypeAST =
+    val scopeDecls = resolveIdDecl(id).toTry.get
+    val scopeDecl  = scopeDecls.headOption.getOrElse(throw BuilderException(s"The symbol '${id}' is not declared"))
+    val aType = scopeDecl.decl.aType match
+      case x: TypeId =>
+        resolveTypeIdType(x)
+      case other =>
+        evalTypeOf(other)
+    aType
+
+  /**
+   * Resolve Type of the TypeId
+   */
+  def resolveTypeIdType(typeId: TypeId): TypeAST =
+    val scopeDecls = resolveTypeIdDecl(typeId).toTry.get
+    val scopeDecl  = scopeDecls.headOption.getOrElse(throw BuilderException(s"The type-symbol '${typeId}' is not declared"))
+    val aType      = scopeDecl.decl.aType
+    aType
+
+/**
+ * Type Resolve State Companion
+ */
+private object TypeResolveState:
+
+  trait HasName[T]:
+    def name(t: T): String
+
+  object HasName:
+    inline given HasName[Id] with
+      def name(id: Id): String = id.name
+
+    inline given HasName[TypeId] with
+      def name(typeId: TypeId): String = typeId.name
+
+  def from(scopeTree: ReadScopeTree, scopeSymbols: ReadScopeSymbols, scopeAsts: ReadScopeAsts): TypeResolveState =
+    TypeResolveState(
+      scopeTree = scopeTree,
+      scopeSymbols = scopeSymbols,
+      scopeAsts = scopeAsts,
+      evalTypes = EvalTypes.empty,
+    )

@@ -2,182 +2,440 @@ package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.interpreter.TestSpec
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.interpreter.memory.Cell
 
 import java.time.LocalDate
 import java.time.OffsetDateTime
 
+import scala.collection.immutable.Set as SSet
+import scala.collection.immutable.Map as SMap
+
 final class CellSpec extends TestSpec:
+
+  val showCell = summon[Show[Cell]]
+
   "Cell" when {
-    "two cells are merged" should {
-      "perform it for structs" in {
-        val a = StructCell(
+    "merge" should {
+
+      /**
+       * {{{
+       * strict a {
+       *   a: 1,
+       *   b: "alice",
+       *   c: true,
+       *   d: {
+       *     e: 3.14
+       * }
+       *
+       * struct b {
+       *   a: 2,
+       *   c: false,
+       *   d: {
+       *     e: 6.28
+       *   }
+       * }
+       *
+       * merged:
+       *
+       * struct c {
+       *   a: 2,
+       *   b: "alice",
+       *   c: false,
+       *   d: {
+       *     e: 6.28
+       *   }
+       * }
+       *
+       * }}}
+       */
+      "merge two structs" in {
+        val a = Cell.Struct(
           Map(
-            "a" -> Cell(1),
-            "b" -> Cell("alice"),
-            "c" -> Cell(true),
-            "d" -> StructCell(Map("e" -> Cell(3.14)))
-          )
+            "a" -> Cell.I32(1),
+            "b" -> Cell.Str("alice"),
+            "c" -> Cell.Bool(true),
+            "d" -> Cell.Struct(Map("e" -> Cell.F64(3.14))),
+          ),
         )
 
-        val b = StructCell(
+        val b = Cell.Struct(
           Map(
-            "a" -> Cell(2),
-            "c" -> Cell(false),
-            "d" -> StructCell(Map("e" -> Cell(6.28)))
-          )
+            "a" -> Cell.I32(2),
+            "c" -> Cell.Bool(false),
+            "d" -> Cell.Struct(Map("e" -> Cell.F64(6.28))),
+          ),
         )
 
         val actual = Cell.merge(a, b)
 
-        val expected = StructCell(
+        val expected = Cell.Struct(
           Map(
-            "a" -> Cell(2),
-            "b" -> Cell("alice"),
-            "c" -> Cell(false),
-            "d" -> StructCell(Map("e" -> Cell(6.28)))
-          )
+            "a" -> Cell.I32(2),
+            "b" -> Cell.Str("alice"),
+            "c" -> Cell.Bool(false),
+            "d" -> Cell.Struct(Map("e" -> Cell.F64(6.28))),
+          ),
         )
 
         actual mustBe Right(expected)
       }
     }
 
-    "difference is calculated" should {
-      "calc it for primitives" in {
-        val a = Cell(1)
-        val b = Cell(2)
+    "difference" should {
+
+      /**
+       * {{{
+       *   a = 1
+       *   b = 2
+       *
+       *   diff(a, b) = [
+       *     Updated("A", 1, 2)
+       *   ]
+       * }}}
+       */
+      "diff for primitives" in {
+        val a = Cell.I32(1)
+        val b = Cell.I32(2)
 
         val actual = Cell.diff("A", Some(a), Some(b))
 
-        val expected = List(Diff.Updated("A", a, b))
+        val expected = List(Diff.Updated(Path.parse("A"), a, b))
 
         actual.toList must contain theSameElementsAs expected
       }
 
-      "calc it for structs" in {
-        val cellA1 = Cell(1)
-        val cellA2 = Cell(2)
-        val cellB  = Cell("alice")
-        val cellC  = Cell(12.34)
+      /**
+       * {{{
+       * struct a = {
+       *   a: 1,
+       *   b: "alice"
+       * }
+       *
+       * struct b = {
+       *   a: 2,
+       *   c: 12.34
+       * }
+       *
+       * diff(a, b) = [
+       *   Updated("A.a", 1, 2),
+       *   Removed("A.b", "alice"),
+       *   Added("A.c", 12.34)
+       * ]
+       * }}}
+       */
+      "diff for structs" in {
+        val cellA1 = Cell.I32(1)
+        val cellA2 = Cell.I32(2)
+        val cellB  = Cell.Str("alice")
+        val cellC  = Cell.F64(12.34)
 
-        val a = StructCell(Map("a" -> cellA1, "b" -> cellB))
-        val b = StructCell(Map("a" -> cellA2, "c" -> cellC))
-
-        val actual = Cell.diff("A", Some(a), Some(b))
-
-        val expected = List(Diff.Updated("A.a", cellA1, cellA2), Diff.Removed("A.b", cellB), Diff.Added("A.c", cellC))
-
-        actual.toList must contain theSameElementsAs expected
-      }
-
-      "calc it for arrays" in {
-        val a = Cell(List(Cell(1), Cell(2), Cell(3)))
-        val b = Cell(List(Cell(1), Cell(2), Cell(3), Cell(4)))
-
-        val actual = Cell.diff("A", Some(a), Some(b))
-
-        val expected = List(Diff.Added("A.2", Cell(4)))
-      }
-
-      "calc it for nested structs" in {
-        val a = StructCell(Map("a" -> Cell(1), "b" -> StructCell(Map("c" -> Cell(true))), "d" -> VecCell(List(Cell("alice")))))
-        val b = StructCell(Map("a" -> Cell(1), "b" -> StructCell(Map("c" -> Cell(false))), "d" -> VecCell(List(Cell("bob")))))
+        val a = Cell.Struct(Map("a" -> cellA1, "b" -> cellB))
+        val b = Cell.Struct(Map("a" -> cellA2, "c" -> cellC))
 
         val actual = Cell.diff("A", Some(a), Some(b))
 
         val expected = List(
-          Diff.Updated("A.b.c", Cell(true), Cell(false)),
-          Diff.Updated("A.d.0", Cell("alice"), Cell("bob"))
+          Diff.Updated(Path.parse("A.a"), cellA1, cellA2),
+          Diff.Removed(Path.parse("A.b"), cellB),
+          Diff.Added(Path.parse("A.c"), cellC),
+        )
+
+        actual.toList must contain theSameElementsAs expected
+      }
+
+      /**
+       * {{{
+       * struct a = {
+       *   a: 1,
+       *   b: "alice"
+       * }
+       *
+       * struct b = {
+       *   a: 1,
+       *   b: "alice"
+       * }
+       *
+       * diff(a, b) = []
+       *
+       * }}}
+       */
+      "diff of equal structs" in {
+        val a = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Str("alice")))
+        val b = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Str("alice")))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List.empty[Diff.Change[Path, Cell]]
+
+        actual.toList must contain theSameElementsAs expected
+      }
+
+      /**
+       * {{{
+       * a = [1, 2, 3]
+       * b = [1, 2, 3, 4]
+       *
+       * diff(a, b) = [
+       *   Added("A.3", 4)
+       * ]
+       * }}}
+       */
+      "diff for arrays if len(a) < len(b)" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(Diff.Added(Path.parse("A.3"), Cell.I32(4)))
+
+        actual mustBe (expected)
+      }
+
+      /**
+       * {{{
+       * a = [1, 2, 3, 4]
+       * b = [1, 2, 3]
+       *
+       * diff(a, b) = [
+       *   Removed("A.3", 4)
+       * ]
+       * }}}
+       */
+      "diff for arrays if len(a) > len(b)" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(Diff.Removed(Path(List("A", "3")), Cell.I32(4)))
+
+        actual mustBe (expected)
+      }
+
+      /**
+       * {{{
+       * a = [1, 2, 3]
+       * b = [1, 2, 3]
+       *
+       * diff(a, b) = [
+       * ]
+       * }}}
+       */
+      "diff for arrays if a == b" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List.empty[Diff.Change[Path, Cell]]
+
+        actual mustBe (expected)
+      }
+
+      /**
+       * {{{
+       * a = []
+       * b = [1, 2, 3, 4]
+       *
+       * diff(a, b) = [
+       *   Added("A.0", 1),
+       *   Added("A.1", 2),
+       *   Added("A.2", 3),
+       *   Added("A.3", 4)
+       * ]
+       * }}}
+       */
+      "diff for arrays if a.isEmpty && b.nonEmpty" in {
+        val a = Cell.Vec(List.empty[Cell])
+        val b = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Added(Path(List("A", "0")), Cell.I32(1)),
+          Diff.Added(Path(List("A", "1")), Cell.I32(2)),
+          Diff.Added(Path(List("A", "2")), Cell.I32(3)),
+          Diff.Added(Path(List("A", "3")), Cell.I32(4)),
+        )
+
+        actual mustBe (expected)
+      }
+
+      /**
+       * {{{
+       * a = [1, 2, 3, 4]
+       * b = []
+       *
+       * diff(a, b) = [
+       *   Removed("A.0", 1),
+       *   Removed("A.1", 2),
+       *   Removed("A.2", 3),
+       *   Removed("A.3", 4)
+       * ]
+       * }}}
+       */
+      "diff for arrays if a.nonEmpty && b.isEmpty" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2), Cell.I32(3), Cell.I32(4)))
+        val b = Cell.Vec(List.empty[Cell])
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Removed(Path(List("A", "0")), Cell.I32(1)),
+          Diff.Removed(Path(List("A", "1")), Cell.I32(2)),
+          Diff.Removed(Path(List("A", "2")), Cell.I32(3)),
+          Diff.Removed(Path(List("A", "3")), Cell.I32(4)),
+        )
+
+        actual mustBe (expected)
+      }
+
+      /**
+       * {{{
+       * a = [1, 2]
+       * b = [3, 4]
+       *
+       * diff(a, b) = [
+       *   Updated("A.0", 1, 3),
+       *   Updated("A.1", 2, 4)
+       * ]
+       * }}}
+       */
+      "diff for arrays if len(a) == len(b)" in {
+        val a = Cell.Vec(List(Cell.I32(1), Cell.I32(2)))
+        val b = Cell.Vec(List(Cell.I32(3), Cell.I32(4)))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Updated(Path(List("A", "0")), Cell.I32(1), Cell.I32(3)),
+          Diff.Updated(Path(List("A", "1")), Cell.I32(2), Cell.I32(4)),
+        )
+
+        actual mustBe (expected)
+      }
+
+      /**
+       * {{{
+       * struct a {
+       *   a: 1,
+       *   b: {
+       *     c: true
+       *     d: ["alice"]
+       *   }
+       * }
+       *
+       * struct b {
+       *   a: 1,
+       *   b: {
+       *     c: false
+       *     d: ["bob"]
+       *   }
+       * }
+       *
+       * diff(a, b) = [
+       *   Updated("A.b.c", true, false),
+       *   Updated("A.b.d.0", "alice", "bob")
+       * ]
+       * }}}
+       */
+      "diff for nested structs" in {
+        val a = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Struct(Map("c" -> Cell.Bool(true))), "d" -> Cell.Vec(List(Cell.Str("alice")))))
+        val b = Cell.Struct(Map("a" -> Cell.I32(1), "b" -> Cell.Struct(Map("c" -> Cell.Bool(false))), "d" -> Cell.Vec(List(Cell.Str("bob")))))
+
+        val actual = Cell.diff("A", Some(a), Some(b))
+
+        val expected = List(
+          Diff.Updated(Path.parse("A.b.c"), Cell.Bool(true), Cell.Bool(false)),
+          Diff.Updated(Path.parse("A.d.0"), Cell.Str("alice"), Cell.Str("bob")),
         )
 
         actual.toList must contain theSameElementsAs expected
       }
     }
 
-    "converted to a string" should {
-      import Cell.{ *, given }
+    "cell as a string" should {
+      import Cell.*
 
       "show nothing" in {
-        val cell: Cell = NothingCell
-        val actual     = cell.show
+        val cell: Cell = Cell.Nothing
+        val actual     = showCell.show(cell)
         val expected   = """"nothing""""
         actual mustBe expected
       }
 
       "show void" in {
-        val cell: Cell = VoidCell
-        val actual     = cell.show
+        val cell: Cell = Cell.Void
+        val actual     = showCell.show(cell)
         val expected   = """"void""""
         actual mustBe expected
       }
 
       "show bool" in {
-        val cell: Cell = BoolCell(true)
-        val actual     = cell.show
+        val cell: Cell = Cell.Bool(true)
+        val actual     = showCell.show(cell)
         val expected   = """"bool(true)""""
         actual mustBe expected
       }
 
       "show i32" in {
-        val cell: Cell = IntCell(123)
-        val actual     = cell.show
+        val cell: Cell = Cell.I32(123)
+        val actual     = showCell.show(cell)
         val expected   = """"i32(123)""""
         actual mustBe expected
       }
 
       "show i64" in {
-        val cell: Cell = LongCell(456L)
-        val actual     = cell.show
+        val cell: Cell = Cell.I64(456L)
+        val actual     = showCell.show(cell)
         val expected   = """"i64(456)""""
         actual mustBe expected
       }
 
       "show f32" in {
-        val cell: Cell = FloatCell(12.34f)
-        val actual     = cell.show
+        val cell: Cell = Cell.F32(12.34f)
+        val actual     = showCell.show(cell)
         val expected   = """"f32(12.34)""""
         actual mustBe expected
       }
 
       "show f64" in {
-        val cell: Cell = DoubleCell(56.78)
-        val actual     = cell.show
+        val cell: Cell = Cell.F64(56.78)
+        val actual     = showCell.show(cell)
         val expected   = """"f64(56.78)""""
         actual mustBe expected
       }
 
       "show dec" in {
-        val cell: Cell = DecimalCell(BigDecimal(1000.28))
-        val actual     = cell.show
+        val cell: Cell = Cell.Dec(BigDecimal(1000.28))
+        val actual     = showCell.show(cell)
         val expected   = """"dec(1000.28)""""
         actual mustBe expected
       }
 
       "show str" in {
-        val cell: Cell = StrCell("alice")
-        val actual     = cell.show
+        val cell: Cell = Cell.Str("alice")
+        val actual     = showCell.show(cell)
         val expected   = """"str(alice)""""
         actual mustBe expected
       }
 
       "show date" in {
-        val cell: Cell = DateCell(LocalDate.parse("2021-10-04"))
-        val actual     = cell.show
+        val cell: Cell = Cell.Date(LocalDate.parse("2021-10-04"))
+        val actual     = showCell.show(cell)
         val expected   = """"date(2021-10-04)""""
         actual mustBe expected
       }
 
       "show datetime" in {
-        val cell: Cell = DateTimeCell(OffsetDateTime.parse("2021-10-04T01:00:00+02:00"))
-        val actual     = cell.show
+        val cell: Cell = Cell.DateTime(OffsetDateTime.parse("2021-10-04T01:00:00+02:00"))
+        val actual     = showCell.show(cell)
         val expected   = """"datetime(2021-10-04T01:00+02:00)""""
         actual mustBe expected
       }
 
       "show vec of primitives" in {
-        val cell: Cell = VecCell(List[Cell](IntCell(1), LongCell(1000L), StrCell("alice")))
-        val actual     = cell.show
+        val cell: Cell = Cell.Vec(List[Cell](Cell.I32(1), Cell.I64(1000L), Cell.Str("alice")))
+        val actual     = showCell.show(cell)
         val expected = """[
                          |  "i32(1)", 
                          |  "i64(1000)", 
@@ -187,8 +445,8 @@ final class CellSpec extends TestSpec:
       }
 
       "show struct" in {
-        val cell: Cell = StructCell(Map("a" -> IntCell(1), "b" -> StrCell("alice")))
-        val actual     = cell.show
+        val cell: Cell = Cell.Struct(SMap("a" -> Cell.I32(1), "b" -> Cell.Str("alice")))
+        val actual     = showCell.show(cell)
         val expected = s"""{
                           |  "a": "i32(1)",
                           |  "b": "str(alice)"
@@ -197,8 +455,8 @@ final class CellSpec extends TestSpec:
       }
 
       "show nested struct" in {
-        val cell: Cell = StructCell(Map("a" -> IntCell(1), "b" -> StructCell(Map("c" -> StrCell("alice")))))
-        val actual     = cell.show
+        val cell: Cell = Cell.Struct(SMap("a" -> Cell.I32(1), "b" -> Cell.Struct(SMap("c" -> Cell.Str("alice")))))
+        val actual     = showCell.show(cell)
         val expected = s"""{
                           |  "a": "i32(1)",
                           |  "b": {
@@ -209,13 +467,13 @@ final class CellSpec extends TestSpec:
       }
 
       "show vec of structs" in {
-        val cell: Cell = VecCell(
+        val cell: Cell = Cell.Vec(
           List[Cell](
-            StructCell(Map("a" -> IntCell(1), "b" -> StrCell("alice"))),
-            StructCell(Map("a" -> IntCell(2), "b" -> StrCell("bob")))
-          )
+            Cell.Struct(SMap("a" -> Cell.I32(1), "b" -> Cell.Str("alice"))),
+            Cell.Struct(SMap("a" -> Cell.I32(2), "b" -> Cell.Str("bob"))),
+          ),
         )
-        val actual = cell.show
+        val actual = showCell.show(cell)
         val expected = s"""[
                           |  {
                           |    "a": "i32(1)",
@@ -226,6 +484,64 @@ final class CellSpec extends TestSpec:
                           |    "b": "str(bob)"
                           |  }
                           |]""".stripMargin
+        actual mustBe expected
+      }
+
+      "show struct of various types" in {
+        val cell: Cell = Cell.Struct(
+          SMap(
+            "a" -> Cell.I32(1),
+            "b" -> Cell.Struct(SMap("c" -> Cell.Str("alice"))),
+            "d" -> Cell.Vec(List[Cell](Cell.I32(1), Cell.I64(1000L), Cell.Str("alice"))),
+          ),
+        )
+        val actual = showCell.show(cell)
+        val expected = s"""{
+                          |  "a": "i32(1)",
+                          |  "b": {
+                          |    "c": "str(alice)"
+                          |  },
+                          |  "d": [
+                          |    "i32(1)", 
+                          |    "i64(1000)", 
+                          |    "str(alice)"
+                          |  ]
+                          |}""".stripMargin
+        actual mustBe expected
+      }
+
+      "show a set" in {
+        val cell: Cell = Cell.Set(SSet[Cell](Cell.I32(1), Cell.I64(1000L), Cell.Str("alice")))
+        val actual     = showCell.show(cell)
+        val expected = """{
+                         |  "i32(1)", 
+                         |  "i64(1000)", 
+                         |  "str(alice)"
+                         |}""".stripMargin
+        actual mustBe expected
+      }
+
+      "show a map" in {
+        val cell: Cell = Cell.Map(
+          SMap[Cell, Cell](
+            Cell.I32(1)       -> Cell.I32(1),
+            Cell.I64(1000L)   -> Cell.I64(1000L),
+            Cell.Str("alice") -> Cell.Str("alice"),
+          ),
+        )
+        val actual = showCell.show(cell)
+        val expected = """{
+                         |  "i32(1)": "i32(1)",
+                         |  "i64(1000)": "i64(1000)",
+                         |  "str(alice)": "str(alice)"
+                         |}""".stripMargin
+        actual mustBe expected
+      }
+
+      "show a method" in {
+        val cell: Cell = Cell.Method(cs => Right(Cell.Void))
+        val actual     = showCell.show(cell)
+        val expected   = """"method([args] => either[err,value])""""
         actual mustBe expected
       }
     }

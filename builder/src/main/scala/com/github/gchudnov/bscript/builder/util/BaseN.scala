@@ -2,7 +2,7 @@ package com.github.gchudnov.bscript.builder.util
 
 import scala.annotation.tailrec
 
-trait BaseN:
+sealed trait BaseN:
   def base: Long
 
   def lookup(x: Long): Char
@@ -11,7 +11,7 @@ trait BaseN:
   def encode(x: Long): String =
     @tailrec
     def iterate(n: Long, ds: List[Char]): List[Char] =
-      assert(n >= 0, s"'n' cannot be negative, got ${n}")
+      require(n >= 0, s"'n' cannot be negative, got ${n}")
       if n == 0 then ds
       else
         // n > 0
@@ -25,7 +25,6 @@ trait BaseN:
     cs.mkString
 
   def decode(s: String): Long =
-
     @tailrec
     def iterate(acc: Long, ds: List[Char]): Long =
       ds match
@@ -36,3 +35,41 @@ trait BaseN:
           iterate(n, tail)
 
     iterate(0L, s.toList)
+
+  /**
+   * Increment a BaseN-encoded string
+   *
+   * @param s
+   *   BaseN-encoded string
+   * @return
+   *   BaseN-encoded string
+   */
+  def inc(s: String): String =
+    val x = decode(s)
+    encode(x + 1L)
+
+/**
+ * Base 26
+ */
+object Base26 extends BaseN:
+  override def base: Long = 26
+
+  override def lookup(x: Long): Char =
+    ('a'.toLong + x).toChar
+
+  override def reverseLookup(c: Char): Long =
+    c.toLong - 'a'.toLong
+
+/**
+ * Base 2
+ */
+object Base2 extends BaseN:
+  override def base: Long = 2
+
+  override def lookup(x: Long): Char = x match
+    case 0 => 'f';
+    case _ => 't'
+
+  override def reverseLookup(c: Char): Long = c match
+    case 'f' => 0L;
+    case _   => 1L

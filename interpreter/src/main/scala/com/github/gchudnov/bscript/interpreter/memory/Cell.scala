@@ -1,248 +1,322 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
-import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.lang.util.Lines
+import com.github.gchudnov.bscript.lang.types.TypeName
 
 import java.time.{ LocalDate, OffsetDateTime }
+import scala.collection.immutable.Set as SSet
+import scala.collection.immutable.Map as SMap
 
-trait Cell
-
-case object NothingCell                               extends Cell
-case object VoidCell                                  extends Cell
-final case class BoolCell(value: Boolean)             extends Cell
-final case class IntCell(value: Int)                  extends Cell
-final case class LongCell(value: Long)                extends Cell
-final case class FloatCell(value: Float)              extends Cell
-final case class DoubleCell(value: Double)            extends Cell
-final case class DecimalCell(value: BigDecimal)       extends Cell
-final case class StrCell(value: String)               extends Cell
-final case class DateCell(value: LocalDate)           extends Cell
-final case class DateTimeCell(value: OffsetDateTime)  extends Cell
-final case class VecCell(value: List[Cell])           extends Cell
-final case class StructCell(value: Map[String, Cell]) extends Cell
-
-object StructCell:
-  def apply(values: (String, Cell)*): Cell =
-    StructCell(values.toMap)
+sealed trait Cell
 
 object Cell:
 
-  val nothing: Cell =
-    NothingCell
+  case object Nothing                                                   extends Cell
+  case object Void                                                      extends Cell
+  final case class Bool(value: Boolean)                                 extends Cell
+  final case class U8(value: Byte)                                      extends Cell
+  final case class I16(value: Short)                                    extends Cell
+  final case class I32(value: Int)                                      extends Cell
+  final case class I64(value: Long)                                     extends Cell
+  final case class F32(value: Float)                                    extends Cell
+  final case class F64(value: Double)                                   extends Cell
+  final case class Dec(value: BigDecimal)                               extends Cell
+  final case class Chr(value: Char)                                     extends Cell
+  final case class Str(value: String)                                   extends Cell
+  final case class Date(value: LocalDate)                               extends Cell
+  final case class DateTime(value: OffsetDateTime)                      extends Cell
+  final case class Vec(value: List[Cell])                               extends Cell
+  final case class Set(vakue: SSet[Cell])                               extends Cell
+  final case class Map(value: SMap[Cell, Cell])                         extends Cell
+  final case class Struct(value: SMap[String, Cell])                    extends Cell
+  final case class Method(value: List[Cell] => Either[Throwable, Cell]) extends Cell
 
-  val void: Cell =
-    VoidCell
+  given Ordering[Cell] =
+    Ordering.by[Cell, String](_.toString)
 
-  def bool(value: Boolean): Cell =
-    BoolCell(value)
+  object Struct:
+    def apply(values: (String, Cell)*): Cell =
+      Struct(values.toMap)
 
-  def i32(value: Int): Cell =
-    IntCell(value)
+  lazy val nothing: Cell =
+    Nothing
 
-  def i64(value: Long): Cell =
-    LongCell(value)
+  lazy val void: Cell =
+    Void
 
-  def f32(value: Float): Cell =
-    FloatCell(value)
+  def bool(value: Boolean): Cell.Bool =
+    Bool(value)
 
-  def f64(value: Double): Cell =
-    DoubleCell(value)
+  def u8(value: Byte): Cell.U8 =
+    U8(value)
 
-  def decimal(value: BigDecimal): Cell =
-    DecimalCell(value)
+  def i16(value: Short): Cell.I16 =
+    I16(value)
 
-  def str(value: String): Cell =
-    StrCell(value)
+  def i32(value: Int): Cell.I32 =
+    I32(value)
 
-  def date(value: LocalDate): Cell =
-    DateCell(value)
+  def i64(value: Long): Cell.I64 =
+    I64(value)
 
-  def datetime(value: OffsetDateTime): Cell =
-    DateTimeCell(value)
+  def f32(value: Float): Cell.F32 =
+    F32(value)
 
-  def vec(value: Seq[Cell]): Cell =
-    VecCell(value.toList)
+  def f64(value: Double): Cell.F64 =
+    F64(value)
 
-  def struct(value: Map[String, Cell]): Cell =
-    StructCell(value)
+  def decimal(value: BigDecimal): Cell.Dec =
+    Dec(value)
 
-  // APPLY
+  def chr(value: Char): Cell.Chr =
+    Chr(value)
 
-  def apply(value: Boolean): Cell =
-    bool(value)
+  def str(value: String): Cell.Str =
+    Str(value)
 
-  def apply(value: Int): Cell =
-    i32(value)
+  def date(value: LocalDate): Cell.Date =
+    Date(value)
 
-  def apply(value: Long): Cell =
-    i64(value)
+  def datetime(value: OffsetDateTime): Cell.DateTime =
+    DateTime(value)
 
-  def apply(value: Float): Cell =
-    f32(value)
+  def vec(value: List[Cell]): Cell.Vec =
+    Vec(value.toList)
 
-  def apply(value: Double): Cell =
-    f64(value)
+  def vec(value: Cell*): Cell.Vec =
+    Vec(value.toList)
 
-  def apply(value: BigDecimal): Cell =
-    decimal(value)
+  def set(value: List[Cell]): Cell.Set =
+    Set(value.toSet)
 
-  def apply(value: String): Cell =
-    str(value)
+  def set(value: Cell*): Cell.Set =
+    Set(value.toSet)
 
-  def apply(value: LocalDate): Cell =
-    date(value)
+  def map(value: List[(Cell, Cell)]): Cell.Map =
+    Map(value.toMap)
 
-  def apply(value: OffsetDateTime): Cell =
-    datetime(value)
+  def struct(value: SMap[String, Cell]): Cell.Struct =
+    Struct(value)
 
-  def apply(value: Seq[Cell]): Cell =
-    vec(value.toList)
-
-  def apply(value: Map[String, Cell]): Cell =
-    struct(value)
+  def struct(values: (String, Cell)*): Cell.Struct =
+    Struct(values.toMap)
 
   /**
    * Checks whether two cells have the same type.
    */
-  def haveSameType(a: Cell, b: Cell): Boolean =
+  def isSameType(a: Cell, b: Cell): Boolean =
     a.getClass.getSimpleName == b.getClass.getSimpleName
 
   /**
    * Deep-merges two cells, replacing values in the left cell with values from the right cell.
    */
   def merge(a: Cell, b: Cell): Either[Throwable, Cell] =
-    if !(haveSameType(a, b)) then Left(new MemoryException(s"Cannot merge cells that have different types: $a, $b"))
+    if !(isSameType(a, b)) then Left(new MemoryException(s"Cannot merge cells that have different types: $a, $b"))
     else
       (a, b) match
-        case (StructCell(ma), StructCell(mb)) =>
-          mb.foldLeft(Right(ma): Either[Throwable, Map[String, Cell]]) { case (acc, (k, v)) =>
+        case (Struct(ma), Struct(mb)) =>
+          mb.foldLeft(Right(ma): Either[Throwable, SMap[String, Cell]]) { case (acc, (k, v)) =>
             acc match
               case Left(e) => Left(e)
               case Right(mx) =>
                 for y <- mx.get(k).fold(Right(v))(x => merge(x, v))
                 yield mx + (k -> v)
-          }.map(m => StructCell(m))
+          }.map(m => Struct(m))
         case (_, _) =>
           Right(b)
 
   /**
    * Calculate the difference between two cells.
    */
-  def diff(name: String, before: Option[Cell], after: Option[Cell]): Iterable[Diff.Change[String, Cell]] =
+  def diff(name: String, before: Option[Cell], after: Option[Cell]): List[Diff.Change[Path, Cell]] =
+    iterateDiff(Path(List(name)), before, after)
 
-    def diffList(ns: List[String], b: List[Cell], a: List[Cell]): Iterable[Diff.Change[String, Cell]] =
-      val rs = Iterable.newBuilder[Diff.Change[String, Cell]]
+  /**
+   * Caclulate the difference between two lists of cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   List of cells
+   * @param a
+   *   List of cells
+   * @return
+   *   The list of changes.
+   */
+  private def diffList(ns: Path, b: List[Cell], a: List[Cell]): List[Diff.Change[Path, Cell]] =
+    val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
-      (b.zip(a)).zipWithIndex.foreach { case ((vb, va), i) =>
-        rs ++= iterate(ns :+ s"${i}", Some(vb), Some(va))
-      }
+    (b.zip(a)).zipWithIndex.foreach { case ((vb, va), i) =>
+      rs ++= iterateDiff(ns.append(s"${i}"), Some(vb), Some(va))
+    }
 
-      if b.size > a.size then
-        val bTail = b.drop(a.size)
-        bTail.zipWithIndex.foreach { case (vb, i) => rs ++= iterate(ns :+ s"${(i + a.size)}", Some(vb), None) }
-      else if a.size > b.size then
-        val aTail = a.drop(b.size)
-        aTail.zipWithIndex.foreach { case (va, i) => rs ++= iterate(ns :+ s"${i + b.size}", None, Some(va)) }
+    if b.size > a.size then
+      val bTail = b.drop(a.size)
+      bTail.zipWithIndex.foreach { case (vb, i) => rs ++= iterateDiff(ns.append(s"${(i + a.size)}"), Some(vb), None) }
+    else if a.size > b.size then
+      val aTail = a.drop(b.size)
+      aTail.zipWithIndex.foreach { case (va, i) => rs ++= iterateDiff(ns.append(s"${i + b.size}"), None, Some(va)) }
 
-      rs.result()
+    rs.result()
 
-    def diffMap(ns: List[String], b: Map[String, Cell], a: Map[String, Cell]): Iterable[Diff.Change[String, Cell]] =
-      val rs = Iterable.newBuilder[Diff.Change[String, Cell]]
+  /**
+   * Calculate the difference between two maps of cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   Map of cells
+   * @param a
+   *   Map of cells
+   * @return
+   *   The list of changes.
+   */
+  private def diffStrMap(ns: Path, b: SMap[String, Cell], a: SMap[String, Cell]): List[Diff.Change[Path, Cell]] =
+    val rs = List.newBuilder[Diff.Change[Path, Cell]]
 
-      b.foreach { case (k, vb) =>
-        val va = a.get(k)
-        rs ++= iterate(ns :+ k, Some(vb), va)
-      }
+    val beforeTuples = b.toList.sortBy(_._1)
+    val afterTuples  = a.toList.sortBy(_._1)
 
-      a.foreach { case (k, va) =>
-        val vb = b.get(k)
-        if vb.isEmpty then rs ++= iterate(ns :+ k, vb, Some(va))
-      }
+    beforeTuples.foreach { case (k, vb) =>
+      val va = a.get(k)
+      rs ++= iterateDiff(ns.append(k), Some(vb), va)
+    }
 
-      rs.result()
+    afterTuples.foreach { case (k, va) =>
+      val vb = b.get(k)
+      if vb.isEmpty then rs ++= iterateDiff(ns.append(k), vb, Some(va))
+    }
 
-    def iterate(ns: List[String], b: Option[Cell], a: Option[Cell]): Iterable[Diff.Change[String, Cell]] =
-      val path = CellPath.make(ns).value
-      (b, a) match
-        case (Some(StructCell(ba)), Some(StructCell(aa))) =>
-          diffMap(ns, ba, aa)
+    rs.result()
 
-        case (Some(VecCell(ba)), Some(VecCell(aa))) =>
-          diffList(ns, ba, aa)
+  /**
+   * Calculate the difference between two maps of cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   Map of cells
+   * @param a
+   *   Map of cells
+   * @return
+   *   The list of changes.
+   */
+  private def diffMap(ns: Path, b: SMap[Cell, Cell], a: SMap[Cell, Cell]): List[Diff.Change[Path, Cell]] =
+    val ba = b.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
+    val aa = a.map { case (k, v) => (summon[Show[Cell]].show(k), v) }
+    diffStrMap(ns, ba, aa)
 
-        case (Some(x), Some(y)) =>
-          if x != y then List(Diff.Updated(path, x, y))
-          else List.empty[Diff.Change[String, Cell]]
+  /**
+   * Calculate the difference between two cells.
+   *
+   * @param ns
+   *   Path
+   * @param b
+   *   Maybe Cell
+   * @param a
+   *   Maybe Cell
+   * @return
+   *   The list of changes.
+   */
+  private def iterateDiff(ns: Path, b: Option[Cell], a: Option[Cell]): List[Diff.Change[Path, Cell]] =
+    (b, a) match
+      case (Some(Struct(ba)), Some(Struct(aa))) =>
+        diffStrMap(ns, ba, aa)
 
-        case (Some(x), None) =>
-          List(Diff.Removed(path, x))
+      case (Some(Set(ba)), Some(Set(aa))) =>
+        diffList(ns, ba.toList.sorted, aa.toList.sorted)
 
-        case (None, Some(x)) =>
-          List(Diff.Added(path, x))
+      case (Some(Map(ba)), Some(Map(aa))) =>
+        diffMap(ns, ba, aa)
 
-        case (None, None) =>
-          List.empty[Diff.Change[String, Cell]]
+      case (Some(Vec(ba)), Some(Vec(aa))) =>
+        diffList(ns, ba, aa)
 
-    iterate(List(name), before, after)
+      case (Some(x), Some(y)) =>
+        if x != y then List(Diff.Updated(ns, x, y))
+        else List.empty[Diff.Change[Path, Cell]]
 
-  private def appendKeyPrefix[K, V](prefix: String, change: Diff.Change[K, V]): Diff.Change[String, V] =
-    def toKey(k: K): String = s"${prefix}${CellPath.sep}${k.toString}"
+      case (Some(x), None) =>
+        List(Diff.Removed(ns, x))
 
-    change match
-      case Diff.Removed(k, v)    => Diff.Removed(toKey(k), v)
-      case Diff.Added(k, v)      => Diff.Added(toKey(k), v)
-      case Diff.Updated(k, b, a) => Diff.Updated(toKey(k), b, a)
+      case (None, Some(x)) =>
+        List(Diff.Added(ns, x))
+
+      case (None, None) =>
+        List.empty[Diff.Change[Path, Cell]]
 
   /**
    * Extension Call Operations
    */
   extension (cell: Cell)
-    def asStructCell: Either[Throwable, StructCell] = cell match
-      case struct: StructCell => Right(struct)
-      case other              => Left(new MemoryException(s"Cannot convert ${other} to StructCell"))
+
+    def asStruct: Either[Throwable, Struct] = cell match
+      case struct: Struct => Right(struct)
+      case other          => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Struct"))
+
+    def asBool: Either[Throwable, Bool] = cell match
+      case bool: Bool => Right(bool)
+      case other      => Left(new MemoryException(s"Cannot convert ${other} to a Cell.Bool"))
 
     def asAny: Either[Throwable, Any] = cell match
-      case _: NothingCell.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing
-      case _: VoidCell.type    => Right(().asInstanceOf[Any])
-      case BoolCell(value)     => Right(value.asInstanceOf[Any])
-      case IntCell(value)      => Right(value.asInstanceOf[Any])
-      case LongCell(value)     => Right(value.asInstanceOf[Any])
-      case FloatCell(value)    => Right(value.asInstanceOf[Any])
-      case DoubleCell(value)   => Right(value.asInstanceOf[Any])
-      case DecimalCell(value)  => Right(value.asInstanceOf[Any])
-      case StrCell(value)      => Right(value.asInstanceOf[Any])
-      case DateCell(value)     => Right(value.asInstanceOf[Any])
-      case DateTimeCell(value) => Right(value.asInstanceOf[Any])
-      case VecCell(value)      => Right(value.asInstanceOf[Any])
-      case StructCell(value)   => Right(value.asInstanceOf[Any])
-
-    def asBoolean: Either[Throwable, Boolean] = cell match
-      case BoolCell(x) => Right(x)
-      case other       => Left(new MemoryException(s"Cannot convert ${other} to Boolean"))
+      case _: Nothing.type => Right(???) // NOTE: it will throw an exception, Nothing is really Nothing
+      case _: Void.type    => Right(().asInstanceOf[Any])
+      case Bool(value)     => Right(value.asInstanceOf[Any])
+      case U8(value)       => Right(value.asInstanceOf[Any])
+      case I16(value)      => Right(value.asInstanceOf[Any])
+      case I32(value)      => Right(value.asInstanceOf[Any])
+      case I64(value)      => Right(value.asInstanceOf[Any])
+      case F32(value)      => Right(value.asInstanceOf[Any])
+      case F64(value)      => Right(value.asInstanceOf[Any])
+      case Dec(value)      => Right(value.asInstanceOf[Any])
+      case Chr(value)      => Right(value.asInstanceOf[Any])
+      case Str(value)      => Right(value.asInstanceOf[Any])
+      case Date(value)     => Right(value.asInstanceOf[Any])
+      case DateTime(value) => Right(value.asInstanceOf[Any])
+      case Vec(value)      => Right(value.asInstanceOf[Any])
+      case Set(value)      => Right(value.asInstanceOf[Any])
+      case Map(value)      => Right(value.asInstanceOf[Any])
+      case Struct(value)   => Right(value.asInstanceOf[Any])
+      case Method(value)   => Right(value.asInstanceOf[Any])
 
   given Show[Cell] with
-    extension (a: Cell)
-      def show: String = a match
-        case _: NothingCell.type => s"\"nothing\""
-        case _: VoidCell.type    => s"\"void\""
-        case BoolCell(value)     => s"\"bool(${value})\""
-        case IntCell(value)      => s"\"i32(${value})\""
-        case LongCell(value)     => s"\"i64(${value})\""
-        case FloatCell(value)    => s"\"f32(${value})\""
-        case DoubleCell(value)   => s"\"f64(${value})\""
-        case DecimalCell(value)  => s"\"dec(${value})\""
-        case StrCell(value)      => s"\"str(${value})\""
-        case DateCell(value)     => s"\"date(${value.toString})\""
-        case DateTimeCell(value) => s"\"datetime(${value.toString})\""
-        case VecCell(value) =>
-          val lineLines = value.map(it => LineOps.split(it.show))
-          val lines     = LineOps.wrap("[", "]", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(", ", lineLines))))
-          LineOps.join(lines)
-        case StructCell(value) =>
-          val lineLines = value.toList.map { case (k, v) =>
-            val vLines  = LineOps.split(v.show)
-            val kvLines = LineOps.joinCR(": ", Seq(s"\"${k}\""), vLines)
-            kvLines
-          }
-          val lines = LineOps.wrap("{", "}", LineOps.wrapEmpty(LineOps.padLines(2, LineOps.joinVAll(",", lineLines))))
-          LineOps.join(lines)
+    def show(a: Cell): String = a match
+      case _: Nothing.type => Lines.quote(s"${TypeName.nothing}")
+      case _: Void.type    => Lines.quote(s"${TypeName.void}")
+      case Bool(value)     => Lines.quote(s"${TypeName.bool}(${value})")
+      case U8(value)       => Lines.quote(s"${TypeName.u8}(${value})")
+      case I16(value)      => Lines.quote(s"${TypeName.i16}(${value})")
+      case I32(value)      => Lines.quote(s"${TypeName.i32}(${value})")
+      case I64(value)      => Lines.quote(s"${TypeName.i64}(${value})")
+      case F32(value)      => Lines.quote(s"${TypeName.f32}(${value})")
+      case F64(value)      => Lines.quote(s"${TypeName.f64}(${value})")
+      case Dec(value)      => Lines.quote(s"${TypeName.dec}(${value})")
+      case Chr(value)      => Lines.quote(s"${TypeName.chr}(${value})")
+      case Str(value)      => Lines.quote(s"${TypeName.str}(${value})")
+      case Date(value)     => Lines.quote(s"${TypeName.date}(${value.toString})")
+      case DateTime(value) => Lines.quote(s"${TypeName.datetime}(${value.toString})")
+      case Vec(value) =>
+        showList(value)
+      case Set(value) =>
+        showList(value.toList.sorted, "{", "}")
+      case Map(value) =>
+        showStruct(value.map((k, v) => (show(k), v)), false)
+      case Struct(value) =>
+        showStruct(value)
+      case Method(_) => Lines.quote("method([args] => either[err,value])")
+
+    private def showList(value: List[Cell], start: String = "[", end: String = "]"): String =
+      val lineLines = value.map(it => Lines.split(show(it)))
+      val lines     = Lines.wrap(start, end, Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(", ", lineLines))))
+      Lines.join(lines)
+
+    private def showStruct(value: SMap[String, Cell], quoteKeys: Boolean = true): String =
+      val tuples = value.toList.sortBy(_._1)
+      val lineLines = tuples.map { case (k, v) =>
+        val vLines  = Lines.split(show(v))
+        val kvLines = Lines.joinCR(": ", Seq(if quoteKeys then Lines.quote(k) else k), vLines)
+        kvLines
+      }
+      val lines = Lines.wrap("{", "}", Lines.wrapEmpty(Lines.padLines(2, Lines.joinVAll(",", lineLines))))
+      Lines.join(lines)

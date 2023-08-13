@@ -1,12 +1,12 @@
 package com.github.gchudnov.bscript.lang.ast
 
-import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
-import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
-
 /**
  * Block of code
  *
- * Contains zero or more statements
+ * Contains zero or more expressions
+ *
+ * If there the block is empty, it evaluates to Void.
+ *
  * {{{
  *   {
  *     int x;
@@ -16,39 +16,27 @@ import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
  *   }
  * }}}
  *
- * @param statements
- *   Statements included in the block
+ * @param exprs
+ *   Expressions included in the block
  */
-final case class Block(statements: List[Expr], symbol: Symbol, evalType: Type, promoteToType: Option[Type]) extends Expr:
-  override def visit[S, R](s: S, v: TreeVisitor[S, R]): Either[Throwable, R] =
-    v.visit(s, this)
-
-  override def withPromoteToType(t: Option[Type]): Block = copy(promoteToType = t)
+final case class Block(exprs: List[Expr]) extends Expr
 
 object Block:
 
-  val empty: Block =
-    new Block(statements = List.empty[Expr], symbol = Symbol.Undefined, evalType = Type.Undefined, promoteToType = None)
+  lazy val empty: Block =
+    new Block(exprs = List.empty[Expr])
 
-  def apply(statements: Expr*): Block =
-    ofSeq(statements.toList)
-
-  def apply(statements: Seq[Expr], symbol: Symbol, evalType: Type): Block =
-    new Block(statements = statements.toList, symbol = symbol, evalType = evalType, promoteToType = None)
-
-  def ofSeq(statements: Seq[Expr]): Block =
-    new Block(statements = statements.toList, symbol = Symbol.Undefined, evalType = Type.Undefined, promoteToType = None)
+  def of(exprs: Expr*): Block =
+    Block(exprs.toList)
 
   extension (block: Block)
     def ++(other: Block): Block =
-      if block.evalType == other.evalType && block.promoteToType == other.promoteToType && block.symbol == other.symbol then
-        Block(statements = block.statements ++ other.statements, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
-      else sys.error("Cannot join Blocks with different evalType and promoteToType values")
+      Block(exprs = block.exprs ++ other.exprs)
 
     def :+(other: AST): Block =
       other match
         case x: Block =>
           block ++ x
         case x: Expr =>
-          Block(statements = block.statements :+ x, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
+          Block(exprs = block.exprs :+ x)
         case _ => sys.error("Cannot append non-Expr to Block")

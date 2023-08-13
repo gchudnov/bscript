@@ -1,34 +1,61 @@
 package com.github.gchudnov.bscript.builder
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor
-import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor
-import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor
-import com.github.gchudnov.bscript.builder.internal.ScopeBuildVisitor.ScopeBuildState
-import com.github.gchudnov.bscript.builder.internal.ScopeResolveVisitor.ScopeResolveState
-import com.github.gchudnov.bscript.builder.internal.TypeCheckVisitor.TypeCheckState
-import com.github.gchudnov.bscript.builder.util.Gen
-import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
-import com.github.gchudnov.bscript.builder.state.Meta
+import com.github.gchudnov.bscript.builder.state.*
+import com.github.gchudnov.bscript.builder.pass.*
+import com.github.gchudnov.bscript.builder.env.*
 
-sealed trait Builder:
+import scala.util.control.Exception.*
 
-  def build(ast0: AST, types: Types, typeCheckLaws: TypeCheckLaws): Either[Throwable, AstMeta] =
-    val meta0 = Meta.init(types)
+object Builder:
+
+  def build(ast0: AST): Either[Throwable, (AST, BuildState)] =
+    val buildPass       = new ScopeBuildPass()
+    val symResolvePass  = new SymbolResolvePass()
+    val typeResolvePass = new TypeResolvePass()
+    val typeCheckPass   = new TypeCheckPass()
+
     for
-      scope0             <- meta0.scopeTree.root.toRight(new Exception(s"Root scope not found"))
-      scopeBuildVisitor   = ScopeBuildVisitor.make()
-      scopeBuildState0    = ScopeBuildState.make(ast0, meta0, scope0, Gen.empty)
-      scopeBuildState1   <- ast0.visit(scopeBuildState0, scopeBuildVisitor)
-      scopeResolveVisitor = ScopeResolveVisitor.make()
-      (ast1, meta1)       = (scopeBuildState1.ast, scopeBuildState1.meta)
-      scopeResolveState0  = ScopeResolveState.make(ast1, meta1)
-      scopeResolveState1 <- ast1.visit(scopeResolveState0, scopeResolveVisitor)
-      (ast2, meta2)       = (scopeResolveState1.ast, scopeResolveState1.meta)
-      typeCheckVisitor    = TypeCheckVisitor.make(types, typeCheckLaws)
-      typeCheckState0     = TypeCheckState.make(ast2, meta2)
-      typeCheckState1    <- ast2.visit(typeCheckState0, typeCheckVisitor)
-      (ast3, meta3)       = (typeCheckState1.ast, typeCheckState1.meta)
-    yield AstMeta(meta = meta3, ast = ast3)
+      buildIn        <- nonFatalCatch.either(toBuildIn(ast0))
+      buildOut       <- nonFatalCatch.either(buildPass.run(buildIn))
+      symResolveIn   <- nonFatalCatch.either(toSymResolveIn(buildOut, ast0))
+      symResolveOut  <- nonFatalCatch.either(symResolvePass.run(symResolveIn)) // NOTE: at the moment we ignore result of this pass
+      typeResolveIn  <- nonFatalCatch.either(toTypeResolveIn(buildOut, ast0))
+      typeResolveOut <- nonFatalCatch.either(typeResolvePass.run(typeResolveIn))
+      typeCheckIn    <- nonFatalCatch.either(toTypeCheckIn(typeResolveOut, ast0))
+      typeCheckOut   <- nonFatalCatch.either(typeCheckPass.run(typeCheckIn)) // NOTE: at the moment we ignore result of this pass
+    yield (ast0, BuildState.from(typeResolveOut.evalTypes))
 
-object Builder extends Builder
+  /**
+   * -> Build In
+   */
+  private def toBuildIn(ast: AST): HasAST =
+    HasAST(ast)
+
+  /**
+   * Build Out -> Symbol Resolve In
+   */
+  private def toSymResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+    new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
+      override val scopeTree: ReadScopeTree       = s.scopeTree
+      override val scopeSymbols: ReadScopeSymbols = s.scopeSymbols
+      override val scopeAsts: ReadScopeAsts       = s.scopeAsts
+      override val ast: AST                       = ast0
+
+  /**
+   * Build Out -> Type Resolve In
+   */
+  private def toTypeResolveIn(s: HasScopeTree & HasScopeSymbols & HasScopeAsts, ast0: AST): HasReadScopeTree & HasReadScopeSymbols & HasReadScopeAsts & HasAST =
+    new HasReadScopeTree with HasReadScopeSymbols with HasReadScopeAsts with HasAST:
+      override val scopeTree: ScopeTree       = s.scopeTree
+      override val scopeSymbols: ScopeSymbols = s.scopeSymbols
+      override val scopeAsts: ScopeAsts       = s.scopeAsts
+      override val ast: AST                   = ast0
+
+  /**
+   * Type Resolve Out -> Type Check In
+   */
+  private def toTypeCheckIn(s: HasEvalTypes, ast0: AST): HasReadEvalTypes & HasAST =
+    new HasReadEvalTypes with HasAST:
+      override val evalTypes: ReadEvalTypes = s.evalTypes
+      override val ast: AST                 = ast0
