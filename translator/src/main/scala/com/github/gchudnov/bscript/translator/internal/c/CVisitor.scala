@@ -161,18 +161,18 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
       idLines   = ids.lines
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
-      lines     = joinCR(" = ", rwrapMl(idLines), exprLines)
+      lines     = append(";", joinCR(" = ", rwrapMl(idLines), exprLines))
     yield es.withLines(lines)
 
   override def visit(s: CState, n: NothingVal): Either[Throwable, CState] =
     for
-      value <- Right("???")
+      value <- Right("NULL")
       lines  = Vector(value)
     yield s.withLines(lines)
 
   override def visit(s: CState, n: VoidVal): Either[Throwable, CState] =
     for
-      value <- Right("()")
+      value <- Right("NULL")
       lines  = Vector(value)
     yield s.withLines(lines)
 
@@ -286,15 +286,15 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
       typeName <- laws.typeConverter.toTypeName(n.vType)
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
-      nameValue = if typeName.nonEmpty then s"var ${name}: ${typeName}" else s"var ${name}"
-      lines     = joinCR(" = ", Vector(nameValue), exprLines)
+      nameValue = if typeName.nonEmpty then s"${typeName} ${name}" else s"auto ${name}"
+      lines     = append(";", joinCR(" = ", Vector(nameValue), exprLines))
     yield es.withLines(lines)
 
   override def visit(s: CState, n: FieldDecl): Either[Throwable, CState] =
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.fType)
-      value     = s"var ${name}: ${typeName}"
+      value     = s"${typeName} ${name};"
       lines     = Vector(value)
     yield s.withLines(lines)
 
@@ -327,11 +327,11 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
                 case Right(si) =>
                   for
                     sn   <- e.visit(si, this)
-                    lines = joinVAll(",", Seq(si.lines, rwrapMl(sn.lines)))
+                    lines = joinVAll("", Seq(si.lines, rwrapMl(sn.lines)))
                   yield sn.withLines(lines)
             }
       fieldLines = fs.lines
-      lines      = wrap(s"final case class ${n.name}(", ")", wrapEmpty(tabLines(1, fieldLines)))
+      lines      = wrap(s"struct ${n.name} {", "};", wrapEmpty(tabLines(1, fieldLines)))
     yield fs.withLines(lines)
 
   override def visit(s: CState, n: Block): Either[Throwable, CState] =
@@ -399,6 +399,9 @@ private[translator] object CVisitor:
   def make(laws: TranslateLaws): CVisitor =
     new CVisitor(laws)
 
+  private def append(end: String, lines: Seq[String]): Seq[String] =
+    LineOps.append(end, lines)
+  
   private def padLines(p: String, lines: Seq[String]): Seq[String] =
     LineOps.padLines(p, lines)
 

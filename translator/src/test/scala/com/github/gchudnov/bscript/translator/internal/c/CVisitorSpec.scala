@@ -44,6 +44,75 @@ final class CVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
     }
+
+    "struct" should {
+
+      /**
+       * {{{
+       *   struct X {
+       *     int x;
+       *     double y;
+       *   }
+       * }}}
+       */
+      "translate to c" in {
+        val t = StructDecl("X", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.f64Type), "y")))
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """struct X {
+                |  int32_t x;
+                |  double y;
+                |};
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "block" should {
+      "translate to c" in {
+        val t = Block(
+          VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
+          Assign(Var(SymbolRef("x")), IntVal(3))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """{
+                |  int32_t x = 0;
+                |  x = 3;
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "translate to c if empty" in {
+        val t        = Block()
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """{}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
   }
 
   private def eval(ast0: AST): Either[Throwable, CState] =
