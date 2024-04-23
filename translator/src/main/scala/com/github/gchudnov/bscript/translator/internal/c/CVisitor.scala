@@ -345,7 +345,7 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
                     lines = joinVAll("", Seq(si.lines, sn.lines))
                   yield sn.withLines(lines)
             }
-      stmtLines = ss.lines
+      stmtLines = append(";", ss.lines)
       lines     = if stmtLines.nonEmpty then wrap("{", "}", wrapEmpty(tabLines(1, stmtLines))) else Seq("{}")
     yield ss.withLines(lines)
 
