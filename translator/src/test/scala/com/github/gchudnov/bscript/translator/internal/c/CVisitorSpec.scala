@@ -152,7 +152,7 @@ final class CVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to scala3 call without arguments" in {
+      "translate to c call without arguments" in {
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
           MethodDecl(
@@ -190,18 +190,18 @@ final class CVisitorSpec extends TestSpec:
             val expected =
               """
                 |{
-                |  var x: Int = 1
-                |  def f(x: Int): Int = {
-                |    var y: Int = 1
-                |    g((2 * x) + y)
+                |  int32_t x = 1;
+                |  int32_t f(int32_t x) {
+                |    int32_t y = 1;
+                |    return g((2 * x) + y);
                 |  }
-                |  def g(x: Int): Int = {
-                |    (x - 1)
+                |  int32_t g(int32_t x) {
+                |    return (x - 1);
                 |  }
-                |  def main(): Int = {
-                |    f(3)
+                |  int32_t main() {
+                |    return f(3);
                 |  }
-                |  main()
+                |  main();
                 |}
                 |""".stripMargin.trim
 
