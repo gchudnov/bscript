@@ -276,7 +276,7 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.aType)
-      value     = s"${name}: ${typeName}"
+      value     = s"${typeName} ${name}"
       lines     = Vector(value)
     yield s.withLines(lines)
 
@@ -315,8 +315,8 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
       bodyLines = bs.lines
       anns      = n.annotations.map(_.value)
       comment   = if anns.nonEmpty then wrap("/**", " */", wrapEmpty(padLines(" * ", anns))) else Seq.empty[String]
-      header    = wrap(s"def ${n.name}(", s"): ${retType}", argLines)
-      lines     = comment ++ joinCR(" = ", header, bodyLines)
+      header    = wrap(s"${retType} ${n.name}(", s")", argLines)
+      lines     = comment ++ joinCR(" ", header, bodyLines)
     yield bs.withLines(lines)
 
   override def visit(s: CState, n: StructDecl): Either[Throwable, CState] =
@@ -401,7 +401,7 @@ private[translator] object CVisitor:
 
   private def append(end: String, lines: Seq[String]): Seq[String] =
     LineOps.append(end, lines)
-  
+
   private def padLines(p: String, lines: Seq[String]): Seq[String] =
     LineOps.padLines(p, lines)
 
