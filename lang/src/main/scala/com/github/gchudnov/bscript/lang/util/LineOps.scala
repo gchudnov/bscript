@@ -1,5 +1,7 @@
 package com.github.gchudnov.bscript.lang.util
 
+import scala.collection.immutable.Seq
+
 object LineOps:
 
   private val NL: String    = System.lineSeparator

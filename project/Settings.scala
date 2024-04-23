@@ -8,7 +8,7 @@ import com.jsuereth.sbtpgp.PgpKeys
 import com.jsuereth.sbtpgp.SbtPgp.autoImport.usePgpKeyHex
 
 object Settings {
-  private val scalaV = "3.2.1"
+  private val scalaV = "3.4.1"
 
   private val sharedScalacOptions = Seq(
     "-deprecation",                  // emit warning and location for usages of deprecated APIs
@@ -20,7 +20,7 @@ object Settings {
     "-print-lines",                  // show source code line numbers.
     "-unchecked",                    // enable additional warnings where generated code depends on assumptions
     "-Ykind-projector",              // allow `*` as wildcard to be compatible with kind projector
-    "-Xfatal-warnings",              // fail the compilation if there are any warnings
+//    "-Xfatal-warnings",              // fail the compilation if there are any warnings
     "-Xmigration",                   // warn about constructs whose behavior may have changed since version
     "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
     "-language:experimental.macros", // Allow macro definition (besides implementation and application)

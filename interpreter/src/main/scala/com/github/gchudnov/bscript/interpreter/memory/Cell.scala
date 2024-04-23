@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.interpreter.memory
 
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
+import scala.collection.immutable.Seq
 
 import java.time.{ LocalDate, OffsetDateTime }
 

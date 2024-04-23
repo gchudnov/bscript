@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.rewriter.internal
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
+import scala.collection.immutable.Seq
 
 /**
  * Finds the first AST-node that matches the given predicate.

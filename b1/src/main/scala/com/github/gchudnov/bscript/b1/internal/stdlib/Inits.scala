@@ -1,6 +1,7 @@
 package com.github.gchudnov.bscript.b1.internal.stdlib
 
 import com.github.gchudnov.bscript.lang.util.LineOps.split
+import scala.collection.immutable.Seq
 
 /**
  * Top Level Initializations, required to make the translated code working

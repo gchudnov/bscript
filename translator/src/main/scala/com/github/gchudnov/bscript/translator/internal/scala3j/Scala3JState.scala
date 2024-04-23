@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.translator.internal.scala3j
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.translator.internal.ScalaState
+import scala.collection.immutable.Seq
 
 /**
  * Scala 3 State with Java Types (to allow 'null')

@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.lang.ast
 
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.{ Symbol, Type }
+import scala.collection.immutable.Seq
 
 /**
  * Method Declaration

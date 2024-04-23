@@ -9,6 +9,7 @@ import com.github.gchudnov.swearwolf.rich.RichText
 import com.github.gchudnov.swearwolf.term.*
 import com.github.gchudnov.swearwolf.util.*
 import com.github.gchudnov.swearwolf.util.TextStyle.*
+import scala.collection.immutable.Seq
 
 object MemWatchDisplay:
   import Cell.*
