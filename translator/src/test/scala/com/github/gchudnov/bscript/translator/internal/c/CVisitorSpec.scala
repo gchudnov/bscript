@@ -193,13 +193,13 @@ final class CVisitorSpec extends TestSpec:
                 |  int32_t x = 1;
                 |  int32_t f(int32_t x) {
                 |    int32_t y = 1;
-                |    return g((2 * x) + y);
+                |    g((2 * x) + y);
                 |  }
                 |  int32_t g(int32_t x) {
-                |    return (x - 1);
+                |    (x - 1);
                 |  }
                 |  int32_t main() {
-                |    return f(3);
+                |    f(3);
                 |  }
                 |  main();
                 |}
