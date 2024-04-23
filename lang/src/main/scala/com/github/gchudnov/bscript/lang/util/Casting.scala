@@ -69,7 +69,7 @@ object Casting:
         case s: SVar => Right(s)
         case _       => Left(new AstException(s"Cannot cast Symbol '${sym.name}' of type '${symbolKind}' to a SVar"))
 
-    def asType: Either[AstException, Symbol with Type] =
+    def asType: Either[AstException, Symbol & Type] =
       sym match
         case x: Type => Right(x)
         case _       => Left(new AstException(s"Cannot cast Symbol '${sym.name}' of type '${symbolKind}' to a Type"))

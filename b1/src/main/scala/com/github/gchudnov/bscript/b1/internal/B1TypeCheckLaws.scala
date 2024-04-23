@@ -8,18 +8,18 @@ import com.github.gchudnov.bscript.lang.types.Types
 private[b1] object B1TypeCheckLaws:
 
   def make(types: Types): TypeCheckLaws =
-    val autoType: Symbol with Type     = types.autoType
-    val nothingType: Symbol with Type  = types.nothingType
-    val voidType: Symbol with Type     = types.voidType
-    val boolType: Symbol with Type     = types.boolType
-    val i32Type: Symbol with Type      = types.i32Type
-    val i64Type: Symbol with Type      = types.i64Type
-    val f32Type: Symbol with Type      = types.f32Type
-    val f64Type: Symbol with Type      = types.f64Type
-    val decType: Symbol with Type      = types.decType
-    val strType: Symbol with Type      = types.strType
-    val dateType: Symbol with Type     = types.dateType
-    val datetimeType: Symbol with Type = types.datetimeType
+    val autoType: Symbol & Type     = types.autoType
+    val nothingType: Symbol & Type  = types.nothingType
+    val voidType: Symbol & Type     = types.voidType
+    val boolType: Symbol & Type     = types.boolType
+    val i32Type: Symbol & Type      = types.i32Type
+    val i64Type: Symbol & Type      = types.i64Type
+    val f32Type: Symbol & Type      = types.f32Type
+    val f64Type: Symbol & Type      = types.f64Type
+    val decType: Symbol & Type      = types.decType
+    val strType: Symbol & Type      = types.strType
+    val dateType: Symbol & Type     = types.dateType
+    val datetimeType: Symbol & Type = types.datetimeType
 
     /**
      * Concatenation rules for strings. If there is no entry, the combination is illegal.

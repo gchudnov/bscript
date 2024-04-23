@@ -276,7 +276,7 @@ final case class Meta(
     val (newScopeSymbols, newSymbolScopes) = addScopeSymbol(symbol, scope)
     this.copy(scopeSymbols = newScopeSymbols, symbolScopes = newSymbolScopes)
 
-  private def defineSymbolScopeInScope(symbolWithScope: Symbol with Scope, scope: Scope): Meta =
+  private def defineSymbolScopeInScope(symbolWithScope: Symbol & Scope, scope: Scope): Meta =
     val (newScopeSymbols, newSymbolScopes) = addScopeSymbol(symbolWithScope, scope)
     this.copy(scopeTree = scopeTree.link(symbolWithScope, scope), scopeSymbols = newScopeSymbols, symbolScopes = newSymbolScopes)
 
