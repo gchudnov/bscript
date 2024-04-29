@@ -56,9 +56,9 @@ final class CInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta) e
                           .typeFor(x)
                           .left
                           .map(ex => new TranslateException(s"Cannot initialize struct field", ex))
-                          .flatMap(t => init(t).map(ls => LineOps.joinCR(" = ", Seq(x.name), LineOps.tabTail(1, ls))))
+                          .flatMap(t => init(t).map(ls => LineOps.joinCR(" = ", Seq("." + x.name), LineOps.tabTail(1, ls))))
                       case other =>
                         Left(new TranslateException(s"Cannot initialize struct field that is not a type '${other}'"))
                   })
-      lines = LineOps.wrap(s"${ss.name}(", ")", LineOps.wrapEmpty(LineOps.tabLines(1, LineOps.joinVAll(",", fields))))
+      lines = LineOps.wrap(s"{", "}", LineOps.wrapEmpty(LineOps.tabLines(1, LineOps.joinVAll(",", fields))))
     yield lines

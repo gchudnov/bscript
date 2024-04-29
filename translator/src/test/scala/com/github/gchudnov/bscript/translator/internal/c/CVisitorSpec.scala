@@ -158,15 +158,15 @@ final class CVisitorSpec extends TestSpec:
                 |    int32_t f;
                 |    int32_t g;
                 |  };
-                |  A a = A(
-                |    a = 0,
-                |    b = 0,
-                |    c = 0,
-                |    d = 0,
-                |    e = 0,
-                |    f = 0,
-                |    g = 0
-                |  );
+                |  A a = {
+                |    .a = 0,
+                |    .b = 0,
+                |    .c = 0,
+                |    .d = 0,
+                |    .e = 0,
+                |    .f = 0,
+                |    .g = 0
+                |  };
                 |}
                 |""".stripMargin.trim
 
