@@ -177,6 +177,21 @@ object LineOps:
     else lines.init :+ (lines.last + end)
 
   /**
+   * Append the given text to the last line of the collection if not present
+   * {{{
+   * example:
+   *   ')'
+   *   111
+   *   222)
+   * output:
+   *   111
+   *   222)
+   * }}}
+   */
+  def appendIfNotExists(end: String, lines: Seq[String]): Seq[String] =
+    if lines.nonEmpty && !lines.last.endsWith(end) then append(end, lines) else lines
+  
+  /**
    * Wraps the head and last element of the collection
    * {{{
    * example:

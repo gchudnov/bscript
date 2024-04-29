@@ -13,7 +13,7 @@ import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.translator.TGlobals
 import com.github.gchudnov.bscript.translator.TTypeCheckLaws
 import com.github.gchudnov.bscript.translator.TestSpec
-import com.github.gchudnov.bscript.translator.internal.c.laws.CTranslateLaws
+import com.github.gchudnov.bscript.translator.internal.c.laws.{CTranslateLaws, CTypeCheckLaws}
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 import java.time.LocalDate
@@ -117,11 +117,11 @@ final class CVisitorSpec extends TestSpec:
     "method" should {
       "translate to c" in {
         val t = MethodDecl(
-          TypeRef(typeNames.i32Type),
+          TypeRef(typeNames.voidType),
           "g",
           List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
           Block(
-            Sub(Var(SymbolRef("x")), IntVal(1))
+            Sub(Var(SymbolRef("x")), IntVal(1)),
           )
         )
 
@@ -130,13 +130,14 @@ final class CVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """int32_t g(int32_t x) {
-                |  return (x - 1);
+              """void g(int32_t x) {
+                |  (x - 1);
                 |}
                 |""".stripMargin.trim
 
             actual mustBe expected
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
 
@@ -145,9 +146,9 @@ final class CVisitorSpec extends TestSpec:
        *   // globals
        *   {
        *     int x = 1;
-       *     int f(int x) { int y = 1; return g(2*x + y); }
-       *     int g(int x) { return (x - 1); }
-       *     int main() { return f(3); }
+       *     void f(int x) { int y = 1; return g(2*x + y); }
+       *     void g(int x) { return (x - 1); }
+       *     void main() { return f(3); }
        *     main();
        *   }
        * }}}
@@ -156,7 +157,7 @@ final class CVisitorSpec extends TestSpec:
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
           MethodDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.voidType),
             "f",
             List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
             Block(
@@ -165,7 +166,7 @@ final class CVisitorSpec extends TestSpec:
             )
           ),
           MethodDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.voidType),
             "g",
             List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
             Block(
@@ -173,7 +174,7 @@ final class CVisitorSpec extends TestSpec:
             )
           ),
           MethodDecl(
-            TypeRef(typeNames.i32Type),
+            TypeRef(typeNames.voidType),
             "main",
             List.empty[ArgDecl],
             Block(
@@ -187,18 +188,21 @@ final class CVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+
+            println(actual)
+
             val expected =
               """
                 |{
                 |  int32_t x = 1;
-                |  int32_t f(int32_t x) {
+                |  void f(int32_t x) {
                 |    int32_t y = 1;
                 |    g((2 * x) + y);
                 |  }
-                |  int32_t g(int32_t x) {
+                |  void g(int32_t x) {
                 |    (x - 1);
                 |  }
-                |  int32_t main() {
+                |  void main() {
                 |    f(3);
                 |  }
                 |  main();
@@ -215,7 +219,7 @@ final class CVisitorSpec extends TestSpec:
 
   private def eval(ast0: AST): Either[Throwable, CState] =
     val types = Types.make(typeNames)
-    val typeCheckLaws = TTypeCheckLaws.make(types)
+    val typeCheckLaws = CTypeCheckLaws.make(types)
 
     Builder
       .build(ast0, types, typeCheckLaws)

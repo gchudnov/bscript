@@ -345,7 +345,7 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
                     lines = joinVAll("", Seq(si.lines, sn.lines))
                   yield sn.withLines(lines)
             }
-      stmtLines = append(";", ss.lines)
+      stmtLines = appendIfNotExists(";", ss.lines)
       lines     = if stmtLines.nonEmpty then wrap("{", "}", wrapEmpty(tabLines(1, stmtLines))) else Seq("{}")
     yield ss.withLines(lines)
 
@@ -402,6 +402,9 @@ private[translator] object CVisitor:
   private def append(end: String, lines: Seq[String]): Seq[String] =
     LineOps.append(end, lines)
 
+  private def appendIfNotExists(end: String, lines: Seq[String]): Seq[String] =
+    LineOps.appendIfNotExists(end, lines)
+  
   private def padLines(p: String, lines: Seq[String]): Seq[String] =
     LineOps.padLines(p, lines)
 

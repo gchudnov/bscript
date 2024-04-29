@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.translator.internal.c
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 case object CTypeInit extends TypeInit:
-  val voidType: String = "NULL"
+  val voidType: String = "void"
   val boolType: String = "false"
   val i32Type: String  = "0"
   val i64Type: String  = "0L"
