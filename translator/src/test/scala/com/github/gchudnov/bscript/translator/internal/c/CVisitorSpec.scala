@@ -111,13 +111,13 @@ final class CVisitorSpec extends TestSpec:
                 |    char* s;
                 |    B b;
                 |  };
-                |  A a = A(
-                |    x = 1,
-                |    s = "alice",
-                |    b = B(
-                |        y = 2
-                |      )
-                |  );
+                |  A a = {
+                |    .x = 1,
+                |    .s = "alice",
+                |    .b = {
+                |        .y = 2
+                |      }
+                |  };
                 |}
                 |""".stripMargin.trim
 

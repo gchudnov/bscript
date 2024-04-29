@@ -244,11 +244,11 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
                   val expr = n.value(sField.name)
                   for
                     sn   <- expr.visit(si, this)
-                    lines = LineOps.joinCR(" = ", Seq(sField.name), LineOps.tabTail(1, sn.lines))
+                    lines = LineOps.joinCR(" = ", Seq("." + sField.name), LineOps.tabTail(1, sn.lines))
                   yield sn.withLines(LineOps.joinVAll(",", Seq(si.lines, lines)))
             }
       fields = ms.lines
-      lines  = LineOps.wrap(s"${n.sType.name}(", ")", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
+      lines  = LineOps.wrap(s"{", "}", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
     yield ms.withLines(lines)
 
   override def visit(s: CState, n: Vec): Either[Throwable, CState] =
@@ -404,7 +404,7 @@ private[translator] object CVisitor:
 
   private def appendIfNotExists(end: String, lines: Seq[String]): Seq[String] =
     LineOps.appendIfNotExists(end, lines)
-  
+
   private def padLines(p: String, lines: Seq[String]): Seq[String] =
     LineOps.padLines(p, lines)
 
