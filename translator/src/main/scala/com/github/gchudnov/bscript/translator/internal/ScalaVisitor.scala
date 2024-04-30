@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.{ Casting, LineOps, Transform }
+import scala.collection.immutable.Seq
 
 /**
  * A visitor that translates AST to Scala 2.13 / 3 code

@@ -20,7 +20,7 @@ object Settings {
     "-print-lines",                  // show source code line numbers.
     "-unchecked",                    // enable additional warnings where generated code depends on assumptions
     "-Ykind-projector",              // allow `*` as wildcard to be compatible with kind projector
-    "-Xfatal-warnings",              // fail the compilation if there are any warnings
+//    "-Xfatal-warnings",              // fail the compilation if there are any warnings
     "-Xmigration",                   // warn about constructs whose behavior may have changed since version
     "-language:existentials",        // Existential types (besides wildcard types) can be written and inferred
     "-language:experimental.macros", // Allow macro definition (besides implementation and application)

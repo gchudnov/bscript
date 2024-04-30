@@ -17,5 +17,5 @@ private[internal] object Printf:
         ArgDecl(TypeRef(typeNames.autoType), "value")
       ),
       Block.empty, // NOTE: at the moment it is not implemented
-      Seq(ComAnn("Prints the formatted string to StdOut"), StdAnn())
+      Seq(ComAnn("Prints the formatted value to StdOut"), StdAnn())
     )

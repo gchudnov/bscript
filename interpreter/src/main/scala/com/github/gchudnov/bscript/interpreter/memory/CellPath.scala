@@ -1,5 +1,7 @@
 package com.github.gchudnov.bscript.interpreter.memory
 
+import scala.collection.immutable.Seq
+
 /**
  * Path to a cell in a structure
  *

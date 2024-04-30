@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.lang.util
 
 import scala.collection.Factory
 import scala.collection.immutable.SeqOps
+import scala.collection.immutable.Seq
 
 object Transform:
 

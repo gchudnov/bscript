@@ -9,6 +9,7 @@ import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
+import scala.collection.immutable.Seq
 
 import scala.annotation.tailrec
 

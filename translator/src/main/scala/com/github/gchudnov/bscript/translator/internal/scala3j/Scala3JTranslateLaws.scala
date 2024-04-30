@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.translator.internal.scala3j
 import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.translator.laws.{ Initializer, TypeConverter }
 import com.github.gchudnov.bscript.translator.internal.scala3j.laws.Scala3JTypeConverter
-import com.github.gchudnov.bscript.translator.internal.scala3.laws.ScalaInitializer
+import com.github.gchudnov.bscript.translator.laws.ScalaInitializer
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.builder.state.Meta

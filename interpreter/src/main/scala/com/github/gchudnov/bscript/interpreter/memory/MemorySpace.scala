@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.interpreter.memory
 import com.github.gchudnov.bscript.lang.util.Show
 import com.github.gchudnov.bscript.lang.util.LineOps
 import com.github.gchudnov.bscript.interpreter.memory.StructCell
+import scala.collection.immutable.Seq
 
 /**
  * Immutable Memory Area

@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.internal.scala3.laws
+package com.github.gchudnov.bscript.translator.laws
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -7,6 +7,7 @@ import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
 import com.github.gchudnov.bscript.translator.laws.Initializer
 import com.github.gchudnov.bscript.translator.TranslateException
 import com.github.gchudnov.bscript.translator.laws.TypeInit
+import scala.collection.immutable.Seq
 
 /**
  * Initializes types for Scala

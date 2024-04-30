@@ -21,6 +21,7 @@ private[b1] object B1Prelude:
     SetDateTime.decl,
     Today.decl,
     Printf.decl,
+    SPrintf.decl,
     ReadFile.decl,
     ExactInt.decl,
     ExactLong.decl,

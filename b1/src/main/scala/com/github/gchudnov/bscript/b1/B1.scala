@@ -22,6 +22,7 @@ import com.github.gchudnov.bscript.translator.laws.TypeInit
 import com.github.gchudnov.bscript.translator.Lang
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Translator
 import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JTranslator
+import scala.collection.immutable.Seq
 
 sealed trait B1:
 

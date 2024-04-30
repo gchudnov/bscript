@@ -2,6 +2,7 @@ package com.github.gchudnov.bscript.translator.internal
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.LineOps
+import scala.collection.immutable.Seq
 
 /**
  * {{{
