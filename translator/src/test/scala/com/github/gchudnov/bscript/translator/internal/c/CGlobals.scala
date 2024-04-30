@@ -461,7 +461,7 @@ object CGlobals:
 
       case s: CState =>
         Right(s) // TODO: change later
-        
+
       case other =>
         Left(new TranslateException(s"Unexpected state passed to now: ${other}"))
 
@@ -553,30 +553,3 @@ object CGlobals:
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to contains: ${other}"))
-
-/*
-#include <stdio.h>
-
-// Function to check if a value is in the array
-int isInArray(int value, int arr[], int size) {
-    for (int i = 0; i < size; i++) {
-        if (arr[i] == value) {
-            return 1; // Return true if the value is found in the array
-        }
-    }
-    return 0; // Return false if the value is not found in the array
-}
-
-int main() {
-    int arr[] = {1, 2, 3, 4, 5};
-    int value = 3;
-
-    if (isInArray(value, arr, sizeof(arr) / sizeof(arr[0]))) {
-        printf("%d is in the array.\n", value);
-    } else {
-        printf("%d is not in the array.\n", value);
-    }
-
-    return 0;
-}
-*/

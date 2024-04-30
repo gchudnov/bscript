@@ -18,8 +18,8 @@ private[internal] final class CTypeConverter(typeNames: TypeNames) extends TypeN
   override val f64Type: String      = "double"
   override val decType: String      = "double"
   override val strType: String      = "char*"
-  override val dateType: String     = "int64_t"
-  override val datetimeType: String = "int64_t"
+  override val dateType: String     = "time_t"
+  override val datetimeType: String = "time_t"
 
   override val trueValue: String  = "true"
   override val falseValue: String = "false"
