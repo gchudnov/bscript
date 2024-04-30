@@ -26,7 +26,7 @@ import com.github.gchudnov.bscript.translator.internal.ScalaState
  *
  * NOTE: it is important to have a dedicated types for Scala3 and Scala3J since using these case classes we differentiate between these cases in `prelude` generation.
  */
-trait CState:
+trait CStateT:
   def meta: Meta
   def lines: Seq[String]
   def imports: Set[String]
@@ -45,7 +45,7 @@ trait CState:
 /**
  * A state for C
  */
-final case class CStateImpl(meta: Meta, lines: Seq[String], imports: Set[String], inits: Map[String, Seq[String]]) extends CState:
+final case class CState(meta: Meta, lines: Seq[String], imports: Set[String], inits: Map[String, Seq[String]]) extends CStateT:
 
   override def withLines(lines: Seq[String]): CState =
     this.copy(lines = lines)
@@ -64,4 +64,4 @@ final case class CStateImpl(meta: Meta, lines: Seq[String], imports: Set[String]
  */
 object CState:
   def make(meta: Meta): CState =
-    new CStateImpl(meta = meta, lines = Vector.empty[String], imports = Set.empty[String], inits = Map.empty[String, Seq[String]])
+    new CState(meta = meta, lines = Vector.empty[String], imports = Set.empty[String], inits = Map.empty[String, Seq[String]])

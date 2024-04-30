@@ -10,7 +10,7 @@ import com.github.gchudnov.bscript.lang.symbols.TypeRef
 import com.github.gchudnov.bscript.lang.symbols.VectorType
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.translator.TGlobals
+import com.github.gchudnov.bscript.translator.internal.c.CGlobals
 import com.github.gchudnov.bscript.translator.TTypeCheckLaws
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.translator.internal.c.laws.{CTranslateLaws, CTypeCheckLaws}
@@ -20,7 +20,7 @@ import java.time.LocalDate
 
 final class CVisitorSpec extends TestSpec:
 
-  private val typeNames: TypeNames = TGlobals.typeNames
+  private val typeNames: TypeNames = CGlobals.typeNames
 
   "CVisitor" when {
 
@@ -652,7 +652,6 @@ final class CVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """{
                 |  int32_t a[] = {1, 2, 3};
@@ -693,35 +692,35 @@ final class CVisitorSpec extends TestSpec:
             val actual = s.show()
             val expected =
               """{
-                |  final case class B(
-                |    var y: Int
-                |  )
-                |  final case class C(
-                |    var z: Int
-                |  )
-                |  final case class A(
-                |    var x: Int,
-                |    var b: B,
-                |    var c: C
-                |  )
-                |  var a: A = A(
-                |    x = 0,
-                |    b = B(
-                |        y = 0
-                |      ),
-                |    c = C(
-                |        z = 0
-                |      )
-                |  )
-                |  def f(): Unit = {
-                |    final case class D(
-                |      var i: Int
-                |    )
-                |    var d: D = D(
-                |      i = 0
-                |    )
-                |    d.i = a.b.y
-                |  }
+                |  struct B {
+                |    int32_t y;
+                |  };
+                |  struct C {
+                |    int32_t z;
+                |  };
+                |  struct A {
+                |    int32_t x;
+                |    B b;
+                |    C c;
+                |  };
+                |  A a = {
+                |    .x = 0,
+                |    .b = {
+                |        .y = 0
+                |      },
+                |    .c = {
+                |        .z = 0
+                |      }
+                |  };
+                |  void f() {
+                |    struct D {
+                |      int32_t i;
+                |    };
+                |    D d = {
+                |      .i = 0
+                |    };
+                |    d.i = a.b.y;
+                |  };
                 |}
                 |""".stripMargin.trim
 
@@ -733,7 +732,7 @@ final class CVisitorSpec extends TestSpec:
 
     "call a method" should {
       "translate if the collection-argument is empty" in {
-        val t = TGlobals.prelude ++ Block(
+        val t = CGlobals.prelude ++ Block(
           VarDecl(
             TypeRef(typeNames.boolType),
             "x",
@@ -746,6 +745,7 @@ final class CVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """
                 |var x: Boolean = contains(4, List.empty)
@@ -759,7 +759,7 @@ final class CVisitorSpec extends TestSpec:
 
     "compiled expressions" should {
       "translate to c" in {
-        val t = TGlobals.prelude ++ Block(
+        val t = CGlobals.prelude ++ Block(
           VarDecl(TypeRef(typeNames.strType), "s", StrVal("str")),
           Call(SymbolRef("strLen"), List(Var(SymbolRef("s"))))
         )
