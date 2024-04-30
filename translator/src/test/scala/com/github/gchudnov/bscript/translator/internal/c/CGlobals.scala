@@ -250,31 +250,10 @@ object CGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS (1) | HOURS (2) | MINUTES (3) | SECONDS (4))
 
     s match
-      case s: Scala3State =>
-        for lines <- Right(
-                       split(
-                         s"""${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.plusDays(${argOffset}.toLong)
-                            |  case `unitHours` =>
-                            |    ${argValue}.plusHours(${argOffset}.toLong)
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.plusMinutes(${argOffset}.toLong)
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.plusSeconds(${argOffset}.toLong)
-                            |  case other =>
-                            |    throw new RuntimeException(s"Unexpected unit of time was passed to offsetDateTime: $${${argUnit}}")
-                            |}
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines)
-
       case s: CState =>
         for lines <- Right(
           split(
-            s"""
-               |switch (unit) {
+            s"""switch (unit) {
                |  case 1:
                |    return value + offset * 86400;
                |  case 2:
