@@ -5,9 +5,7 @@ import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
-import com.github.gchudnov.bscript.lang.symbols.SymbolRef
-import com.github.gchudnov.bscript.lang.symbols.TypeRef
-import com.github.gchudnov.bscript.lang.symbols.VectorType
+import com.github.gchudnov.bscript.lang.symbols.{SymbolRef, Type, TypeRef, VectorType}
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
 import com.github.gchudnov.bscript.translator.internal.c.CGlobals
@@ -736,7 +734,7 @@ final class CVisitorSpec extends TestSpec:
           VarDecl(
             TypeRef(typeNames.boolType),
             "x",
-            Call(SymbolRef("contains"), List(IntVal(4), Vec()))
+            Call(SymbolRef("contains"), List(IntVal(4), Vec())) // TODO: an empty array should be convertable to any array type
           ),
           Var(SymbolRef("x"))
         )
