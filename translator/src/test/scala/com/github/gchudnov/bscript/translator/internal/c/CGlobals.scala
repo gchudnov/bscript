@@ -459,6 +459,9 @@ object CGlobals:
                      )
         yield s.copy(lines = lines)
 
+      case s: CState =>
+        Right(s) // TODO: change later
+        
       case other =>
         Left(new TranslateException(s"Unexpected state passed to now: ${other}"))
 

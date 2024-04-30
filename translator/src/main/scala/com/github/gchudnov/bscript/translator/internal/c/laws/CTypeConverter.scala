@@ -11,7 +11,7 @@ private[internal] final class CTypeConverter(typeNames: TypeNames) extends TypeN
   override val autoType: String     = "NULL"
   override val nothingType: String  = "NULL"
   override val voidType: String     = "void"
-  override val boolType: String     = "int8_t"
+  override val boolType: String     = "int"
   override val i32Type: String      = "int32_t"
   override val i64Type: String      = "int64_t"
   override val f32Type: String      = "float"
