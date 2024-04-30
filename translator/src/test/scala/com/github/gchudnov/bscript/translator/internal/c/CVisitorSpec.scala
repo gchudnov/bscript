@@ -729,6 +729,40 @@ final class CVisitorSpec extends TestSpec:
     }
 
     "call a method" should {
+      "translate if the collection-argument is non-empty" in {
+        val t = CGlobals.prelude ++ Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(IntVal(4), Vec(List(IntVal(4))))) // TODO: an empty array should be convertable to any array type
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            // TODO: need to rewrite so that the size of the array is provided
+            val expected =
+              """
+                |  int contains(int32_t x, int32_t xs[]) {
+                |    for (int i = 0; i < size; i++) {
+                |          if (arr[i] == value) {
+                |              return 1; // Return true if the value is found in the array
+                |          }
+                |      }
+                |      return 0; // Return false if the value is not found in the array;
+                |  }
+                |  int x = contains(4, {4});
+                |  x;
+                |""".stripMargin.trim
+
+            actual.contains(expected) mustBe true
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
       "translate if the collection-argument is empty" in {
         val t = CGlobals.prelude ++ Block(
           VarDecl(
