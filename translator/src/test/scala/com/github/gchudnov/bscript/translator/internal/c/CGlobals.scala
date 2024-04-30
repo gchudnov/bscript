@@ -97,12 +97,12 @@ object CGlobals:
       List(
         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
         ArgDecl(TypeRef(typeNames.i32Type), "offset"),
-        ArgDecl(TypeRef(typeNames.strType), "unit")
+        ArgDecl(TypeRef(typeNames.i32Type), "unit")
       ),
       Block(
         CompiledExpr(callback = offsetDateTime, retType = TypeRef(typeNames.datetimeType))
       ),
-      Seq(ComAnn("offsets the provided date-time"), StdAnn())
+      Seq(ComAnn("offsets the provided date-time"), ComAnn("DAYS (1) | HOURS (2) | MINUTES (3) | SECONDS (4)"), StdAnn())
     ),
     MethodDecl(
       TypeRef(typeNames.datetimeType),
@@ -247,7 +247,7 @@ object CGlobals:
   private def offsetDateTime(s: Any): Either[Throwable, Any] =
     val argValue  = "value"  // datetime
     val argOffset = "offset" // integer offset
-    val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
+    val argUnit   = "unit"   // string unit of the offset (DAYS (1) | HOURS (2) | MINUTES (3) | SECONDS (4))
 
     s match
       case s: Scala3State =>
@@ -271,7 +271,25 @@ object CGlobals:
         yield s.copy(lines = lines)
 
       case s: CState =>
-        Right(s) // TODO: change later
+        for lines <- Right(
+          split(
+            s"""
+               |switch (unit) {
+               |  case 1:
+               |    return value + offset * 86400;
+               |  case 2:
+               |    return value + offset * 3600;
+               |  case 3:
+               |    return value + offset * 60;
+               |  case 4:
+               |    return value + offset;
+               |  default:
+               |    exit(EXIT_FAILURE);
+               |}
+               |""".stripMargin
+          )
+        )
+        yield s.copy(lines = lines, imports = s.imports + "<stdlib.h>")
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to offsetDateTime: ${other}"))
