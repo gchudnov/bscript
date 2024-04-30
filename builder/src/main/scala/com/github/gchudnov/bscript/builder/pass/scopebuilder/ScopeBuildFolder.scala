@@ -26,8 +26,6 @@ private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuil
       case x @ TypeDecl(name) =>
         foldOverAST(s.define(SType(name)).bind(x), x)
 
-      case x: Annotated =>
-        foldOverAST(s, x)
       case x: Assign =>
         foldOverAST(s, x)
       case x: Block =>
@@ -39,6 +37,8 @@ private[scopebuilder] final class ScopeBuildFolder() extends AstFolder[ScopeBuil
       case x: If =>
         foldOverAST(s, x)
       case x @ Init() =>
+        foldOverAST(s, x)
+      case x @ KeyValue(key, value) =>
         foldOverAST(s, x)
 
       case x @ ConstLit(const) =>

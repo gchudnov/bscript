@@ -6,7 +6,6 @@ import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 import com.github.gchudnov.bscript.lang.const.*
 
-import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
 /* Maps AST
  *
  * Usage:
@@ -55,8 +54,6 @@ trait AstMapper:
         mapRef(a)
       case a: Decl =>
         mapDecl(a)
-      case a: Annotated =>
-        mapAnnotated(a)
       case a: Assign =>
         mapAssign(a)
       case a: Block =>
@@ -144,9 +141,6 @@ trait AstMapper:
 
   def mapVarDecl(ast: VarDecl): VarDecl =
     ast.copy(vType = mapTypeAST(ast.vType), expr = mapExpr(ast.expr))
-
-  def mapAnnotated(ast: Annotated): Annotated =
-    ast.copy(expr = mapExpr(ast.expr), id = mapRef(ast.id), tparams = mapTypeDecls(ast.tparams), params = mapExprs(ast.params))
 
   def mapAssign(ast: Assign): Assign =
     ast.copy(lhs = mapRef(ast.lhs), rhs = mapExpr(ast.rhs))

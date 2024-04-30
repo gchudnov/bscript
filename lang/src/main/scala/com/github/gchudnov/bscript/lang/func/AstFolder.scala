@@ -1,4 +1,3 @@
-
 package com.github.gchudnov.bscript.lang.func
 
 import com.github.gchudnov.bscript.lang.ast.*
@@ -6,7 +5,6 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 
-import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
 /**
  * Folds AST
  */
@@ -33,8 +31,6 @@ trait AstFolder[S]:
       case TypeDecl(_) =>
         s
 
-      case Annotated(expr, id, tparams, params) =>
-        foldAST(foldAST(params.foldLeft(foldASTs(s, tparams))(foldAST), id), expr)
       case Assign(lhs, rhs) =>
         foldAST(foldAST(s, lhs), rhs)
       case Block(exprs) =>

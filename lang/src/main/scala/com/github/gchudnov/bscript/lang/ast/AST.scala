@@ -14,7 +14,6 @@ package com.github.gchudnov.bscript.lang.ast
  *      |                |       +- VarDecl
  *      |                |       +- TypeDecl
  *      |                |
- *      |                +- Annotated
  *      |                +- Assign
  *      |                +- Block
  *      |                +- Call

@@ -945,7 +945,32 @@ final class ScopeBuildPassSpec extends TestSpec:
        * }}}
        */
       "build scopes" in {
+        val t = Block.of(
+          MethodDecl(
+            "main",
+            MethodType(
+              List.empty[TypeDecl],
+              List.empty[VarDecl],
+              TypeId(TypeName.void)
+            ),
+            Block.of(
+              VarDecl("as", Auto(), GroupLit(VecType(Auto()), List(ConstLit(StrVal("alice")), ConstLit(StrVal("bob")), ConstLit(StrVal("carol"))))),
+              VarDecl("f", Auto(), MethodLit(
+                MethodType(
+                  List.empty[TypeDecl],
+                  List(VarDecl("as", VecType(TypeId(TypeName.i32)))),
+                  TypeId(TypeName.void) // TODO: change to map[str, i32] 
+                ),
+                Block.of(
+                  // TODO: impl here
+                )
+              )),
 
+              Call(Id("f"), List(ConstLit(IntVal(3))))
+            )
+          ),
+          Call(Id("main"), List.empty[Expr])
+        )
       }
     }
   }

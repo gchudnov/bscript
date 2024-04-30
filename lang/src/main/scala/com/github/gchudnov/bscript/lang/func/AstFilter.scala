@@ -5,7 +5,6 @@ import com.github.gchudnov.bscript.lang.ast.types.*
 import com.github.gchudnov.bscript.lang.ast.decls.*
 import com.github.gchudnov.bscript.lang.ast.lit.*
 
-import com.github.gchudnov.bscript.lang.ast.lit.GroupLit
 /**
  * Filters AST
  *
@@ -39,9 +38,9 @@ trait AstFilter:
   private def filterTypeAST(ast: TypeAST): Option[TypeAST] =
     ast match
       case a: Auto =>
-        if isKeep(a) then Some(a) else None
+        Some(a).filter(isKeep)
       case a: TypeId =>
-        if isKeep(a) then Some(a) else None
+        Some(a).filter(isKeep)
       case a: VecType =>
         for
           elemType <- filterTypeAST(a.elemType)
@@ -74,14 +73,6 @@ trait AstFilter:
         filterRef(a)
       case a: Decl =>
         filterDecl(a)
-      case a: Annotated =>
-        val tparams = filterTypeDecls(a.tparams)
-        val params  = filterExprs(a.params)
-        for
-          expr      <- filterExpr(a.expr)
-          id        <- filterRef(a.id)
-          annotated <- if isKeep(a) then Some(a.copy(expr = expr, id = id, tparams = tparams, params = params)) else None
-        yield annotated
       case a: Assign =>
         for
           lhs    <- filterRef(a.lhs)
@@ -111,7 +102,7 @@ trait AstFilter:
           if1   <- if isKeep(a) then Some(a.copy(cond = cond, then1 = then1, else1 = else1)) else None
         yield if1
       case a: Init =>
-        if isKeep(a) then Some(a) else None
+        Some(a).filter(isKeep)
       case a: KeyValue =>
         for
           key      <- filterLit(a.key).map(_.asInstanceOf[ConstLit])
@@ -132,7 +123,7 @@ trait AstFilter:
           access <- if isKeep(a) then Some(a.copy(a = x1, b = y1)) else None
         yield access
       case a: Id =>
-        if isKeep(a) then Some(a) else None
+        Some(a).filter(isKeep)
       case other =>
         throw new MatchError(s"Unsupported Ref: ${other}")
 
@@ -156,14 +147,14 @@ trait AstFilter:
           varDecl <- if isKeep(a) then Some(a.copy(vType = vType, expr = expr)) else None
         yield varDecl
       case a: TypeDecl =>
-        if isKeep(a) then Some(a) else None
+        Some(a).filter(isKeep)
       case other =>
         throw new MatchError(s"Unsupported Decl: ${other}")
 
   private def filterLit(ast: Lit): Option[Lit] =
     ast match
       case a: ConstLit =>
-        if isKeep(a) then Some(a) else None
+        Some(a).filter(isKeep)
       case a: GroupLit =>
         for
           cType  <- filterTypeAST(a.cType)
