@@ -209,20 +209,20 @@ final class CVisitorSpec extends TestSpec:
             val actual = s.show()
             val expected =
               """{
-                |  final case class A(
-                |    var a: Int,
-                |    var b: Int,
-                |    var c: Int,
-                |    var d: Int,
-                |    var e: Int
-                |  )
-                |  var x: A = A(
-                |    a = 1,
-                |    b = 2,
-                |    c = 3,
-                |    d = 4,
-                |    e = 5
-                |  )
+                |  struct A {
+                |    int32_t a;
+                |    int32_t b;
+                |    int32_t c;
+                |    int32_t d;
+                |    int32_t e;
+                |  };
+                |  A x = {
+                |    .a = 1,
+                |    .b = 2,
+                |    .c = 3,
+                |    .d = 4,
+                |    .e = 5
+                |  };
                 |}
                 |""".stripMargin.trim
 
