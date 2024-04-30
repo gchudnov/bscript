@@ -6,6 +6,7 @@ import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.{Casting, LineOps, Transform}
 import com.github.gchudnov.bscript.translator.TranslateLaws
+import com.github.gchudnov.bscript.lang.symbols.{DeclType, Type, VectorType}
 
 import scala.collection.immutable.Seq
 
@@ -263,7 +264,7 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
                   yield sn.withLines(lines)
             }
       elementLines = es.lines
-      lines        = if elementLines.nonEmpty then wrap("List(", ")", elementLines) else Seq("List.empty")
+      lines        = if elementLines.nonEmpty then wrap("{", "}", elementLines) else Seq("{}")
     yield es.withLines(lines)
 
   override def visit(s: CState, n: Var): Either[Throwable, CState] =
@@ -276,7 +277,8 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.aType)
-      value     = s"${typeName} ${name}"
+      vecBraces = if isVectorType(n.aType) then "[]" else ""
+      value     = s"${typeName} ${name}${vecBraces}"
       lines     = Vector(value)
     yield s.withLines(lines)
 
@@ -284,9 +286,10 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.vType)
+      vecBraces = if isVectorType(n.vType) then "[]" else ""
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
-      nameValue = if typeName.nonEmpty then s"${typeName} ${name}" else s"auto ${name}"
+      nameValue = if typeName.nonEmpty then s"${typeName} ${name}${vecBraces}" else s"auto ${name}"
       lines     = append(";", joinCR(" = ", Vector(nameValue), exprLines))
     yield es.withLines(lines)
 
@@ -294,7 +297,8 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.fType)
-      value     = s"${typeName} ${name};"
+      vecBraces = if isVectorType(n.fType) then "[]" else ""
+      value     = s"${typeName} ${name}${vecBraces};"
       lines     = Vector(value)
     yield s.withLines(lines)
 
@@ -374,7 +378,7 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
       elseLines = es.map(_.lines)
 
       cond2        = wrap("if ", "", rwrapIfNonWrapped(condLines))
-      condThen     = joinCR(" then ", cond2, thenLines)
+      condThen     = joinCR(" ", cond2, thenLines)
       condThenElse = elseLines.map(else2 => joinCR(" else ", condThen, else2)).getOrElse(condThen)
 
       lines = condThenElse
@@ -443,3 +447,10 @@ private[translator] object CVisitor:
 
   private def rwrapMl(lines: Seq[String]): Seq[String] =
     LineOps.wrapIfMultiline("(", ")", lines)
+
+  private def isVectorType(t: Type): Boolean =
+    t match
+      case VectorType(_) =>
+        true
+      case _ =>
+        false

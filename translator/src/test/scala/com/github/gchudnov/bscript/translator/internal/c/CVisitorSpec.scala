@@ -377,7 +377,7 @@ final class CVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """if (7 < 5) then (2 + 5) else if (1L > 2) then {}
+              """if (7 < 5) (2 + 5) else if (1L > 2) {}
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -393,10 +393,10 @@ final class CVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """if (7 < 5) then {
-                |  (2 + 5)
+              """if (7 < 5) {
+                |  (2 + 5);
                 |} else {
-                |  if (1L > 2) then {}
+                |  if (1L > 2) {};
                 |}
                 |""".stripMargin.trim
 
@@ -412,8 +412,8 @@ final class CVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """if (4 < 5) then {
-                |  (2 + 3)
+              """if (4 < 5) {
+                |  (2 + 3);
                 |}
                 |""".stripMargin.trim
 
@@ -443,12 +443,13 @@ final class CVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            // TODO: technically not valid, but we do not have Return at the moment
             val expected =
               """{
-                |  def isValid(x: Boolean): Boolean = {
-                |    false
+                |  int isValid(int x) {
+                |    false;
                 |  }
-                |  if (isValid(true)) then 1 else 0
+                |  if (isValid(true)) 1 else 0;
                 |}
                 |""".stripMargin.trim
 
@@ -478,12 +479,13 @@ final class CVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            // TODO: technically not valid, but we do not have Return at the moment
             val expected =
               """{
-                |  def isValid(): Boolean = {
-                |    true
+                |  int isValid() {
+                |    true;
                 |  }
-                |  if (isValid()) then 1 else 0
+                |  if (isValid()) 1 else 0;
                 |}
                 |""".stripMargin.trim
 
@@ -557,7 +559,7 @@ final class CVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to scala3" in {
+      "translate to c" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.i32Type),
@@ -583,10 +585,10 @@ final class CVisitorSpec extends TestSpec:
             val actual = s.show()
             val expected =
               """{
-                |  def f(x: Int): Int = {
-                |    if (x > 0) then (x + f(x - 1)) else 0
+                |  int32_t f(int32_t x) {
+                |    if (x > 0) (x + f(x - 1)) else 0;
                 |  }
-                |  f(4)
+                |  f(4);
                 |}
                 |""".stripMargin.trim
 
@@ -595,7 +597,7 @@ final class CVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to scala3 with blocks" in {
+      "translate to c with blocks" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.i32Type),
@@ -623,14 +625,14 @@ final class CVisitorSpec extends TestSpec:
             val actual = s.show()
             val expected =
               """{
-                |  def f(x: Int): Int = {
-                |    if (x > 0) then {
-                |      (x + f(x - 1))
+                |  int32_t f(int32_t x) {
+                |    if (x > 0) {
+                |      (x + f(x - 1));
                 |    } else {
-                |      0
-                |    }
+                |      0;
+                |    };
                 |  }
-                |  f(4)
+                |  f(4);
                 |}
                 |""".stripMargin.trim
 
@@ -641,7 +643,7 @@ final class CVisitorSpec extends TestSpec:
     }
 
     "collection" should {
-      "translate to scala3" in {
+      "translate to c" in {
         val t = Block(
           VarDecl(VectorType(TypeRef(typeNames.i32Type)), "a", Vec(Seq(IntVal(1), IntVal(2), IntVal(3))))
         )
@@ -650,9 +652,10 @@ final class CVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
-                |  var a: List[Int] = List(1, 2, 3)
+                |  int32_t a[] = {1, 2, 3};
                 |}
                 |""".stripMargin.trim
 
@@ -663,7 +666,7 @@ final class CVisitorSpec extends TestSpec:
     }
 
     "access" should {
-      "translate to scala3" in {
+      "translate to c" in {
         val t = Block(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("C", List(FieldDecl(TypeRef(typeNames.i32Type), "z"))),
@@ -755,7 +758,7 @@ final class CVisitorSpec extends TestSpec:
     }
 
     "compiled expressions" should {
-      "translate to scala3" in {
+      "translate to c" in {
         val t = TGlobals.prelude ++ Block(
           VarDecl(TypeRef(typeNames.strType), "s", StrVal("str")),
           Call(SymbolRef("strLen"), List(Var(SymbolRef("s"))))

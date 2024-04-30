@@ -42,7 +42,7 @@ private[internal] final class CTypeConverter(typeNames: TypeNames) extends TypeN
   override def toTypeName(t: Type): Either[Throwable, String] =
     t match
       case VectorType(elementType) =>
-        toTypeName(elementType).map(typeName => s"${typeName}[]")
+        toTypeName(elementType).map(typeName => s"${typeName}") // WRONG: `int[] a` --> should be `int a[]` instead
       case DeclType(expr) =>
         toTypeName(expr.evalType)
       case _ =>
