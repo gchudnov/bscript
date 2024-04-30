@@ -84,11 +84,11 @@ private[internal] object SPrintf {
           split(
             s"""// NOTE: Add [T] to the method
                |${argValue} match {
-               |  case value: BigDecimal => 
+               |  case value: BigDecimal =>
                |    new DecimalFormat(format).format(value)
-               |  case value: LocalDate => 
+               |  case value: LocalDate =>
                |    value.format(DateTimeFormatter.ofPattern(format))
-               |  case value: OffsetDateTime => 
+               |  case value: OffsetDateTime =>
                |    value.format(DateTimeFormatter.ofPattern(format))
                |  case _ =>
                |    throw new RuntimeException(s"Unexpected value of time was passed to ${fnName}: '$${${argValue}}'")
@@ -96,18 +96,18 @@ private[internal] object SPrintf {
                |""".stripMargin
           )
         )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports + "java.text.DecimalFormat")
 
       case s: Scala3JState =>
         for lines <- Right(
           split(
             s"""// NOTE: Add [T] to the method
                |${argValue} match {
-               |  case value: BigDecimal => 
+               |  case value: BigDecimal =>
                |    new DecimalFormat(format).format(value)
-               |  case value: LocalDate => 
+               |  case value: LocalDate =>
                |    value.format(DateTimeFormatter.ofPattern(format))
-               |  case value: OffsetDateTime => 
+               |  case value: OffsetDateTime =>
                |    value.format(DateTimeFormatter.ofPattern(format))
                |  case _ =>
                |    throw new RuntimeException(s"Unexpected value of time was passed to ${fnName}: '$${${argValue}}'")
@@ -115,7 +115,7 @@ private[internal] object SPrintf {
                |""".stripMargin
           )
         )
-        yield s.copy(lines = lines)
+        yield s.copy(lines = lines, imports = s.imports + "java.text.DecimalFormat")
 
       case other =>
         Left(new B1Exception(s"Unexpected state passed to ${fnName}: ${other}"))
