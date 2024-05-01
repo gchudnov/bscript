@@ -325,7 +325,7 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """function g(x: i32): i32 {
-                |  return (x - 1)
+                |  return (x - 1);
                 |}
                 |""".stripMargin.trim
 
@@ -386,13 +386,13 @@ final class AsmVisitorSpec extends TestSpec:
               """let x: i32 = 1
                 |function f(x: i32): i32 {
                 |  let y: i32 = 1
-                |  return g((2 * x) + y)
+                |  return g((2 * x) + y);
                 |}
                 |function g(x: i32): i32 {
-                |  return (x - 1)
+                |  return (x - 1);
                 |}
                 |function main(): i32 {
-                |  return f(3)
+                |  return f(3);
                 |}
                 |main()
                 |""".stripMargin.trim
@@ -484,7 +484,7 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """function isValid(x: bool): bool {
-                |  return false
+                |  return false;
                 |}
                 |if (isValid(true)) 1 else 0
                 |""".stripMargin.trim
@@ -518,7 +518,7 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """function isValid(): bool {
-                |  return true
+                |  return true;
                 |}
                 |if (isValid()) 1 else 0
                 |""".stripMargin.trim
@@ -561,7 +561,7 @@ final class AsmVisitorSpec extends TestSpec:
               """import { Date} from "date";
                 |
                 |function calc(x: Date, y: Date): bool {
-                |  return true
+                |  return true;
                 |}
                 |let a: Date = Date.parse("2020-01-01")
                 |let res: bool = calc(a, Date.parse("2022-03-04"))
@@ -593,7 +593,7 @@ final class AsmVisitorSpec extends TestSpec:
        * }}}
        */
       "translate to asm" in {
-        val t = Block(
+        val t = Module(
           MethodDecl(
             TypeRef(typeNames.i32Type),
             "f",
@@ -601,11 +601,11 @@ final class AsmVisitorSpec extends TestSpec:
             Block(
               If(
                 Greater(Var(SymbolRef("x")), IntVal(0)),
-                Add(
+                Return(Add(
                   Var(SymbolRef("x")),
                   Call(SymbolRef("f"), List(Sub(Var(SymbolRef("x")), IntVal(1))))
-                ),
-                Some(IntVal(0))
+                )),
+                Some(Return(IntVal(0)))
               )
             )
           ),
@@ -618,12 +618,10 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """{
-                |  int32_t f(int32_t x) {
-                |    if (x > 0) (x + f(x - 1)) else 0;
-                |  }
-                |  f(4);
+              """function f(x: i32): i32 {
+                |  if (x > 0) return (x + f(x - 1)); else return 0;
                 |}
+                |f(4)
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -632,7 +630,7 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "translate to asm with blocks" in {
-        val t = Block(
+        val t = Module(
           MethodDecl(
             TypeRef(typeNames.i32Type),
             "f",
@@ -641,12 +639,12 @@ final class AsmVisitorSpec extends TestSpec:
               If(
                 Greater(Var(SymbolRef("x")), IntVal(0)),
                 Block(
-                  Add(
+                  Return(Add(
                     Var(SymbolRef("x")),
                     Call(SymbolRef("f"), List(Sub(Var(SymbolRef("x")), IntVal(1))))
-                  )
+                  ))
                 ),
-                Some(Block(IntVal(0)))
+                Some(Block(Return(IntVal(0))))
               )
             )
           ),
@@ -659,16 +657,14 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """{
-                |  int32_t f(int32_t x) {
-                |    if (x > 0) {
-                |      (x + f(x - 1));
-                |    } else {
-                |      0;
-                |    };
+              """function f(x: i32): i32 {
+                |  if (x > 0) {
+                |    return (x + f(x - 1));
+                |  } else {
+                |    return 0;
                 |  }
-                |  f(4);
                 |}
+                |f(4)
                 |""".stripMargin.trim
 
             actual mustBe expected
