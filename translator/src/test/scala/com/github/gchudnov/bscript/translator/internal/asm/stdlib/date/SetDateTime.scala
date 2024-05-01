@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.translator.internal.asm.stdlib.date
 
-import com.github.gchudnov.bscript.translator.internal.asm.AsmException
+import com.github.gchudnov.bscript.translator.internal.asm.{AsmException, AsmState}
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -45,6 +45,9 @@ private[internal] object SetDateTime:
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
     s match
+      case s: AsmState =>
+        Right(s) // TODO: change later
+
       case s: Scala3State =>
         for lines <- Right(
                        split(

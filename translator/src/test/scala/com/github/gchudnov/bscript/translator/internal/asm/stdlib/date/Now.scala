@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.translator.internal.asm.stdlib.date
 
-import com.github.gchudnov.bscript.translator.internal.asm.AsmException
+import com.github.gchudnov.bscript.translator.internal.asm.{AsmException, AsmState}
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -33,6 +33,9 @@ private[internal] object Now:
    */
   private def now(s: Any): Either[Throwable, Any] =
     s match
+      case s: AsmState =>
+        Right(s) // TODO: change later
+
       case s: Scala3JState =>
         for lines <- Right(
                        split(

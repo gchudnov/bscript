@@ -4,7 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
-import com.github.gchudnov.bscript.translator.internal.asm.AsmException
+import com.github.gchudnov.bscript.translator.internal.asm.{AsmException, AsmState}
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.internal.scalax.scala3j.Scala3JState
 
@@ -49,6 +49,9 @@ private[internal] object AdjustDate:
       allCatch.either(x.plusDays(offset.toLong))
 
     s match
+      case s: AsmState =>
+        Right(s) // TODO: change later
+
       case s: Scala3State =>
         for lines <- Right(
                        split(

@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.translator.internal.asm.stdlib.io
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.translator.internal.asm.AsmException
+import com.github.gchudnov.bscript.translator.internal.asm.{AsmException, AsmState}
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -62,6 +62,9 @@ private[internal] object SPrintf {
       allCatch.either(value.format(DateTimeFormatter.ofPattern(format)))
 
     s match
+      case s: AsmState =>
+        Right(s) // TODO: change later
+
       case s: Scala3State =>
         for lines <- Right(
           split(

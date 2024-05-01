@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.translator.internal.asm.stdlib.num
 
-import com.github.gchudnov.bscript.translator.internal.asm.AsmException
+import com.github.gchudnov.bscript.translator.internal.asm.{AsmException, AsmState}
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
@@ -50,6 +50,9 @@ private[internal] object ExactLong:
       allCatch.either(n.toLongExact).left.map(t => new AsmException(s"Cannot convert bigDecimal ${n} to the exact long", t))
 
     s match
+      case s: AsmState =>
+        Right(s) // TODO: change later
+
       case s: Scala3State =>
         for lines <- Right(
                        split(

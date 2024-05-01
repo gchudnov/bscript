@@ -1,6 +1,6 @@
 package com.github.gchudnov.bscript.translator.internal.asm.stdlib.num
 
-import com.github.gchudnov.bscript.translator.internal.asm.AsmException
+import com.github.gchudnov.bscript.translator.internal.asm.{AsmException, AsmState}
 import com.github.gchudnov.bscript.translator.internal.asm.stdlib.Inits
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
@@ -45,6 +45,9 @@ private[internal] object Round:
       n.setScale(p, BigDecimal.RoundingMode.HALF_UP)
 
     s match
+      case s: AsmState =>
+        Right(s) // TODO: change later
+
       case s: Scala3State =>
         for lines <- Right(
                        split(
