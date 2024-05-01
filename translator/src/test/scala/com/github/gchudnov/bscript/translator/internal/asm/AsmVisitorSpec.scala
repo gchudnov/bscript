@@ -777,19 +777,10 @@ final class AsmVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             println(actual)
-            // TODO: need to rewrite so that the size of the array is provided
             val expected =
-              """
-                |  int contains(int32_t x, int32_t xs[]) {
-                |    for (int i = 0; i < size; i++) {
-                |          if (arr[i] == value) {
-                |              return 1; // Return true if the value is found in the array
-                |          }
-                |      }
-                |      return 0; // Return false if the value is not found in the array;
+              """  function contains(x: i32, xs: Array<i32>): bool {
+                |    return xs.includes(x);
                 |  }
-                |  int x = contains(4, {4});
-                |  x;
                 |""".stripMargin.trim
 
             actual.contains(expected) mustBe true

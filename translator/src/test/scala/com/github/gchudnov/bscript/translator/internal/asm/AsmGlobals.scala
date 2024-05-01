@@ -6,7 +6,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.TranslateException
-import com.github.gchudnov.bscript.translator.internal.c.CState
+import com.github.gchudnov.bscript.translator.internal.asm.AsmState
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
 
 import java.time.{LocalDate, OffsetDateTime, ZoneId}
@@ -229,7 +229,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -250,7 +250,7 @@ object AsmGlobals:
     val argUnit   = "unit"   // string unit of the offset (DAYS (1) | HOURS (2) | MINUTES (3) | SECONDS (4))
 
     s match
-      case s: CState =>
+      case s: AsmState =>
         for lines <- Right(
           split(
             s"""switch (unit) {
@@ -308,7 +308,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -348,7 +348,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -382,7 +382,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -416,7 +416,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -436,7 +436,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -456,7 +456,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -489,7 +489,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -523,7 +523,7 @@ object AsmGlobals:
                      )
         yield s.copy(lines = lines)
 
-      case s: CState =>
+      case s: AsmState =>
         Right(s) // TODO: change later
 
       case other =>
@@ -534,15 +534,10 @@ object AsmGlobals:
     val argXS = "xs" // vec[decltype(x)]
 
     s match
-      case s: CState =>
+      case s: AsmState =>
         for lines <- Right(
           split(
-            s"""for (int i = 0; i < size; i++) {
-               |      if (arr[i] == value) {
-               |          return 1; // Return true if the value is found in the array
-               |      }
-               |  }
-               |  return 0; // Return false if the value is not found in the array
+            s"""return xs.includes(x);
                |""".stripMargin
           )
         )
