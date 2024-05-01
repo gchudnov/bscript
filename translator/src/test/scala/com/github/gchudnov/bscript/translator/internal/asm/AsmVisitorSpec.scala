@@ -113,7 +113,7 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "should translate to asm with values" in {
-        val t = Block(
+        val t = Module(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
           VarDecl(
@@ -141,22 +141,20 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """{
-                |  class B {
-                |    y: i32
-                |  }
-                |  class A {
-                |    x: i32
-                |    s: string
-                |    b: B
-                |  }
-                |  let a: A = {
-                |    x: 1,
-                |    s: "alice",
-                |    b: {
-                |        y: 2
-                |      }
-                |  };
+              """class B {
+                |  y: i32
+                |}
+                |class A {
+                |  x: i32
+                |  s: string
+                |  b: B
+                |}
+                |let a: A = {
+                |  x: 1,
+                |  s: "alice",
+                |  b: {
+                |      y: 2
+                |    }
                 |}
                 |""".stripMargin.trim
 
@@ -165,8 +163,8 @@ final class AsmVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "preserve the order fields they are defined" in {
-        val t = Block(
+      "preserve the order fields without explicit init" in {
+        val t = Module(
           StructDecl(
             "A",
             List(
@@ -188,25 +186,23 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """{
-                |  class A {
-                |    a: i32
-                |    b: i32
-                |    c: i32
-                |    d: i32
-                |    e: i32
-                |    f: i32
-                |    g: i32
-                |  }
-                |  let a: A = {
-                |    a: 0,
-                |    b: 0,
-                |    c: 0,
-                |    d: 0,
-                |    e: 0,
-                |    f: 0,
-                |    g: 0
-                |  };
+              """class A {
+                |  a: i32
+                |  b: i32
+                |  c: i32
+                |  d: i32
+                |  e: i32
+                |  f: i32
+                |  g: i32
+                |}
+                |let a: A = {
+                |  a: 0,
+                |  b: 0,
+                |  c: 0,
+                |  d: 0,
+                |  e: 0,
+                |  f: 0,
+                |  g: 0
                 |}
                 |""".stripMargin.trim
 
@@ -216,7 +212,7 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "preserve the order fields during explicit initialization" in {
-        val t = Block(
+        val t = Module(
           StructDecl(
             "A",
             List(
@@ -249,21 +245,19 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """{
-                |  struct A {
-                |    int32_t a;
-                |    int32_t b;
-                |    int32_t c;
-                |    int32_t d;
-                |    int32_t e;
-                |  };
-                |  A x = {
-                |    .a = 1,
-                |    .b = 2,
-                |    .c = 3,
-                |    .d = 4,
-                |    .e = 5
-                |  };
+              """class A {
+                |  a: i32
+                |  b: i32
+                |  c: i32
+                |  d: i32
+                |  e: i32
+                |}
+                |let x: A = {
+                |  a: 1,
+                |  b: 2,
+                |  c: 3,
+                |  d: 4,
+                |  e: 5
                 |}
                 |""".stripMargin.trim
 
