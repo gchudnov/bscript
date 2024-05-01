@@ -3,7 +3,7 @@ package com.github.gchudnov.bscript.translator.internal.asm
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.ast.AST
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.translator.internal.c.laws.CTranslateLaws
+import com.github.gchudnov.bscript.translator.internal.asm.laws.AsmTranslateLaws
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 import com.github.gchudnov.bscript.translator.{TranslateLaws, Translator}
@@ -25,7 +25,7 @@ private[translator] final class AsmTranslator(laws: TranslateLaws, state: AsmSta
 object AsmTranslator {
   def make(meta: Meta, typeNames: TypeNames): Translator =
     val typeInit = AsmTypeInit
-    val laws     = CTranslateLaws.make(typeNames, typeInit, meta)
+    val laws     = AsmTranslateLaws.make(typeNames, typeInit, meta)
     val state    = AsmState.make(meta)
     new AsmTranslator(laws, state)
 

@@ -9,3 +9,6 @@
 - TODO: do not allow to redefine the var in the same block | OR is that OK?? shadowing ???
 - TODO: do not allow to redefine function in the same block, see: bscript/builder/src/main/scala/com/github/gchudnov/bscript/builder/state/Meta.scala
 - TODO: add stdout | printf
+
+- TODO: add <Module> like block, but without wrapping
+- TODO: add <Return>

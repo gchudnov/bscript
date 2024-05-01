@@ -157,23 +157,23 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """{
-                |  struct A {
-                |    int32_t a;
-                |    int32_t b;
-                |    int32_t c;
-                |    int32_t d;
-                |    int32_t e;
-                |    int32_t f;
-                |    int32_t g;
-                |  };
-                |  A a = {
-                |    .a = 0,
-                |    .b = 0,
-                |    .c = 0,
-                |    .d = 0,
-                |    .e = 0,
-                |    .f = 0,
-                |    .g = 0
+                |  class A {
+                |    a: i32
+                |    b: i32
+                |    c: i32
+                |    d: i32
+                |    e: i32
+                |    f: i32
+                |    g: i32
+                |  }
+                |  let a: A = {
+                |    a: 0,
+                |    b: 0,
+                |    c: 0,
+                |    d: 0,
+                |    e: 0,
+                |    f: 0,
+                |    g: 0
                 |  };
                 |}
                 |""".stripMargin.trim

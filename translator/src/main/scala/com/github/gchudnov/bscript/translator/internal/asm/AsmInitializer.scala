@@ -56,7 +56,7 @@ final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta)
                           .typeFor(x)
                           .left
                           .map(ex => new TranslateException(s"Cannot initialize struct field", ex))
-                          .flatMap(t => init(t).map(ls => LineOps.joinCR(" = ", Seq("." + x.name), LineOps.tabTail(1, ls))))
+                          .flatMap(t => init(t).map(ls => LineOps.joinCR(": ", Seq(x.name), LineOps.tabTail(1, ls))))
                       case other =>
                         Left(new TranslateException(s"Cannot initialize struct field that is not a type '${other}'"))
                   })

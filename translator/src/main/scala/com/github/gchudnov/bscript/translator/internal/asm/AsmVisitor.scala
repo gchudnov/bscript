@@ -297,8 +297,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.aType)
-      vecBraces = if isVectorType(n.aType) then "[]" else ""
-      value     = s"${typeName} ${name}${vecBraces}"
+      value     = s"${name}: ${typeName}"
       lines     = Vector(value)
     yield s.withLines(lines)
 
@@ -465,10 +464,3 @@ private[translator] object AsmVisitor:
 
   private def rwrapMl(lines: Seq[String]): Seq[String] =
     LineOps.wrapIfMultiline("(", ")", lines)
-
-  private def isVectorType(t: Type): Boolean =
-    t match
-      case VectorType(_) =>
-        true
-      case _ =>
-        false
