@@ -42,7 +42,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "module" should {
-      "exclude braces" in {
+      "render without braces" in {
         val t = Module(
           StructDecl(
             "A",
@@ -59,7 +59,12 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """xxx
+              """class A {
+                |  a: i32
+                |}
+                |let a: A = {
+                |  a: 0
+                |}
                 |""".stripMargin.trim
 
             actual mustBe expected

@@ -107,7 +107,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
 
   override def visit(s: ScopeResolveState, n: VarDecl): Either[Throwable, ScopeResolveState] =
     for
-      scope               <- s.meta.scopeFor(n).flatMap(_.asSBlock)
+      scope               <- s.meta.scopeFor(n)
       sVar                <- s.meta.resolveMember(n.name, scope).flatMap(_.asSVar)
       _                    = assert(sVar == n.symbol, "The SVar resolved is not equal to ehe Symbol stored in AST")
       st                  <- visitType(s, scope, n.vType)
@@ -121,7 +121,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
 
   override def visit(s: ScopeResolveState, n: MethodDecl): Either[Throwable, ScopeResolveState] =
     for
-      scope <- s.meta.scopeFor(n).flatMap(_.asSBlock)
+      scope <- s.meta.scopeFor(n)
       sa <- n.params.foldLeft(Right((s, List.empty[ArgDecl])): Either[Throwable, (ScopeResolveState, List[ArgDecl])]) { case (acc, argDecl) =>
               acc match
                 case Left(ex) => Left(ex)
@@ -146,7 +146,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
 
   override def visit(s: ScopeResolveState, n: StructDecl): Either[Throwable, ScopeResolveState] =
     for
-      scope   <- s.meta.scopeFor(n).flatMap(_.asSBlock)
+      scope   <- s.meta.scopeFor(n)
       _       <- s.meta.resolve(n.name, scope).flatMap(_.asType) // NOTE: Struct is a Type as well; this line is used to assert this fact here.
       sStruct <- s.meta.resolve(n.name, scope).flatMap(_.asSStruct)
       _        = assert(sStruct == n.symbol, "The SStruct resolved is not equal to ehe Symbol stored in AST")
@@ -195,7 +195,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       n1          = n.copy(statements = exprs)
       ss1         = s1.meta.redefineASTScope(n, n1)
     yield s1.copy(ast = n1, meta = ss1)
-  
+
   override def visit(s: ScopeResolveState, n: Var): Either[Throwable, ScopeResolveState] =
     for
       scope <- s.meta.scopeFor(n)
@@ -422,7 +422,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
 
   override def visit(s: ScopeResolveState, n: Call): Either[Throwable, ScopeResolveState] =
     for
-      scope   <- s.meta.scopeFor(n).flatMap(_.asSBlock)
+      scope   <- s.meta.scopeFor(n)
       sMethod <- s.meta.resolve(n.id.name, scope).flatMap(_.asSMethod)
       sa <- n.args.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeResolveState, List[Expr])]) { case (acc, expr) =>
               acc match
@@ -465,7 +465,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
         case (x: Var, y: Var) =>
           // 'x' must be a Struct Type, 'y' is a field of struct 'x'.
           for
-            scopeX <- s.meta.scopeFor(x).flatMap(_.asSBlock)
+            scopeX <- s.meta.scopeFor(x)
             xVar   <- s.meta.resolve(x.symbol.name, scopeX).flatMap(_.asSVar)
             yVar   <- member(xVar, y)
             nx      = x.copy(symbol = xVar)
@@ -494,7 +494,7 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
 
   override def visit(s: ScopeResolveState, n: CompiledExpr): Either[Throwable, ScopeResolveState] =
     for
-      scope                 <- s.meta.scopeFor(n).flatMap(_.asSBlock)
+      scope                 <- s.meta.scopeFor(n)
       st                    <- visitType(s, scope, n.retType)
       StateType(s1, retType) = st
       n1                     = n.copy(retType = retType)
