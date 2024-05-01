@@ -686,7 +686,7 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """{
-                |  int32_t a[] = {1, 2, 3};
+                |  let a: Array<i32> = [1, 2, 3]
                 |}
                 |""".stripMargin.trim
 

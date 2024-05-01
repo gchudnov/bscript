@@ -259,26 +259,6 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       lines  = LineOps.wrap(s"{", "}", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
     yield ms.withLines(lines)
 
-/*
-  override def visit(s: ScalaState, n: StructVal): Either[Throwable, ScalaState] =
-    for
-      sStruct <- n.sType.asSStruct
-      sFields  = s.meta.symbolsFor(sStruct)
-      ms <- sFields.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, ScalaState]) { case (acc, sField) =>
-              acc match
-                case Left(e) => Left(e)
-                case Right(si) =>
-                  val expr = n.value(sField.name)
-                  for
-                    sn   <- expr.visit(si, this)
-                    lines = LineOps.joinCR(" = ", Seq(sField.name), LineOps.tabTail(1, sn.lines))
-                  yield sn.withLines(LineOps.joinVAll(",", Seq(si.lines, lines)))
-            }
-      fields = ms.lines
-      lines  = LineOps.wrap(s"${n.sType.name}(", ")", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
-    yield ms.withLines(lines)
-*/
-
   override def visit(s: AsmState, n: Vec): Either[Throwable, AsmState] =
     for
       es <- n.elements.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, AsmState]) { case (acc, e) =>
@@ -291,7 +271,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
                   yield sn.withLines(lines)
             }
       elementLines = es.lines
-      lines        = if elementLines.nonEmpty then wrap("{", "}", elementLines) else Seq("{}")
+      lines        = if elementLines.nonEmpty then wrap("[", "]", elementLines) else Seq("[]")
     yield es.withLines(lines)
 
   override def visit(s: AsmState, n: Var): Either[Throwable, AsmState] =
