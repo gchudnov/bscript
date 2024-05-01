@@ -531,13 +531,13 @@ final class AsmVisitorSpec extends TestSpec:
 
     "assignment" should {
       "write function call" in {
-        val t = Block(
+        val t = Module(
           MethodDecl(
             TypeRef(typeNames.boolType),
             "calc",
             List(ArgDecl(TypeRef(typeNames.dateType), "x"), ArgDecl(TypeRef(typeNames.dateType), "y")),
             Block(
-              BoolVal(true)
+              Return(BoolVal(true))
             )
           ),
           VarDecl(
@@ -558,15 +558,13 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """import java.time.LocalDate
+              """import { Date} from "date";
                 |
-                |{
-                |  def calc(x: LocalDate, y: LocalDate): Boolean = {
-                |    true
-                |  }
-                |  var a: LocalDate = LocalDate.parse("2020-01-01")
-                |  var res: Boolean = calc(a, LocalDate.parse("2022-03-04"))
+                |function calc(x: Date, y: Date): bool {
+                |  return true
                 |}
+                |let a: Date = Date.parse("2020-01-01")
+                |let res: bool = calc(a, Date.parse("2022-03-04"))
                 |""".stripMargin.trim
 
             actual mustBe expected

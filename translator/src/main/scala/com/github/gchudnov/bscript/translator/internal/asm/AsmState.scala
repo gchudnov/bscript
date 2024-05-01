@@ -33,7 +33,7 @@ trait AsmStateT:
   def inits: Map[String, Seq[String]]
 
   def show(): String =
-    val fmtImports = imports.toSeq.sorted.map(i => s"#include $i")
+    val fmtImports = imports.toSeq.sorted.map(i => s"import $i")
     val fmtInits   = inits.keys.toList.sorted.map(key => inits(key)).flatten
     LineOps.join(LineOps.joinNL(LineOps.joinNL(fmtImports, fmtInits), lines))
 

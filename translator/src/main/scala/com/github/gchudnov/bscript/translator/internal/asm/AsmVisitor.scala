@@ -230,9 +230,9 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
     yield s.withLines(lines)
 
   override def visit(s: AsmState, n: DateVal): Either[Throwable, AsmState] = for
-    value  <- Right(s"""LocalDate.parse("${n.value.toString}")""")
+    value  <- Right(s"""Date.parse("${n.value.toString}")""")
     lines   = Vector(value)
-    imports = Set("java.time.LocalDate")
+    imports = Set("""{ Date} from "date";""")
   yield s.withLines(lines).withImports(s.imports ++ imports)
 
   override def visit(s: AsmState, n: DateTimeVal): Either[Throwable, AsmState] = for
@@ -346,7 +346,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       header    = wrap(s"function ${n.name}(", s"): ${retType}", argLines)
       lines     = comment ++ joinCR(" ", header, bodyLines)
     yield bs.withLines(lines)
-  
+
   override def visit(s: AsmState, n: StructDecl): Either[Throwable, AsmState] =
     for
       fs <- n.fields.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, AsmState]) { case (acc, e) =>
