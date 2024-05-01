@@ -336,10 +336,10 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       bodyLines = bs.lines
       anns      = n.annotations.map(_.value)
       comment   = if anns.nonEmpty then wrap("/**", " */", wrapEmpty(padLines(" * ", anns))) else Seq.empty[String]
-      header    = wrap(s"${retType} ${n.name}(", s")", argLines)
+      header    = wrap(s"function ${n.name}(", s"): ${retType}", argLines)
       lines     = comment ++ joinCR(" ", header, bodyLines)
     yield bs.withLines(lines)
-
+  
   override def visit(s: AsmState, n: StructDecl): Either[Throwable, AsmState] =
     for
       fs <- n.fields.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, AsmState]) { case (acc, e) =>

@@ -310,7 +310,7 @@ final class AsmVisitorSpec extends TestSpec:
     "method" should {
       "translate to asm" in {
         val t = MethodDecl(
-          TypeRef(typeNames.voidType),
+          TypeRef(typeNames.i32Type),
           "g",
           List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
           Block(
