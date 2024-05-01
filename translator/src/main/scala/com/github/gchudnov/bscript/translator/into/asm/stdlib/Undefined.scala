@@ -1,12 +1,19 @@
 package com.github.gchudnov.bscript.translator.into.asm.stdlib
 
+import com.github.gchudnov.bscript.lang.types.TypeNames
+
 /**
  * Magic values that specify an undefined value for a type
  */
 object Undefined {
-  val undefinedStr: String = "!#"
-  val undefinedI32: String = "i32.MIN_VALUE"
-  val undefinedI64: String = "i64.MIN_VALUE"
-  val undefinedF32: String = "f32.NaN"
-  val undefinedF64: String = "f64.NaN"
+  def magic(typeNames: TypeNames): Map[String, String] =
+    Map(
+      typeNames.strType -> "!#",
+      typeNames.i32Type -> "i32.MIN_VALUE",
+      typeNames.i64Type -> "i64.MIN_VALUE",
+      typeNames.f32Type -> "f32.NaN",
+      typeNames.f64Type -> "f64.NaN",
+      typeNames.dateType -> """Date.parse("1900-01-01")""",
+      typeNames.datetimeType -> """Date.parse("1900-01-01")"""
+    )
 }
