@@ -8,21 +8,26 @@ import com.github.gchudnov.bscript.translator.laws.TypeConverter
  * Scala Type Names NOTE: It is possible that not all types be expressed in Scala
  */
 private[internal] final class AsmTypeConverter(typeNames: TypeNames) extends TypeNames with TypeConverter:
-  override val autoType: String     = "NULL"
-  override val nothingType: String  = "NULL"
+  override val autoType: String     = "auto"
+  override val nothingType: String  = "null"
   override val voidType: String     = "void"
-  override val boolType: String     = "int"
-  override val i32Type: String      = "int32_t"
-  override val i64Type: String      = "int64_t"
-  override val f32Type: String      = "float"
-  override val f64Type: String      = "double"
-  override val decType: String      = "double"
-  override val strType: String      = "char*"
-  override val dateType: String     = "time_t"
-  override val datetimeType: String = "time_t"
+  override val boolType: String     = "bool"
+  override val i32Type: String      = "i32"
+  override val i64Type: String      = "i64"
+  override val f32Type: String      = "f32"
+  override val f64Type: String      = "f64"
+  override val decType: String      = "f64"
+  override val strType: String      = "string"
+  override val dateType: String     = "Date"
+  override val datetimeType: String = "Date"
 
   override val trueValue: String  = "true"
   override val falseValue: String = "false"
+
+  private val i32ArrType: String = "Int32Array"
+  private val i64ArrType: String = "Int64Array"
+  private val f32ArrType: String = "Float32Array"
+  private val f64ArrType: String = "Float64Array"
 
   private val typeMap = Map(
     typeNames.autoType     -> autoType,
@@ -42,7 +47,7 @@ private[internal] final class AsmTypeConverter(typeNames: TypeNames) extends Typ
   override def toTypeName(t: Type): Either[Throwable, String] =
     t match
       case VectorType(elementType) =>
-        toTypeName(elementType).map(typeName => s"${typeName}") // WRONG: `int[] a` --> should be `int a[]` instead
+        toTypeName(elementType).map(typeName => s"Array<${typeName}>")
       case DeclType(expr) =>
         toTypeName(expr.evalType)
       case _ =>

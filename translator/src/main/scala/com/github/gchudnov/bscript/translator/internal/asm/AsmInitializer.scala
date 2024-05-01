@@ -44,7 +44,7 @@ final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta)
     case other          => Left(new TranslateException(s"Cannot initialize BuiltInType '${other}'"))
 
   private def initCollection(cs: VectorType): Either[Throwable, Seq[String]] =
-    Right(Seq("NULL"))
+    Right(Seq("[]"))
 
   private def initStruct(ss: SStruct): Either[Throwable, Seq[String]] =
     for

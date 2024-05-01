@@ -9,8 +9,7 @@ import com.github.gchudnov.bscript.lang.symbols.{SymbolRef, Type, TypeRef, Vecto
 import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
 import com.github.gchudnov.bscript.translator.{TTypeCheckLaws, TestSpec}
 import com.github.gchudnov.bscript.translator.internal.asm
-import com.github.gchudnov.bscript.translator.internal.c.CGlobals
-import com.github.gchudnov.bscript.translator.internal.c.laws.{CTranslateLaws, CTypeCheckLaws}
+import com.github.gchudnov.bscript.translator.internal.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 import java.time.LocalDate
@@ -27,7 +26,7 @@ final class AsmVisitorSpec extends TestSpec:
        *  -10;
        * }}}
        */
-      "translate to c" in {
+      "translate to asm" in {
         val t = UnaryMinus(IntVal(10))
 
         val errOrRes = eval(t)
@@ -49,21 +48,31 @@ final class AsmVisitorSpec extends TestSpec:
        *   struct X {
        *     int x;
        *     double y;
+       *     string[] ss;
+       *     float[] fs;
        *   }
        * }}}
        */
-      "translate to c" in {
-        val t = StructDecl("X", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.f64Type), "y")))
+      "translate to asm" in {
+        val t = StructDecl("X", List(
+          FieldDecl(TypeRef(typeNames.i32Type), "x"),
+          FieldDecl(TypeRef(typeNames.f64Type), "y"),
+          FieldDecl(VectorType(TypeRef(typeNames.strType)), "ss"),
+          FieldDecl(VectorType(TypeRef(typeNames.f32Type)), "fs"),
+        ))
 
         val errOrRes = eval(t)
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
-              """struct X {
-                |  int32_t x;
-                |  double y;
-                |};
+              """class X {
+                |  x: i32
+                |  y: f64
+                |  ss: Array<string>
+                |  fs: Array<f32>
+                |}
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -71,7 +80,7 @@ final class AsmVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "should translate to c with values" in {
+      "should translate to asm with values" in {
         val t = Block(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"), FieldDecl(TypeRef("B"), "b"))),
@@ -98,6 +107,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  struct B {
@@ -144,6 +154,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  struct A {
@@ -204,6 +215,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  struct A {
@@ -230,7 +242,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "block" should {
-      "translate to c" in {
+      "translate to asm" in {
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(0)),
           Assign(Var(SymbolRef("x")), IntVal(3))
@@ -240,6 +252,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  int32_t x = 0;
@@ -252,7 +265,7 @@ final class AsmVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to c if empty" in {
+      "translate to asm if empty" in {
         val t        = Block()
         val errOrRes = eval(t)
         errOrRes match
@@ -269,7 +282,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "method" should {
-      "translate to c" in {
+      "translate to asm" in {
         val t = MethodDecl(
           TypeRef(typeNames.voidType),
           "g",
@@ -283,6 +296,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """void g(int32_t x) {
                 |  (x - 1);
@@ -306,7 +320,7 @@ final class AsmVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to c call without arguments" in {
+      "translate to asm call without arguments" in {
         val t = Block(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
           MethodDecl(
@@ -341,6 +355,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """
                 |{
@@ -373,6 +388,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """if (7 < 5) (2 + 5) else if (1L > 2) {}
                 |""".stripMargin.trim
@@ -389,6 +405,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """if (7 < 5) {
                 |  (2 + 5);
@@ -408,6 +425,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """if (4 < 5) {
                 |  (2 + 3);
@@ -440,6 +458,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             // TODO: technically not valid, but we do not have Return at the moment
             val expected =
               """{
@@ -476,6 +495,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             // TODO: technically not valid, but we do not have Return at the moment
             val expected =
               """{
@@ -519,6 +539,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """import java.time.LocalDate
                 |
@@ -556,7 +577,7 @@ final class AsmVisitorSpec extends TestSpec:
        *   }
        * }}}
        */
-      "translate to c" in {
+      "translate to asm" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.i32Type),
@@ -580,6 +601,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  int32_t f(int32_t x) {
@@ -594,7 +616,7 @@ final class AsmVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to c with blocks" in {
+      "translate to asm with blocks" in {
         val t = Block(
           MethodDecl(
             TypeRef(typeNames.i32Type),
@@ -620,6 +642,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  int32_t f(int32_t x) {
@@ -640,7 +663,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "collection" should {
-      "translate to c" in {
+      "translate to asm" in {
         val t = Block(
           VarDecl(VectorType(TypeRef(typeNames.i32Type)), "a", Vec(Seq(IntVal(1), IntVal(2), IntVal(3))))
         )
@@ -649,6 +672,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  int32_t a[] = {1, 2, 3};
@@ -662,7 +686,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "access" should {
-      "translate to c" in {
+      "translate to asm" in {
         val t = Block(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("C", List(FieldDecl(TypeRef(typeNames.i32Type), "z"))),
@@ -687,6 +711,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  struct B {
@@ -790,7 +815,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "compiled expressions" should {
-      "translate to c" in {
+      "translate to asm" in {
         val t = asm.AsmGlobals.prelude ++ Block(
           VarDecl(TypeRef(typeNames.strType), "s", StrVal("str")),
           Call(SymbolRef("strLen"), List(Var(SymbolRef("s"))))
@@ -800,6 +825,7 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
+            println(actual)
             val expected =
               """{
                 |  /**
@@ -941,13 +967,13 @@ final class AsmVisitorSpec extends TestSpec:
 
   private def eval(ast0: AST): Either[Throwable, AsmState] =
     val types = Types.make(typeNames)
-    val typeCheckLaws = CTypeCheckLaws.make(types)
+    val typeCheckLaws = AsmTypeCheckLaws.make(types)
 
     Builder
       .build(ast0, types, typeCheckLaws)
       .flatMap(astMeta =>
         val typeInit = AsmTypeInit
-        val laws = CTranslateLaws.make(typeNames, typeInit, astMeta.meta)
+        val laws = AsmTranslateLaws.make(typeNames, typeInit, astMeta.meta)
 
         val cVisitor: AsmVisitor = AsmVisitor.make(laws)
         val cState: AsmState = AsmState.make(astMeta.meta)

@@ -297,8 +297,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.fType)
-      vecBraces = if isVectorType(n.fType) then "[]" else ""
-      value     = s"${typeName} ${name}${vecBraces};"
+      value     = s"${name}: ${typeName}"
       lines     = Vector(value)
     yield s.withLines(lines)
 
@@ -335,7 +334,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
                   yield sn.withLines(lines)
             }
       fieldLines = fs.lines
-      lines      = wrap(s"struct ${n.name} {", "};", wrapEmpty(tabLines(1, fieldLines)))
+      lines      = wrap(s"class ${n.name} {", "}", wrapEmpty(tabLines(1, fieldLines)))
     yield fs.withLines(lines)
 
   override def visit(s: AsmState, n: Block): Either[Throwable, AsmState] =
