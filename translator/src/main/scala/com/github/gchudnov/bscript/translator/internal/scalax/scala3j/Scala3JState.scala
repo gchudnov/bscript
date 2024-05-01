@@ -1,7 +1,7 @@
-package com.github.gchudnov.bscript.translator.internal.scala3j
+package com.github.gchudnov.bscript.translator.internal.scalax.scala3j
 
 import com.github.gchudnov.bscript.builder.state.Meta
-import com.github.gchudnov.bscript.translator.internal.ScalaState
+import com.github.gchudnov.bscript.translator.internal.scalax.ScalaState
 import scala.collection.immutable.Seq
 
 /**

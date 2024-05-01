@@ -1,10 +1,9 @@
-package com.github.gchudnov.bscript.translator.internal.scala3j
+package com.github.gchudnov.bscript.translator.internal.scalax.scala3j
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.translator.TranslateLaws
-import com.github.gchudnov.bscript.translator.internal.ScalaState
-import com.github.gchudnov.bscript.translator.internal.ScalaTranslator
+import com.github.gchudnov.bscript.translator.internal.scalax.{ScalaState, ScalaTranslator}
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 object Scala3JTranslator:

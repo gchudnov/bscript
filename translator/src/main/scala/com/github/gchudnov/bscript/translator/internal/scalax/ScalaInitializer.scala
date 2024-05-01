@@ -1,12 +1,12 @@
-package com.github.gchudnov.bscript.translator.laws
+package com.github.gchudnov.bscript.translator.internal.scalax
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.util.{ LineOps, Transform }
-import com.github.gchudnov.bscript.translator.laws.Initializer
+import com.github.gchudnov.bscript.lang.util.{LineOps, Transform}
 import com.github.gchudnov.bscript.translator.TranslateException
-import com.github.gchudnov.bscript.translator.laws.TypeInit
+import com.github.gchudnov.bscript.translator.laws.{Initializer, TypeInit}
+
 import scala.collection.immutable.Seq
 
 /**

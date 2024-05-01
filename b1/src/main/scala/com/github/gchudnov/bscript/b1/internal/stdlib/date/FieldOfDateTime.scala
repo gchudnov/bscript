@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
-import com.github.gchudnov.bscript.translator.internal.scala3j.Scala3JState
+import com.github.gchudnov.bscript.translator.internal.scalax.scala3j.Scala3JState
 
 import scala.util.control.Exception.allCatch
 

@@ -1,7 +1,8 @@
-package com.github.gchudnov.bscript.translator.internal
+package com.github.gchudnov.bscript.translator.internal.scalax
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.LineOps
+
 import scala.collection.immutable.Seq
 
 /**

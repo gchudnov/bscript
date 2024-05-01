@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.internal.scala3j
+package com.github.gchudnov.bscript.translator.internal.scalax.scala3j
 
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 

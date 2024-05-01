@@ -1,4 +1,4 @@
-package com.github.gchudnov.bscript.translator.internal.scala3j.laws
+package com.github.gchudnov.bscript.translator.internal.scalax.scala3j.laws
 
 import com.github.gchudnov.bscript.translator.laws.TypeConverter
 import com.github.gchudnov.bscript.lang.symbols.{ DeclType, Type, VectorType }

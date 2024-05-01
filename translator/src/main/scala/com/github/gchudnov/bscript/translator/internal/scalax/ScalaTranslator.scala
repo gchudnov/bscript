@@ -1,9 +1,10 @@
-package com.github.gchudnov.bscript.translator.internal
+package com.github.gchudnov.bscript.translator.internal.scalax
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.translator.TranslateLaws
-import com.github.gchudnov.bscript.translator.Translator
+import com.github.gchudnov.bscript.translator.{TranslateLaws, Translator}
+import com.github.gchudnov.bscript.translator.internal.ScalaVisitor
 import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import
+import com.github.gchudnov.bscript.translator.internal.scalax.ScalaState
 
 /**
  * Translates AST to Scala

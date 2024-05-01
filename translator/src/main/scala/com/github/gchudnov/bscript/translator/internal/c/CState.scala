@@ -2,9 +2,9 @@ package com.github.gchudnov.bscript.translator.internal.c
 
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.util.LineOps
+import com.github.gchudnov.bscript.translator.internal.scalax.ScalaState
 
 import scala.collection.immutable.Seq
-import com.github.gchudnov.bscript.translator.internal.ScalaState
 
 
 /**

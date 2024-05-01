@@ -1,8 +1,10 @@
-package com.github.gchudnov.bscript.translator.internal.scala3
+package com.github.gchudnov.bscript.translator.internal.scalax.scala3
 
 import com.github.gchudnov.bscript.translator.TestSpec
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.symbols.*
+import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Import
+
 import java.lang.Boolean as JBoolean
 import java.lang.Double as JDouble
 import java.lang.Integer as JInteger

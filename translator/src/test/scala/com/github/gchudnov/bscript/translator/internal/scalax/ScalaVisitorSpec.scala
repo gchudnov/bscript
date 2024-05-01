@@ -1,22 +1,16 @@
-package com.github.gchudnov.bscript.translator.internal
+package com.github.gchudnov.bscript.translator.internal.scalax
 
 import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
-import com.github.gchudnov.bscript.lang.symbols.SymbolRef
-import com.github.gchudnov.bscript.lang.symbols.TypeRef
-import com.github.gchudnov.bscript.lang.symbols.VectorType
-import com.github.gchudnov.bscript.lang.types.TypeNames
-import com.github.gchudnov.bscript.lang.types.Types
-import com.github.gchudnov.bscript.translator.TGlobals
-import com.github.gchudnov.bscript.translator.TTypeCheckLaws
-import com.github.gchudnov.bscript.translator.TestSpec
-import com.github.gchudnov.bscript.translator.internal.ScalaState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TranslateLaws
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3TypeInit
+import com.github.gchudnov.bscript.lang.symbols.{SymbolRef, TypeRef, VectorType}
+import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
+import com.github.gchudnov.bscript.translator.{TGlobals, TTypeCheckLaws, TestSpec}
+import com.github.gchudnov.bscript.translator.internal.ScalaVisitor
+import com.github.gchudnov.bscript.translator.internal.scala3.{Scala3State, Scala3TranslateLaws, Scala3TypeInit}
+import com.github.gchudnov.bscript.translator.internal.scalax.ScalaState
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 
 import java.time.LocalDate

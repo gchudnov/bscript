@@ -1,12 +1,12 @@
 package com.github.gchudnov.bscript.translator.internal
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.internal.ScalaState
 import com.github.gchudnov.bscript.translator.TranslateLaws
 import com.github.gchudnov.bscript.lang.ast.visitors.TreeVisitor
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.{ Casting, LineOps, Transform }
+import com.github.gchudnov.bscript.translator.internal.scalax.ScalaState
 import scala.collection.immutable.Seq
 
 /**
