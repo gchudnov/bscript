@@ -169,7 +169,7 @@ final case class Meta(
     val newAstScopes = replaceASTScope(oldAst, newAst)
     this.copy(astScopes = newAstScopes)
 
-  def defineVar(v: SVar, in: SBlock): Meta =
+  def defineVar(v: SVar, in: Scope): Meta =
     defineSymbolInScope(v, in)
 
   /**

@@ -41,6 +41,33 @@ final class AsmVisitorSpec extends TestSpec:
       }
     }
 
+    "module" should {
+      "exclude braces" in {
+        val t = Module(
+          StructDecl(
+            "A",
+            List(
+              FieldDecl(TypeRef(typeNames.i32Type), "a"),
+            )
+          ),
+          VarDecl(TypeRef("A"), "a", Init(TypeRef("A")))
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            println(actual)
+            val expected =
+              """xxx
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
     "struct" should {
 
       /**

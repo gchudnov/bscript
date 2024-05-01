@@ -56,6 +56,11 @@ object Casting:
         case b: SBlock => Right(b)
         case _         => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SBlock"))
 
+    def asSModule: Either[AstException, SBlock] =
+      scope match
+        case b: SBlock => Right(b)
+        case _ => Left(new AstException(s"Cannot cast Scope '${scope.name}' of type '${scopeKind}' to a SModule"))
+
     def scopeKind: String = scope match
       case _: SMethod => "Method"
       case _: SStruct => "Struct"

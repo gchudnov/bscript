@@ -106,21 +106,21 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
 
   override def visit(s: ScopeBuildState, n: VarDecl): Either[Throwable, ScopeBuildState] =
     for
-      sBlock              <- s.curScope.asSBlock
+      sScope              <- Right(s.curScope)
       st                  <- visitType(s, n.vType)
       StateType(s1, vType) = st
       s2                  <- n.expr.visit(s1, this)
       expr                <- s2.ast.asExpr
       sVar                 = SVar(n.name)
       n1                   = n.copy(vType = vType, expr = expr, symbol = sVar)
-      ss1                  = s2.meta.defineASTScope(n1, s2.curScope).defineVar(sVar, sBlock)
+      ss1                  = s2.meta.defineASTScope(n1, s2.curScope).defineVar(sVar, sScope)
     yield s1.copy(ast = n1, meta = ss1)
 
   override def visit(s: ScopeBuildState, n: MethodDecl): Either[Throwable, ScopeBuildState] =
     for
-      sBlock <- s.curScope.asSBlock
+      sScope <- Right(s.curScope)
       sMethod = SMethod(n.name)
-      ss1     = s.meta.defineMethod(sMethod, sBlock)
+      ss1     = s.meta.defineMethod(sMethod, sScope)
       s1      = s.copy(meta = ss1, curScope = sMethod)
       sa <- n.params.foldLeft(Right((s1, List.empty[ArgDecl])): Either[Throwable, (ScopeBuildState, List[ArgDecl])]) { (acc, argDecl) =>
               acc match
@@ -142,9 +142,9 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
 
   override def visit(s: ScopeBuildState, n: StructDecl): Either[Throwable, ScopeBuildState] =
     for
-      sBlock <- s.curScope.asSBlock
+      sScope <- Right(s.curScope) // SBlock | SModule
       sStruct = SStruct(n.name)
-      ss1     = s.meta.defineStruct(sStruct, sBlock)
+      ss1     = s.meta.defineStruct(sStruct, sScope)
       s1      = s.copy(meta = ss1, curScope = sStruct)
       sf <- n.fields.foldLeft(Right((s1, List.empty[FieldDecl])): Either[Throwable, (ScopeBuildState, List[FieldDecl])]) { (acc, fieldDecl) =>
               acc match
