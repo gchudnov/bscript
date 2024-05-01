@@ -983,7 +983,7 @@ final class AsmVisitorSpec extends TestSpec:
                   | * [std]
                   | */
                   |function isDefined_string(x: string): bool {
-                  |  return x !== "UNDEFINED";
+                  |  return x !== "!#";
                   |}
                   |""".stripMargin.trim
 
