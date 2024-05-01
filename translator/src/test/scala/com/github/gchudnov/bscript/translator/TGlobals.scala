@@ -1,7 +1,7 @@
 package com.github.gchudnov.bscript.translator
 
 import com.github.gchudnov.bscript.lang.ast.*
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.lang.symbols.*
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.lang.types.TypeNames

@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.rewriter.Rewriter
 import com.github.gchudnov.bscript.rewriter.Predicates
 import com.github.gchudnov.bscript.lang.util.{ Casting, Transform }
 import com.github.gchudnov.bscript.interpreter.internal.InterpretState
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3State
+import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.interpreter.internal.StashEntry
 import com.github.gchudnov.bscript.interpreter.internal.Stash
 import com.github.gchudnov.bscript.lang.util.LineOps.split

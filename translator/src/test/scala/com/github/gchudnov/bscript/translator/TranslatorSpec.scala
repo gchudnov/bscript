@@ -6,8 +6,8 @@ import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.builder.Builder
 import com.github.gchudnov.bscript.translator.TGlobals
 import com.github.gchudnov.bscript.translator.TTypeCheckLaws
-import com.github.gchudnov.bscript.translator.internal.scala3.Scala3Translator
-import com.github.gchudnov.bscript.translator.internal.scalax.scala3j.Scala3JTranslator
+import com.github.gchudnov.bscript.translator.into.scala3.Scala3Translator
+import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JTranslator
 
 final class TranslatorSpec extends TestSpec:
   "Translator" when {
