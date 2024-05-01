@@ -482,14 +482,11 @@ final class AsmVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             println(actual)
-            // TODO: technically not valid, but we do not have Return at the moment
             val expected =
-              """{
-                |  int isValid(int x) {
-                |    false;
-                |  }
-                |  if (isValid(true)) 1 else 0;
+              """function isValid(x: bool): bool {
+                |  return false
                 |}
+                |if (isValid(true)) 1 else 0
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -498,13 +495,13 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "wrap function call with no args in IF-condition with round brackets" in {
-        val t = Block(
+        val t = Module(
           MethodDecl(
             TypeRef(typeNames.boolType),
             "isValid",
             List.empty[ArgDecl],
             Block(
-              BoolVal(true)
+              Return(BoolVal(true))
             )
           ),
           If(
@@ -519,14 +516,11 @@ final class AsmVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             println(actual)
-            // TODO: technically not valid, but we do not have Return at the moment
             val expected =
-              """{
-                |  int isValid() {
-                |    true;
-                |  }
-                |  if (isValid()) 1 else 0;
+              """function isValid(): bool {
+                |  return true
                 |}
+                |if (isValid()) 1 else 0
                 |""".stripMargin.trim
 
             actual mustBe expected
