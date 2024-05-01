@@ -724,6 +724,11 @@ object ScopeBuildVisitorSpec:
       _ <- n.expr.visit(s"${s} -> Not(expr", this)
     yield ()
 
+    override def visit(s: String, n: Return): Either[Throwable, Unit] = for
+      _ <- checkDefined(n, "Return")
+      _ <- n.expr.visit(s"${s} -> Return(expr", this)
+    yield ()
+
     override def visit(s: String, n: And): Either[Throwable, Unit] = for
       _ <- checkDefined(n, "And")
       _ <- n.lhs.visit(s"${s} -> And(lhs", this)
@@ -813,7 +818,7 @@ object ScopeBuildVisitorSpec:
 
     override def visit(s: String, n: Module): Either[Throwable, Unit] =
       Transform.sequence(n.statements.map(st => st.visit(s"${s} -> Module {", this))).map(_ => ())
-    
+
     override def visit(s: String, n: Call): Either[Throwable, Unit] = for
       _ <- checkDefined(n, s"${s} -> Call(${n.id.name})")
       _ <- Transform.sequence(n.args.map(e => e.visit(s"${s} -> Call(${n.id.name})(...)", this)))

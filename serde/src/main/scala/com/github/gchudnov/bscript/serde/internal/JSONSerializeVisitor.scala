@@ -58,6 +58,13 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
   override def visit(s: Unit, n: Not): Either[Throwable, JValue] =
     visitUnLogicOp(n.getClass.getSimpleName, n)
 
+  override def visit(s: Unit, n: Return): Either[Throwable, JValue] =
+    for
+      kind  <- Right(n.getClass.getSimpleName)
+      expr  <- n.expr.visit((), this)
+      jValue = ((Keys.kind -> s"${kind}") ~ (Keys.expr -> expr))
+    yield jValue
+
   override def visit(s: Unit, n: And): Either[Throwable, JValue] =
     visitLogicOp(n.getClass.getSimpleName, n)
 

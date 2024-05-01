@@ -138,6 +138,13 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       lines     = prepend("!", rwrapMl(exprLines))
     yield es.withLines(lines)
 
+  override def visit(s: AsmState, n: Return): Either[Throwable, AsmState] =
+    for
+      es <- n.expr.visit(s, this)
+      exprLines = es.lines
+      lines = prepend("return ", rwrapMl(exprLines))
+    yield es.withLines(lines)
+
   override def visit(s: AsmState, n: And): Either[Throwable, AsmState] =
     for
       ls      <- n.lhs.visit(s, this)

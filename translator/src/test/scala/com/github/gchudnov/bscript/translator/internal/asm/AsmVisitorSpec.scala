@@ -314,7 +314,7 @@ final class AsmVisitorSpec extends TestSpec:
           "g",
           List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
           Block(
-            Sub(Var(SymbolRef("x")), IntVal(1)),
+            Return(Sub(Var(SymbolRef("x")), IntVal(1))),
           )
         )
 
@@ -324,8 +324,8 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """void g(int32_t x) {
-                |  (x - 1);
+              """function g(x: i32): i32 {
+                |  return (x - 1)
                 |}
                 |""".stripMargin.trim
 
@@ -347,31 +347,31 @@ final class AsmVisitorSpec extends TestSpec:
        * }}}
        */
       "translate to asm call without arguments" in {
-        val t = Block(
+        val t = Module(
           VarDecl(TypeRef(typeNames.i32Type), "x", IntVal(1)),
           MethodDecl(
-            TypeRef(typeNames.voidType),
+            TypeRef(typeNames.i32Type),
             "f",
             List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
             Block(
               VarDecl(TypeRef(typeNames.i32Type), "y", IntVal(1)),
-              Call(SymbolRef("g"), List(Add(Mul(IntVal(2), Var(SymbolRef("x"))), Var(SymbolRef("y")))))
+              Return(Call(SymbolRef("g"), List(Add(Mul(IntVal(2), Var(SymbolRef("x"))), Var(SymbolRef("y"))))))
             )
           ),
           MethodDecl(
-            TypeRef(typeNames.voidType),
+            TypeRef(typeNames.i32Type),
             "g",
             List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
             Block(
-              Sub(Var(SymbolRef("x")), IntVal(1))
+              Return(Sub(Var(SymbolRef("x")), IntVal(1)))
             )
           ),
           MethodDecl(
-            TypeRef(typeNames.voidType),
+            TypeRef(typeNames.i32Type),
             "main",
             List.empty[ArgDecl],
             Block(
-              Call(SymbolRef("f"), List(IntVal(3)))
+              Return(Call(SymbolRef("f"), List(IntVal(3))))
             )
           ),
           Call(SymbolRef("main"), List.empty[Expr])
@@ -383,21 +383,18 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """
-                |{
-                |  int32_t x = 1;
-                |  void f(int32_t x) {
-                |    int32_t y = 1;
-                |    g((2 * x) + y);
-                |  }
-                |  void g(int32_t x) {
-                |    (x - 1);
-                |  }
-                |  void main() {
-                |    f(3);
-                |  }
-                |  main();
+              """let x: i32 = 1
+                |function f(x: i32): i32 {
+                |  let y: i32 = 1
+                |  return g((2 * x) + y)
                 |}
+                |function g(x: i32): i32 {
+                |  return (x - 1)
+                |}
+                |function main(): i32 {
+                |  return f(3)
+                |}
+                |main()
                 |""".stripMargin.trim
 
             actual mustBe expected

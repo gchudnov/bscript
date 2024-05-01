@@ -1420,6 +1420,12 @@ object TypeCheckVisitorSpec:
       _ <- checkPromoteToType(n.promoteToType, s"${s} -> Not(... (promote)")
     yield ()
 
+    override def visit(s: String, n: Return): Either[Throwable, Unit] = for
+      _ <- n.expr.visit(s"${s} -> Return(expr", this)
+      _ <- checkType(n.evalType, s"${s} -> Return(... (evalType)")
+      _ <- checkPromoteToType(n.promoteToType, s"${s} -> Return(... (promote)")
+    yield ()
+
     override def visit(s: String, n: And): Either[Throwable, Unit] = for
       _ <- n.lhs.visit(s"${s} -> And(lhs", this)
       _ <- n.rhs.visit(s"${s} -> And(lhs, rhs", this)

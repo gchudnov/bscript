@@ -138,6 +138,13 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
       lines     = prepend("!", rwrapMl(exprLines))
     yield es.withLines(lines)
 
+  override def visit(s: CState, n: Return): Either[Throwable, CState] =
+    for
+      es <- n.expr.visit(s, this)
+      exprLines = es.lines
+      lines = append(";", prepend("return ", rwrapMl(exprLines)))
+    yield es.withLines(lines)
+
   override def visit(s: CState, n: And): Either[Throwable, CState] =
     for
       ls      <- n.lhs.visit(s, this)

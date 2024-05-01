@@ -416,6 +416,14 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       ss1   = s1.meta.defineASTScope(n1, s1.curScope)
     yield s1.copy(ast = n1, meta = ss1)
 
+  override def visit(s: ScopeBuildState, n: Return): Either[Throwable, ScopeBuildState] =
+    for
+      s1 <- n.expr.visit(s, this)
+      expr <- s1.ast.asExpr
+      n1 = n.copy(expr = expr)
+      ss1 = s1.meta.defineASTScope(n1, s1.curScope)
+    yield s1.copy(ast = n1, meta = ss1)
+
   override def visit(s: ScopeBuildState, n: And): Either[Throwable, ScopeBuildState] =
     for
       ls    <- n.lhs.visit(s, this)

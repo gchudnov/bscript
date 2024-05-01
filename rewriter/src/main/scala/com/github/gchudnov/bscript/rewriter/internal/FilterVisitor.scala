@@ -167,6 +167,16 @@ private[internal] final class FilterVisitor(pred: (AST) => Boolean) extends Tree
            yield n2)
     yield nn
 
+  override def visit(s: FilterState, n: Return): Either[Throwable, Option[AST]] =
+    for
+      oExpr <- n.expr.visit(s, this).flatMap(toExpr)
+      nn = (for
+        expr <- oExpr
+        n1 = n.copy(expr = expr)
+        n2 <- filterAST(n1)
+      yield n2)
+    yield nn
+  
   override def visit(s: FilterState, n: And): Either[Throwable, Option[AST]] =
     for
       lExpr <- n.lhs.visit(s, this).flatMap(toExpr)

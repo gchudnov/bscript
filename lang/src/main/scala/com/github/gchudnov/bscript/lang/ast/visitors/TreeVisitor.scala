@@ -48,3 +48,4 @@ trait TreeVisitor[S, R]:
   def visit(s: S, n: If): Either[Throwable, R]
   def visit(s: S, n: Access): Either[Throwable, R]
   def visit(s: S, n: CompiledExpr): Either[Throwable, R]
+  def visit(s: S, n: Return): Either[Throwable, R]

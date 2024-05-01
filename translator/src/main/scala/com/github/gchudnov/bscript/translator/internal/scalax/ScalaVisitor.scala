@@ -137,6 +137,13 @@ private[translator] final class ScalaVisitor(laws: TranslateLaws) extends TreeVi
       lines     = prepend("!", rwrapMl(exprLines))
     yield es.withLines(lines)
 
+  override def visit(s: ScalaState, n: Return): Either[Throwable, ScalaState] =
+    for
+      es <- n.expr.visit(s, this)
+      exprLines = es.lines
+      lines = rwrapMl(exprLines)
+    yield es.withLines(lines)
+
   override def visit(s: ScalaState, n: And): Either[Throwable, ScalaState] =
     for
       ls      <- n.lhs.visit(s, this)

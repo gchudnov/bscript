@@ -1173,6 +1173,9 @@ object ScopeResolveVisitorSpec:
     override def visit(s: String, n: Not): Either[Throwable, Unit] = for _ <- n.expr.visit(s"${s} -> Not(expr", this)
     yield ()
 
+    override def visit(s: String, n: Return): Either[Throwable, Unit] = for _ <- n.expr.visit(s"${s} -> Return(expr", this)
+      yield ()
+
     override def visit(s: String, n: And): Either[Throwable, Unit] = for
       _ <- n.lhs.visit(s"${s} -> And(lhs", this)
       _ <- n.rhs.visit(s"${s} -> And(lhs, rhs", this)

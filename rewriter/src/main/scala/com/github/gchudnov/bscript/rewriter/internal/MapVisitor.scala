@@ -115,6 +115,13 @@ private[internal] final class MapVisitor(f: (AST) => AST) extends TreeVisitor[Ma
       n2    = mapAST(n1)
     yield n2
 
+  override def visit(s: MapState, n: Return): Either[Throwable, AST] =
+    for
+      expr <- n.expr.visit(s, this).flatMap(_.asExpr)
+      n1 = n.copy(expr = expr)
+      n2 = mapAST(n1)
+    yield n2
+
   override def visit(s: MapState, n: And): Either[Throwable, AST] =
     for
       lhs <- n.lhs.visit(s, this).flatMap(_.asExpr)

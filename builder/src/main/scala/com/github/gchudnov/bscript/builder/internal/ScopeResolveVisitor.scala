@@ -400,6 +400,14 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       ss1   = s1.meta.redefineASTScope(n, n1)
     yield s1.copy(ast = n1, meta = ss1)
 
+  override def visit(s: ScopeResolveState, n: Return): Either[Throwable, ScopeResolveState] =
+    for
+      s1 <- n.expr.visit(s, this)
+      expr <- s1.ast.asExpr
+      n1 = n.copy(expr = expr)
+      ss1 = s1.meta.redefineASTScope(n, n1)
+    yield s1.copy(ast = n1, meta = ss1)
+
   override def visit(s: ScopeResolveState, n: And): Either[Throwable, ScopeResolveState] =
     for
       ls    <- n.lhs.visit(s, this)

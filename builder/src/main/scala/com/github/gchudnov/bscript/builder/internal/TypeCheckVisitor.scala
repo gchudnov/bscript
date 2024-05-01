@@ -214,6 +214,14 @@ private[internal] final class TypeCheckVisitor(
       ss1   = s1.meta.redefineASTScope(n, n1)
     yield s1.copy(ast = n1, meta = ss1)
 
+  override def visit(s: TypeCheckState, n: Return): Either[Throwable, TypeCheckState] =
+    for
+      s1 <- n.expr.visit(s, this)
+      expr <- s1.ast.asExpr
+      n1 = n.copy(expr = expr, evalType = expr.evalType)
+      ss1 = s1.meta.redefineASTScope(n, n1)
+    yield s1.copy(ast = n1, meta = ss1)
+
   override def visit(s: TypeCheckState, n: And): Either[Throwable, TypeCheckState] =
     for
       ls                    <- n.lhs.visit(s, this)
@@ -524,7 +532,7 @@ private[internal] final class TypeCheckVisitor(
       n1          = n.copy(statements = exprs, evalType = evalType)
       ss1         = s1.meta.redefineASTScope(n, n1)
     yield s1.copy(ast = n1, meta = ss1)
-  
+
   /**
    * Given g(int x, float y) { ... } and Call g('q', 10), we need to promote 'q' to int and 10 to float.
    */

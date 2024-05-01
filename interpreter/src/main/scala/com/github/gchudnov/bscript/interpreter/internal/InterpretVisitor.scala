@@ -158,6 +158,13 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
       z  <- boolLaws.not(x).flatMap(it => promote(it, n.promoteToType))
     yield s1.copy(retValue = z)
 
+  override def visit(s: InterpretState, n: Return): Either[Throwable, InterpretState] =
+    for
+      s1 <- n.expr.visit(s, this)
+      x = s1.retValue
+      z <- promote(x, n.promoteToType)
+    yield s1.copy(retValue = z)
+
   override def visit(s: InterpretState, n: And): Either[Throwable, InterpretState] =
     for
       ls    <- n.lhs.visit(s, this)
@@ -333,7 +340,7 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
         }
       ms <- s1.memSpace.tryPop()
     yield s1.copy(memSpace = ms)
-  
+
   override def visit(s: InterpretState, n: Call): Either[Throwable, InterpretState] =
     for
       sMethod    <- n.id.asSMethod
