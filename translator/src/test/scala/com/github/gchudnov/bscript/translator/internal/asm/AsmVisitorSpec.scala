@@ -404,7 +404,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "if" should {
-      "translate to scala3 without blocks" in {
+      "translate to ast without blocks" in {
         val t = If(Less(IntVal(7), IntVal(5)), Add(IntVal(2), IntVal(5)), Some(If(Greater(LongVal(1L), IntVal(2)), Block())))
 
         val errOrRes = eval(t)
@@ -413,7 +413,7 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """if (7 < 5) (2 + 5) else if (1L > 2) {}
+              """if (7 < 5) (2 + 5) else if (1 > 2) {}
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -421,7 +421,7 @@ final class AsmVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "translate to scala3 with blocks" in {
+      "translate to ast with blocks" in {
         val t = If(Less(IntVal(7), IntVal(5)), Block(Add(IntVal(2), IntVal(5))), Some(Block(If(Greater(LongVal(1L), IntVal(2)), Block()))))
 
         val errOrRes = eval(t)
@@ -431,9 +431,9 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """if (7 < 5) {
-                |  (2 + 5);
+                |  (2 + 5)
                 |} else {
-                |  if (1L > 2) {};
+                |  if (1 > 2) {}
                 |}
                 |""".stripMargin.trim
 
@@ -451,7 +451,7 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """if (4 < 5) {
-                |  (2 + 3);
+                |  (2 + 3)
                 |}
                 |""".stripMargin.trim
 
@@ -461,13 +461,13 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "wrap function call with 1 arg in IF-condition with round brackets" in {
-        val t = Block(
+        val t = Module(
           MethodDecl(
             TypeRef(typeNames.boolType),
             "isValid",
             List(ArgDecl(TypeRef(typeNames.boolType), "x")),
             Block(
-              BoolVal(false)
+              Return(BoolVal(false))
             )
           ),
           If(

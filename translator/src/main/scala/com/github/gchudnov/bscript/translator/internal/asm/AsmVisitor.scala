@@ -201,13 +201,13 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
 
   override def visit(s: AsmState, n: LongVal): Either[Throwable, AsmState] =
     for
-      value <- Right(s"${n.value.toString}L")
+      value <- Right(s"${n.value.toString}")
       lines  = Vector(value)
     yield s.withLines(lines)
 
   override def visit(s: AsmState, n: FloatVal): Either[Throwable, AsmState] =
     for
-      value <- Right(s"${n.value.toString}f")
+      value <- Right(s"${n.value.toString}")
       lines  = Vector(value)
     yield s.withLines(lines)
 
