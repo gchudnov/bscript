@@ -1,8 +1,8 @@
 package com.github.gchudnov.bscript.builder.state
 
 import com.github.gchudnov.bscript.lang.ast.AST
-import com.github.gchudnov.bscript.lang.symbols.{ Named, SBlock, SBuiltInType, SMethod, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef }
-import com.github.gchudnov.bscript.lang.util.{ Show, Transform }
+import com.github.gchudnov.bscript.lang.symbols.{Named, SBlock, SBuiltInType, SMethod, SModule, SStruct, SVar, Scope, ScopeStateException, Symbol, Type, TypeRef}
+import com.github.gchudnov.bscript.lang.util.{Show, Transform}
 import com.github.gchudnov.bscript.builder.util.EqWrap
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.types.Types
@@ -69,6 +69,22 @@ final case class Meta(
     scopeSymbols
       .get(EqWrap(in))
       .flatMap(_.find(_.name == name))
+
+  /**
+   * Defines a root Scope, not connected to any parent Scope
+   *
+   * NOTE: it could be multiple Scopes, not connected to the parent, but the use-case for that is not clear.
+   */
+  def defineModule(module: SModule): Meta =
+    this.copy(scopeTree = scopeTree.add(module))
+
+  /**
+   * Defines a Block in the given Scope
+   *
+   * NOTE: Block is not a symbol
+   */
+  def defineModule(module: SModule, in: Scope): Meta =
+    this.copy(scopeTree = scopeTree.link(module, in))
 
   /**
    * Defines a root Scope, not connected to any parent Scope

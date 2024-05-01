@@ -219,6 +219,12 @@ private[internal] final class JSONSerializeVisitor extends TreeVisitor[Unit, JVa
       jValue      = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.statements -> statements))
     yield jValue
 
+  override def visit(s: Unit, n: Module): Either[Throwable, JValue] =
+    for
+      statements <- Transform.sequence(n.statements.map(n1 => n1.visit((), this)))
+      jValue      = ((Keys.kind -> n.getClass.getSimpleName) ~ (Keys.statements -> statements))
+    yield jValue
+
   override def visit(s: Unit, n: Call): Either[Throwable, JValue] =
     for
       id    <- visitSymbol(n.id)

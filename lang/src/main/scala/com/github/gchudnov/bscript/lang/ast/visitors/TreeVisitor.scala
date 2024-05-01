@@ -43,6 +43,7 @@ trait TreeVisitor[S, R]:
   def visit(s: S, n: MethodDecl): Either[Throwable, R]
   def visit(s: S, n: StructDecl): Either[Throwable, R]
   def visit(s: S, n: Block): Either[Throwable, R]
+  def visit(s: S, n: Module): Either[Throwable, R]
   def visit(s: S, n: Call): Either[Throwable, R]
   def visit(s: S, n: If): Either[Throwable, R]
   def visit(s: S, n: Access): Either[Throwable, R]

@@ -181,6 +181,27 @@ private[internal] final class ScopeBuildVisitor() extends TreeVisitor[ScopeBuild
       ss2         = s2.meta.defineASTScope(n1, s.curScope)
     yield s2.copy(ast = n1, meta = ss2, curScope = s.curScope)
 
+  override def visit(s: ScopeBuildState, n: Module): Either[Throwable, ScopeBuildState] =
+    val (gen1, moduleName) = s.gen.name()
+    val sModule = SModule(s"#${moduleName}")
+    val ss1 = s.meta.defineModule(sModule, s.curScope)
+    val s1 = s.copy(meta = ss1, curScope = sModule, gen = gen1)
+    for
+      ss <- n.statements.foldLeft(Right((s1, List.empty[Expr])): Either[Throwable, (ScopeBuildState, List[Expr])]) { (acc, expr) =>
+        acc match
+          case Left(t) => Left(t)
+          case Right((sx, exprs)) =>
+            for
+              sy <- expr.visit(sx, this)
+              exprN <- sy.ast.asExpr
+            yield (sy, exprs :+ exprN)
+
+      }
+      (s2, exprs) = ss
+      n1 = n.copy(statements = exprs, symbol = sModule)
+      ss2 = s2.meta.defineASTScope(n1, s.curScope)
+    yield s2.copy(ast = n1, meta = ss2, curScope = s.curScope)
+
   override def visit(s: ScopeBuildState, n: Var): Either[Throwable, ScopeBuildState] =
     for ss1 <- Right(s.meta.defineASTScope(n, s.curScope))
     yield s.copy(ast = n, meta = ss1)

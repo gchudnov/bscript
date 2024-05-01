@@ -811,6 +811,9 @@ object ScopeBuildVisitorSpec:
     override def visit(s: String, n: Block): Either[Throwable, Unit] =
       Transform.sequence(n.statements.map(st => st.visit(s"${s} -> Block {", this))).map(_ => ())
 
+    override def visit(s: String, n: Module): Either[Throwable, Unit] =
+      Transform.sequence(n.statements.map(st => st.visit(s"${s} -> Module {", this))).map(_ => ())
+    
     override def visit(s: String, n: Call): Either[Throwable, Unit] = for
       _ <- checkDefined(n, s"${s} -> Call(${n.id.name})")
       _ <- Transform.sequence(n.args.map(e => e.visit(s"${s} -> Call(${n.id.name})(...)", this)))

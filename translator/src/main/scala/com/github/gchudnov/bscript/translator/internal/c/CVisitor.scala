@@ -353,6 +353,21 @@ private[translator] final class CVisitor(laws: TranslateLaws) extends TreeVisito
       lines     = if stmtLines.nonEmpty then wrap("{", "}", wrapEmpty(tabLines(1, stmtLines))) else Seq("{}")
     yield ss.withLines(lines)
 
+  override def visit(s: CState, n: Module): Either[Throwable, CState] =
+    for
+      ss <- n.statements.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, CState]) { case (acc, e) =>
+        acc match
+          case Left(t) => Left(t)
+          case Right(si) =>
+            for
+              sn <- e.visit(si, this)
+              lines = joinVAll("", Seq(si.lines, sn.lines))
+            yield sn.withLines(lines)
+      }
+      stmtLines = ss.lines
+      lines = stmtLines
+    yield ss.withLines(lines)
+
   override def visit(s: CState, n: Call): Either[Throwable, CState] =
     for
       as <- n.args.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, CState]) { case (acc, e) =>

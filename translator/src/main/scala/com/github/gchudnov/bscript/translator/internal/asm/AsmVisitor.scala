@@ -366,10 +366,25 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
                     lines = joinVAll("", Seq(si.lines, sn.lines))
                   yield sn.withLines(lines)
             }
-      stmtLines = appendIfNotExists(";", ss.lines)
+      stmtLines = ss.lines
       lines     = if stmtLines.nonEmpty then wrap("{", "}", wrapEmpty(tabLines(1, stmtLines))) else Seq("{}")
     yield ss.withLines(lines)
 
+  override def visit(s: AsmState, n: Module): Either[Throwable, AsmState] =
+    for
+      ss <- n.statements.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, AsmState]) { case (acc, e) =>
+        acc match
+          case Left(t) => Left(t)
+          case Right(si) =>
+            for
+              sn   <- e.visit(si, this)
+              lines = joinVAll("", Seq(si.lines, sn.lines))
+            yield sn.withLines(lines)
+      }
+      stmtLines = ss.lines
+      lines     = stmtLines
+    yield ss.withLines(lines)
+  
   override def visit(s: AsmState, n: Call): Either[Throwable, AsmState] =
     for
       as <- n.args.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, AsmState]) { case (acc, e) =>

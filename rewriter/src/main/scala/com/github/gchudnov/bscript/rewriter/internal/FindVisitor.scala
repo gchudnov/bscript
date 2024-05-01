@@ -208,6 +208,12 @@ private[internal] final class FindVisitor(pred: (AST) => Boolean) extends TreeVi
       n2 <- foundOrElse(n1)(visitSeq(s, n.statements))
     yield n2
 
+  override def visit(s: FindState, n: Module): Either[Throwable, Option[AST]] =
+    for
+      n1 <- Right(findAST(n))
+      n2 <- foundOrElse(n1)(visitSeq(s, n.statements))
+    yield n2
+  
   override def visit(s: FindState, n: Call): Either[Throwable, Option[AST]] =
     for
       n1 <- Right(findAST(n))

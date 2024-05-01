@@ -1553,6 +1553,12 @@ object TypeCheckVisitorSpec:
       _ <- Transform.sequence(n.statements.map(st => st.visit(s"${s} -> Block", this))).map(_ => ())
     yield ()
 
+    override def visit(s: String, n: Module): Either[Throwable, Unit] = for
+      _ <- checkType(n.evalType, s"${s} -> Module(... (evalType)")
+      _ <- checkPromoteToType(n.promoteToType, s"${s} -> Module(... (promote)")
+      _ <- Transform.sequence(n.statements.map(st => st.visit(s"${s} -> Module", this))).map(_ => ())
+    yield ()
+
     override def visit(s: String, n: Call): Either[Throwable, Unit] = for
       _ <- Transform.sequence(n.args.map(e => e.visit(s"${s} -> Call(${n.id.name}(...)", this)))
       _ <- checkType(n.evalType, s"${s} -> ? Call(...) (evalType)")

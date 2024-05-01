@@ -180,6 +180,22 @@ private[internal] final class ScopeResolveVisitor() extends TreeVisitor[ScopeRes
       ss1         = s1.meta.redefineASTScope(n, n1)
     yield s1.copy(ast = n1, meta = ss1)
 
+  override def visit(s: ScopeResolveState, n: Module): Either[Throwable, ScopeResolveState] =
+    for
+      bs <- n.statements.foldLeft(Right((s, List.empty[Expr])): Either[Throwable, (ScopeResolveState, List[Expr])]) { case (acc, expr) =>
+        acc match
+          case Left(ex) => Left(ex)
+          case Right((sx, exprs)) =>
+            for
+              sy    <- expr.visit(sx, this)
+              exprN <- sy.ast.asExpr
+            yield (sy, exprs :+ exprN)
+      }
+      (s1, exprs) = bs
+      n1          = n.copy(statements = exprs)
+      ss1         = s1.meta.redefineASTScope(n, n1)
+    yield s1.copy(ast = n1, meta = ss1)
+  
   override def visit(s: ScopeResolveState, n: Var): Either[Throwable, ScopeResolveState] =
     for
       scope <- s.meta.scopeFor(n)

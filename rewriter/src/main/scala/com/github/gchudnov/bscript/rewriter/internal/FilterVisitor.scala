@@ -294,6 +294,13 @@ private[internal] final class FilterVisitor(pred: (AST) => Boolean) extends Tree
       n2          = filterAST(n1)
     yield n2
 
+  override def visit(s: FilterState, n: Module): Either[Throwable, Option[AST]] =
+    for
+      statements <- Transform.sequence(n.statements.map(it => it.visit(s, this).flatMap(toExpr))).map(_.collect { case Some(it) => it })
+      n1 = n.copy(statements = statements.toList)
+      n2 = filterAST(n1)
+    yield n2
+  
   override def visit(s: FilterState, n: Call): Either[Throwable, Option[AST]] =
     for
       args <- Transform.sequence(n.args.map(it => it.visit(s, this).flatMap(toExpr))).map(_.collect { case Some(it) => it })

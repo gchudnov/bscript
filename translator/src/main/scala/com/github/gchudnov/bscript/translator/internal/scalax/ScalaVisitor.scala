@@ -349,6 +349,21 @@ private[translator] final class ScalaVisitor(laws: TranslateLaws) extends TreeVi
       lines     = if stmtLines.nonEmpty then wrap("{", "}", wrapEmpty(tabLines(1, stmtLines))) else Seq("{}")
     yield ss.withLines(lines)
 
+  override def visit(s: ScalaState, n: Module): Either[Throwable, ScalaState] =
+    for
+      ss <- n.statements.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, ScalaState]) { case (acc, e) =>
+        acc match
+          case Left(t) => Left(t)
+          case Right(si) =>
+            for
+              sn   <- e.visit(si, this)
+              lines = joinVAll("", Seq(si.lines, sn.lines))
+            yield sn.withLines(lines)
+      }
+      stmtLines = ss.lines
+      lines     = stmtLines
+    yield ss.withLines(lines)
+
   override def visit(s: ScalaState, n: Call): Either[Throwable, ScalaState] =
     for
       as <- n.args.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, ScalaState]) { case (acc, e) =>

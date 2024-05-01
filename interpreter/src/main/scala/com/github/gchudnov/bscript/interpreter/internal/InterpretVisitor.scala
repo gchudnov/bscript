@@ -321,6 +321,19 @@ private[interpreter] final class InterpretVisitor(laws: InterpreterLaws) extends
       ms <- s1.memSpace.tryPop()
     yield s1.copy(memSpace = ms)
 
+  override def visit(s: InterpretState, n: Module): Either[Throwable, InterpretState] =
+    for
+      s1 <- n.statements
+        .foldLeft(Right(s.copy(memSpace = MemorySpace(n.symbol.name, Some(s.memSpace)), retValue = VoidCell)): Either[Throwable, InterpretState]) { (acc, stmt) =>
+          acc match
+            case Left(err) =>
+              Left(err)
+            case Right(sx) =>
+              stmt.visit(sx, this)
+        }
+      ms <- s1.memSpace.tryPop()
+    yield s1.copy(memSpace = ms)
+  
   override def visit(s: InterpretState, n: Call): Either[Throwable, InterpretState] =
     for
       sMethod    <- n.id.asSMethod

@@ -224,6 +224,13 @@ private[internal] final class MapVisitor(f: (AST) => AST) extends TreeVisitor[Ma
       n2          = mapAST(n1)
     yield n2
 
+  override def visit(s: MapState, n: Module): Either[Throwable, AST] =
+    for
+      statements <- Transform.sequence(n.statements.map(it => it.visit(s, this).flatMap(_.asExpr)))
+      n1 = n.copy(statements = statements.toList)
+      n2 = mapAST(n1)
+    yield n2
+  
   override def visit(s: MapState, n: Call): Either[Throwable, AST] =
     for
       args <- Transform.sequence(n.args.map(it => it.visit(s, this).flatMap(_.asExpr)))
