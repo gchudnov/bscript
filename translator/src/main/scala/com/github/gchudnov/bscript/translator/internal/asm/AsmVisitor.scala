@@ -162,7 +162,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       idLines   = ids.lines
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
-      lines     = append(";", joinCR(" = ", rwrapMl(idLines), exprLines))
+      lines     = joinCR(" = ", rwrapMl(idLines), exprLines)
     yield es.withLines(lines)
 
   override def visit(s: AsmState, n: NothingVal): Either[Throwable, AsmState] =
@@ -384,7 +384,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       stmtLines = ss.lines
       lines     = stmtLines
     yield ss.withLines(lines)
-  
+
   override def visit(s: AsmState, n: Call): Either[Throwable, AsmState] =
     for
       as <- n.args.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, AsmState]) { case (acc, e) =>
