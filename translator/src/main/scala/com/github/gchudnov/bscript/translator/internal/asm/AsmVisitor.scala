@@ -236,9 +236,9 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
   yield s.withLines(lines).withImports(s.imports ++ imports)
 
   override def visit(s: AsmState, n: DateTimeVal): Either[Throwable, AsmState] = for
-    value  <- Right(s"""OffsetDateTime.parse("${n.value.toString}", DateTimeFormatter.ISO_OFFSET_DATE_TIME)""")
+    value  <- Right(s"""Date.parse("${n.value.toString}")""")
     lines   = Vector(value)
-    imports = Set("java.time.OffsetDateTime", "java.time.format.DateTimeFormatter")
+    imports = Set("""{ Date} from "date";""")
   yield s.withLines(lines).withImports(s.imports ++ imports)
 
   override def visit(s: AsmState, n: StructVal): Either[Throwable, AsmState] =

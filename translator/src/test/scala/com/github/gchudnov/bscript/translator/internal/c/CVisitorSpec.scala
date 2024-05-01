@@ -743,7 +743,6 @@ final class CVisitorSpec extends TestSpec:
 //        errOrRes match
 //          case Right(s) =>
 //            val actual = s.show()
-//            println(actual)
 //            // TODO: need to rewrite so that the size of the array is provided
 //            val expected =
 //              """
@@ -778,7 +777,6 @@ final class CVisitorSpec extends TestSpec:
 //        errOrRes match
 //          case Right(s) =>
 //            val actual = s.show()
-//            println(actual)
 //            val expected =
 //              """
 //                |var x: Boolean = contains(4, List.empty)

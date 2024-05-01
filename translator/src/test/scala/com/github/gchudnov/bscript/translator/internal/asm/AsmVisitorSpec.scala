@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.translator.internal.asm
 import com.github.gchudnov.bscript.translator.internal.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 
-import java.time.LocalDate
+import java.time.{LocalDate, OffsetDateTime}
 
 final class AsmVisitorSpec extends TestSpec:
 
@@ -57,7 +57,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """class A {
                 |  a: i32
@@ -97,7 +96,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """class X {
                 |  x: i32
@@ -139,7 +137,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """class B {
                 |  y: i32
@@ -184,7 +181,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """class A {
                 |  a: i32
@@ -243,7 +239,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """class A {
                 |  a: i32
@@ -278,7 +273,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """{
                 |  let x: i32 = 0
@@ -322,7 +316,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """function g(x: i32): i32 {
                 |  return (x - 1);
@@ -381,7 +374,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """let x: i32 = 1
                 |function f(x: i32): i32 {
@@ -411,7 +403,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """if (7 < 5) (2 + 5) else if (1 > 2) {}
                 |""".stripMargin.trim
@@ -428,7 +419,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """if (7 < 5) {
                 |  (2 + 5)
@@ -448,7 +438,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """if (4 < 5) {
                 |  (2 + 3)
@@ -481,7 +470,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """function isValid(x: bool): bool {
                 |  return false;
@@ -515,7 +503,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """function isValid(): bool {
                 |  return true;
@@ -556,7 +543,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """import { Date} from "date";
                 |
@@ -565,6 +551,32 @@ final class AsmVisitorSpec extends TestSpec:
                 |}
                 |let a: Date = Date.parse("2020-01-01")
                 |let res: bool = calc(a, Date.parse("2022-03-04"))
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
+    "datetime" should {
+      "be parsed" in {
+        val t = Module(
+          VarDecl(
+            TypeRef(typeNames.datetimeType),
+            "a",
+            DateTimeVal(OffsetDateTime.parse("2024-05-01T21:30:43+00:00"))
+          )
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """import { Date} from "date";
+                |
+                |let a: Date = Date.parse("2024-05-01T21:30:43Z")
                 |""".stripMargin.trim
 
             actual mustBe expected
@@ -616,7 +628,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """function f(x: i32): i32 {
                 |  if (x > 0) return (x + f(x - 1)); else return 0;
@@ -655,7 +666,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """function f(x: i32): i32 {
                 |  if (x > 0) {
@@ -683,7 +693,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """{
                 |  let a: Array<i32> = [1, 2, 3]
@@ -722,7 +731,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """class B {
                 |  y: i32
@@ -776,7 +784,6 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            println(actual)
             val expected =
               """  function contains(x: i32, xs: Array<i32>): bool {
                 |    return xs.includes(x);
@@ -802,7 +809,6 @@ final class AsmVisitorSpec extends TestSpec:
 //        errOrRes match
 //          case Right(s) =>
 //            val actual = s.show()
-//            println(actual)
 //            val expected =
 //              """
 //                |var x: Boolean = contains(4, List.empty)
@@ -825,7 +831,6 @@ final class AsmVisitorSpec extends TestSpec:
 //        errOrRes match
 //          case Right(s) =>
 //            val actual = s.show()
-//            println(actual)
 //            val expected =
 //              """{
 //                |  /**
