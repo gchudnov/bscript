@@ -110,19 +110,19 @@ final class AsmVisitorSpec extends TestSpec:
             println(actual)
             val expected =
               """{
-                |  struct B {
-                |    int32_t y;
-                |  };
-                |  struct A {
-                |    int32_t x;
-                |    char* s;
-                |    B b;
-                |  };
-                |  A a = {
-                |    .x = 1,
-                |    .s = "alice",
-                |    .b = {
-                |        .y = 2
+                |  class B {
+                |    y: i32
+                |  }
+                |  class A {
+                |    x: i32
+                |    s: string
+                |    b: B
+                |  }
+                |  let a: A = {
+                |    x: 1,
+                |    s: "alice",
+                |    b: {
+                |        y: 2
                 |      }
                 |  };
                 |}

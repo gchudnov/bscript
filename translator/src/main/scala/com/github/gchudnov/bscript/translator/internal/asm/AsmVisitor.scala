@@ -245,12 +245,32 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
                   val expr = n.value(sField.name)
                   for
                     sn   <- expr.visit(si, this)
-                    lines = LineOps.joinCR(" = ", Seq("." + sField.name), LineOps.tabTail(1, sn.lines))
+                    lines = LineOps.joinCR(": ", Seq(sField.name), LineOps.tabTail(1, sn.lines))
                   yield sn.withLines(LineOps.joinVAll(",", Seq(si.lines, lines)))
             }
       fields = ms.lines
       lines  = LineOps.wrap(s"{", "}", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
     yield ms.withLines(lines)
+
+/*
+  override def visit(s: ScalaState, n: StructVal): Either[Throwable, ScalaState] =
+    for
+      sStruct <- n.sType.asSStruct
+      sFields  = s.meta.symbolsFor(sStruct)
+      ms <- sFields.foldLeft(Right(s.withLines(Seq.empty[String])): Either[Throwable, ScalaState]) { case (acc, sField) =>
+              acc match
+                case Left(e) => Left(e)
+                case Right(si) =>
+                  val expr = n.value(sField.name)
+                  for
+                    sn   <- expr.visit(si, this)
+                    lines = LineOps.joinCR(" = ", Seq(sField.name), LineOps.tabTail(1, sn.lines))
+                  yield sn.withLines(LineOps.joinVAll(",", Seq(si.lines, lines)))
+            }
+      fields = ms.lines
+      lines  = LineOps.wrap(s"${n.sType.name}(", ")", LineOps.wrapEmpty(LineOps.tabLines(1, fields)))
+    yield ms.withLines(lines)
+*/
 
   override def visit(s: AsmState, n: Vec): Either[Throwable, AsmState] =
     for
@@ -286,11 +306,10 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
     for
       name     <- Right(n.name)
       typeName <- laws.typeConverter.toTypeName(n.vType)
-      vecBraces = if isVectorType(n.vType) then "[]" else ""
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
-      nameValue = if typeName.nonEmpty then s"${typeName} ${name}${vecBraces}" else s"auto ${name}"
-      lines     = append(";", joinCR(" = ", Vector(nameValue), exprLines))
+      nameValue = if typeName.nonEmpty then s"let ${name}: ${typeName}" else s"let ${name}"
+      lines     = joinCR(" = ", Vector(nameValue), exprLines)
     yield es.withLines(lines)
 
   override def visit(s: AsmState, n: FieldDecl): Either[Throwable, AsmState] =
