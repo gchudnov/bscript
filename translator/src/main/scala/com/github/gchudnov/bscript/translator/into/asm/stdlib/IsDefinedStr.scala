@@ -10,12 +10,13 @@ import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
 private[into] object IsDefinedStr:
 
-  private val fnName = "isDefined_string"
+  private def fnName(typeName: String) = 
+    s"isDefined_${typeName}"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
       TypeRef(typeNames.boolType),
-      fnName,
+      fnName(typeNames.strType),
       List(
         ArgDecl(TypeRef(typeNames.strType), "x")
       ),
