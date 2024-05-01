@@ -968,6 +968,30 @@ final class AsmVisitorSpec extends TestSpec:
 //      }
 //    }
 
+      "compiled expressions" should {
+        "translate to asm" in {
+          val t = AsmPrelude.make(typeNames)
+
+          val errOrRes = eval(t)
+          errOrRes match
+            case Right(s) =>
+              val actual = s.show()
+              println(actual)
+              val expected =
+                """/**
+                  | * returns true of the provided variable is defined, otherwise false
+                  | * [std]
+                  | */
+                  |function isDefined_string(x: string): bool {
+                  |  return x !== "UNDEFINED";
+                  |}
+                  |""".stripMargin.trim
+
+              actual mustBe expected
+            case Left(t) =>
+              fail("Should be 'right", t)
+        }
+      }
   }
 
   private def eval(ast0: AST): Either[Throwable, AsmState] =
