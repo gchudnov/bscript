@@ -698,17 +698,17 @@ final class AsmVisitorSpec extends TestSpec:
 
     "access" should {
       "translate to asm" in {
-        val t = Block(
+        val t = Module(
           StructDecl("B", List(FieldDecl(TypeRef(typeNames.i32Type), "y"))),
           StructDecl("C", List(FieldDecl(TypeRef(typeNames.i32Type), "z"))),
           StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef("B"), "b"), FieldDecl(TypeRef("C"), "c"))),
           VarDecl(TypeRef("A"), "a", Init(TypeRef("A"))),
+          StructDecl("D", List(FieldDecl(TypeRef(typeNames.i32Type), "i"))),
           MethodDecl(
             TypeRef(typeNames.voidType),
             "f",
             List.empty[ArgDecl],
             Block(
-              StructDecl("D", List(FieldDecl(TypeRef(typeNames.i32Type), "i"))),
               VarDecl(TypeRef("D"), "d", Init(TypeRef("D"))),
               Assign(
                 Access(Var(SymbolRef("d")), Var(SymbolRef("i"))),
@@ -724,36 +724,34 @@ final class AsmVisitorSpec extends TestSpec:
             val actual = s.show()
             println(actual)
             val expected =
-              """{
-                |  struct B {
-                |    int32_t y;
-                |  };
-                |  struct C {
-                |    int32_t z;
-                |  };
-                |  struct A {
-                |    int32_t x;
-                |    B b;
-                |    C c;
-                |  };
-                |  A a = {
-                |    .x = 0,
-                |    .b = {
-                |        .y = 0
-                |      },
-                |    .c = {
-                |        .z = 0
-                |      }
-                |  };
-                |  void f() {
-                |    struct D {
-                |      int32_t i;
-                |    };
-                |    D d = {
-                |      .i = 0
-                |    };
-                |    d.i = a.b.y;
-                |  };
+              """class B {
+                |  y: i32
+                |}
+                |class C {
+                |  z: i32
+                |}
+                |class A {
+                |  x: i32
+                |  b: B
+                |  c: C
+                |}
+                |let a: A = {
+                |  x: 0,
+                |  b: {
+                |      y: 0
+                |    },
+                |  c: {
+                |      z: 0
+                |    }
+                |}
+                |class D {
+                |  i: i32
+                |}
+                |function f(): void {
+                |  let d: D = {
+                |    i: 0
+                |  }
+                |  d.i = a.b.y
                 |}
                 |""".stripMargin.trim
 
