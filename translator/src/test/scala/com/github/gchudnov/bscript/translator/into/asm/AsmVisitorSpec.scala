@@ -1000,15 +1000,57 @@ final class AsmVisitorSpec extends TestSpec:
 
         errOrRes match
           case Right(s) =>
-            val actual = s.show()
-            println(actual)
+            val actual = trimTrailing(s.show())
             val expected =
-              """XXX
+              """class D {
+                |  x: i32
+                |  y: f64
+                |}
+                |/**
+                | * Update the key in data structure with the provided value
+                | * [std]
+                | */
+                |function update_D(d: D, key: string, value: string): void {
+                |  if ("key" == "x") {
+                |    d.x = I32.parseInt(value)
+                |  } else if ("key" == "y") {
+                |    d.y = F64.parseFloat(value)
+                |  }
+                |}
+                |/**
+                | * Read the data structure from a string
+                | * [std]
+                | */
+                |function read_D(input: string): D {
+                |  let d: D = {
+                |    x: I32.MIN_VALUE,
+                |    y: F64.NaN
+                |  }
+                |  const lines = str.split("\n");
+                |  for (let i = 0; i < lines.length; i++) {
+                |    const line = lines[i];
+                |    if (line.length == 0) {
+                |      // empty line
+                |      continue
+                |    }
+                |
+                |    const kv = line.split("=");
+                |    if (kv.length != 2) {
+                |      // invalid line
+                |      continue;
+                |    }
+                |
+                |    const key = kv[0].trim();
+                |    const value = kv[1].trim();
+                |    update_D(d, key, value);
+                |  }
+                |
+                |  return d;
+                |}
                 |""".stripMargin.trim
 
-            actual.contains(expected) mustBe true
+            actual mustBe expected
           case Left(t) =>
-            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -1476,3 +1518,6 @@ final class AsmVisitorSpec extends TestSpec:
     s.copy(
       inits = s.inits ++ inits
     )
+
+  private def trimTrailing(lines: String): String =
+    lines.split("\n").map(_.stripTrailing()).mkString("\n").trim
