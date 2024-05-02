@@ -1,22 +1,22 @@
 package com.github.gchudnov.bscript.translator.into.asm
 
-import com.github.gchudnov.bscript.builder.{AstMeta, Builder}
+import com.github.gchudnov.bscript.builder.{ AstMeta, Builder }
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
-import com.github.gchudnov.bscript.lang.symbols.{SymbolRef, Type, TypeRef, VectorType}
-import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
+import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, Type, TypeRef, VectorType }
+import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
 import com.github.gchudnov.bscript.rewriter.Rewriter
-import com.github.gchudnov.bscript.translator.{TTypeCheckLaws, TestSpec}
+import com.github.gchudnov.bscript.translator.{ TTypeCheckLaws, TestSpec }
 import com.github.gchudnov.bscript.translator.into.asm
-import com.github.gchudnov.bscript.translator.into.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
+import com.github.gchudnov.bscript.translator.into.asm.laws.{ AsmTranslateLaws, AsmTypeCheckLaws }
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.Inits
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 import com.github.gchudnov.bscript.translator.util.FileOps
 
 import java.nio.file.Paths
-import java.time.{LocalDate, OffsetDateTime}
+import java.time.{ LocalDate, OffsetDateTime }
 import scala.collection.immutable.Seq
 
 final class AsmVisitorSpec extends TestSpec:
@@ -26,6 +26,7 @@ final class AsmVisitorSpec extends TestSpec:
   "AsmVisitor" when {
 
     "unary minus" should {
+
       /**
        * {{{
        *  -10;
@@ -54,13 +55,13 @@ final class AsmVisitorSpec extends TestSpec:
           VarDecl(TypeRef(typeNames.f32Type), "c", NothingVal()),
           VarDecl(TypeRef(typeNames.f64Type), "d", NothingVal()),
           VarDecl(TypeRef(typeNames.dateType), "e", NothingVal()),
-          VarDecl(TypeRef(typeNames.datetimeType), "f", NothingVal()),
+          VarDecl(TypeRef(typeNames.datetimeType), "f", NothingVal())
         )
 
         val errOrRes = eval(t)
         errOrRes match
           case Right(s) =>
-            val actual   = s.show()
+            val actual = s.show()
             val expected =
               """
                 |let a: i32 = I32.MIN_VALUE
@@ -83,7 +84,7 @@ final class AsmVisitorSpec extends TestSpec:
           StructDecl(
             "A",
             List(
-              FieldDecl(TypeRef(typeNames.i32Type), "a"),
+              FieldDecl(TypeRef(typeNames.i32Type), "a")
             )
           ),
           VarDecl(TypeRef("A"), "a", Init(TypeRef("A")))
@@ -121,12 +122,15 @@ final class AsmVisitorSpec extends TestSpec:
        * }}}
        */
       "translate to asm" in {
-        val t = StructDecl("X", List(
-          FieldDecl(TypeRef(typeNames.i32Type), "x"),
-          FieldDecl(TypeRef(typeNames.f64Type), "y"),
-          FieldDecl(VectorType(TypeRef(typeNames.strType)), "ss"),
-          FieldDecl(VectorType(TypeRef(typeNames.f32Type)), "fs"),
-        ))
+        val t = StructDecl(
+          "X",
+          List(
+            FieldDecl(TypeRef(typeNames.i32Type), "x"),
+            FieldDecl(TypeRef(typeNames.f64Type), "y"),
+            FieldDecl(VectorType(TypeRef(typeNames.strType)), "ss"),
+            FieldDecl(VectorType(TypeRef(typeNames.f32Type)), "fs")
+          )
+        )
 
         val errOrRes = eval(t)
         errOrRes match
@@ -344,7 +348,7 @@ final class AsmVisitorSpec extends TestSpec:
           "g",
           List(ArgDecl(TypeRef(typeNames.i32Type), "x")),
           Block(
-            Return(Sub(Var(SymbolRef("x")), IntVal(1))),
+            Return(Sub(Var(SymbolRef("x")), IntVal(1)))
           )
         )
 
@@ -649,10 +653,12 @@ final class AsmVisitorSpec extends TestSpec:
             Block(
               If(
                 Greater(Var(SymbolRef("x")), IntVal(0)),
-                Return(Add(
-                  Var(SymbolRef("x")),
-                  Call(SymbolRef("f"), List(Sub(Var(SymbolRef("x")), IntVal(1))))
-                )),
+                Return(
+                  Add(
+                    Var(SymbolRef("x")),
+                    Call(SymbolRef("f"), List(Sub(Var(SymbolRef("x")), IntVal(1))))
+                  )
+                ),
                 Some(Return(IntVal(0)))
               )
             )
@@ -686,10 +692,12 @@ final class AsmVisitorSpec extends TestSpec:
               If(
                 Greater(Var(SymbolRef("x")), IntVal(0)),
                 Block(
-                  Return(Add(
-                    Var(SymbolRef("x")),
-                    Call(SymbolRef("f"), List(Sub(Var(SymbolRef("x")), IntVal(1))))
-                  ))
+                  Return(
+                    Add(
+                      Var(SymbolRef("x")),
+                      Call(SymbolRef("f"), List(Sub(Var(SymbolRef("x")), IntVal(1))))
+                    )
+                  )
                 ),
                 Some(Block(Return(IntVal(0))))
               )
@@ -867,31 +875,33 @@ final class AsmVisitorSpec extends TestSpec:
           Var(SymbolRef("x"))
         )
 
-        val errOrRes = build(t)
-          .flatMap(astMeta => {
-            val ast1 = astMeta.ast
+        val errOrRes = build(t).flatMap { astMeta =>
+          val ast1 = astMeta.ast
 
-            // maps function name to the argument index to take the type from for a suffix
-            val mapper = Map(
-              "contains" -> 0,
-              "isDefined" -> 0,
-              "round" -> 0,
-              "truncate" -> 0,
-              "coalesce" -> 0,
-              "contains" -> 0,
-            )
+          // maps function name to the argument index to take the type from for a suffix
+          val mapper = Map(
+            "contains"  -> 0,
+            "isDefined" -> 0,
+            "round"     -> 0,
+            "truncate"  -> 0,
+            "coalesce"  -> 0,
+            "contains"  -> 0
+          )
 
-            val errOrAst2 = Rewriter.map(ast1, {
+          val errOrAst2 = Rewriter.map(
+            ast1,
+            {
               case call: Call =>
-                val id = call.id.name
+                val id       = call.id.name
                 val fnSuffix = mapper.get(id).map(argIdx => call.args(argIdx).evalType.name)
                 fnSuffix.map(suffix => call.copy(id = SymbolRef(s"${id}_${suffix}"))).getOrElse(call)
               case a =>
                 a
-            })
+            }
+          )
 
-            errOrAst2
-          })
+          errOrAst2
+        }
           .flatMap(ast2 => eval(ast2))
         errOrRes match
           case Right(s) =>
@@ -910,40 +920,52 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "generate reader for a data structure" in {
-        val t = StructDecl("D", List(
-          FieldDecl(TypeRef(typeNames.i32Type), "x"),
-          FieldDecl(TypeRef(typeNames.f64Type), "y"),
-        ))
+        val t = StructDecl(
+          "D",
+          List(
+            FieldDecl(TypeRef(typeNames.i32Type), "x"),
+            FieldDecl(TypeRef(typeNames.f64Type), "y")
+          )
+        )
 
-        val errOrRes = build(t)
-          .flatMap(astMeta => {
-            val ast1 = astMeta.ast
+        val errOrRes = build(t).flatMap { astMeta =>
+          val ast1 = astMeta.ast
 
-            val nameToFind = "D"
-            val errOrStruct = Rewriter.find(ast1, {
+          val nameToFind = "D" // struct to look for
+          val errOrStruct = Rewriter.find(
+            ast1,
+            {
               case s: StructDecl if s.name == nameToFind =>
                 true
               case _ =>
                 false
-            })
-
-            println(errOrStruct)
-
-            errOrStruct.map {
-              case Some(s) =>
-                val struct = s.asInstanceOf[StructDecl]
-                val fields = struct.fields.map(fd => (fd.name, fd.fType.name))
-                // List((x,int), (y,double))
-                
-
-                println(fields)
-                ???
-              case other =>
-                Block.empty
             }
+          )
 
-            ???
-          })
+          println(errOrStruct)
+
+          errOrStruct.map {
+            case Some(s) =>
+              val struct = s.asInstanceOf[StructDecl]
+              val fields = struct.fields.map(fd => (fd.name, fd.fType.name))
+              // List((x,int), (y,double))
+
+              val body = """
+                           |function updateD(key: string, value: string): void {
+                           |}
+                           |
+                           |function readD(): D {
+                           |}
+                           |""".stripMargin.trim
+
+              println(fields)
+              ???
+            case other =>
+              Block.empty
+          }
+
+          ???
+        }
 
         eval(t) match
           case Right(s) =>
@@ -961,10 +983,12 @@ final class AsmVisitorSpec extends TestSpec:
 
     "compiled expressions" should {
       "translate to asm" in {
-        val inits = Inits.codeBlocks(Seq(
-          Inits.Keys.NAConstants,
-          Inits.Keys.InlineTest,
-        ))
+        val inits = Inits.codeBlocks(
+          Seq(
+            Inits.Keys.NAConstants,
+            Inits.Keys.InlineTest
+          )
+        )
 
         val t = AsmPrelude.make(typeNames)
 //            :+
@@ -1393,32 +1417,30 @@ final class AsmVisitorSpec extends TestSpec:
   }
 
   private def eval(ast0: AST, inits: List[(String, Seq[String])] = List.empty[(String, Seq[String])]): Either[Throwable, AsmState] =
-    val types = Types.make(typeNames)
+    val types         = Types.make(typeNames)
     val typeCheckLaws = AsmTypeCheckLaws.make(types)
 
     Builder
       .build(ast0, types, typeCheckLaws)
       .flatMap(astMeta =>
         val typeInit = AsmTypeInit
-        val typeNa = AsmTypeNA
-        val laws = AsmTranslateLaws.make(typeNames, typeInit, typeNa, astMeta.meta)
+        val typeNa   = AsmTypeNA
+        val laws     = AsmTranslateLaws.make(typeNames, typeInit, typeNa, astMeta.meta)
 
         val cVisitor: AsmVisitor = AsmVisitor.make(laws)
-        val cState: AsmState = withInits(AsmState.make(astMeta.meta), inits)
+        val cState: AsmState     = withInits(AsmState.make(astMeta.meta), inits)
 
         astMeta.ast.visit(cState, cVisitor)
       )
 
-  private def build(ast0: AST): Either[Throwable, AstMeta] = {
-    val types = Types.make(typeNames)
+  private def build(ast0: AST): Either[Throwable, AstMeta] =
+    val types         = Types.make(typeNames)
     val typeCheckLaws = AsmTypeCheckLaws.make(types)
 
     Builder
       .build(ast0, types, typeCheckLaws)
-  }
 
-  private def withInits(s: AsmState, inits: List[(String, Seq[String])]): AsmState = {
+  private def withInits(s: AsmState, inits: List[(String, Seq[String])]): AsmState =
     s.copy(
       inits = s.inits ++ inits
     )
-  }
