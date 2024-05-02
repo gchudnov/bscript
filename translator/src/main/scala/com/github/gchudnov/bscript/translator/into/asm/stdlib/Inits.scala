@@ -169,6 +169,24 @@ object Inits:
         |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("1900-01-01"), Date.parse("2024-05-02")).toString());
         |console.log("coalesce(Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T22:32:44+00:00")).toString());
         |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("1900-01-01"), Date.parse("2024-05-02T22:32:44+00:00")).toString());
+        |
+        |// contains
+        |console.log("\n\n# contains\n");
+        |console.log("contains(\"a\", [\"a\", \"b\", \"c\"): " + contains_string("a", ["a", "b", "c"]).toString());
+        |console.log("contains(\"d\", [\"a\", \"b\", \"c\"): " + contains_string("d", ["a", "b", "c"]).toString());
+        |console.log("contains(1, [1, 2, 3]): " + contains_int(1, [1, 2, 3]).toString());
+        |console.log("contains(4, [1, 2, 3]): " + contains_int(4, [1, 2, 3]).toString());
+        |console.log("contains(1L, [1L, 2L, 3L]): " + contains_long(1, [1, 2, 3]).toString());
+        |console.log("contains(4L, [1L, 2L, 3L]): " + contains_long(4, [1, 2, 3]).toString());
+        |console.log("contains(1.0f, [1.0f, 2.0f, 3.0f]): " + contains_float(1.0, [1.0, 2.0, 3.0]).toString());
+        |console.log("contains(4.0f, [1.0f, 2.0f, 3.0f]): " + contains_float(4.0, [1.0, 2.0, 3.0]).toString());
+        |console.log("contains(1.0, [1.0, 2.0, 3.0]): " + contains_double(1.0, [1.0, 2.0, 3.0]).toString());
+        |console.log("contains(4.0, [1.0, 2.0, 3.0]): " + contains_double(4.0, [1.0, 2.0, 3.0]).toString());
+        |console.log("contains(Date.parse(\"2024-05-01\"), [Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\"), Date.parse(\"2024-05-03\")]): " + contains_date(Date.parse("2024-05-01"), [Date.parse("2024-05-01"), Date.parse("2024-05-02"), Date.parse("2024-05-03")]).toString());
+        |console.log("contains(Date.parse(\"2024-05-04\"), [Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\"), Date.parse(\"2024-05-03\")]): " + contains_date(Date.parse("2024-05-04"), [Date.parse("2024-05-01"), Date.parse("2024-05-02"), Date.parse("2024-05-03")]).toString());
+        |console.log("contains(Date.parse(\"2024-05-01T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-01T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
+        |console.log("contains(Date.parse(\"2024-05-04T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-04T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
+        |
         |""".stripMargin
     )
   )

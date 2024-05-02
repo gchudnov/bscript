@@ -5,6 +5,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.date.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.num.*
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.vec.*
 
 private[asm] object AsmPrelude:
 
@@ -24,7 +25,15 @@ private[asm] object AsmPrelude:
     val coalesceF64 = CoalesceF64(typeNames, typeNames.f64Type)
     val coalesceDate = CoalesceDat(typeNames, typeNames.dateType)
     val coalesceDateTime = CoalesceDtm(typeNames, typeNames.datetimeType)
-    
+
+    val containsStr = ContainsStr(typeNames, typeNames.strType)
+    val containsI32 = ContainsI32(typeNames, typeNames.i32Type)
+    val containsI64 = ContainsI64(typeNames, typeNames.i64Type)
+    val containsF32 = ContainsF32(typeNames, typeNames.f32Type)
+    val containsF64 = ContainsF64(typeNames, typeNames.f64Type)
+    val containsDate = ContainsDat(typeNames, typeNames.dateType)
+    val containsDateTime = ContainsDtm(typeNames, typeNames.datetimeType)
+
     val methodDecls = List(
       isDefinedStr.decl,
       isDefinedI32.decl,
@@ -46,6 +55,13 @@ private[asm] object AsmPrelude:
       coalesceF64.decl,
       coalesceDate.decl,
       coalesceDateTime.decl,
+      containsStr.decl,
+      containsI32.decl,
+      containsI64.decl,
+      containsF32.decl,
+      containsF64.decl,
+      containsDate.decl,
+      containsDateTime.decl,
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
@@ -58,7 +74,6 @@ private[asm] object AsmPrelude:
       //    ExactLong.decl,
       //    StrLen.decl,
       //    Append.decl,
-      //    Contains.decl,
     )
 
     Module(methodDecls*)

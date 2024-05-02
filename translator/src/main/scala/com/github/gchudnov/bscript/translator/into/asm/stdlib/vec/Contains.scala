@@ -10,20 +10,50 @@ import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
 import scala.util.control.Exception.allCatch
 
-private[into] object Contains:
+private[asm] final class ContainsStr(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName, "return xs.includes(x);")
 
-  private val fnName = "contains"
+private[asm] final class ContainsI32(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName, "return xs.includes(x);")
 
-  def decl(typeNames: TypeNames): MethodDecl =
+private[asm] final class ContainsI64(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName, "return xs.includes(x);")
+
+private[asm] final class ContainsF32(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName, "return xs.includes(x);")
+
+private[asm] final class ContainsF64(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName, "return xs.includes(x);")
+
+private[asm] final class ContainsDat(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName,
+  """for (let i = 0; i < xs.length; i++) {
+    |  if (xs[i].getTime() == x.getTime()) {
+    |    return true;
+    |  }
+    |}
+    |return false;
+    |""".stripMargin)
+
+private[asm] final class ContainsDtm(typeNames: TypeNames, typeName: String) extends Contains(typeNames, typeName,
+  """for (let i = 0; i < xs.length; i++) {
+    |  if (xs[i].getTime() == x.getTime()) {
+    |    return true;
+    |  }
+    |}
+    |return false;
+    |""".stripMargin)
+
+
+private[asm] abstract class Contains(typeNames: TypeNames, typeName: String, check: String):
+
+  private val fnName: String =
+    s"contains_${typeName}"
+
+  def decl: MethodDecl =
     MethodDecl(
       TypeRef(typeNames.boolType),
       fnName,
       List(
-        ArgDecl(TypeRef(typeNames.autoType), "x"),
+        ArgDecl(TypeRef(typeName), "x"),
         ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
       ),
       Block(
-        CompiledExpr(callback = Contains.contains, retType = TypeRef(typeNames.boolType))
+        CompiledExpr(callback = this.contains, retType = TypeRef(typeNames.boolType))
       ),
       Seq(ComAnn("Tests whether the collection contains the given element."), StdAnn())
     )
@@ -34,31 +64,15 @@ private[into] object Contains:
 
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""// NOTE: Add [T] to the method
-                            |xs.contains(x)
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines)
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""// NOTE: Add [T] to the method
-                            |xs.contains(x)
+                         s"""${check}
                             |""".stripMargin
                        )
                      )
         yield s.copy(
           lines = lines,
-          imports = s.imports ++ Set(
-            "java.lang.Boolean as JBoolean"
-          )
+          imports = s.imports
         )
 
       case other =>
