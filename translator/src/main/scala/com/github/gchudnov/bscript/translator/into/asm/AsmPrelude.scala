@@ -7,13 +7,13 @@ import com.github.gchudnov.bscript.translator.into.asm.stdlib.*
 private[asm] object AsmPrelude:
 
   def make(typeNames: TypeNames): Module =
-    val isDefineStr = IsDefinedT(typeNames, typeNames.strType)
-    val isDefineI32 = IsDefinedT(typeNames, typeNames.i32Type)
-    val isDefineI64 = IsDefinedT(typeNames, typeNames.i64Type)
-    val isDefineF32 = IsDefinedT(typeNames, typeNames.f32Type)
-    val isDefineF64 = IsDefinedT(typeNames, typeNames.f64Type)
-    val isDefineDate = IsDefinedT(typeNames, typeNames.dateType)
-    val isDefineDateTime = IsDefinedT(typeNames, typeNames.datetimeType)
+    val isDefineStr = IsDefinedStr(typeNames, typeNames.strType)
+    val isDefineI32 = IsDefinedI32(typeNames, typeNames.i32Type)
+    val isDefineI64 = IsDefinedI64(typeNames, typeNames.i64Type)
+    val isDefineF32 = IsDefinedF32(typeNames, typeNames.f32Type)
+    val isDefineF64 = IsDefinedF64(typeNames, typeNames.f64Type)
+    val isDefineDate = IsDefinedDat(typeNames, typeNames.dateType)
+    val isDefineDateTime = IsDefinedDtm(typeNames, typeNames.datetimeType)
 
     val methodDecls = List(
       isDefineStr.decl,

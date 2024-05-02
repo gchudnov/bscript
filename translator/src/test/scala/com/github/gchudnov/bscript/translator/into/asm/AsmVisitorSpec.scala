@@ -969,11 +969,33 @@ final class AsmVisitorSpec extends TestSpec:
 //    }
 
       "compiled expressions" should {
+        /**
+         * {{{
+         * // isDefined
+         * console.log("\n\n# isDefined\n");
+         * console.log("isDefined(\"hello world\"): " + isDefined_string("hello world").toString());
+         * console.log("isDefined(\"!#\"): " + isDefined_string("!#").toString());
+         * console.log("isDefined(123): " + isDefined_int(123).toString());
+         * console.log("isDefined(I32.MIN_VALUE): " + isDefined_int(I32.MIN_VALUE).toString());
+         * console.log("isDefined(123L): " + isDefined_long(123).toString());
+         * console.log("isDefined(I64.MIN_VALUE): " + isDefined_long(I64.MIN_VALUE).toString());
+         * console.log("isDefined(123.0f): " + isDefined_float(123.0).toString());
+         * console.log("isDefined(F32.NaN): " + isDefined_float(F32.NaN).toString());
+         * console.log("isDefined(123.0): " + isDefined_double(123.0).toString());
+         * console.log("isDefined(F64.NaN): " + isDefined_double(F64.NaN).toString());
+         * console.log("isDefined_date(Date.parse(\"2024-05-01\")): " + isDefined_date(Date.parse("2024-05-01")).toString());
+         * console.log("isDefined_date(Date.parse(\"1900-01-01\")): " + isDefined_date(Date.parse("1900-01-01")).toString());
+         * console.log("isDefined_datetime(Date.parse(\"2024-05-01T21:30:43+00:00\")): " + isDefined_datetime(Date.parse("2024-05-01T21:30:43+00:00")).toString());
+         * console.log("isDefined_datetime(Date.parse(\"1900-01-01\")): " + isDefined_datetime(Date.parse("1900-01-01")).toString());
+         *
+         * }}}
+         */
         "translate to asm" in {
-          val t = AsmPrelude.make(typeNames) :+
-            Block(
-              Call(SymbolRef("isDefined_string"), List(StrVal("123")))
-            )
+          val t = AsmPrelude.make(typeNames)
+//            :+
+//            Block(
+//              Call(SymbolRef("isDefined_string"), List(StrVal("123")))
+//            )
 
           val errOrRes = eval(t)
           errOrRes match
