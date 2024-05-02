@@ -155,8 +155,20 @@ object Inits:
         |
         |// coalesce
         |console.log("\n\n# coalesce\n");
+        |console.log("coalesce(\"a\", \"b\"): " + coalesce_string("a", "b").toString());
+        |console.log("coalesce(\"!#\", \"b\"): " + coalesce_string("!#", "b").toString());
         |console.log("coalesce(10, 20): " + coalesce_int(10, 20).toString());
         |console.log("coalesce(I32.MIN_VALUE, 20): " + coalesce_int(I32.MIN_VALUE, 20).toString());
+        |console.log("coalesce(10L, 20L): " + coalesce_long(10, 20).toString());
+        |console.log("coalesce(I64.MIN_VALUE, 20L): " + coalesce_long(I64.MIN_VALUE, 20).toString());
+        |console.log("coalesce(10.0f, 20.0f): " + coalesce_float(10.0, 20.0).toString());
+        |console.log("coalesce(F32.NaN, 20.0f): " + coalesce_float(F32.NaN, 20.0).toString());
+        |console.log("coalesce(10.0, 20.0): " + coalesce_double(10.0, 20.0).toString());
+        |console.log("coalesce(F64.NaN, 20.0): " + coalesce_double(F64.NaN, 20.0).toString());
+        |console.log("coalesce(Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("2024-05-01"), Date.parse("2024-05-02")).toString());
+        |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("1900-01-01"), Date.parse("2024-05-02")).toString());
+        |console.log("coalesce(Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T22:32:44+00:00")).toString());
+        |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("1900-01-01"), Date.parse("2024-05-02T22:32:44+00:00")).toString());
         |""".stripMargin
     )
   )

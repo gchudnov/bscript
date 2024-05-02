@@ -8,20 +8,36 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
-private[into] object Coalesce:
+private[asm] final class CoalesceStr(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, s"x !== \"!#\"")
 
-  private val fnName = "coalesce"
+private[asm] final class CoalesceI32(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, s"x !== I32.MIN_VALUE")
 
-  def decl(typeNames: TypeNames): MethodDecl =
+private[asm] final class CoalesceI64(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, s"x !== I64.MIN_VALUE")
+
+private[asm] final class CoalesceF32(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, "!F32.isNaN(x)")
+
+private[asm] final class CoalesceF64(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, "!F64.isNaN(x)")
+
+private[asm] final class CoalesceDat(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, "x.getTime() !== NAdate.getTime()")
+
+private[asm] final class CoalesceDtm(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, "x.getTime() !== NAdate.getTime()")
+
+
+private abstract class Coalesce(typeNames: TypeNames, typeName: String, check: String):
+
+  private def fnName: String =
+    s"coalesce_${typeName}"
+
+  def decl: MethodDecl =
     MethodDecl(
       DeclType(Var(SymbolRef("x"))),
       fnName,
       List(
-        ArgDecl(TypeRef(typeNames.autoType), "x"),
-        ArgDecl(TypeRef(typeNames.autoType), "y")
+        ArgDecl(TypeRef(typeName), "x"),
+        ArgDecl(TypeRef(typeName), "y")
       ),
       Block(
-        CompiledExpr(callback = Coalesce.coalesce, retType = DeclType(Var(SymbolRef("x"))))
+        CompiledExpr(callback = this.coalesce, retType = DeclType(Var(SymbolRef("x"))))
       ),
       Seq(ComAnn("returns the first non-null value out of two values that were provided"), StdAnn())
     )
@@ -42,34 +58,15 @@ private[into] object Coalesce:
 
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
-                       split(
-                         s"""// NOTE: Add [T] to the method
-                            |(${argX}, ${argY}) match {
-                            |  case (null, _) => ${argY}
-                            |  case (None, _) => ${argY}
-                            |  case _ => ${argX}
-                            |}
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines)
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""// NOTE: Add [T] to the method
-                            |(${argX}, ${argY}) match {
-                            |  case (null, _) => ${argY}
-                            |  case (None, _) => ${argY}
-                            |  case _ => ${argX}
-                            |}
-                            |""".stripMargin
-                       )
-                     )
+          split(
+            s"""if (${check}) {
+               |  return ${argX};
+               |}
+               |return ${argY};
+               |""".stripMargin
+          )
+        )
         yield s.copy(lines = lines)
 
       case other =>
