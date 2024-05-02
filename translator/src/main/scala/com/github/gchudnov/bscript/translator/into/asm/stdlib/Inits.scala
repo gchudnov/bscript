@@ -146,6 +146,12 @@ object Inits:
         |console.log("round(123.456f, 2): " + round_float(123.456, 2).toString());
         |console.log("round(123.444f, 2): " + round_float(123.444, 2).toString());
         |
+        |// truncate
+        |console.log("\n\n# truncate\n");
+        |console.log("truncate(123.456, 2): " + truncate_double(123.456, 2).toString());
+        |console.log("truncate(123.444, 2): " + truncate_double(123.444, 2).toString());
+        |console.log("truncate(123.456f, 2): " + truncate_float(123.456, 2).toString());
+        |console.log("truncate(123.444f, 2): " + truncate_float(123.444, 2).toString());
         |""".stripMargin
     )
   )
