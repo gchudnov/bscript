@@ -18,7 +18,6 @@ private[asm] object AsmPrelude:
     val isDefineDateTime = IsDefinedDtm(typeNames, typeNames.datetimeType)
 
     val methodDecls = List(
-      // IsDefined
       isDefineStr.decl,
       isDefineI32.decl,
       isDefineI64.decl,
@@ -32,6 +31,7 @@ private[asm] object AsmPrelude:
       RoundF32.decl(typeNames),
       TruncateF64.decl(typeNames),
       TruncateF32.decl(typeNames),
+      CoalesceI32.decl(typeNames)
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
@@ -45,7 +45,6 @@ private[asm] object AsmPrelude:
       //    StrLen.decl,
       //    Append.decl,
       //    Contains.decl,
-      //    Coalesce.decl
     )
 
     Module(methodDecls*)

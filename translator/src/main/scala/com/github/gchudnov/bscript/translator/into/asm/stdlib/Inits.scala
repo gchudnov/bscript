@@ -152,6 +152,11 @@ object Inits:
         |console.log("truncate(123.444, 2): " + truncate_double(123.444, 2).toString());
         |console.log("truncate(123.456f, 2): " + truncate_float(123.456, 2).toString());
         |console.log("truncate(123.444f, 2): " + truncate_float(123.444, 2).toString());
+        |
+        |// coalesce
+        |console.log("\n\n# coalesce\n");
+        |console.log("coalesce(10, 20): " + coalesce_int(10, 20).toString());
+        |console.log("coalesce(I32.MIN_VALUE, 20): " + coalesce_int(I32.MIN_VALUE, 20).toString());
         |""".stripMargin
     )
   )
