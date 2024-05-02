@@ -5,3 +5,4 @@ import scala.collection.immutable.Seq
 
 trait Initializer:
   def init(toType: Type): Either[Throwable, Seq[String]]
+  def na(forType: Type): Either[Throwable, String]

@@ -12,7 +12,7 @@ import scala.collection.immutable.Seq
 /**
  * Initializes types for C
  */
-final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta) extends Initializer:
+final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, typeNA: TypeInit, meta: Meta) extends Initializer:
 
   private val voidTypeName: String = typeNames.voidType
   private val boolTypeName: String = typeNames.boolType
@@ -22,8 +22,10 @@ final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta)
   private val f64TypeName: String  = typeNames.f64Type
   private val decTypeName: String  = typeNames.decType
   private val strTypeName: String  = typeNames.strType
+  private val dateTypeName: String  = typeNames.dateType
+  private val datetimeTypeName: String  = typeNames.datetimeType
 
-  def init(toType: Type): Either[Throwable, Seq[String]] = toType match
+  override def init(toType: Type): Either[Throwable, Seq[String]] = toType match
     case ss: SStruct =>
       initStruct(ss)
     case cs: VectorType =>
@@ -31,6 +33,11 @@ final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta)
     case bs: SBuiltInType =>
       initBuiltInType(bs)
     case other => Left(new TranslateException(s"Cannot initialize Type '${other}'"))
+
+  override def na(forType: Type): Either[Throwable, String] = forType match
+    case bs: SBuiltInType =>
+      naBuiltInType(bs)
+    case other => Left(new TranslateException(s"Cannot set to NA the Type '${other}'"))
 
   private def initBuiltInType(bs: SBuiltInType): Either[Throwable, Seq[String]] = bs.name match
     case `voidTypeName` => Right(Seq(typeInit.voidType))
@@ -42,6 +49,17 @@ final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta)
     case `decTypeName`  => Right(Seq(typeInit.decType))
     case `strTypeName`  => Right(Seq(typeInit.strType))
     case other          => Left(new TranslateException(s"Cannot initialize BuiltInType '${other}'"))
+
+  private def naBuiltInType(bs: SBuiltInType): Either[Throwable, String] = bs.name match
+    case `i32TypeName`  => Right(typeNA.i32Type)
+    case `i64TypeName`  => Right(typeNA.i64Type)
+    case `f32TypeName`  => Right(typeNA.f32Type)
+    case `f64TypeName`  => Right(typeNA.f64Type)
+    case `decTypeName`  => Right(typeNA.decType)
+    case `strTypeName`  => Right(typeNA.strType)
+    case `dateTypeName`  => Right(typeNA.dateType)
+    case `datetimeTypeName`  => Right(typeNA.datetimeType)
+    case other          => Left(new TranslateException(s"Cannot reset the BuiltInType '${other}'"))
 
   private def initCollection(cs: VectorType): Either[Throwable, Seq[String]] =
     Right(Seq("[]"))

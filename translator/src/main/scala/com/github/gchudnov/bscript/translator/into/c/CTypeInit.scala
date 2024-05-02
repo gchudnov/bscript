@@ -10,4 +10,6 @@ case object CTypeInit extends TypeInit:
   val f32Type: String  = "0.0f"
   val f64Type: String  = "0.0"
   val decType: String  = "0.0"
+  val dateType: String  = "0"
+  val datetimeType: String  = "0"
   val strType: String  = "\"\""

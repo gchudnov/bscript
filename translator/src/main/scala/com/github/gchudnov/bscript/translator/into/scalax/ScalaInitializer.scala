@@ -23,7 +23,7 @@ final class ScalaInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Met
   private val decTypeName: String  = typeNames.decType
   private val strTypeName: String  = typeNames.strType
 
-  def init(toType: Type): Either[Throwable, Seq[String]] = toType match
+  override def init(toType: Type): Either[Throwable, Seq[String]] = toType match
     case ss: SStruct =>
       initStruct(ss)
     case cs: VectorType =>
@@ -31,6 +31,9 @@ final class ScalaInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Met
     case bs: SBuiltInType =>
       initBuiltInType(bs)
     case other => Left(new TranslateException(s"Cannot initialize Type '${other}'"))
+
+  override def na(forType: Type): Either[Throwable, String] =
+    Right("???")
 
   private def initBuiltInType(bs: SBuiltInType): Either[Throwable, Seq[String]] = bs.name match
     case `voidTypeName` => Right(Seq(typeInit.voidType))

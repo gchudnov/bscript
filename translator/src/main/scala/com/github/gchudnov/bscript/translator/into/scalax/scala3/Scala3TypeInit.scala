@@ -10,4 +10,6 @@ case object Scala3TypeInit extends TypeInit:
   val f32Type: String  = "0.0f"
   val f64Type: String  = "0.0"
   val decType: String  = "BigDecimal.valueOf(0)"
+  val dateType: String = "???"
+  val datetimeType: String = "???"
   val strType: String  = "\"\""

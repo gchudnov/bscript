@@ -23,9 +23,6 @@ private abstract class IsDefined(typeNames: TypeNames, typeName: String, check: 
   private val fnName: String =
     s"isDefined_${typeName}"
 
-  private val magic: String =
-    Undefined.magic(typeNames)(typeName)
-
   def decl: MethodDecl =
     MethodDecl(
       TypeRef(typeNames.boolType),

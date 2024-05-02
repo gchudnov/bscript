@@ -23,7 +23,7 @@ final class CInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta) e
   private val decTypeName: String  = typeNames.decType
   private val strTypeName: String  = typeNames.strType
 
-  def init(toType: Type): Either[Throwable, Seq[String]] = toType match
+  override def init(toType: Type): Either[Throwable, Seq[String]] = toType match
     case ss: SStruct =>
       initStruct(ss)
     case cs: VectorType =>
@@ -32,6 +32,9 @@ final class CInitializer(typeNames: TypeNames, typeInit: TypeInit, meta: Meta) e
       initBuiltInType(bs)
     case other => Left(new TranslateException(s"Cannot initialize Type '${other}'"))
 
+  override def na(forType: Type): Either[Throwable, String] =
+    Right("null")
+  
   private def initBuiltInType(bs: SBuiltInType): Either[Throwable, Seq[String]] = bs.name match
     case `voidTypeName` => Right(Seq(typeInit.voidType))
     case `boolTypeName` => Right(Seq(typeInit.boolType))

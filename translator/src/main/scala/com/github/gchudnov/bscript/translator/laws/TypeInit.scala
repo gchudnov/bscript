@@ -18,3 +18,5 @@ trait TypeInit:
   def f64Type: String
   def decType: String
   def strType: String
+  def dateType: String
+  def datetimeType: String

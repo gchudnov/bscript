@@ -41,6 +41,24 @@ final class AsmVisitorSpec extends TestSpec:
       }
     }
 
+    "set to nothing" should {
+      "set the the correct NA values" in {
+        val t = Block(
+          VarDecl(TypeRef(typeNames.i32Type), "x", NothingVal()),
+        )
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual   = s.show()
+            val expected = "-10"
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
+    }
+
     "module" should {
       "render without braces" in {
         val t = Module(
@@ -1069,7 +1087,8 @@ final class AsmVisitorSpec extends TestSpec:
       .build(ast0, types, typeCheckLaws)
       .flatMap(astMeta =>
         val typeInit = AsmTypeInit
-        val laws = AsmTranslateLaws.make(typeNames, typeInit, astMeta.meta)
+        val typeNa = AsmTypeNA
+        val laws = AsmTranslateLaws.make(typeNames, typeInit, typeNa, astMeta.meta)
 
         val cVisitor: AsmVisitor = AsmVisitor.make(laws)
         val cState: AsmState = AsmState.make(astMeta.meta)

@@ -174,13 +174,13 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
 
   override def visit(s: AsmState, n: NothingVal): Either[Throwable, AsmState] =
     for
-      value <- Right("NULL")
+      value <- Right("<NULL>")
       lines  = Vector(value)
     yield s.withLines(lines)
 
   override def visit(s: AsmState, n: VoidVal): Either[Throwable, AsmState] =
     for
-      value <- Right("NULL")
+      value <- Right("<NULL>")
       lines  = Vector(value)
     yield s.withLines(lines)
 
@@ -466,3 +466,9 @@ private[translator] object AsmVisitor:
 
   private def rwrapMl(lines: Seq[String]): Seq[String] =
     LineOps.wrapIfMultiline("(", ")", lines)
+
+  private def replaceNA(t: Type, lines: Seq[String]) =
+    lines.map(line => line.replace("<NULL>", NAforType(t)))
+  
+  private def NAforType(t: Type): String =
+    ???

@@ -25,7 +25,8 @@ private[translator] final class AsmTranslator(laws: TranslateLaws, state: AsmSta
 object AsmTranslator {
   def make(meta: Meta, typeNames: TypeNames): Translator =
     val typeInit = AsmTypeInit
-    val laws     = AsmTranslateLaws.make(typeNames, typeInit, meta)
+    val typeNa = AsmTypeNA
+    val laws     = AsmTranslateLaws.make(typeNames, typeInit, typeNa, meta)
     val state    = AsmState.make(meta)
     new AsmTranslator(laws, state)
 

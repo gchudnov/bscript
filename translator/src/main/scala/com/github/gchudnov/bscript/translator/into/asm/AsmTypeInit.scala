@@ -10,4 +10,6 @@ case object AsmTypeInit extends TypeInit:
   val f32Type: String  = "0.0f"
   val f64Type: String  = "0.0"
   val decType: String  = "0.0"
+  val dateType: String = "Date.parse(\"1900-01-01\")"
+  val datetimeType: String = "Date.parse(\"1900-01-01\")"
   val strType: String  = "\"\""
