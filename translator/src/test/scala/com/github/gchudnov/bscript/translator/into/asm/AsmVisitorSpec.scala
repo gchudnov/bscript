@@ -970,7 +970,10 @@ final class AsmVisitorSpec extends TestSpec:
 
       "compiled expressions" should {
         "translate to asm" in {
-          val t = AsmPrelude.make(typeNames)
+          val t = AsmPrelude.make(typeNames) :+
+            Block(
+              Call(SymbolRef("isDefined_string"), List(StrVal("123")))
+            )
 
           val errOrRes = eval(t)
           errOrRes match
@@ -990,42 +993,42 @@ final class AsmVisitorSpec extends TestSpec:
                   | * [std]
                   | */
                   |function isDefined_int(x: string): bool {
-                  |  return x !== "i32.MIN_VALUE";
+                  |  return x !== i32.MIN_VALUE;
                   |}
                   |/**
                   | * returns true of the provided variable is defined, otherwise false
                   | * [std]
                   | */
                   |function isDefined_long(x: string): bool {
-                  |  return x !== "i64.MIN_VALUE";
+                  |  return x !== i64.MIN_VALUE;
                   |}
                   |/**
                   | * returns true of the provided variable is defined, otherwise false
                   | * [std]
                   | */
                   |function isDefined_float(x: string): bool {
-                  |  return x !== "f32.NaN";
+                  |  return x !== f32.NaN;
                   |}
                   |/**
                   | * returns true of the provided variable is defined, otherwise false
                   | * [std]
                   | */
                   |function isDefined_double(x: string): bool {
-                  |  return x !== "f64.NaN";
+                  |  return x !== f64.NaN;
                   |}
                   |/**
                   | * returns true of the provided variable is defined, otherwise false
                   | * [std]
                   | */
                   |function isDefined_date(x: string): bool {
-                  |  return x !== "Date.parse("1900-01-01")";
+                  |  return x !== Date.parse("1900-01-01");
                   |}
                   |/**
                   | * returns true of the provided variable is defined, otherwise false
                   | * [std]
                   | */
                   |function isDefined_datetime(x: string): bool {
-                  |  return x !== "Date.parse("1900-01-01")";
+                  |  return x !== Date.parse("1900-01-01");
                   |}
                   |""".stripMargin.trim
 

@@ -42,7 +42,7 @@ private[asm] final class IsDefinedT(typeNames: TypeNames, typeName: String):
       case s: AsmState =>
         for lines <- Right(
           split(
-            s"""return x !== "${magic}";
+            s"""return x !== ${magic};
                |""".stripMargin
           )
         )

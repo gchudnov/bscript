@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 object Undefined {
   def magic(typeNames: TypeNames): Map[String, String] =
     Map(
-      typeNames.strType -> "!#",
+      typeNames.strType -> """"!#"""",
       typeNames.i32Type -> "i32.MIN_VALUE",
       typeNames.i64Type -> "i64.MIN_VALUE",
       typeNames.f32Type -> "f32.NaN",
