@@ -855,585 +855,438 @@ final class AsmVisitorSpec extends TestSpec:
 //      }
     }
 
-//    "compiled expressions" should {
-//      "translate to asm" in {
-//        val t = asm.AsmGlobals.prelude ++ Block(
-//          VarDecl(TypeRef(typeNames.strType), "s", StrVal("str")),
-//          Call(SymbolRef("strLen"), List(Var(SymbolRef("s"))))
-//        )
-//
-//        val errOrRes = eval(t)
-//        errOrRes match
-//          case Right(s) =>
-//            val actual = s.show()
-//            val expected =
-//              """{
-//                |  /**
-//                |   * prints the formatted string to StdOut
-//                |   * [std]
-//                |   */
-//                |  def printf(format: String, value: T): Unit = {}
-//                |  /**
-//                |   * returns the length of the provided string
-//                |   * [std]
-//                |   */
-//                |  def strLen(s: String): Int = {
-//                |    s.length
-//                |  }
-//                |  /**
-//                |   * offsets the provided date-time
-//                |   * [std]
-//                |   */
-//                |  def offsetDateTime(value: OffsetDateTime, offset: Int, unit: String): OffsetDateTime = {
-//                |    unit.trim.toLowerCase match {
-//                |      case `unitDays` =>
-//                |        value.plusDays(offset.toLong)
-//                |      case `unitHours` =>
-//                |        value.plusHours(offset.toLong)
-//                |      case `unitMinutes` =>
-//                |        value.plusMinutes(offset.toLong)
-//                |      case `unitSeconds` =>
-//                |        value.plusSeconds(offset.toLong)
-//                |      case other =>
-//                |        throw new RuntimeException(s"Unexpected unit of time was passed to offsetDateTime: ${unit}")
-//                |    }
-//                |  }
-//                |  /**
-//                |   * sets data and time to the specified value
-//                |   * [std]
-//                |   */
-//                |  def setDateTime(value: OffsetDateTime, offset: Int, unit: String): OffsetDateTime = {
-//                |    unit.trim.toLowerCase match {
-//                |      case `unitDays` =>
-//                |        value.withDayOfMonth(offset)
-//                |      case `unitHours` =>
-//                |        value.withHour(offset)
-//                |      case `unitMinutes` =>
-//                |        value.withMinute(offset)
-//                |      case `unitSeconds` =>
-//                |        value.withSecond(offset)
-//                |      case other =>
-//                |        throw new RuntimeException(s"Unexpected unit of time was passed to setDateTime: ${unit}")
-//                |    }
-//                |  }
-//                |  /**
-//                |   * return the specified part of date-time as an integer value
-//                |   * [std]
-//                |   */
-//                |  def fieldOfDateTime(value: OffsetDateTime, unit: String): Int = {
-//                |    unit.trim.toLowerCase match {
-//                |      case `unitDays` =>
-//                |        value.getDayOfMonth
-//                |      case `unitHours` =>
-//                |        value.getHour
-//                |      case `unitMinutes` =>
-//                |        value.getMinute
-//                |      case `unitSeconds` =>
-//                |        value.getSecond
-//                |      case other =>
-//                |        throw new RuntimeException(s"Unexpected unit of time was passed to fieldOfDateTime: ${unit}")
-//                |    }
-//                |  }
-//                |  /**
-//                |   * returns true of the provided variable is defined, otherwise false
-//                |   * [std]
-//                |   */
-//                |  def isDefined(x: T): Boolean = {
-//                |    x match {
-//                |      case null => false
-//                |      case None => false
-//                |      case _ => true
-//                |    }
-//                |  }
-//                |  /**
-//                |   * returns the first non-null value out of two values that were provided
-//                |   * [std]
-//                |   */
-//                |  def coalesce(x: T, y: T): T = {
-//                |    (x, y) match {
-//                |      case (null, _) => y
-//                |      case (None, _) => y
-//                |      case _ => x
-//                |    }
-//                |  }
-//                |  /**
-//                |   * returns today as date
-//                |   * [std]
-//                |   */
-//                |  def today(): LocalDate = {
-//                |    LocalDate.now(ZoneId.of("Z"))
-//                |  }
-//                |  /**
-//                |   * returns current date and time as date-time
-//                |   * [std]
-//                |   */
-//                |  def now(): OffsetDateTime = {
-//                |    OffsetDateTime.now(ZoneId.of("Z"))
-//                |  }
-//                |  /**
-//                |   * rounds the provided value with the given precision
-//                |   * [std]
-//                |   */
-//                |  def round(value: T, precision: Int): T = {
-//                |    value.setScale(precision, BigDecimal.RoundingMode.HALF_UP)
-//                |  }
-//                |  /**
-//                |   * truncates the provided value with the given precision
-//                |   * [std]
-//                |   */
-//                |  def truncate(value: T, precision: Int): T = {
-//                |    value.setScale(precision, BigDecimal.RoundingMode.DOWN)
-//                |  }
-//                |  /**
-//                |   * Tests whether the collection contains the given element
-//                |   * [std]
-//                |   */
-//                |  def contains(x: T, xs: List[T]): Boolean = {
-//                |    // NOTE: Add [T] to the method
-//                |    xs.contains(x)
-//                |  }
-//                |  var s: String = "str"
-//                |  strLen(s)
-//                |}
-//                |""".stripMargin.trim
-//
-//            actual mustBe expected
-//          case Left(t) =>
-//            fail("Should be 'right", t)
-//      }
-//    }
 
-      "compiled expressions" should {
-        "translate to asm" in {
-          val inits = Inits.codeBlocks(Seq(
-            Inits.Keys.NAConstants,
-            Inits.Keys.InlineTest,
-          ))
+    "compiled expressions" should {
+      "translate to asm" in {
+        val inits = Inits.codeBlocks(Seq(
+          Inits.Keys.NAConstants,
+          Inits.Keys.InlineTest,
+        ))
 
-          val t = AsmPrelude.make(typeNames)
+        val t = AsmPrelude.make(typeNames)
 //            :+
 //            Block(
 //              Call(SymbolRef("isDefined_string"), List(StrVal("123")))
 //            )
 
-          val errOrRes = eval(t, inits)
-          errOrRes match
-            case Right(s) =>
-              val actual = s.show()
-              FileOps.saveString(Paths.get("/home/gchudnov/Projects/wasmdemo/test1.ts"), actual)
-              println(actual)
-              val expected =
-                """import { Date} from "date";
-                  |
-                  |
-                  |const NAdate: Date = Date.parse("1900-01-01");
-                  |
-                  |// isDefined
-                  |console.log("\n\n# isDefined\n");
-                  |console.log("isDefined(\"hello world\"): " + isDefined_string("hello world").toString());
-                  |console.log("isDefined(\"!#\"): " + isDefined_string("!#").toString());
-                  |console.log("isDefined(123): " + isDefined_int(123).toString());
-                  |console.log("isDefined(I32.MIN_VALUE): " + isDefined_int(I32.MIN_VALUE).toString());
-                  |console.log("isDefined(123L): " + isDefined_long(123).toString());
-                  |console.log("isDefined(I64.MIN_VALUE): " + isDefined_long(I64.MIN_VALUE).toString());
-                  |console.log("isDefined(123.0f): " + isDefined_float(123.0).toString());
-                  |console.log("isDefined(F32.NaN): " + isDefined_float(F32.NaN).toString());
-                  |console.log("isDefined(123.0): " + isDefined_double(123.0).toString());
-                  |console.log("isDefined(F64.NaN): " + isDefined_double(F64.NaN).toString());
-                  |console.log("isDefined_date(Date.parse(\"2024-05-01\")): " + isDefined_date(Date.parse("2024-05-01")).toString());
-                  |console.log("isDefined_date(Date.parse(\"1900-01-01\")): " + isDefined_date(Date.parse("1900-01-01")).toString());
-                  |console.log("isDefined_datetime(Date.parse(\"2024-05-01T21:30:43+00:00\")): " + isDefined_datetime(Date.parse("2024-05-01T21:30:43+00:00")).toString());
-                  |console.log("isDefined_datetime(Date.parse(\"1900-01-01\")): " + isDefined_datetime(Date.parse("1900-01-01")).toString());
-                  |
-                  |// now
-                  |console.log("\n\n# now\n");
-                  |console.log("now(): " + now().toString());
-                  |
-                  |// today
-                  |console.log("\n\n# today\n");
-                  |console.log("today(): " + today().toString());
-                  |
-                  |// round
-                  |console.log("\n\n# round\n");
-                  |console.log("round(123.456, 2): " + round_double(123.456, 2).toString());
-                  |console.log("round(123.444, 2): " + round_double(123.444, 2).toString());
-                  |console.log("round(123.456f, 2): " + round_float(123.456, 2).toString());
-                  |console.log("round(123.444f, 2): " + round_float(123.444, 2).toString());
-                  |
-                  |// truncate
-                  |console.log("\n\n# truncate\n");
-                  |console.log("truncate(123.456, 2): " + truncate_double(123.456, 2).toString());
-                  |console.log("truncate(123.444, 2): " + truncate_double(123.444, 2).toString());
-                  |console.log("truncate(123.456f, 2): " + truncate_float(123.456, 2).toString());
-                  |console.log("truncate(123.444f, 2): " + truncate_float(123.444, 2).toString());
-                  |
-                  |// coalesce
-                  |console.log("\n\n# coalesce\n");
-                  |console.log("coalesce(\"a\", \"b\"): " + coalesce_string("a", "b").toString());
-                  |console.log("coalesce(\"!#\", \"b\"): " + coalesce_string("!#", "b").toString());
-                  |console.log("coalesce(10, 20): " + coalesce_int(10, 20).toString());
-                  |console.log("coalesce(I32.MIN_VALUE, 20): " + coalesce_int(I32.MIN_VALUE, 20).toString());
-                  |console.log("coalesce(10L, 20L): " + coalesce_long(10, 20).toString());
-                  |console.log("coalesce(I64.MIN_VALUE, 20L): " + coalesce_long(I64.MIN_VALUE, 20).toString());
-                  |console.log("coalesce(10.0f, 20.0f): " + coalesce_float(10.0, 20.0).toString());
-                  |console.log("coalesce(F32.NaN, 20.0f): " + coalesce_float(F32.NaN, 20.0).toString());
-                  |console.log("coalesce(10.0, 20.0): " + coalesce_double(10.0, 20.0).toString());
-                  |console.log("coalesce(F64.NaN, 20.0): " + coalesce_double(F64.NaN, 20.0).toString());
-                  |console.log("coalesce(Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("2024-05-01"), Date.parse("2024-05-02")).toISOString());
-                  |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("1900-01-01"), Date.parse("2024-05-02")).toISOString());
-                  |console.log("coalesce(Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T22:32:44+00:00")).toISOString());
-                  |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("1900-01-01"), Date.parse("2024-05-02T22:32:44+00:00")).toISOString());
-                  |
-                  |// contains
-                  |console.log("\n\n# contains\n");
-                  |console.log("contains(\"a\", [\"a\", \"b\", \"c\"): " + contains_string("a", ["a", "b", "c"]).toString());
-                  |console.log("contains(\"d\", [\"a\", \"b\", \"c\"): " + contains_string("d", ["a", "b", "c"]).toString());
-                  |console.log("contains(1, [1, 2, 3]): " + contains_int(1, [1, 2, 3]).toString());
-                  |console.log("contains(4, [1, 2, 3]): " + contains_int(4, [1, 2, 3]).toString());
-                  |console.log("contains(1L, [1L, 2L, 3L]): " + contains_long(1, [1, 2, 3]).toString());
-                  |console.log("contains(4L, [1L, 2L, 3L]): " + contains_long(4, [1, 2, 3]).toString());
-                  |console.log("contains(1.0f, [1.0f, 2.0f, 3.0f]): " + contains_float(1.0, [1.0, 2.0, 3.0]).toString());
-                  |console.log("contains(4.0f, [1.0f, 2.0f, 3.0f]): " + contains_float(4.0, [1.0, 2.0, 3.0]).toString());
-                  |console.log("contains(1.0, [1.0, 2.0, 3.0]): " + contains_double(1.0, [1.0, 2.0, 3.0]).toString());
-                  |console.log("contains(4.0, [1.0, 2.0, 3.0]): " + contains_double(4.0, [1.0, 2.0, 3.0]).toString());
-                  |console.log("contains(Date.parse(\"2024-05-01\"), [Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\"), Date.parse(\"2024-05-03\")]): " + contains_date(Date.parse("2024-05-01"), [Date.parse("2024-05-01"), Date.parse("2024-05-02"), Date.parse("2024-05-03")]).toString());
-                  |console.log("contains(Date.parse(\"2024-05-04\"), [Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\"), Date.parse(\"2024-05-03\")]): " + contains_date(Date.parse("2024-05-04"), [Date.parse("2024-05-01"), Date.parse("2024-05-02"), Date.parse("2024-05-03")]).toString());
-                  |console.log("contains(Date.parse(\"2024-05-01T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-01T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
-                  |console.log("contains(Date.parse(\"2024-05-04T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-04T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
-                  |
-                  |// fieldOfDateTime
-                  |console.log("\n\n# fieldOfDateTime\n");
-                  |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"days\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "days").toString());
-                  |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"hours\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "hours").toString());
-                  |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"minutes\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "minutes").toString());
-                  |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"seconds\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "seconds").toString());
-                  |
-                  |// setDateTime
-                  |console.log("\n\n# setDateTime\n");
-                  |const dt1 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |setDateTime_datetime(dt1, 5, "days");
-                  |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt1.toISOString());
-                  |
-                  |const dt2 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |setDateTime_datetime(dt2, 12, "hours");
-                  |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt2.toISOString());
-                  |
-                  |const dt3 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |setDateTime_datetime(dt3, 34, "minutes");
-                  |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt3.toISOString());
-                  |
-                  |const dt4 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |setDateTime_datetime(dt4, 56, "seconds");
-                  |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt4.toISOString());
-                  |
-                  |// offsetDateTime
-                  |console.log("\n\n# offsetDateTime\n");
-                  |const dt11 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |offsetDateTime_datetime(dt11, 5, "days");
-                  |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt11.toISOString());
-                  |
-                  |const dt12 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |offsetDateTime_datetime(dt12, 50, "days");
-                  |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 50, \"days\"): " + dt12.toISOString());
-                  |
-                  |const dt13 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |offsetDateTime_datetime(dt13, 12, "hours");
-                  |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt13.toISOString());
-                  |
-                  |const dt14 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |offsetDateTime_datetime(dt14, 34, "minutes");
-                  |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt14.toISOString());
-                  |
-                  |const dt15 = Date.parse("2024-05-01T21:30:43+00:00");
-                  |offsetDateTime_datetime(dt15, 56, "seconds");
-                  |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt15.toISOString());
-                  |
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_string(x: string): bool {
-                  |  return x !== "!#";
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_int(x: i32): bool {
-                  |  return x !== I32.MIN_VALUE;
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_long(x: i64): bool {
-                  |  return x !== I64.MIN_VALUE;
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_float(x: f32): bool {
-                  |  return !F32.isNaN(x);
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_double(x: f64): bool {
-                  |  return !F64.isNaN(x);
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_date(x: Date): bool {
-                  |  return x.getTime() !== NAdate.getTime();
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_datetime(x: Date): bool {
-                  |  return x.getTime() !== NAdate.getTime();
-                  |}
-                  |/**
-                  | * Returns the current date and time
-                  | * [std]
-                  | */
-                  |function now(): Date {
-                  |  return new Date(wasi_Date.now())
-                  |}
-                  |/**
-                  | * Returns today as date
-                  | * [std]
-                  | */
-                  |function today(): Date {
-                  |  let dt = new Date(wasi_Date.now())
-                  |  return Date.parse(dt.toISOString().substring(0, 10))
-                  |}
-                  |/**
-                  | * Rounds the provided value with the given precision
-                  | * [std]
-                  | */
-                  |function round_double(value: f64, precision: i32): f64 {
-                  |  let s: f64 = Math.pow(<f64>10, <f64>precision)
-                  |  return Math.round(value * s) / s
-                  |}
-                  |/**
-                  | * Rounds the provided value with the given precision
-                  | * [std]
-                  | */
-                  |function round_float(value: f32, precision: i32): f32 {
-                  |  let s: f32 = Mathf.pow(<f32>10, <f32>precision)
-                  |  return Mathf.round(value * s) / s
-                  |}
-                  |/**
-                  | * Truncates the provided value with the given precision
-                  | * [std]
-                  | */
-                  |function truncate_double(value: f64, precision: i32): f64 {
-                  |  let s: f64 = Math.pow(<f64>10, <f64>precision)
-                  |  if (value < 0.0) {
-                  |    return Math.ceil(value * s) / s;
-                  |  } else {
-                  |    return Math.floor(value * s) / s;
-                  |  }
-                  |}
-                  |/**
-                  | * Truncates the provided value with the given precision
-                  | * [std]
-                  | */
-                  |function truncate_float(value: f32, precision: i32): f32 {
-                  |  let s: f32 = Mathf.pow(<f32>10, <f32>precision)
-                  |  if (value < 0.0) {
-                  |    return Mathf.ceil(value * s) / s;
-                  |  } else {
-                  |    return Mathf.floor(value * s) / s;
-                  |  }
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_string(x: string, y: string): string {
-                  |  if (x !== "!#") {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_int(x: i32, y: i32): i32 {
-                  |  if (x !== I32.MIN_VALUE) {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_long(x: i64, y: i64): i64 {
-                  |  if (x !== I64.MIN_VALUE) {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_float(x: f32, y: f32): f32 {
-                  |  if (!F32.isNaN(x)) {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_double(x: f64, y: f64): f64 {
-                  |  if (!F64.isNaN(x)) {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_date(x: Date, y: Date): Date {
-                  |  if (x.getTime() !== NAdate.getTime()) {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * returns the first non-null value out of two values that were provided
-                  | * [std]
-                  | */
-                  |function coalesce_datetime(x: Date, y: Date): Date {
-                  |  if (x.getTime() !== NAdate.getTime()) {
-                  |    return x;
-                  |  }
-                  |  return y;
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_string(x: string, xs: Array<string>): bool {
-                  |  return xs.includes(x);
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_int(x: i32, xs: Array<i32>): bool {
-                  |  return xs.includes(x);
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_long(x: i64, xs: Array<i64>): bool {
-                  |  return xs.includes(x);
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_float(x: f32, xs: Array<f32>): bool {
-                  |  return xs.includes(x);
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_double(x: f64, xs: Array<f64>): bool {
-                  |  return xs.includes(x);
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_date(x: Date, xs: Array<Date>): bool {
-                  |  for (let i = 0; i < xs.length; i++) {
-                  |    if (xs[i].getTime() == x.getTime()) {
-                  |      return true;
-                  |    }
-                  |  }
-                  |  return false;
-                  |}
-                  |/**
-                  | * Tests whether the collection contains the given element.
-                  | * [std]
-                  | */
-                  |function contains_datetime(x: Date, xs: Array<Date>): bool {
-                  |  for (let i = 0; i < xs.length; i++) {
-                  |    if (xs[i].getTime() == x.getTime()) {
-                  |      return true;
-                  |    }
-                  |  }
-                  |  return false;
-                  |}
-                  |/**
-                  | * Returns the specified field of date-time as an integer value
-                  | * [std]
-                  | */
-                  |function fieldOfDateTime_datetime(value: Date, unit: string): i32 {
-                  |  if (unit === "days") {
-                  |    return value.getUTCDate();
-                  |  } else if (unit === "hours") {
-                  |    return value.getUTCHours();
-                  |  } else if (unit === "minutes") {
-                  |    return value.getUTCMinutes();
-                  |  } else if (unit === "seconds") {
-                  |    return value.getUTCSeconds();
-                  |  }
-                  |  return -1;
-                  |}
-                  |/**
-                  | * Sets a field of datetime to the specified value
-                  | * [std]
-                  | */
-                  |function setDateTime_datetime(value: Date, offset: i32, unit: string): void {
-                  |  if (unit === "days") {
-                  |    value.setUTCDate(offset);
-                  |  } else if (unit === "hours") {
-                  |    value.setUTCHours(offset);
-                  |  } else if (unit === "minutes") {
-                  |    value.setUTCMinutes(offset);
-                  |  } else if (unit === "seconds") {
-                  |    value.setUTCSeconds(offset);
-                  |  }
-                  |}
-                  |/**
-                  | * Offsets the provided date-time
-                  | * [std]
-                  | */
-                  |function offsetDateTime_datetime(value: Date, offset: i32, unit: string): void {
-                  |  if (unit === "days") {
-                  |    value.setUTCDate(value.getUTCDate() + offset);
-                  |  } else if (unit === "hours") {
-                  |    value.setUTCHours(value.getUTCHours() + offset);
-                  |  } else if (unit === "minutes") {
-                  |    value.setUTCMinutes(value.getUTCMinutes() + offset);
-                  |  } else if (unit === "seconds") {
-                  |    value.setUTCSeconds(value.getUTCSeconds() + offset);
-                  |  }
-                  |}
-                  |""".stripMargin.trim
+        val errOrRes = eval(t, inits)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            FileOps.saveString(Paths.get("/home/gchudnov/Projects/wasmdemo/test1.ts"), actual)
+            println(actual)
+            val expected =
+              """import { Date} from "date";
+                |
+                |
+                |const NAdate: Date = Date.parse("1900-01-01");
+                |
+                |// isDefined
+                |console.log("\n\n# isDefined\n");
+                |console.log("isDefined(\"hello world\"): " + isDefined_string("hello world").toString());
+                |console.log("isDefined(\"!#\"): " + isDefined_string("!#").toString());
+                |console.log("isDefined(123): " + isDefined_int(123).toString());
+                |console.log("isDefined(I32.MIN_VALUE): " + isDefined_int(I32.MIN_VALUE).toString());
+                |console.log("isDefined(123L): " + isDefined_long(123).toString());
+                |console.log("isDefined(I64.MIN_VALUE): " + isDefined_long(I64.MIN_VALUE).toString());
+                |console.log("isDefined(123.0f): " + isDefined_float(123.0).toString());
+                |console.log("isDefined(F32.NaN): " + isDefined_float(F32.NaN).toString());
+                |console.log("isDefined(123.0): " + isDefined_double(123.0).toString());
+                |console.log("isDefined(F64.NaN): " + isDefined_double(F64.NaN).toString());
+                |console.log("isDefined_date(Date.parse(\"2024-05-01\")): " + isDefined_date(Date.parse("2024-05-01")).toString());
+                |console.log("isDefined_date(Date.parse(\"1900-01-01\")): " + isDefined_date(Date.parse("1900-01-01")).toString());
+                |console.log("isDefined_datetime(Date.parse(\"2024-05-01T21:30:43+00:00\")): " + isDefined_datetime(Date.parse("2024-05-01T21:30:43+00:00")).toString());
+                |console.log("isDefined_datetime(Date.parse(\"1900-01-01\")): " + isDefined_datetime(Date.parse("1900-01-01")).toString());
+                |
+                |// now
+                |console.log("\n\n# now\n");
+                |console.log("now(): " + now().toString());
+                |
+                |// today
+                |console.log("\n\n# today\n");
+                |console.log("today(): " + today().toString());
+                |
+                |// round
+                |console.log("\n\n# round\n");
+                |console.log("round(123.456, 2): " + round_double(123.456, 2).toString());
+                |console.log("round(123.444, 2): " + round_double(123.444, 2).toString());
+                |console.log("round(123.456f, 2): " + round_float(123.456, 2).toString());
+                |console.log("round(123.444f, 2): " + round_float(123.444, 2).toString());
+                |
+                |// truncate
+                |console.log("\n\n# truncate\n");
+                |console.log("truncate(123.456, 2): " + truncate_double(123.456, 2).toString());
+                |console.log("truncate(123.444, 2): " + truncate_double(123.444, 2).toString());
+                |console.log("truncate(123.456f, 2): " + truncate_float(123.456, 2).toString());
+                |console.log("truncate(123.444f, 2): " + truncate_float(123.444, 2).toString());
+                |
+                |// coalesce
+                |console.log("\n\n# coalesce\n");
+                |console.log("coalesce(\"a\", \"b\"): " + coalesce_string("a", "b").toString());
+                |console.log("coalesce(\"!#\", \"b\"): " + coalesce_string("!#", "b").toString());
+                |console.log("coalesce(10, 20): " + coalesce_int(10, 20).toString());
+                |console.log("coalesce(I32.MIN_VALUE, 20): " + coalesce_int(I32.MIN_VALUE, 20).toString());
+                |console.log("coalesce(10L, 20L): " + coalesce_long(10, 20).toString());
+                |console.log("coalesce(I64.MIN_VALUE, 20L): " + coalesce_long(I64.MIN_VALUE, 20).toString());
+                |console.log("coalesce(10.0f, 20.0f): " + coalesce_float(10.0, 20.0).toString());
+                |console.log("coalesce(F32.NaN, 20.0f): " + coalesce_float(F32.NaN, 20.0).toString());
+                |console.log("coalesce(10.0, 20.0): " + coalesce_double(10.0, 20.0).toString());
+                |console.log("coalesce(F64.NaN, 20.0): " + coalesce_double(F64.NaN, 20.0).toString());
+                |console.log("coalesce(Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("2024-05-01"), Date.parse("2024-05-02")).toISOString());
+                |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("1900-01-01"), Date.parse("2024-05-02")).toISOString());
+                |console.log("coalesce(Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T22:32:44+00:00")).toISOString());
+                |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("1900-01-01"), Date.parse("2024-05-02T22:32:44+00:00")).toISOString());
+                |
+                |// contains
+                |console.log("\n\n# contains\n");
+                |console.log("contains(\"a\", [\"a\", \"b\", \"c\"): " + contains_string("a", ["a", "b", "c"]).toString());
+                |console.log("contains(\"d\", [\"a\", \"b\", \"c\"): " + contains_string("d", ["a", "b", "c"]).toString());
+                |console.log("contains(1, [1, 2, 3]): " + contains_int(1, [1, 2, 3]).toString());
+                |console.log("contains(4, [1, 2, 3]): " + contains_int(4, [1, 2, 3]).toString());
+                |console.log("contains(1L, [1L, 2L, 3L]): " + contains_long(1, [1, 2, 3]).toString());
+                |console.log("contains(4L, [1L, 2L, 3L]): " + contains_long(4, [1, 2, 3]).toString());
+                |console.log("contains(1.0f, [1.0f, 2.0f, 3.0f]): " + contains_float(1.0, [1.0, 2.0, 3.0]).toString());
+                |console.log("contains(4.0f, [1.0f, 2.0f, 3.0f]): " + contains_float(4.0, [1.0, 2.0, 3.0]).toString());
+                |console.log("contains(1.0, [1.0, 2.0, 3.0]): " + contains_double(1.0, [1.0, 2.0, 3.0]).toString());
+                |console.log("contains(4.0, [1.0, 2.0, 3.0]): " + contains_double(4.0, [1.0, 2.0, 3.0]).toString());
+                |console.log("contains(Date.parse(\"2024-05-01\"), [Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\"), Date.parse(\"2024-05-03\")]): " + contains_date(Date.parse("2024-05-01"), [Date.parse("2024-05-01"), Date.parse("2024-05-02"), Date.parse("2024-05-03")]).toString());
+                |console.log("contains(Date.parse(\"2024-05-04\"), [Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\"), Date.parse(\"2024-05-03\")]): " + contains_date(Date.parse("2024-05-04"), [Date.parse("2024-05-01"), Date.parse("2024-05-02"), Date.parse("2024-05-03")]).toString());
+                |console.log("contains(Date.parse(\"2024-05-01T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-01T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
+                |console.log("contains(Date.parse(\"2024-05-04T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-04T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
+                |
+                |// fieldOfDateTime
+                |console.log("\n\n# fieldOfDateTime\n");
+                |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"days\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "days").toString());
+                |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"hours\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "hours").toString());
+                |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"minutes\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "minutes").toString());
+                |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"seconds\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "seconds").toString());
+                |
+                |// setDateTime
+                |console.log("\n\n# setDateTime\n");
+                |const dt1 = Date.parse("2024-05-01T21:30:43+00:00");
+                |setDateTime_datetime(dt1, 5, "days");
+                |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt1.toISOString());
+                |
+                |const dt2 = Date.parse("2024-05-01T21:30:43+00:00");
+                |setDateTime_datetime(dt2, 12, "hours");
+                |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt2.toISOString());
+                |
+                |const dt3 = Date.parse("2024-05-01T21:30:43+00:00");
+                |setDateTime_datetime(dt3, 34, "minutes");
+                |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt3.toISOString());
+                |
+                |const dt4 = Date.parse("2024-05-01T21:30:43+00:00");
+                |setDateTime_datetime(dt4, 56, "seconds");
+                |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt4.toISOString());
+                |
+                |// offsetDateTime
+                |console.log("\n\n# offsetDateTime\n");
+                |const dt11 = Date.parse("2024-05-01T21:30:43+00:00");
+                |offsetDateTime_datetime(dt11, 5, "days");
+                |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt11.toISOString());
+                |
+                |const dt12 = Date.parse("2024-05-01T21:30:43+00:00");
+                |offsetDateTime_datetime(dt12, 50, "days");
+                |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 50, \"days\"): " + dt12.toISOString());
+                |
+                |const dt13 = Date.parse("2024-05-01T21:30:43+00:00");
+                |offsetDateTime_datetime(dt13, 12, "hours");
+                |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt13.toISOString());
+                |
+                |const dt14 = Date.parse("2024-05-01T21:30:43+00:00");
+                |offsetDateTime_datetime(dt14, 34, "minutes");
+                |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt14.toISOString());
+                |
+                |const dt15 = Date.parse("2024-05-01T21:30:43+00:00");
+                |offsetDateTime_datetime(dt15, 56, "seconds");
+                |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt15.toISOString());
+                |
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_string(x: string): bool {
+                |  return x !== "!#";
+                |}
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_int(x: i32): bool {
+                |  return x !== I32.MIN_VALUE;
+                |}
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_long(x: i64): bool {
+                |  return x !== I64.MIN_VALUE;
+                |}
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_float(x: f32): bool {
+                |  return !F32.isNaN(x);
+                |}
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_double(x: f64): bool {
+                |  return !F64.isNaN(x);
+                |}
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_date(x: Date): bool {
+                |  return x.getTime() !== NAdate.getTime();
+                |}
+                |/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined_datetime(x: Date): bool {
+                |  return x.getTime() !== NAdate.getTime();
+                |}
+                |/**
+                | * Returns the current date and time
+                | * [std]
+                | */
+                |function now(): Date {
+                |  return new Date(wasi_Date.now())
+                |}
+                |/**
+                | * Returns today as date
+                | * [std]
+                | */
+                |function today(): Date {
+                |  let dt = new Date(wasi_Date.now())
+                |  return Date.parse(dt.toISOString().substring(0, 10))
+                |}
+                |/**
+                | * Rounds the provided value with the given precision
+                | * [std]
+                | */
+                |function round_double(value: f64, precision: i32): f64 {
+                |  let s: f64 = Math.pow(<f64>10, <f64>precision)
+                |  return Math.round(value * s) / s
+                |}
+                |/**
+                | * Rounds the provided value with the given precision
+                | * [std]
+                | */
+                |function round_float(value: f32, precision: i32): f32 {
+                |  let s: f32 = Mathf.pow(<f32>10, <f32>precision)
+                |  return Mathf.round(value * s) / s
+                |}
+                |/**
+                | * Truncates the provided value with the given precision
+                | * [std]
+                | */
+                |function truncate_double(value: f64, precision: i32): f64 {
+                |  let s: f64 = Math.pow(<f64>10, <f64>precision)
+                |  if (value < 0.0) {
+                |    return Math.ceil(value * s) / s;
+                |  } else {
+                |    return Math.floor(value * s) / s;
+                |  }
+                |}
+                |/**
+                | * Truncates the provided value with the given precision
+                | * [std]
+                | */
+                |function truncate_float(value: f32, precision: i32): f32 {
+                |  let s: f32 = Mathf.pow(<f32>10, <f32>precision)
+                |  if (value < 0.0) {
+                |    return Mathf.ceil(value * s) / s;
+                |  } else {
+                |    return Mathf.floor(value * s) / s;
+                |  }
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_string(x: string, y: string): string {
+                |  if (x !== "!#") {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_int(x: i32, y: i32): i32 {
+                |  if (x !== I32.MIN_VALUE) {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_long(x: i64, y: i64): i64 {
+                |  if (x !== I64.MIN_VALUE) {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_float(x: f32, y: f32): f32 {
+                |  if (!F32.isNaN(x)) {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_double(x: f64, y: f64): f64 {
+                |  if (!F64.isNaN(x)) {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_date(x: Date, y: Date): Date {
+                |  if (x.getTime() !== NAdate.getTime()) {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * returns the first non-null value out of two values that were provided
+                | * [std]
+                | */
+                |function coalesce_datetime(x: Date, y: Date): Date {
+                |  if (x.getTime() !== NAdate.getTime()) {
+                |    return x;
+                |  }
+                |  return y;
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_string(x: string, xs: Array<string>): bool {
+                |  return xs.includes(x);
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_int(x: i32, xs: Array<i32>): bool {
+                |  return xs.includes(x);
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_long(x: i64, xs: Array<i64>): bool {
+                |  return xs.includes(x);
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_float(x: f32, xs: Array<f32>): bool {
+                |  return xs.includes(x);
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_double(x: f64, xs: Array<f64>): bool {
+                |  return xs.includes(x);
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_date(x: Date, xs: Array<Date>): bool {
+                |  for (let i = 0; i < xs.length; i++) {
+                |    if (xs[i].getTime() == x.getTime()) {
+                |      return true;
+                |    }
+                |  }
+                |  return false;
+                |}
+                |/**
+                | * Tests whether the collection contains the given element.
+                | * [std]
+                | */
+                |function contains_datetime(x: Date, xs: Array<Date>): bool {
+                |  for (let i = 0; i < xs.length; i++) {
+                |    if (xs[i].getTime() == x.getTime()) {
+                |      return true;
+                |    }
+                |  }
+                |  return false;
+                |}
+                |/**
+                | * Returns the specified field of date-time as an integer value
+                | * [std]
+                | */
+                |function fieldOfDateTime_datetime(value: Date, unit: string): i32 {
+                |  if (unit === "days") {
+                |    return value.getUTCDate();
+                |  } else if (unit === "hours") {
+                |    return value.getUTCHours();
+                |  } else if (unit === "minutes") {
+                |    return value.getUTCMinutes();
+                |  } else if (unit === "seconds") {
+                |    return value.getUTCSeconds();
+                |  }
+                |  return -1;
+                |}
+                |/**
+                | * Sets a field of datetime to the specified value
+                | * [std]
+                | */
+                |function setDateTime_datetime(value: Date, offset: i32, unit: string): void {
+                |  if (unit === "days") {
+                |    value.setUTCDate(offset);
+                |  } else if (unit === "hours") {
+                |    value.setUTCHours(offset);
+                |  } else if (unit === "minutes") {
+                |    value.setUTCMinutes(offset);
+                |  } else if (unit === "seconds") {
+                |    value.setUTCSeconds(offset);
+                |  }
+                |}
+                |/**
+                | * Offsets the provided date-time
+                | * [std]
+                | */
+                |function offsetDateTime_datetime(value: Date, offset: i32, unit: string): void {
+                |  if (unit === "days") {
+                |    value.setUTCDate(value.getUTCDate() + offset);
+                |  } else if (unit === "hours") {
+                |    value.setUTCHours(value.getUTCHours() + offset);
+                |  } else if (unit === "minutes") {
+                |    value.setUTCMinutes(value.getUTCMinutes() + offset);
+                |  } else if (unit === "seconds") {
+                |    value.setUTCSeconds(value.getUTCSeconds() + offset);
+                |  }
+                |}
+                |""".stripMargin.trim
 
-              actual mustBe expected
-            case Left(t) =>
-              fail("Should be 'right", t)
-        }
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
       }
+    }
   }
 
   private def eval(ast0: AST, inits: List[(String, Seq[String])] = List.empty[(String, Seq[String])]): Either[Throwable, AsmState] =
