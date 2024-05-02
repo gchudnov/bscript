@@ -13,11 +13,11 @@ import scala.util.control.Exception.allCatch
 private[into] object SetDateTime:
   import DateTime.*
 
-  private val fnName = "setDateTime"
+  private val fnName = "setDateTime_datetime"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
-      TypeRef(typeNames.datetimeType),
+      TypeRef(typeNames.voidType),
       fnName,
       List(
         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
@@ -46,57 +46,21 @@ private[into] object SetDateTime:
 
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""val unitDays: String    = "${unitDays}"
-                            |val unitHours: String   = "${unitHours}"
-                            |val unitMinutes: String = "${unitMinutes}"
-                            |val unitSeconds: String = "${unitSeconds}"
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.withDayOfMonth(${argOffset})
-                            |  case `unitHours` =>
-                            |    ${argValue}.withHour(${argOffset})
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.withMinute(${argOffset})
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.withSecond(${argOffset})
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                         s"""if (${argUnit} === "${unitDays}") {
+                            |  ${argValue}.setUTCDate(${argOffset});
+                            |} else if (${argUnit} === "${unitHours}") {
+                            |  ${argValue}.setUTCHours(${argOffset});
+                            |} else if (${argUnit} === "${unitMinutes}") {
+                            |  ${argValue}.setUTCMinutes(${argOffset});
+                            |} else if (${argUnit} === "${unitSeconds}") {
+                            |  ${argValue}.setUTCSeconds(${argOffset});
                             |}
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""val unitDays: JString    = "${unitDays}"
-                            |val unitHours: JString   = "${unitHours}"
-                            |val unitMinutes: JString = "${unitMinutes}"
-                            |val unitSeconds: JString = "${unitSeconds}"
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.withDayOfMonth(${argOffset})
-                            |  case `unitHours` =>
-                            |    ${argValue}.withHour(${argOffset})
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.withMinute(${argOffset})
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.withSecond(${argOffset})
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
-                            |}
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines, imports = s.imports ++ Set("java.time.OffsetDateTime", "java.lang.String as JString", "java.lang.Integer as JInteger"))
+        yield s.copy(lines = lines, imports = s.imports)
 
       case other =>
         Left(new AsmException(s"Unexpected state passed to ${fnName}: ${other}"))

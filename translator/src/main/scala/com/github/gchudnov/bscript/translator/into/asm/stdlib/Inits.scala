@@ -193,6 +193,26 @@ object Inits:
         |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"hours\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "hours").toString());
         |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"minutes\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "minutes").toString());
         |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"seconds\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "seconds").toString());
+        |
+        |// setDateTime
+        |console.log("\n\n# setDateTime\n");
+        |const dt1 = Date.parse("2024-05-01T21:30:43+00:00");
+        |setDateTime_datetime(dt1, 5, "days");
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt1.toString());
+        |
+        |const dt2 = Date.parse("2024-05-01T21:30:43+00:00");
+        |setDateTime_datetime(dt2, 12, "hours");
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt2.toString());
+        |
+        |const dt3 = Date.parse("2024-05-01T21:30:43+00:00");
+        |setDateTime_datetime(dt3, 34, "minutes");
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt3.toString());
+        |
+        |const dt4 = Date.parse("2024-05-01T21:30:43+00:00");
+        |setDateTime_datetime(dt4, 56, "seconds");
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt4.toString());
+        |
+        |
         |""".stripMargin
     )
   )
