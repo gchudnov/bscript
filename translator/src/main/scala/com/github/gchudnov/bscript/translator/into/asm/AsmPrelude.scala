@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.date.*
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.num.*
 
 private[asm] object AsmPrelude:
 
@@ -27,6 +28,7 @@ private[asm] object AsmPrelude:
       isDefineDateTime.decl,
       Now.decl(typeNames),
       Today.decl(typeNames),
+      RoundF64.decl(typeNames),
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
@@ -37,7 +39,6 @@ private[asm] object AsmPrelude:
       //    ReadFile.decl,
       //    ExactInt.decl,
       //    ExactLong.decl,
-      //    Round.decl,
       //    Truncate.decl,
       //    StrLen.decl,
       //    Append.decl,

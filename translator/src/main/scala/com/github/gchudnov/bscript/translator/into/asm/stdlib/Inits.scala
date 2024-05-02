@@ -13,6 +13,7 @@ object Inits:
     val ToOrderedOffsetDateTime = "toOrderedOffsetDateTime"
     val JFractional             = "JFractional"
     val JBigDecimalOps          = "JBigDecimalOps"
+    val InlineTest              = "InlineTest"
 
   private val m = Map(
     Keys.ToOrderedLocalDate -> split(
@@ -104,6 +105,42 @@ object Inits:
          |    def -(y: JBigDecimal): JBigDecimal =
          |      x.subtract(y)
          |""".stripMargin
+    ),
+    Keys.InlineTest -> split(
+      """
+        |// isDefined
+        |console.log("\n\n# isDefined\n");
+        |console.log("isDefined(\"hello world\"): " + isDefined_string("hello world").toString());
+        |console.log("isDefined(\"!#\"): " + isDefined_string("!#").toString());
+        |console.log("isDefined(123): " + isDefined_int(123).toString());
+        |console.log("isDefined(I32.MIN_VALUE): " + isDefined_int(I32.MIN_VALUE).toString());
+        |console.log("isDefined(123L): " + isDefined_long(123).toString());
+        |console.log("isDefined(I64.MIN_VALUE): " + isDefined_long(I64.MIN_VALUE).toString());
+        |console.log("isDefined(123.0f): " + isDefined_float(123.0).toString());
+        |console.log("isDefined(F32.NaN): " + isDefined_float(F32.NaN).toString());
+        |console.log("isDefined(123.0): " + isDefined_double(123.0).toString());
+        |console.log("isDefined(F64.NaN): " + isDefined_double(F64.NaN).toString());
+        |console.log("isDefined_date(Date.parse(\"2024-05-01\")): " + isDefined_date(Date.parse("2024-05-01")).toString());
+        |console.log("isDefined_date(Date.parse(\"1900-01-01\")): " + isDefined_date(Date.parse("1900-01-01")).toString());
+        |console.log("isDefined_datetime(Date.parse(\"2024-05-01T21:30:43+00:00\")): " + isDefined_datetime(Date.parse("2024-05-01T21:30:43+00:00")).toString());
+        |console.log("isDefined_datetime(Date.parse(\"1900-01-01\")): " + isDefined_datetime(Date.parse("1900-01-01")).toString());
+        |
+        |// now
+        |console.log("\n\n# now\n");
+        |console.log("now(): " + now().toString());
+        |
+        |// today
+        |console.log("\n\n# today\n");
+        |console.log("today(): " + today().toString());
+        |
+        |// round
+        |console.log("\n\n# round\n");
+        |console.log("round(123.456, 2): " + round_double(123.456, 2).toString());
+        |console.log("round(123.444, 2): " + round_double(123.444, 2).toString());
+        |console.log("round(123.456f, 2): " + round_float(123.456, 2).toString());
+        |console.log("round(123.444f, 2): " + round_float(123.444, 2).toString());
+        |
+        |""".stripMargin
     )
   )
 

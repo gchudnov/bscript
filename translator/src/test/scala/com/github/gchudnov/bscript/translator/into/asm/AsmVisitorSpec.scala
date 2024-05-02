@@ -10,9 +10,13 @@ import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
 import com.github.gchudnov.bscript.translator.{TTypeCheckLaws, TestSpec}
 import com.github.gchudnov.bscript.translator.into.asm
 import com.github.gchudnov.bscript.translator.into.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.Inits
 import com.github.gchudnov.bscript.translator.laws.TypeInit
+import com.github.gchudnov.bscript.translator.util.FileOps
 
+import java.nio.file.Paths
 import java.time.{LocalDate, OffsetDateTime}
+import scala.collection.immutable.Seq
 
 final class AsmVisitorSpec extends TestSpec:
 
@@ -1000,89 +1004,25 @@ final class AsmVisitorSpec extends TestSpec:
 //    }
 
       "compiled expressions" should {
-        /**
-         * {{{
-         * // isDefined
-         * console.log("\n\n# isDefined\n");
-         * console.log("isDefined(\"hello world\"): " + isDefined_string("hello world").toString());
-         * console.log("isDefined(\"!#\"): " + isDefined_string("!#").toString());
-         * console.log("isDefined(123): " + isDefined_int(123).toString());
-         * console.log("isDefined(I32.MIN_VALUE): " + isDefined_int(I32.MIN_VALUE).toString());
-         * console.log("isDefined(123L): " + isDefined_long(123).toString());
-         * console.log("isDefined(I64.MIN_VALUE): " + isDefined_long(I64.MIN_VALUE).toString());
-         * console.log("isDefined(123.0f): " + isDefined_float(123.0).toString());
-         * console.log("isDefined(F32.NaN): " + isDefined_float(F32.NaN).toString());
-         * console.log("isDefined(123.0): " + isDefined_double(123.0).toString());
-         * console.log("isDefined(F64.NaN): " + isDefined_double(F64.NaN).toString());
-         * console.log("isDefined_date(Date.parse(\"2024-05-01\")): " + isDefined_date(Date.parse("2024-05-01")).toString());
-         * console.log("isDefined_date(Date.parse(\"1900-01-01\")): " + isDefined_date(Date.parse("1900-01-01")).toString());
-         * console.log("isDefined_datetime(Date.parse(\"2024-05-01T21:30:43+00:00\")): " + isDefined_datetime(Date.parse("2024-05-01T21:30:43+00:00")).toString());
-         * console.log("isDefined_datetime(Date.parse(\"1900-01-01\")): " + isDefined_datetime(Date.parse("1900-01-01")).toString());
-         *
-         * }}}
-         */
         "translate to asm" in {
+          val inits = Inits.codeBlocks(Seq(
+            Inits.Keys.InlineTest,
+          ))
+
           val t = AsmPrelude.make(typeNames)
 //            :+
 //            Block(
 //              Call(SymbolRef("isDefined_string"), List(StrVal("123")))
 //            )
 
-          val errOrRes = eval(t)
+          val errOrRes = eval(t, inits)
           errOrRes match
             case Right(s) =>
               val actual = s.show()
+              FileOps.saveString(Paths.get("/home/gchudnov/Projects/wasmdemo/test1.ts"), actual)
               println(actual)
               val expected =
-                """/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_string(x: string): bool {
-                  |  return x !== "!#";
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_int(x: string): bool {
-                  |  return x !== i32.MIN_VALUE;
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_long(x: string): bool {
-                  |  return x !== i64.MIN_VALUE;
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_float(x: string): bool {
-                  |  return x !== f32.NaN;
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_double(x: string): bool {
-                  |  return x !== f64.NaN;
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_date(x: string): bool {
-                  |  return x !== Date.parse("1900-01-01");
-                  |}
-                  |/**
-                  | * returns true of the provided variable is defined, otherwise false
-                  | * [std]
-                  | */
-                  |function isDefined_datetime(x: string): bool {
-                  |  return x !== Date.parse("1900-01-01");
-                  |}
+                """XX
                   |""".stripMargin.trim
 
               actual mustBe expected
@@ -1092,7 +1032,7 @@ final class AsmVisitorSpec extends TestSpec:
       }
   }
 
-  private def eval(ast0: AST): Either[Throwable, AsmState] =
+  private def eval(ast0: AST, inits: Map[String, Seq[String]] = Map.empty[String, Seq[String]]): Either[Throwable, AsmState] =
     val types = Types.make(typeNames)
     val typeCheckLaws = AsmTypeCheckLaws.make(types)
 
@@ -1104,7 +1044,13 @@ final class AsmVisitorSpec extends TestSpec:
         val laws = AsmTranslateLaws.make(typeNames, typeInit, typeNa, astMeta.meta)
 
         val cVisitor: AsmVisitor = AsmVisitor.make(laws)
-        val cState: AsmState = AsmState.make(astMeta.meta)
+        val cState: AsmState = withInits(AsmState.make(astMeta.meta), inits)
 
         astMeta.ast.visit(cState, cVisitor)
       )
+
+  private def withInits(s: AsmState, inits: Map[String, Seq[String]]): AsmState = {
+    s.copy(
+      inits = s.inits ++ inits
+    )
+  }
