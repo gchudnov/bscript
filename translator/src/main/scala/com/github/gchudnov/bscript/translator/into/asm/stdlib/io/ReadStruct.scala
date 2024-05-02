@@ -121,7 +121,26 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
       case s: AsmState =>
         for lines <- Right(
           split(
-            s"""null;
+            s"""const lines = str.split("\\n");
+               |for (let i = 0; i < lines.length; i++) {
+               |  const line = lines[i];
+               |  if (line.length == 0) {
+               |    // empty line
+               |    continue
+               |  }
+               |
+               |  const kv = line.split("=");
+               |  if (kv.length != 2) {
+               |    // invalid line
+               |    continue;
+               |  }
+               |
+               |  const key = kv[0].trim();
+               |  const value = kv[1].trim();
+               |  ${updateFnName}(d, key, value);
+               |}
+               |
+               |return d;
                |""".stripMargin
           )
         )
