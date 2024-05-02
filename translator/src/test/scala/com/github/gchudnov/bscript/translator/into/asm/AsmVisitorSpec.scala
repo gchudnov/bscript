@@ -871,8 +871,14 @@ final class AsmVisitorSpec extends TestSpec:
           .flatMap(astMeta => {
             val ast1 = astMeta.ast
 
+            // maps function name to the argument index to take the type from for a suffix
             val mapper = Map(
-              "contains" -> 0
+              "contains" -> 0,
+              "isDefined" -> 0,
+              "round" -> 0,
+              "truncate" -> 0,
+              "coalesce" -> 0,
+              "contains" -> 0,
             )
 
             val errOrAst2 = Rewriter.map(ast1, {
