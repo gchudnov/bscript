@@ -86,24 +86,6 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
       Seq(ComAnn("Update the key in data structure with the provided value"), StdAnn())
     )
 
-  private def update(s: Any): Either[Throwable, Any] =
-    s match
-      case s: AsmState =>
-        for lines <- Right(
-          split(
-            s"""${conds}
-               |""".stripMargin
-          )
-        )
-        yield s.copy(
-          lines = lines,
-          imports = s.imports ++ Seq("{ Date} from \"date\";"),
-          inits = s.inits
-        )
-
-      case other =>
-        Left(new AsmException(s"Unexpected state passed to ${updateFnName}: ${other}"))
-
   def readDecl: MethodDecl =
     MethodDecl(
       TypeRef(struct.name),
