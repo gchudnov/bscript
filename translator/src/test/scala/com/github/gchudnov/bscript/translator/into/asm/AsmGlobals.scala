@@ -205,6 +205,18 @@ object AsmGlobals:
         CompiledExpr(callback = contains, retType = TypeRef(typeNames.boolType))
       ),
       Seq(ComAnn("Tests whether the collection contains the given element"), StdAnn())
+    ),
+    MethodDecl(
+      TypeRef(typeNames.boolType),
+      "contains_int",
+      List(
+        ArgDecl(TypeRef(typeNames.i32Type), "x"),
+        ArgDecl(VectorType(DeclType(Var(SymbolRef("x")))), "xs")
+      ),
+      Block(
+        CompiledExpr(callback = contains, retType = TypeRef(typeNames.boolType))
+      ),
+      Seq(ComAnn("Tests whether the collection contains the given element"), StdAnn())
     )
   )
 
@@ -268,7 +280,7 @@ object AsmGlobals:
                |""".stripMargin
           )
         )
-        yield s.copy(lines = lines, imports = s.imports + "<stdlib.h>")
+        yield s.copy(lines = lines, imports = s.imports)
 
       case other =>
         Left(new TranslateException(s"Unexpected state passed to offsetDateTime: ${other}"))

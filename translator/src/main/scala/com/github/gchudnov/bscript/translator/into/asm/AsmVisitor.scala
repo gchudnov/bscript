@@ -420,7 +420,9 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
     yield cs.withLines(lines)
 
   private def replaceNA(t: Type, lines: Seq[String]) =
-    lines.map(line => line.replace("<NULL>", NAforType(t)))
+    if lines.contains("<NULL>") then
+      lines.map(line => line.replace("<NULL>", NAforType(t)))
+    else lines
 
   private def NAforType(t: Type): String =
     laws.initializer.na(t).fold(t => throw t, identity)

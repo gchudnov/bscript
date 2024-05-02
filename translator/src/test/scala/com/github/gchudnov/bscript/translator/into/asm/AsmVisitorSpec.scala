@@ -1,12 +1,13 @@
 package com.github.gchudnov.bscript.translator.into.asm
 
-import com.github.gchudnov.bscript.builder.Builder
+import com.github.gchudnov.bscript.builder.{AstMeta, Builder}
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
 import com.github.gchudnov.bscript.lang.symbols.{SymbolRef, Type, TypeRef, VectorType}
 import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
+import com.github.gchudnov.bscript.rewriter.Rewriter
 import com.github.gchudnov.bscript.translator.{TTypeCheckLaws, TestSpec}
 import com.github.gchudnov.bscript.translator.into.asm
 import com.github.gchudnov.bscript.translator.into.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
@@ -855,6 +856,55 @@ final class AsmVisitorSpec extends TestSpec:
 //      }
     }
 
+    "function calls" should {
+      "be rewritten" in {
+        val t = asm.AsmGlobals.prelude ++ Block(
+          VarDecl(
+            TypeRef(typeNames.boolType),
+            "x",
+            Call(SymbolRef("contains"), List(IntVal(4), Vec(List(IntVal(4)))))
+          ),
+          Var(SymbolRef("x"))
+        )
+
+        val errOrRes = build(t)
+          .flatMap(astMeta => {
+            val ast1 = astMeta.ast
+
+            val mapper = Map(
+              "contains" -> 0
+            )
+
+            val errOrAst2 = Rewriter.map(ast1, {
+              case call: Call =>
+                val id = call.id.name
+                val fnSuffix = mapper.get(id).map(argIdx => call.args(argIdx).evalType.name)
+                fnSuffix.map(suffix => call.copy(id = SymbolRef(s"${id}_${suffix}"))).getOrElse(call)
+              case a =>
+                a
+            })
+
+            errOrAst2
+          })
+          .flatMap(ast2 => eval(ast2))
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """  function contains_int(x: i32, xs: Array<i32>): bool {
+                |    return xs.includes(x);
+                |  }
+                |  let x: bool = contains_int(4, [4])
+                |  x
+                |""".stripMargin.trim
+
+            actual.contains(expected) mustBe true
+          case Left(t) =>
+            fail("Should be 'right", t)
+
+
+      }
+    }
 
     "compiled expressions" should {
       "translate to asm" in {
@@ -873,8 +923,8 @@ final class AsmVisitorSpec extends TestSpec:
         errOrRes match
           case Right(s) =>
             val actual = s.show()
-            FileOps.saveString(Paths.get("/home/gchudnov/Projects/wasmdemo/test1.ts"), actual)
-            println(actual)
+//            FileOps.saveString(Paths.get("/home/gchudnov/Projects/wasmdemo/test1.ts"), actual)
+//            println(actual)
             val expected =
               """import { Date} from "date";
                 |
@@ -1305,6 +1355,14 @@ final class AsmVisitorSpec extends TestSpec:
 
         astMeta.ast.visit(cState, cVisitor)
       )
+
+  private def build(ast0: AST): Either[Throwable, AstMeta] = {
+    val types = Types.make(typeNames)
+    val typeCheckLaws = AsmTypeCheckLaws.make(types)
+
+    Builder
+      .build(ast0, types, typeCheckLaws)
+  }
 
   private def withInits(s: AsmState, inits: List[(String, Seq[String])]): AsmState = {
     s.copy(
