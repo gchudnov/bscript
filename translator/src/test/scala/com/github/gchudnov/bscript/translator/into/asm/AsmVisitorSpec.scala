@@ -857,7 +857,7 @@ final class AsmVisitorSpec extends TestSpec:
     }
 
     "function calls" should {
-      "be rewritten" in {
+      "be rewritten to include data-types" in {
         val t = asm.AsmGlobals.prelude ++ Block(
           VarDecl(
             TypeRef(typeNames.boolType),
