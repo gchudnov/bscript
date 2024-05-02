@@ -19,7 +19,7 @@ private[asm] final class IsDefinedT(typeNames: TypeNames, typeName: String):
       TypeRef(typeNames.boolType),
       fnName,
       List(
-        ArgDecl(TypeRef(typeNames.strType), "x")
+        ArgDecl(TypeRef(typeName), "x")
       ),
       Block(
         CompiledExpr(callback = this.isDefined, retType = TypeRef(typeNames.boolType))
