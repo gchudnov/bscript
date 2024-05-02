@@ -915,8 +915,37 @@ final class AsmVisitorSpec extends TestSpec:
           FieldDecl(TypeRef(typeNames.f64Type), "y"),
         ))
 
-        val errOrRes = eval(t)
-        errOrRes match
+        val errOrRes = build(t)
+          .flatMap(astMeta => {
+            val ast1 = astMeta.ast
+
+            val nameToFind = "D"
+            val errOrStruct = Rewriter.find(ast1, {
+              case s: StructDecl if s.name == nameToFind =>
+                true
+              case _ =>
+                false
+            })
+
+            println(errOrStruct)
+
+            errOrStruct.map {
+              case Some(s) =>
+                val struct = s.asInstanceOf[StructDecl]
+                val fields = struct.fields.map(fd => (fd.name, fd.fType.name))
+                // List((x,int), (y,double))
+                
+
+                println(fields)
+                ???
+              case other =>
+                Block.empty
+            }
+
+            ???
+          })
+
+        eval(t) match
           case Right(s) =>
             val actual = s.show()
             println(actual)
