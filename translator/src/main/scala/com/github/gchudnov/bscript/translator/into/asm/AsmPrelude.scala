@@ -4,6 +4,7 @@ import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.date.*
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.io.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.num.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.vec.*
 
@@ -65,6 +66,7 @@ private[asm] object AsmPrelude:
       FieldOfDateTime.decl(typeNames),
       SetDateTime.decl(typeNames),
       AdjustDateTime.decl(typeNames),
+      ReadStdIo.decl(typeNames)
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
       //    SPrintf.decl,

@@ -16,7 +16,7 @@ import scala.collection.immutable.Seq
  * @param struct structure declaration with resolved types
  * @param typeNames type names
  */
-private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
+final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
 
   private val updateFnName: String =
     s"update_${struct.name}"

@@ -1481,6 +1481,15 @@ final class AsmVisitorSpec extends TestSpec:
                 |    value.setUTCSeconds(value.getUTCSeconds() + offset);
                 |  }
                 |}
+                |/**
+                | * Returns today as date
+                | * [std]
+                | */
+                |function readStdIo(size: i32): string {
+                |  const buffer = new ArrayBuffer(size);
+                |  process.stdin.read(buffer);
+                |  return String.UTF8.decode(buffer);
+                |}
                 |""".stripMargin.trim
 
             actual mustBe expected
