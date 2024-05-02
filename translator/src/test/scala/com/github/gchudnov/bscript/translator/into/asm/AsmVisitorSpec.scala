@@ -98,7 +98,14 @@ final class AsmVisitorSpec extends TestSpec:
           case Right(s) =>
             val actual = s.show()
             val expected =
-              """XXX
+              """class A {
+                |  x: i32
+                |  s: string
+                |}
+                |let a: A = {
+                |  x: I32.MIN_VALUE,
+                |  s: "!#"
+                |}
                 |""".stripMargin.trim
 
             actual mustBe expected

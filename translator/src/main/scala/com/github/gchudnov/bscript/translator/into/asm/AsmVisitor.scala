@@ -253,7 +253,10 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
                   val expr = n.value(sField.name)
                   for
                     sn   <- expr.visit(si, this)
-                    lines = LineOps.joinCR(": ", Seq(sField.name), LineOps.tabTail(1, sn.lines))
+                    fieldLines = sn.lines
+                    keyType <- sn.meta.structTypes(sStruct).map(_(sField.name))
+                    fieldLines1 = replaceNA(keyType, fieldLines)
+                    lines = LineOps.joinCR(": ", Seq(sField.name), LineOps.tabTail(1, fieldLines1))
                   yield sn.withLines(LineOps.joinVAll(",", Seq(si.lines, lines)))
             }
       fields = ms.lines
