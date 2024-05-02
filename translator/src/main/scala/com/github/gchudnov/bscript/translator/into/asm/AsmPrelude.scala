@@ -62,18 +62,13 @@ private[asm] object AsmPrelude:
       containsF64.decl,
       containsDate.decl,
       containsDateTime.decl,
+      FieldOfDateTime.decl(typeNames),
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
-      //    FieldOfDateTime.decl,
       //    SetDateTime.decl,
-      //    Printf.decl,
       //    SPrintf.decl,
       //    ReadFile.decl,
-      //    ExactInt.decl,
-      //    ExactLong.decl,
-      //    StrLen.decl,
-      //    Append.decl,
     )
 
     Module(methodDecls*)

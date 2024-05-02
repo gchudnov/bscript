@@ -44,57 +44,22 @@ private[into] object FieldOfDateTime:
 
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""val unitDays: String    = "${unitDays}"
-                            |val unitHours: String   = "${unitHours}"
-                            |val unitMinutes: String = "${unitMinutes}"
-                            |val unitSeconds: String = "${unitSeconds}"
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.getDayOfMonth
-                            |  case `unitHours` =>
-                            |    ${argValue}.getHour
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.getMinute
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.getSecond
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                         s"""if (${argUnit} === "${unitDays}") {
+                            |  return ${argValue}.getUTCDate();
+                            |} else if (${argUnit} === "${unitHours}") {
+                            |  return ${argValue}.getUTCHours();
+                            |} else if (${argUnit} === "${unitMinutes}") {
+                            |  return ${argValue}.getUTCMinutes();
+                            |} else if (${argUnit} === "${unitSeconds}") {
+                            |  return ${argValue}.getUTCSeconds();
                             |}
+                            |return -1;
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""val unitDays: JString    = "${unitDays}"
-                            |val unitHours: JString   = "${unitHours}"
-                            |val unitMinutes: JString = "${unitMinutes}"
-                            |val unitSeconds: JString = "${unitSeconds}"
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.getDayOfMonth
-                            |  case `unitHours` =>
-                            |    ${argValue}.getHour
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.getMinute
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.getSecond
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
-                            |}
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines, imports = s.imports ++ Set("java.time.OffsetDateTime", "java.lang.String as JString"))
+        yield s.copy(lines = lines, imports = s.imports)
 
       case other =>
         Left(new AsmException(s"Unexpected state passed to ${fnName}: ${other}"))
