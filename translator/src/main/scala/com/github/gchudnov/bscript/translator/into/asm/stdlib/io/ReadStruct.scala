@@ -9,8 +9,6 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 
 import scala.collection.immutable.Seq
 
-// TODO: readStdIn as a string
-
 /**
  * Reads the provided structure from a string
  * @param struct structure declaration with resolved types
