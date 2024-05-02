@@ -64,7 +64,7 @@ lazy val interpreter = (project in file("interpreter"))
   )
 
 lazy val translator = (project in file("translator"))
-  .dependsOn(lang, builder)
+  .dependsOn(lang, builder, rewriter)
   .disablePlugins(AssemblyPlugin)
   .settings(allSettings: _*)
   .settings(Settings.sonatype)
