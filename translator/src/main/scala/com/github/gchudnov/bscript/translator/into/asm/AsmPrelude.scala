@@ -3,6 +3,7 @@ package com.github.gchudnov.bscript.translator.into.asm
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.*
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.date.*
 
 private[asm] object AsmPrelude:
 
@@ -24,13 +25,11 @@ private[asm] object AsmPrelude:
       isDefineF64.decl,
       isDefineDate.decl,
       isDefineDateTime.decl,
-      // Reset
-      // ???
+      Now.decl(typeNames),
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
       //    FieldOfDateTime.decl,
-      //    Now.decl,
       //    SetDateTime.decl,
       //    Today.decl,
       //    Printf.decl,

@@ -12,7 +12,7 @@ import java.time.LocalDate
 import java.time.OffsetDateTime
 import java.time.ZoneId
 
-private[into] object Now:
+private[asm] object Now:
   import DateTime.*
 
   private val fnName = "now"
@@ -34,16 +34,13 @@ private[into] object Now:
   private def now(s: Any): Either[Throwable, Any] =
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3JState =>
         for lines <- Right(
                        split(
-                         s"""OffsetDateTime.now(ZoneId.of("Z"))
+                         s"""return new Date(wasi_Date.now())
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports ++ Seq("java.time.OffsetDateTime", "java.time.ZoneId", "java.time.format.DateTimeFormatter"))
+        yield s.copy(lines = lines, imports = s.imports ++ Seq("{ Date} from \"date\";"))
 
       case other =>
         Left(new AsmException(s"Unexpected state passed to ${fnName}: ${other}"))
