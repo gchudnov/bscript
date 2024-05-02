@@ -1,22 +1,23 @@
 package com.github.gchudnov.bscript.translator.into.asm
 
-import com.github.gchudnov.bscript.builder.{ AstMeta, Builder }
+import com.github.gchudnov.bscript.builder.{AstMeta, Builder}
 import com.github.gchudnov.bscript.builder.state.Meta
 import com.github.gchudnov.bscript.builder.util.Gen
 import com.github.gchudnov.bscript.lang.ast.*
 import com.github.gchudnov.bscript.lang.ast.visitors.*
-import com.github.gchudnov.bscript.lang.symbols.{ SymbolRef, Type, TypeRef, VectorType }
-import com.github.gchudnov.bscript.lang.types.{ TypeNames, Types }
+import com.github.gchudnov.bscript.lang.symbols.{SymbolRef, Type, TypeRef, VectorType}
+import com.github.gchudnov.bscript.lang.types.{TypeNames, Types}
 import com.github.gchudnov.bscript.rewriter.Rewriter
-import com.github.gchudnov.bscript.translator.{ TTypeCheckLaws, TestSpec }
+import com.github.gchudnov.bscript.translator.{TTypeCheckLaws, TestSpec}
 import com.github.gchudnov.bscript.translator.into.asm
-import com.github.gchudnov.bscript.translator.into.asm.laws.{ AsmTranslateLaws, AsmTypeCheckLaws }
+import com.github.gchudnov.bscript.translator.into.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.Inits
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.io.ReadStruct
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 import com.github.gchudnov.bscript.translator.util.FileOps
 
 import java.nio.file.Paths
-import java.time.{ LocalDate, OffsetDateTime }
+import java.time.{LocalDate, OffsetDateTime}
 import scala.collection.immutable.Seq
 
 final class AsmVisitorSpec extends TestSpec:
@@ -920,18 +921,21 @@ final class AsmVisitorSpec extends TestSpec:
       }
 
       "generate reader for a data structure" in {
-        val t = StructDecl(
-          "D",
-          List(
-            FieldDecl(TypeRef(typeNames.i32Type), "x"),
-            FieldDecl(TypeRef(typeNames.f64Type), "y")
-          )
-        )
+        val nameToFind = "D" // struct to look for
+
+        val t = Module(
+          StructDecl(
+            "D",
+            List(
+              FieldDecl(TypeRef(typeNames.i32Type), "x"),
+              FieldDecl(TypeRef(typeNames.f64Type), "y")
+            )
+          ))
 
         val errOrRes = build(t).flatMap { astMeta =>
           val ast1 = astMeta.ast
 
-          val nameToFind = "D" // struct to look for
+          // located struct
           val errOrStruct = Rewriter.find(
             ast1,
             {
@@ -942,32 +946,23 @@ final class AsmVisitorSpec extends TestSpec:
             }
           )
 
-          println(errOrStruct)
-
-          errOrStruct.map {
+          // declaration for updater
+          val errOrDecl: Either[Throwable, AST] = errOrStruct.map {
             case Some(s) =>
               val struct = s.asInstanceOf[StructDecl]
-              val fields = struct.fields.map(fd => (fd.name, fd.fType.name))
-              // List((x,int), (y,double))
 
-              val body = """
-                           |function updateD(key: string, value: string): void {
-                           |}
-                           |
-                           |function readD(): D {
-                           |}
-                           |""".stripMargin.trim
+              val readStruct = ReadStruct(struct, typeNames)
+              val updateDecl = readStruct.updateDecl
 
-              println(fields)
-              ???
+              updateDecl
             case other =>
               Block.empty
           }
 
-          ???
-        }
+          errOrDecl.map(decl => t :+ decl)
+        }.flatMap(t => eval(t))
 
-        eval(t) match
+        errOrRes match
           case Right(s) =>
             val actual = s.show()
             println(actual)
@@ -977,6 +972,7 @@ final class AsmVisitorSpec extends TestSpec:
 
             actual.contains(expected) mustBe true
           case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }
