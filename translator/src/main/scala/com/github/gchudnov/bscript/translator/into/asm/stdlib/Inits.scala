@@ -188,10 +188,11 @@ object Inits:
         |console.log("contains(Date.parse(\"2024-05-04T21:30:43+00:00\"), [Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T21:30:43+00:00\"), Date.parse(\"2024-05-03T21:30:43+00:00\")]): " + contains_datetime(Date.parse("2024-05-04T21:30:43+00:00"), [Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T21:30:43+00:00"), Date.parse("2024-05-03T21:30:43+00:00")]).toString());
         |
         |// fieldOfDateTime
-        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"days\"): " + fieldOfDateTime(Date.parse("2024-05-01T21:30:43+00:00"), "days").toString());
-        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"hours\"): " + fieldOfDateTime(Date.parse("2024-05-01T21:30:43+00:00"), "hours").toString());
-        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"minutes\"): " + fieldOfDateTime(Date.parse("2024-05-01T21:30:43+00:00"), "minutes").toString());
-        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"seconds\"): " + fieldOfDateTime(Date.parse("2024-05-01T21:30:43+00:00"), "seconds").toString());
+        |console.log("\n\n# fieldOfDateTime\n");
+        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"days\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "days").toString());
+        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"hours\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "hours").toString());
+        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"minutes\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "minutes").toString());
+        |console.log("fieldOfDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), \"seconds\"): " + fieldOfDateTime_datetime(Date.parse("2024-05-01T21:30:43+00:00"), "seconds").toString());
         |""".stripMargin
     )
   )

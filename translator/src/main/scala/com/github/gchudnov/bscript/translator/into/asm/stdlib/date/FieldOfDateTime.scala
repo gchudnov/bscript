@@ -13,7 +13,7 @@ import scala.util.control.Exception.allCatch
 private[into] object FieldOfDateTime:
   import DateTime.*
 
-  private val fnName = "fieldOfDateTime"
+  private val fnName = "fieldOfDateTime_datetime"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(

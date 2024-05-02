@@ -63,10 +63,10 @@ private[asm] object AsmPrelude:
       containsDate.decl,
       containsDateTime.decl,
       FieldOfDateTime.decl(typeNames),
+      SetDateTime.decl(typeNames),
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
-      //    SetDateTime.decl,
       //    SPrintf.decl,
       //    ReadFile.decl,
     )
