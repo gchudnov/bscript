@@ -29,6 +29,7 @@ private[asm] object AsmPrelude:
       Now.decl(typeNames),
       Today.decl(typeNames),
       RoundF64.decl(typeNames),
+      RoundF32.decl(typeNames),
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
