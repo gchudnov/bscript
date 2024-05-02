@@ -907,8 +907,6 @@ final class AsmVisitorSpec extends TestSpec:
             actual.contains(expected) mustBe true
           case Left(t) =>
             fail("Should be 'right", t)
-
-
       }
     }
 
