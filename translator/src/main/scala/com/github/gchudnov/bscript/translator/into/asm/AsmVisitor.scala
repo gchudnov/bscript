@@ -169,7 +169,8 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       idLines   = ids.lines
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
-      lines     = joinCR(" = ", rwrapMl(idLines), exprLines)
+      exprLines1 = replaceNA(n.id.evalType, exprLines)
+      lines     = joinCR(" = ", rwrapMl(idLines), exprLines1)
     yield es.withLines(lines)
 
   override def visit(s: AsmState, n: NothingVal): Either[Throwable, AsmState] =
@@ -294,8 +295,9 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       typeName <- laws.typeConverter.toTypeName(n.vType)
       es       <- n.expr.visit(s, this)
       exprLines = es.lines
+      exprLines1 = replaceNA(n.vType, exprLines)
       nameValue = if typeName.nonEmpty then s"let ${name}: ${typeName}" else s"let ${name}"
-      lines     = joinCR(" = ", Vector(nameValue), exprLines)
+      lines     = joinCR(" = ", Vector(nameValue), exprLines1)
     yield es.withLines(lines)
 
   override def visit(s: AsmState, n: FieldDecl): Either[Throwable, AsmState] =
@@ -417,6 +419,12 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
       lines         = callbackLines
     yield cs.withLines(lines)
 
+  private def replaceNA(t: Type, lines: Seq[String]) =
+    lines.map(line => line.replace("<NULL>", NAforType(t)))
+
+  private def NAforType(t: Type): String =
+    laws.initializer.na(t).fold(t => throw t, identity)
+
 private[translator] object AsmVisitor:
 
   def make(laws: TranslateLaws): AsmVisitor =
@@ -466,9 +474,3 @@ private[translator] object AsmVisitor:
 
   private def rwrapMl(lines: Seq[String]): Seq[String] =
     LineOps.wrapIfMultiline("(", ")", lines)
-
-  private def replaceNA(t: Type, lines: Seq[String]) =
-    lines.map(line => line.replace("<NULL>", NAforType(t)))
-  
-  private def NAforType(t: Type): String =
-    ???

@@ -43,15 +43,28 @@ final class AsmVisitorSpec extends TestSpec:
 
     "set to nothing" should {
       "set the the correct NA values" in {
-        val t = Block(
-          VarDecl(TypeRef(typeNames.i32Type), "x", NothingVal()),
+        val t = Module(
+          VarDecl(TypeRef(typeNames.i32Type), "a", NothingVal()),
+          VarDecl(TypeRef(typeNames.i64Type), "b", NothingVal()),
+          VarDecl(TypeRef(typeNames.f32Type), "c", NothingVal()),
+          VarDecl(TypeRef(typeNames.f64Type), "d", NothingVal()),
+          VarDecl(TypeRef(typeNames.dateType), "e", NothingVal()),
+          VarDecl(TypeRef(typeNames.datetimeType), "f", NothingVal()),
         )
 
         val errOrRes = eval(t)
         errOrRes match
           case Right(s) =>
             val actual   = s.show()
-            val expected = "-10"
+            val expected =
+              """
+                |let a: i32 = I32.MIN_VALUE
+                |let b: i64 = I64.MIN_VALUE
+                |let c: f32 = F32.NaN
+                |let d: f64 = F64.NaN
+                |let e: Date = Date.parse("1900-01-01")
+                |let f: Date = Date.parse("1900-01-01")
+                |""".stripMargin.trim
 
             actual mustBe expected
           case Left(t) =>
