@@ -908,6 +908,26 @@ final class AsmVisitorSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      "generate reader for a data structure" in {
+        val t = StructDecl("D", List(
+          FieldDecl(TypeRef(typeNames.i32Type), "x"),
+          FieldDecl(TypeRef(typeNames.f64Type), "y"),
+        ))
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            println(actual)
+            val expected =
+              """XXX
+                |""".stripMargin.trim
+
+            actual.contains(expected) mustBe true
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
 
     "compiled expressions" should {
