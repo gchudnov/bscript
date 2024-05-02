@@ -14,6 +14,7 @@ object Inits:
     val JFractional             = "JFractional"
     val JBigDecimalOps          = "JBigDecimalOps"
     val InlineTest              = "InlineTest"
+    val NAConstants             = "NAConstants"
 
   private val m = Map(
     Keys.ToOrderedLocalDate -> split(
@@ -105,6 +106,11 @@ object Inits:
          |    def -(y: JBigDecimal): JBigDecimal =
          |      x.subtract(y)
          |""".stripMargin
+    ),
+    Keys.NAConstants -> split(
+      """
+        |const x = ? // TODO: not clear if needed
+        |""".stripMargin
     ),
     Keys.InlineTest -> split(
       """
