@@ -1482,7 +1482,7 @@ final class AsmVisitorSpec extends TestSpec:
                 |  }
                 |}
                 |/**
-                | * Returns today as date
+                | * Read a string from stdio
                 | * [std]
                 | */
                 |function readStdIo(size: i32): string {
