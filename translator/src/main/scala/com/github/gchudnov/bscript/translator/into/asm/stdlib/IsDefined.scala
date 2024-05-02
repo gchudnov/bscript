@@ -14,8 +14,8 @@ private[asm] final class IsDefinedI64(typeNames: TypeNames, typeName: String) ex
 private[asm] final class IsDefinedF32(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "F32.isNaN(x)")
 private[asm] final class IsDefinedF64(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "F64.isNaN(x)")
 
-private[asm] final class IsDefinedDat(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "x.getTime() !== Date.parse(\"1900-01-01\").getTime()")
-private[asm] final class IsDefinedDtm(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "x.getTime() !== Date.parse(\"1900-01-01\").getTime()")
+private[asm] final class IsDefinedDat(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "x.getTime() !== NAdate.getTime()")
+private[asm] final class IsDefinedDtm(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "x.getTime() !== NAdate.getTime()")
 
 
 private abstract class IsDefined(typeNames: TypeNames, typeName: String, check: String):

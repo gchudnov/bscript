@@ -30,22 +30,22 @@ trait AsmStateT:
   def meta: Meta
   def lines: Seq[String]
   def imports: Set[String]
-  def inits: Map[String, Seq[String]]
+  def inits: List[(String, Seq[String])]
 
   def show(): String =
     val fmtImports = imports.toSeq.sorted.map(i => s"import $i")
-    val fmtInits   = inits.keys.toList.sorted.map(key => inits(key)).flatten
+    val fmtInits   = inits.flatMap(_._2)
     LineOps.join(LineOps.joinNL(LineOps.joinNL(fmtImports, fmtInits), lines))
 
   def withLines(lines: Seq[String]): AsmState
   def withMeta(meta: Meta): AsmState
   def withImports(imports: Set[String]): AsmState
-  def withInits(inits: Map[String, Seq[String]]): AsmState
+  def withInits(inits: List[(String, Seq[String])]): AsmState
 
 /**
  * A state for C
  */
-final case class AsmState(meta: Meta, lines: Seq[String], imports: Set[String], inits: Map[String, Seq[String]]) extends AsmStateT:
+final case class AsmState(meta: Meta, lines: Seq[String], imports: Set[String], inits: List[(String, Seq[String])]) extends AsmStateT:
 
   override def withLines(lines: Seq[String]): AsmState =
     this.copy(lines = lines)
@@ -56,7 +56,7 @@ final case class AsmState(meta: Meta, lines: Seq[String], imports: Set[String], 
   override def withImports(imports: Set[String]): AsmState =
     this.copy(imports = imports)
 
-  override def withInits(inits: Map[String, Seq[String]]): AsmState =
+  override def withInits(inits: List[(String, Seq[String])]): AsmState =
     this.copy(inits = inits)
 
 /**
@@ -64,4 +64,4 @@ final case class AsmState(meta: Meta, lines: Seq[String], imports: Set[String], 
  */
 object AsmState:
   def make(meta: Meta): AsmState =
-    new AsmState(meta = meta, lines = Vector.empty[String], imports = Set.empty[String], inits = Map.empty[String, Seq[String]])
+    new AsmState(meta = meta, lines = Vector.empty[String], imports = Set.empty[String], inits = List.empty[(String, Seq[String])])

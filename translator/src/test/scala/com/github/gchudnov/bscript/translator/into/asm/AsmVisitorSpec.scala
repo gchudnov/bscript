@@ -1006,6 +1006,7 @@ final class AsmVisitorSpec extends TestSpec:
       "compiled expressions" should {
         "translate to asm" in {
           val inits = Inits.codeBlocks(Seq(
+            Inits.Keys.NAConstants,
             Inits.Keys.InlineTest,
           ))
 
@@ -1032,7 +1033,7 @@ final class AsmVisitorSpec extends TestSpec:
       }
   }
 
-  private def eval(ast0: AST, inits: Map[String, Seq[String]] = Map.empty[String, Seq[String]]): Either[Throwable, AsmState] =
+  private def eval(ast0: AST, inits: List[(String, Seq[String])] = List.empty[(String, Seq[String])]): Either[Throwable, AsmState] =
     val types = Types.make(typeNames)
     val typeCheckLaws = AsmTypeCheckLaws.make(types)
 
@@ -1049,7 +1050,7 @@ final class AsmVisitorSpec extends TestSpec:
         astMeta.ast.visit(cState, cVisitor)
       )
 
-  private def withInits(s: AsmState, inits: Map[String, Seq[String]]): AsmState = {
+  private def withInits(s: AsmState, inits: List[(String, Seq[String])]): AsmState = {
     s.copy(
       inits = s.inits ++ inits
     )

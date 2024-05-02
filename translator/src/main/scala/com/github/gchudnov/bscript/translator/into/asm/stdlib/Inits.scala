@@ -109,7 +109,7 @@ object Inits:
     ),
     Keys.NAConstants -> split(
       """
-        |const x = ? // TODO: not clear if needed
+        |const NAdate: Date = Date.parse("1900-01-01");
         |""".stripMargin
     ),
     Keys.InlineTest -> split(
@@ -150,5 +150,5 @@ object Inits:
     )
   )
 
-  def codeBlocks(keys: Iterable[String]): Map[String, Seq[String]] =
-    keys.map(key => (key, m(key))).toMap
+  def codeBlocks(keys: Iterable[String]): List[(String, Seq[String])] =
+    keys.map(key => (key, m(key))).toList
