@@ -165,10 +165,10 @@ object Inits:
         |console.log("coalesce(F32.NaN, 20.0f): " + coalesce_float(F32.NaN, 20.0).toString());
         |console.log("coalesce(10.0, 20.0): " + coalesce_double(10.0, 20.0).toString());
         |console.log("coalesce(F64.NaN, 20.0): " + coalesce_double(F64.NaN, 20.0).toString());
-        |console.log("coalesce(Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("2024-05-01"), Date.parse("2024-05-02")).toString());
-        |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("1900-01-01"), Date.parse("2024-05-02")).toString());
-        |console.log("coalesce(Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T22:32:44+00:00")).toString());
-        |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("1900-01-01"), Date.parse("2024-05-02T22:32:44+00:00")).toString());
+        |console.log("coalesce(Date.parse(\"2024-05-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("2024-05-01"), Date.parse("2024-05-02")).toISOString());
+        |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02\")): " + coalesce_date(Date.parse("1900-01-01"), Date.parse("2024-05-02")).toISOString());
+        |console.log("coalesce(Date.parse(\"2024-05-01T21:30:43+00:00\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("2024-05-01T21:30:43+00:00"), Date.parse("2024-05-02T22:32:44+00:00")).toISOString());
+        |console.log("coalesce(Date.parse(\"1900-01-01\"), Date.parse(\"2024-05-02T22:32:44+00:00\")): " + coalesce_datetime(Date.parse("1900-01-01"), Date.parse("2024-05-02T22:32:44+00:00")).toISOString());
         |
         |// contains
         |console.log("\n\n# contains\n");
@@ -198,21 +198,41 @@ object Inits:
         |console.log("\n\n# setDateTime\n");
         |const dt1 = Date.parse("2024-05-01T21:30:43+00:00");
         |setDateTime_datetime(dt1, 5, "days");
-        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt1.toString());
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt1.toISOString());
         |
         |const dt2 = Date.parse("2024-05-01T21:30:43+00:00");
         |setDateTime_datetime(dt2, 12, "hours");
-        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt2.toString());
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt2.toISOString());
         |
         |const dt3 = Date.parse("2024-05-01T21:30:43+00:00");
         |setDateTime_datetime(dt3, 34, "minutes");
-        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt3.toString());
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt3.toISOString());
         |
         |const dt4 = Date.parse("2024-05-01T21:30:43+00:00");
         |setDateTime_datetime(dt4, 56, "seconds");
-        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt4.toString());
+        |console.log("setDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt4.toISOString());
         |
+        |// offsetDateTime
+        |console.log("\n\n# offsetDateTime\n");
+        |const dt11 = Date.parse("2024-05-01T21:30:43+00:00");
+        |offsetDateTime_datetime(dt11, 5, "days");
+        |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 5, \"days\"): " + dt11.toISOString());
         |
+        |const dt12 = Date.parse("2024-05-01T21:30:43+00:00");
+        |offsetDateTime_datetime(dt12, 50, "days");
+        |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 50, \"days\"): " + dt12.toISOString());
+        |
+        |const dt13 = Date.parse("2024-05-01T21:30:43+00:00");
+        |offsetDateTime_datetime(dt13, 12, "hours");
+        |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 12, \"hours\"): " + dt13.toISOString());
+        |
+        |const dt14 = Date.parse("2024-05-01T21:30:43+00:00");
+        |offsetDateTime_datetime(dt14, 34, "minutes");
+        |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 34, \"minutes\"): " + dt14.toISOString());
+        |
+        |const dt15 = Date.parse("2024-05-01T21:30:43+00:00");
+        |offsetDateTime_datetime(dt15, 56, "seconds");
+        |console.log("offsetDateTime(Date.parse(\"2024-05-01T21:30:43+00:00\"), 56, \"seconds\"): " + dt15.toISOString());
         |""".stripMargin
     )
   )

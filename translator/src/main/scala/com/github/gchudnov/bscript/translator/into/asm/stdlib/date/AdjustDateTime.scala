@@ -14,11 +14,11 @@ import scala.util.control.Exception.allCatch
 private[into] object AdjustDateTime:
   import DateTime.*
 
-  private val fnName = "offsetDateTime"
+  private val fnName = "offsetDateTime_datetime"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
-      TypeRef(typeNames.datetimeType),
+      TypeRef(typeNames.voidType),
       fnName,
       List(
         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
@@ -26,7 +26,7 @@ private[into] object AdjustDateTime:
         ArgDecl(TypeRef(typeNames.strType), "unit")
       ),
       Block(
-        CompiledExpr(callback = AdjustDateTime.offsetDateTime, retType = TypeRef(typeNames.datetimeType))
+        CompiledExpr(callback = AdjustDateTime.offsetDateTime, retType = TypeRef(typeNames.voidType))
       ),
       Seq(ComAnn("Offsets the provided date-time"), StdAnn())
     )
@@ -59,64 +59,23 @@ private[into] object AdjustDateTime:
 
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""val unitDays: String    = "${unitDays}"
-                            |val unitHours: String   = "${unitHours}"
-                            |val unitMinutes: String = "${unitMinutes}"
-                            |val unitSeconds: String = "${unitSeconds}"
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.plusDays(${argOffset}.toLong)
-                            |  case `unitHours` =>
-                            |    ${argValue}.plusHours(${argOffset}.toLong)
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.plusMinutes(${argOffset}.toLong)
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.plusSeconds(${argOffset}.toLong)
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
-                            |}
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines, imports = s.imports + "java.time.OffsetDateTime")
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""val unitDays: JString    = "${unitDays}"
-                            |val unitHours: JString   = "${unitHours}"
-                            |val unitMinutes: JString = "${unitMinutes}"
-                            |val unitSeconds: JString = "${unitSeconds}"
-                            |
-                            |def toJLong(x: JInteger): JLong =
-                            |  if (x == null) then null else x.longValue()
-                            |
-                            |val longOffset = toJLong(${argOffset})
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.plusDays(longOffset)
-                            |  case `unitHours` =>
-                            |    ${argValue}.plusHours(longOffset)
-                            |  case `unitMinutes` =>
-                            |    ${argValue}.plusMinutes(longOffset)
-                            |  case `unitSeconds` =>
-                            |    ${argValue}.plusSeconds(longOffset)
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected date-time unit passed to ${fnName}: '$${${argUnit}}'")
+                         s"""if (${argUnit} === "${unitDays}") {
+                            |  ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
+                            |} else if (${argUnit} === "${unitHours}") {
+                            |  ${argValue}.setUTCHours(${argValue}.getUTCHours() + ${argOffset});
+                            |} else if (${argUnit} === "${unitMinutes}") {
+                            |  ${argValue}.setUTCMinutes(${argValue}.getUTCMinutes() + ${argOffset});
+                            |} else if (${argUnit} === "${unitSeconds}") {
+                            |  ${argValue}.setUTCSeconds(${argValue}.getUTCSeconds() + ${argOffset});
                             |}
                             |""".stripMargin
                        )
                      )
         yield s.copy(
           lines = lines,
-          imports = s.imports ++ Set("java.time.OffsetDateTime", "java.lang.String as JString", "java.lang.Integer as JInteger", "java.lang.Long as JLong")
+          imports = s.imports
         )
 
       case other =>
