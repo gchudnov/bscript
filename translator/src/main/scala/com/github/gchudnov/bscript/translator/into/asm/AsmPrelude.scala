@@ -31,6 +31,7 @@ private[asm] object AsmPrelude:
       RoundF64.decl(typeNames),
       RoundF32.decl(typeNames),
       TruncateF64.decl(typeNames),
+      TruncateF32.decl(typeNames),
       //    AdjustDateTime.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
