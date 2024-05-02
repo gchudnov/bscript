@@ -77,6 +77,34 @@ final class AsmVisitorSpec extends TestSpec:
           case Left(t) =>
             fail("Should be 'right", t)
       }
+
+      "set to NA on struct definition" in {
+        val t = Module(
+          StructDecl("A", List(FieldDecl(TypeRef(typeNames.i32Type), "x"), FieldDecl(TypeRef(typeNames.strType), "s"))),
+          VarDecl(
+          TypeRef("A"),
+          "a",
+          StructVal(
+            TypeRef("A"),
+            Map(
+              "x" -> NothingVal(),
+              "s" -> NothingVal(),
+            )
+          )
+        ))
+
+        val errOrRes = eval(t)
+        errOrRes match
+          case Right(s) =>
+            val actual = s.show()
+            val expected =
+              """XXX
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            fail("Should be 'right", t)
+      }
     }
 
     "module" should {
