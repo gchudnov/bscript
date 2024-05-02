@@ -19,6 +19,9 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
   private val updateFnName: String =
     s"update_${struct.name}"
 
+  private val readFnName: String =
+    s"read_${struct.name}"
+
   // field name -> field type
   private val fields: Seq[(String, String)] =
     struct.fields.map(fd => (fd.name, fd.fType.name))
@@ -53,6 +56,11 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
     fields
       .map((fName, fType) => s"""if (key === "${fName}") { d.${fName} = ${parsers(fType)}; }""")
       .mkString(" else ")
+//
+//  private val inits: String =
+//    fields
+//      .map((fName, fType) => s"""if (key === "${fName}") { d.${fName} = ${parsers(fType)}; }""")
+//      .mkString(",\n")
 
   def updateDecl: MethodDecl =
     MethodDecl(
@@ -66,7 +74,7 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
       Block(
         CompiledExpr(callback = this.update, retType = TypeRef(typeNames.voidType))
       ),
-      Seq(ComAnn("Returns today as date"), StdAnn())
+      Seq(ComAnn("Update the key in data structure with the provided value"), StdAnn())
     )
 
   private def update(s: Any): Either[Throwable, Any] =
@@ -86,4 +94,44 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
 
       case other =>
         Left(new AsmException(s"Unexpected state passed to ${updateFnName}: ${other}"))
+
+  def readDecl: MethodDecl =
+    MethodDecl(
+      TypeRef(struct.name),
+      readFnName,
+      List(
+        ArgDecl(TypeRef(typeNames.strType), "input"),
+      ),
+      Block(
+        VarDecl(
+          TypeRef(struct.name),
+          "d",
+          StructVal(
+            TypeRef(struct.name),
+            fields.map((fName, _) => fName -> NothingVal()).toMap
+          )
+        ),
+        CompiledExpr(callback = this.read, retType = TypeRef(struct.name))
+      ),
+      Seq(ComAnn("Read the data structure from a string"), StdAnn())
+    )
+
+  private def read(s: Any): Either[Throwable, Any] =
+    s match
+      case s: AsmState =>
+        for lines <- Right(
+          split(
+            s"""null;
+               |""".stripMargin
+          )
+        )
+        yield s.copy(
+          lines = lines,
+          imports = s.imports,
+          inits = s.inits
+        )
+
+      case other =>
+        Left(new AsmException(s"Unexpected state passed to ${updateFnName}: ${other}"))
+
 }

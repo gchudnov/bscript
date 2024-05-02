@@ -920,7 +920,7 @@ final class AsmVisitorSpec extends TestSpec:
             fail("Should be 'right", t)
       }
 
-      "generate reader for a data structure" in {
+      "generate reader for data structure" in {
         val nameToFind = "D" // struct to look for
 
         val t = Module(
@@ -953,10 +953,11 @@ final class AsmVisitorSpec extends TestSpec:
 
               val readStruct = ReadStruct(struct, typeNames)
               val updateDecl = readStruct.updateDecl
+              val readDecl = readStruct.readDecl
 
-              updateDecl
+              Module(updateDecl, readDecl)
             case other =>
-              Block.empty
+              Module.empty
           }
 
           errOrDecl.map(decl => t :+ decl)
