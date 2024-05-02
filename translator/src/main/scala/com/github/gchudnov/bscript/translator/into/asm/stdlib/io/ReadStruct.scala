@@ -54,20 +54,15 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
       typeNames.boolType -> "value == \"true\""
     )
 
-  private val conds: String =
-    fields
-      .map((fName, fType) => s"""if (key === "${fName}") { d.${fName} = ${parsers(fType)}; }""")
-      .mkString(" else ")
-
-  private val conds2: Expr =
+  private val conds: Expr =
     fields
       .foldLeft(None: Option[If]){case (acc, (fName, fType)) => {
-        val if1 = If(Equal(StrVal("key"), StrVal(fName)), Block(CompiledExpr({
+        val if1 = If(Equal(StrVal("key"), StrVal(fName)), Block(Assign(Access(Var(SymbolRef("d")), Var(SymbolRef(fName))), CompiledExpr({
           case s: AsmState =>
             Right(s.copy(lines = Seq(parsers(fType))))
           case other =>
             Left(new AsmException(s"Unexpected state passed to ${updateFnName}: ${other}"))
-        }, TypeRef(typeNames.voidType))))
+        }, TypeRef(fType)))))
         acc match {
           case Some(if0) =>
             Some(if0.copy(else1 = Some(if1)))
@@ -75,11 +70,6 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
             Some(if1)
         }
     }}.getOrElse(Block.empty)
-  //
-//  private val inits: String =
-//    fields
-//      .map((fName, fType) => s"""if (key === "${fName}") { d.${fName} = ${parsers(fType)}; }""")
-//      .mkString(",\n")
 
   def updateDecl: MethodDecl =
     MethodDecl(
@@ -91,8 +81,7 @@ private[asm] final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
         ArgDecl(TypeRef(typeNames.strType), "value")
       ),
       Block(
-        conds2
-//        CompiledExpr(callback = this.update, retType = TypeRef(typeNames.voidType))
+        conds
       ),
       Seq(ComAnn("Update the key in data structure with the provided value"), StdAnn())
     )
