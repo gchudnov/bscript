@@ -55,7 +55,10 @@ private abstract class IsDefined(typeNames: TypeNames, typeName: String, check: 
                |""".stripMargin
           )
         )
-        yield s.copy(lines = lines)
+        yield s.copy(
+          lines = lines,
+          inits = s.inits //++ Inits.codeBlocks(Seq(Inits.Keys.ToOrderedLocalDate, Inits.Keys.ToOrderedOffsetDateTime))
+        )
 
       case other =>
         Left(new AsmException(s"Unexpected state passed to ${fnName}: ${other}"))

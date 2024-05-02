@@ -35,32 +35,17 @@ private[into] object Today:
   private def today(s: Any): Either[Throwable, Any] =
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""LocalDate.now(ZoneId.of("Z"))
+                         s"""let dt = new Date(wasi_Date.now())
+                            |return Date.parse(dt.toISOString().substring(0, 10))
                             |""".stripMargin
                        )
                      )
         yield s.copy(
           lines = lines,
-          imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"),
-          inits = s.inits ++ Inits.codeBlocks(Seq(Inits.Keys.ToOrderedLocalDate, Inits.Keys.ToOrderedOffsetDateTime))
-        )
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""LocalDate.now(ZoneId.of("Z"))
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(
-          lines = lines,
-          imports = s.imports ++ Seq("java.time.LocalDate", "java.time.ZoneId"),
-          inits = s.inits ++ Inits.codeBlocks(Seq(Inits.Keys.ToOrderedLocalDate, Inits.Keys.ToOrderedOffsetDateTime))
+          imports = s.imports ++ Seq("{ Date} from \"date\";"),
+          inits = s.inits //++ Inits.codeBlocks(Seq(Inits.Keys.ToOrderedLocalDate, Inits.Keys.ToOrderedOffsetDateTime))
         )
 
       case other =>
