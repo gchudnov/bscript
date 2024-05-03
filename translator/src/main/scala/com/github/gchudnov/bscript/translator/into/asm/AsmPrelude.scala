@@ -35,6 +35,11 @@ object AsmPrelude:
     val containsDate = ContainsDat(typeNames, typeNames.dateType)
     val containsDateTime = ContainsDtm(typeNames, typeNames.datetimeType)
 
+    val exactIntI32 = ExactInt(typeNames, typeNames.i32Type)
+    val exactIntI64 = ExactInt(typeNames, typeNames.i64Type)
+    val exactIntF32 = ExactInt(typeNames, typeNames.f32Type)
+    val exactIntF64 = ExactInt(typeNames, typeNames.f64Type)
+
     val methodDecls = List(
       isDefinedStr.decl,
       isDefinedI32.decl,
@@ -67,7 +72,11 @@ object AsmPrelude:
       SetDateTime.decl(typeNames),
       AdjustDateTime.decl(typeNames),
       AdjustDate.decl(typeNames),
-      ReadStdIo.decl(typeNames)
+      ReadStdIo.decl(typeNames),
+      exactIntI32.decl,
+      exactIntI64.decl,
+      exactIntF32.decl,
+      exactIntF64.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
       //    SPrintf.decl,
