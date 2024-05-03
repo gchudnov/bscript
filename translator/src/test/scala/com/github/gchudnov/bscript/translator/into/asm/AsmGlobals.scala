@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import java.time.{LocalDate, OffsetDateTime, ZoneId}
 import scala.util.control.Exception.allCatch
 
-object AsmGlobals:
+private[asm] object AsmGlobals:
 
   val typeNames: TypeNames = new TypeNames:
     override def autoType: String     = "auto"

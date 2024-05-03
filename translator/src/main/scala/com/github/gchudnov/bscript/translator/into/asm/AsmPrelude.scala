@@ -8,7 +8,7 @@ import com.github.gchudnov.bscript.translator.into.asm.stdlib.io.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.num.*
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.vec.*
 
-private[asm] object AsmPrelude:
+object AsmPrelude:
 
   def make(typeNames: TypeNames): Module =
     val isDefinedStr = IsDefinedStr(typeNames, typeNames.strType)

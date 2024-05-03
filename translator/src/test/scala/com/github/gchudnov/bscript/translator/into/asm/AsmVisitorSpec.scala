@@ -22,7 +22,7 @@ import scala.collection.immutable.Seq
 
 final class AsmVisitorSpec extends TestSpec:
 
-  private val typeNames: TypeNames = asm.AsmGlobals.typeNames
+  private val typeNames: TypeNames = AsmGlobals.typeNames
 
   "AsmVisitor" when {
 
