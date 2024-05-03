@@ -8,6 +8,9 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
+// TODO: not implemented, most likely we do not need it, but instead convert Bools to Ints at the beginning
+private[asm] final class CoalesceBool(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, s"x")
+
 private[asm] final class CoalesceStr(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, s"x !== \"!#\"")
 
 private[asm] final class CoalesceI32(typeNames: TypeNames, typeName: String) extends Coalesce(typeNames, typeName, s"x !== I32.MIN_VALUE")

@@ -17,6 +17,9 @@ private[asm] final class IsDefinedF64(typeNames: TypeNames, typeName: String) ex
 private[asm] final class IsDefinedDat(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "x.getTime() !== NAdate.getTime()")
 private[asm] final class IsDefinedDtm(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, "x.getTime() !== NAdate.getTime()")
 
+// TODO: for Boolean-type the undefined is not implemented at the moment, so we always consider it as defined 
+private[asm] final class IsDefinedBool(typeNames: TypeNames, typeName: String) extends IsDefined(typeNames, typeName, s"true")
+
 
 private abstract class IsDefined(typeNames: TypeNames, typeName: String, check: String):
 
