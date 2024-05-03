@@ -9,9 +9,12 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
-private[into] object RoundF64:
+private[into] object RoundF64 extends RoundF64Dec("double")
+private[into] object RoundDec extends RoundF64Dec("dec")
 
-  private val fnName = "round_double"
+private abstract class RoundF64Dec(typeName: String):
+
+  private val fnName = s"round_${typeName}"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
@@ -22,7 +25,7 @@ private[into] object RoundF64:
         ArgDecl(TypeRef(typeNames.i32Type), "precision")
       ),
       Block(
-        CompiledExpr(callback = RoundF64.round, retType = DeclType(Var(SymbolRef("value"))))
+        CompiledExpr(callback = this.round, retType = DeclType(Var(SymbolRef("value"))))
       ),
       Seq(ComAnn("Rounds the provided value with the given precision"), StdAnn())
     )

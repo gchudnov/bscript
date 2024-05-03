@@ -9,9 +9,13 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
-private[into] object TruncateF64:
+private[into] object TruncateF64 extends TruncateF64Dec("double")
 
-  private val fnName = "truncate_double"
+private[into] object TruncateDec extends TruncateF64Dec("dec")
+
+private abstract class TruncateF64Dec(typeName: String):
+
+  private val fnName = s"truncate_${typeName}"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
@@ -22,7 +26,7 @@ private[into] object TruncateF64:
         ArgDecl(TypeRef(typeNames.i32Type), "precision")
       ),
       Block(
-        CompiledExpr(callback = TruncateF64.truncate, retType = DeclType(Var(SymbolRef("value"))))
+        CompiledExpr(callback = this.truncate, retType = DeclType(Var(SymbolRef("value"))))
       ),
       Seq(ComAnn("Truncates the provided value with the given precision"), StdAnn())
     )
