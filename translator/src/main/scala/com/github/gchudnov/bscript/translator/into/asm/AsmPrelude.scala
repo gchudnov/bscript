@@ -66,6 +66,7 @@ object AsmPrelude:
       FieldOfDateTime.decl(typeNames),
       SetDateTime.decl(typeNames),
       AdjustDateTime.decl(typeNames),
+      AdjustDate.decl(typeNames),
       ReadStdIo.decl(typeNames)
       //    AdjustDate.decl,
       //    BetweenTemp.decl,

@@ -18,7 +18,7 @@ private[into] object AdjustDateTime:
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
-      TypeRef(typeNames.voidType),
+      TypeRef(typeNames.datetimeType),
       fnName,
       List(
         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
@@ -26,7 +26,7 @@ private[into] object AdjustDateTime:
         ArgDecl(TypeRef(typeNames.strType), "unit")
       ),
       Block(
-        CompiledExpr(callback = AdjustDateTime.offsetDateTime, retType = TypeRef(typeNames.voidType))
+        CompiledExpr(callback = AdjustDateTime.offsetDateTime, retType = TypeRef(typeNames.datetimeType))
       ),
       Seq(ComAnn("Offsets the provided date-time"), StdAnn())
     )
@@ -45,30 +45,18 @@ private[into] object AdjustDateTime:
     val argOffset = "offset" // integer offset
     val argUnit   = "unit"   // string unit of the offset (DAYS | HOURS | MINUTES | SECONDS)
 
-    def dateTimePlusDays(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
-      allCatch.either(x.plusDays(offset.toLong))
-
-    def dateTimePlusHours(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
-      allCatch.either(x.plusHours(offset.toLong))
-
-    def dateTimePlusMinutes(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
-      allCatch.either(x.plusMinutes(offset.toLong))
-
-    def dateTimePlusSeconds(x: OffsetDateTime, offset: Int): Either[Throwable, OffsetDateTime] =
-      allCatch.either(x.plusSeconds(offset.toLong))
-
     s match
       case s: AsmState =>
         for lines <- Right(
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
-                            |  ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
+                            |  return ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
                             |} else if (${argUnit} === "${unitHours}") {
-                            |  ${argValue}.setUTCHours(${argValue}.getUTCHours() + ${argOffset});
+                            |  return ${argValue}.setUTCHours(${argValue}.getUTCHours() + ${argOffset});
                             |} else if (${argUnit} === "${unitMinutes}") {
-                            |  ${argValue}.setUTCMinutes(${argValue}.getUTCMinutes() + ${argOffset});
+                            |  return ${argValue}.setUTCMinutes(${argValue}.getUTCMinutes() + ${argOffset});
                             |} else if (${argUnit} === "${unitSeconds}") {
-                            |  ${argValue}.setUTCSeconds(${argValue}.getUTCSeconds() + ${argOffset});
+                            |  return ${argValue}.setUTCSeconds(${argValue}.getUTCSeconds() + ${argOffset});
                             |}
                             |""".stripMargin
                        )

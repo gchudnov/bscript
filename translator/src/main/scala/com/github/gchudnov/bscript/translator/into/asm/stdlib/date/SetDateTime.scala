@@ -17,7 +17,7 @@ private[into] object SetDateTime:
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
-      TypeRef(typeNames.voidType),
+      TypeRef(typeNames.datetimeType),
       fnName,
       List(
         ArgDecl(TypeRef(typeNames.datetimeType), "value"),
@@ -49,13 +49,13 @@ private[into] object SetDateTime:
         for lines <- Right(
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
-                            |  ${argValue}.setUTCDate(${argOffset});
+                            |  return ${argValue}.setUTCDate(${argOffset});
                             |} else if (${argUnit} === "${unitHours}") {
-                            |  ${argValue}.setUTCHours(${argOffset});
+                            |  return ${argValue}.setUTCHours(${argOffset});
                             |} else if (${argUnit} === "${unitMinutes}") {
-                            |  ${argValue}.setUTCMinutes(${argOffset});
+                            |  return ${argValue}.setUTCMinutes(${argOffset});
                             |} else if (${argUnit} === "${unitSeconds}") {
-                            |  ${argValue}.setUTCSeconds(${argOffset});
+                            |  return ${argValue}.setUTCSeconds(${argOffset});
                             |}
                             |""".stripMargin
                        )

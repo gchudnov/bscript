@@ -14,7 +14,7 @@ import scala.util.control.Exception.allCatch
 private[into] object AdjustDate:
   import DateTime.*
 
-  private val fnName = "offsetDate"
+  private val fnName = "offsetDate_date"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
@@ -50,44 +50,15 @@ private[into] object AdjustDate:
 
     s match
       case s: AsmState =>
-        Right(s) // TODO: change later
-
-      case s: Scala3State =>
         for lines <- Right(
                        split(
-                         s"""val unitDays: String    = "${unitDays}"
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.plusDays(${argOffset}.toLong)
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: '$${${argUnit}}'")
+                         s"""if (${argUnit} === "${unitDays}") {
+                            |  return ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
                             |}
                             |""".stripMargin
                        )
                      )
-        yield s.copy(lines = lines, imports = s.imports + "java.time.LocalDate")
-
-      case s: Scala3JState =>
-        for lines <- Right(
-                       split(
-                         s"""val unitDays: JString    = "${unitDays}"
-                            |
-                            |def toJLong(x: JInteger): JLong =
-                            |  if (x == null) then null else x.longValue()
-                            |
-                            |val longOffset = toJLong(${argOffset})
-                            |
-                            |${argUnit}.trim.toLowerCase match {
-                            |  case `unitDays` =>
-                            |    ${argValue}.plusDays(longOffset)
-                            |  case _ =>
-                            |    throw new RuntimeException(s"Unexpected unit of time was passed to ${fnName}: '$${${argUnit}}'")
-                            |}
-                            |""".stripMargin
-                       )
-                     )
-        yield s.copy(lines = lines, imports = s.imports ++ Set("java.time.LocalDate", "java.lang.String as JString", "java.lang.Integer as JInteger", "java.lang.Long as JLong"))
+        yield s.copy(lines = lines, imports = s.imports)
 
       case other =>
         Left(new AsmException(s"Unexpected state passed to ${fnName}: ${other}"))
