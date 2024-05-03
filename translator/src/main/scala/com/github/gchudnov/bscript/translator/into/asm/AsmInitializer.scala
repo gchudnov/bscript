@@ -51,6 +51,8 @@ final class AsmInitializer(typeNames: TypeNames, typeInit: TypeInit, typeNA: Typ
     case other          => Left(new TranslateException(s"Cannot initialize BuiltInType '${other}'"))
 
   private def naBuiltInType(bs: SBuiltInType): Either[Throwable, String] = bs.name match
+    case `voidTypeName` => Right(typeNA.voidType)
+    case `boolTypeName`  => Right(typeNA.boolType)
     case `i32TypeName`  => Right(typeNA.i32Type)
     case `i64TypeName`  => Right(typeNA.i64Type)
     case `f32TypeName`  => Right(typeNA.f32Type)
