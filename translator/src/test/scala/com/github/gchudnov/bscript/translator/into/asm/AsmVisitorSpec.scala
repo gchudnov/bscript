@@ -12,7 +12,7 @@ import com.github.gchudnov.bscript.translator.{TTypeCheckLaws, TestSpec}
 import com.github.gchudnov.bscript.translator.into.asm
 import com.github.gchudnov.bscript.translator.into.asm.laws.{AsmTranslateLaws, AsmTypeCheckLaws}
 import com.github.gchudnov.bscript.translator.into.asm.stdlib.Inits
-import com.github.gchudnov.bscript.translator.into.asm.stdlib.io.ReadStruct
+import com.github.gchudnov.bscript.translator.into.asm.stdlib.io.{ReadStruct, WriteStruct}
 import com.github.gchudnov.bscript.translator.laws.TypeInit
 import com.github.gchudnov.bscript.translator.util.FileOps
 
@@ -902,7 +902,7 @@ final class AsmVisitorSpec extends TestSpec:
 
     "function calls" should {
       "be rewritten to include data-types" in {
-        val t = asm.AsmGlobals.prelude ++ Block(
+        val t = AsmGlobals.prelude ++ Block(
           VarDecl(
             TypeRef(typeNames.boolType),
             "x",
@@ -981,7 +981,7 @@ final class AsmVisitorSpec extends TestSpec:
             }
           )
 
-          // declaration for updater
+          // declaration for updater & reader
           val errOrDecl: Either[Throwable, AST] = errOrStruct.map {
             case Some(s) =>
               val struct = s.asInstanceOf[StructDecl]
@@ -1007,7 +1007,7 @@ final class AsmVisitorSpec extends TestSpec:
                 |  y: f64
                 |}
                 |/**
-                | * Update the key in data structure with the provided value
+                | * Update the key in D data structure with the provided value
                 | * [std]
                 | */
                 |function update_D(d: D, key: string, value: string): void {
@@ -1018,7 +1018,7 @@ final class AsmVisitorSpec extends TestSpec:
                 |  }
                 |}
                 |/**
-                | * Read the data structure from a string
+                | * Read the D data structure from a string
                 | * [std]
                 | */
                 |function read_D(input: string): D {
@@ -1051,6 +1051,87 @@ final class AsmVisitorSpec extends TestSpec:
 
             actual mustBe expected
           case Left(t) =>
+            fail("Should be 'right", t)
+      }
+
+      "generate writer for a data structure" in {
+        val nameToFind = "D" // struct to look for
+
+        val t = Module(isDefinedStub) ++ Module(
+          StructDecl(
+            "D",
+            List(
+              FieldDecl(TypeRef(typeNames.i32Type), "x"),
+              FieldDecl(TypeRef(typeNames.f64Type), "y")
+            )
+          ))
+
+        val errOrRes = build(t).flatMap { astMeta =>
+          val ast1 = astMeta.ast
+
+          // located struct
+          val errOrStruct = Rewriter.find(
+            ast1,
+            {
+              case s: StructDecl if s.name == nameToFind =>
+                true
+              case _ =>
+                false
+            }
+          )
+
+          // declaration for writer
+          val errOrDecl: Either[Throwable, AST] = errOrStruct.map {
+            case Some(s) =>
+              val struct = s.asInstanceOf[StructDecl]
+
+              val writeStruct = WriteStruct(struct, typeNames)
+              val writeDecl = writeStruct.decl
+
+              Module(writeDecl)
+            case other =>
+              Module.empty
+          }
+
+          errOrDecl.map(decl => t :+ decl)
+        }.flatMap(t => eval(t))
+
+        errOrRes match
+          case Right(s) =>
+            val actual = trimTrailing(s.show())
+            val expected =
+              """/**
+                | * returns true of the provided variable is defined, otherwise false
+                | * [std]
+                | */
+                |function isDefined(x: auto): bool {
+                |  return true;
+                |}
+                |class D {
+                |  x: i32
+                |  y: f64
+                |}
+                |/**
+                | * Saves the structure D to a string
+                | * [std]
+                | */
+                |function write_D(d: D): string {
+                |  let res: string = ""
+                |  if (isDefined(d.x)) {
+                |    res = (res + d.x.toString())
+                |    res = (res + "\n")
+                |  }
+                |  if (isDefined(d.y)) {
+                |    res = (res + d.y.toString())
+                |    res = (res + "\n")
+                |  }
+                |  return res;
+                |}
+                |""".stripMargin.trim
+
+            actual mustBe expected
+          case Left(t) =>
+            println(t)
             fail("Should be 'right", t)
       }
     }
@@ -1530,3 +1611,15 @@ final class AsmVisitorSpec extends TestSpec:
 
   private def trimTrailing(lines: String): String =
     lines.split("\n").map(_.stripTrailing()).mkString("\n").trim
+
+  private def isDefinedStub: MethodDecl = {
+    MethodDecl(
+      TypeRef(typeNames.boolType),
+      "isDefined",
+      List(
+        ArgDecl(TypeRef(typeNames.autoType), "x")
+      ),
+      Block(Return(BoolVal(true))),
+      Seq(ComAnn("returns true of the provided variable is defined, otherwise false"), StdAnn())
+    )
+  }

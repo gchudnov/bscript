@@ -81,7 +81,7 @@ final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
       Block(
         conds
       ),
-      Seq(ComAnn("Update the key in data structure with the provided value"), StdAnn())
+      Seq(ComAnn(s"Update the key in ${struct.name} data structure with the provided value"), StdAnn())
     )
 
   def readDecl: MethodDecl =
@@ -102,7 +102,7 @@ final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
         ),
         CompiledExpr(callback = this.read, retType = TypeRef(struct.name))
       ),
-      Seq(ComAnn("Read the data structure from a string"), StdAnn())
+      Seq(ComAnn(s"Read the ${struct.name} data structure from a string"), StdAnn())
     )
 
   private def read(s: Any): Either[Throwable, Any] =
