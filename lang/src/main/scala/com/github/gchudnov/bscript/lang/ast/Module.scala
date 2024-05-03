@@ -37,9 +37,7 @@ object Module:
 
   extension (block: Module)
     def ++(other: Module): Module =
-      if block.evalType == other.evalType && block.promoteToType == other.promoteToType && block.symbol == other.symbol then
-        Module(statements = block.statements ++ other.statements, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
-      else sys.error("Cannot join Modules with different evalType and promoteToType values")
+      Module(statements = block.statements ++ other.statements, symbol = other.symbol, evalType = other.evalType, promoteToType = other.promoteToType)
 
     def :+(other: AST): Module =
       other match

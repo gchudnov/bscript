@@ -42,9 +42,7 @@ object Block:
 
   extension (block: Block)
     def ++(other: Block): Block =
-      if block.evalType == other.evalType && block.promoteToType == other.promoteToType && block.symbol == other.symbol then
-        Block(statements = block.statements ++ other.statements, symbol = block.symbol, evalType = block.evalType, promoteToType = block.promoteToType)
-      else sys.error("Cannot join Blocks with different evalType and promoteToType values")
+      Block(statements = block.statements ++ other.statements, symbol = other.symbol, evalType = other.evalType, promoteToType = other.promoteToType)
 
     def :+(other: AST): Block =
       other match
