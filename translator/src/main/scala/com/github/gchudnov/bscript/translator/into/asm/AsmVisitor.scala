@@ -17,7 +17,7 @@ import scala.collection.immutable.Seq
  *
  * NOTE: not all ASTs can be convertible to Scala. Some of them can produce ill-formed code.
  */
-private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisitor[AsmState, AsmState]:
+final class AsmVisitor(laws: TranslateLaws) extends TreeVisitor[AsmState, AsmState]:
   import AsmVisitor.*
   import Casting.*
 
@@ -430,7 +430,7 @@ private[translator] final class AsmVisitor(laws: TranslateLaws) extends TreeVisi
   private def NAforType(t: Type): String =
     laws.initializer.na(t).fold(t => throw t, identity)
 
-private[translator] object AsmVisitor:
+object AsmVisitor:
 
   def make(laws: TranslateLaws): AsmVisitor =
     new AsmVisitor(laws)

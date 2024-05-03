@@ -10,7 +10,7 @@ import com.github.gchudnov.bscript.translator.laws.{Initializer, TypeConverter, 
 /**
  * Laws used to translate AST to Scala.
  */
-private[into] object AsmTranslateLaws:
+object AsmTranslateLaws:
   def make(typeNames: TypeNames, typeInit: TypeInit, typeNA: TypeInit, meta: Meta): TranslateLaws = new TranslateLaws:
     override def typeConverter: TypeConverter = new AsmTypeConverter(typeNames)
     override def initializer: Initializer     = new AsmInitializer(typeNames, typeInit, typeNA, meta)
