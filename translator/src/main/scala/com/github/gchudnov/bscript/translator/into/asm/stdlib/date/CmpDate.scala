@@ -16,7 +16,7 @@ import scala.util.control.Exception.allCatch
  * Date Comparison
  * @param op operator to use: < >, ...
  */
-final class CmpDate(typeNames: TypeNames, op: String):
+final class CmpDate(typeNames: TypeNames, lhsType: String, rhsType: String, op: String):
   import DateTime.*
 
   private val suffixes: Map[String, String] =
@@ -25,15 +25,15 @@ final class CmpDate(typeNames: TypeNames, op: String):
       ">" -> "gt"
     )
 
-  private val fnName = s"cmp_date_${suffixes(op)}"
+  private val fnName = s"cmp_${lhsType}_${suffixes(op)}_${rhsType}"
 
   def decl: MethodDecl =
     MethodDecl(
       TypeRef(typeNames.boolType),
       fnName,
       List(
-        ArgDecl(TypeRef(typeNames.dateType), "lhs"),
-        ArgDecl(TypeRef(typeNames.dateType), "rhs"),
+        ArgDecl(TypeRef(lhsType), "lhs"),
+        ArgDecl(TypeRef(rhsType), "rhs"),
       ),
       Block(
         CompiledExpr(callback = this.cmpDate, retType = TypeRef(typeNames.boolType))

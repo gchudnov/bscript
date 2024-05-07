@@ -50,8 +50,10 @@ object AsmPrelude:
     val roundF64 = RoundT(typeNames, typeNames.f64Type)
     val roundF32 = RoundF(typeNames, typeNames.f32Type)
 
-    val cmpDateLt = CmpDate(typeNames, "<")
-    val cmpDateGt = CmpDate(typeNames, ">")
+    val cmpDateLt = CmpDate(typeNames, typeNames.dateType, typeNames.dateType, "<")
+    val cmpDateGt = CmpDate(typeNames, typeNames.dateType, typeNames.dateType, ">")
+    val cmpDateTime_DateGt = CmpDate(typeNames, typeNames.datetimeType, typeNames.dateType, ">")
+    val cmpDateTime_DateTimeGt = CmpDate(typeNames, typeNames.datetimeType, typeNames.datetimeType, ">")
 
     val methodDecls = List(
       isDefinedBool.decl,
@@ -100,6 +102,8 @@ object AsmPrelude:
       exactIntDec.decl,
       cmpDateLt.decl,
       cmpDateGt.decl,
+      cmpDateTime_DateGt.decl,
+      cmpDateTime_DateTimeGt.decl,
       //    AdjustDate.decl,
       //    BetweenTemp.decl,
       //    SPrintf.decl,
