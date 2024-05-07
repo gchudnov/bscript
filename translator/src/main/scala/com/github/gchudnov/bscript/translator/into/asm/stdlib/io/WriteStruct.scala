@@ -37,6 +37,7 @@ final class WriteStruct(struct: StructDecl, typeNames: TypeNames) {
   private val writes: Seq[Expr] =
     fields.map((fName, fType) => {
       If(Call(SymbolRef("isDefined"), List(Access(Var(SymbolRef("d")), Var(SymbolRef(fName))))), Block(
+        Assign(Var(SymbolRef("res")), Add(Var(SymbolRef("res")), StrVal(fName + "="))),
         Assign(Var(SymbolRef("res")), Add(Var(SymbolRef("res")), CompiledExpr({
           case s: AsmState =>
             Right(s.copy(lines = Seq(asStrings(fType).format(s"d.${fName}"))))
@@ -46,21 +47,6 @@ final class WriteStruct(struct: StructDecl, typeNames: TypeNames) {
         Assign(Var(SymbolRef("res")), Add(Var(SymbolRef("res")), StrVal("\\n")))
       ))
     })
-//    fields
-//      .foldLeft(None: Option[If]){case (acc, (fName, fType)) => {
-//        val if1 = If(Equal(StrVal("key"), StrVal(fName)), Block(Assign(Access(Var(SymbolRef("d")), Var(SymbolRef(fName))), CompiledExpr({
-//          case s: AsmState =>
-//            Right(s.copy(lines = Seq(parsers(fType))))
-//          case other =>
-//            Left(new AsmException(s"Unexpected state passed to ${updateFnName}: ${other}"))
-//        }, TypeRef(fType)))))
-//        acc match {
-//          case Some(if0) =>
-//            Some(if0.copy(else1 = Some(if1)))
-//          case None =>
-//            Some(if1)
-//        }
-//      }}.getOrElse(Block.empty)
 
   def decl: MethodDecl =
     MethodDecl(
