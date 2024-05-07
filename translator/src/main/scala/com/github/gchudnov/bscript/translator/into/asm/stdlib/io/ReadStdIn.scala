@@ -7,9 +7,9 @@ import com.github.gchudnov.bscript.lang.types.TypeNames
 import com.github.gchudnov.bscript.lang.util.LineOps.split
 
 
-private[into] object ReadStdIo:
+private[into] object ReadStdIn:
 
-  private val fnName = "readStdIo"
+  private val fnName = "readStdIn"
 
   def decl(typeNames: TypeNames): MethodDecl =
     MethodDecl(
@@ -19,9 +19,9 @@ private[into] object ReadStdIo:
         ArgDecl(TypeRef(typeNames.i32Type), "size"),
       ),
       Block(
-        CompiledExpr(callback = ReadStdIo.readStdIn, retType = TypeRef(typeNames.strType))
+        CompiledExpr(callback = ReadStdIn.readStdIn, retType = TypeRef(typeNames.strType))
       ),
-      Seq(ComAnn("Read a string from stdio"), StdAnn())
+      Seq(ComAnn("Read a string from stdin"), StdAnn())
     )
 
   /**
