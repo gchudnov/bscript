@@ -21,7 +21,7 @@ private abstract class RoundF64Dec(typeName: String):
       DeclType(Var(SymbolRef("value"))),
       fnName,
       List(
-        ArgDecl(TypeRef(typeNames.f64Type), "value"), // f32, f64, dec
+        ArgDecl(TypeRef(typeName), "value"), // f32, f64, dec
         ArgDecl(TypeRef(typeNames.i32Type), "precision")
       ),
       Block(
