@@ -110,7 +110,7 @@ final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
       case s: AsmState =>
         for lines <- Right(
           split(
-            s"""const lines = str.split("\\n");
+            s"""const lines = input.split("\\n");
                |for (let i = 0; i < lines.length; i++) {
                |  const line = lines[i];
                |  if (line.length == 0) {
