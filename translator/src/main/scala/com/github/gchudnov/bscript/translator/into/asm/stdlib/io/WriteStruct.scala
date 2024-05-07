@@ -27,6 +27,7 @@ final class WriteStruct(struct: StructDecl, typeNames: TypeNames) {
       typeNames.i64Type -> "%s.toString()",
       typeNames.f32Type -> "%s.toString()",
       typeNames.f64Type -> "%s.toString()",
+      typeNames.decType -> "%s.toString()",
       typeNames.strType -> "%s",
       typeNames.dateType -> "%s.toISOString()",
       typeNames.datetimeType -> "%s.toISOString()",
