@@ -56,16 +56,18 @@ final class ReadStruct(struct: StructDecl, typeNames: TypeNames) {
 
   private val conds: Expr =
     fields
-      .foldLeft(None: Option[If]){case (acc, (fName, fType)) => {
+      .foldRight(None: Option[If]){case ((fName, fType), acc) => {
+
         val if1 = If(Equal(StrVal("key"), StrVal(fName)), Block(Assign(Access(Var(SymbolRef("d")), Var(SymbolRef(fName))), CompiledExpr({
           case s: AsmState =>
             Right(s.copy(lines = Seq(parsers(fType))))
           case other =>
             Left(new AsmException(s"Unexpected state passed to ${updateFnName}: ${other}"))
         }, TypeRef(fType)))))
+
         acc match {
           case Some(if0) =>
-            Some(if0.copy(else1 = Some(if1)))
+            Some(if1.copy(else1 = Some(if0)))
           case None =>
             Some(if1)
         }
