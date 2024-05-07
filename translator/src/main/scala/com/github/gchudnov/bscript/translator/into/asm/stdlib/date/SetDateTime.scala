@@ -49,13 +49,17 @@ private[into] object SetDateTime:
         for lines <- Right(
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
-                            |  return ${argValue}.setUTCDate(${argOffset});
+                            |  ${argValue}.setUTCDate(${argOffset});
+                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitHours}") {
-                            |  return ${argValue}.setUTCHours(${argOffset});
+                            |  ${argValue}.setUTCHours(${argOffset});
+                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitMinutes}") {
-                            |  return ${argValue}.setUTCMinutes(${argOffset});
+                            |  ${argValue}.setUTCMinutes(${argOffset});
+                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitSeconds}") {
-                            |  return ${argValue}.setUTCSeconds(${argOffset});
+                            |  ${argValue}.setUTCSeconds(${argOffset});
+                            |  return ${argValue};
                             |}
                             |""".stripMargin
                        )

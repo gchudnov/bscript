@@ -50,13 +50,17 @@ private[into] object AdjustDateTime:
         for lines <- Right(
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
-                            |  return ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
+                            |  ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
+                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitHours}") {
-                            |  return ${argValue}.setUTCHours(${argValue}.getUTCHours() + ${argOffset});
+                            |  ${argValue}.setUTCHours(${argValue}.getUTCHours() + ${argOffset});
+                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitMinutes}") {
-                            |  return ${argValue}.setUTCMinutes(${argValue}.getUTCMinutes() + ${argOffset});
+                            |  ${argValue}.setUTCMinutes(${argValue}.getUTCMinutes() + ${argOffset});
+                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitSeconds}") {
-                            |  return ${argValue}.setUTCSeconds(${argValue}.getUTCSeconds() + ${argOffset});
+                            |  ${argValue}.setUTCSeconds(${argValue}.getUTCSeconds() + ${argOffset});
+                            |  return ${argValue};
                             |}
                             |""".stripMargin
                        )

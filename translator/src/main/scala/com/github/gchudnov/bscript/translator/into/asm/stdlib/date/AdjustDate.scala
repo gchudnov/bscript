@@ -53,7 +53,8 @@ private[into] object AdjustDate:
         for lines <- Right(
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
-                            |  return ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
+                            |  ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
+                            |  return ${argValue};
                             |}
                             |""".stripMargin
                        )
