@@ -36,7 +36,7 @@ private[asm] object Now:
       case s: AsmState =>
         for lines <- Right(
                        split(
-                         s"""return new Date(wasi_Date.now())
+                         s"""return new Date(wasi_Date.now());
                             |""".stripMargin
                        )
                      )

@@ -50,17 +50,14 @@ private[into] object SetDateTime:
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
                             |  ${argValue}.setUTCDate(${argOffset});
-                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitHours}") {
                             |  ${argValue}.setUTCHours(${argOffset});
-                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitMinutes}") {
                             |  ${argValue}.setUTCMinutes(${argOffset});
-                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitSeconds}") {
                             |  ${argValue}.setUTCSeconds(${argOffset});
-                            |  return ${argValue};
                             |}
+                            |return ${argUnit};
                             |""".stripMargin
                        )
                      )

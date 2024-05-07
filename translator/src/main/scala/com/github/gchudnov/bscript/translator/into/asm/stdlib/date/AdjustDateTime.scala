@@ -51,17 +51,14 @@ private[into] object AdjustDateTime:
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
                             |  ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
-                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitHours}") {
                             |  ${argValue}.setUTCHours(${argValue}.getUTCHours() + ${argOffset});
-                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitMinutes}") {
                             |  ${argValue}.setUTCMinutes(${argValue}.getUTCMinutes() + ${argOffset});
-                            |  return ${argValue};
                             |} else if (${argUnit} === "${unitSeconds}") {
                             |  ${argValue}.setUTCSeconds(${argValue}.getUTCSeconds() + ${argOffset});
-                            |  return ${argValue};
                             |}
+                            |return ${argUnit};
                             |""".stripMargin
                        )
                      )

@@ -54,8 +54,8 @@ private[into] object AdjustDate:
                        split(
                          s"""if (${argUnit} === "${unitDays}") {
                             |  ${argValue}.setUTCDate(${argValue}.getUTCDate() + ${argOffset});
-                            |  return ${argValue};
                             |}
+                            |return ${argValue};
                             |""".stripMargin
                        )
                      )
