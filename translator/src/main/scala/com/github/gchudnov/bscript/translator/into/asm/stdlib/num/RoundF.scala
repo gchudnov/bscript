@@ -9,11 +9,11 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
-private[into] object RoundF32:
+final class RoundF(typeNames: TypeNames, typeName: String):
 
-  private val fnName = "round_float"
+  private val fnName = s"round_${typeName}"
 
-  def decl(typeNames: TypeNames): MethodDecl =
+  def decl: MethodDecl =
     MethodDecl(
       DeclType(Var(SymbolRef("value"))),
       fnName,
@@ -22,7 +22,7 @@ private[into] object RoundF32:
         ArgDecl(TypeRef(typeNames.i32Type), "precision")
       ),
       Block(
-        CompiledExpr(callback = RoundF32.round, retType = DeclType(Var(SymbolRef("value"))))
+        CompiledExpr(callback = this.round, retType = DeclType(Var(SymbolRef("value"))))
       ),
       Seq(ComAnn("Rounds the provided value with the given precision"), StdAnn())
     )

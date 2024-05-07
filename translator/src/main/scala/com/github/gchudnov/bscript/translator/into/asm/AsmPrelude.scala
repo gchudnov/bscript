@@ -46,6 +46,10 @@ object AsmPrelude:
     val exactIntF64 = ExactInt(typeNames, typeNames.f64Type)
     val exactIntDec = ExactInt(typeNames, typeNames.decType)
 
+    val roundDec = RoundT(typeNames, typeNames.decType)
+    val roundF64 = RoundT(typeNames, typeNames.f64Type)
+    val roundF32 = RoundF(typeNames, typeNames.f32Type)
+
     val methodDecls = List(
       isDefinedBool.decl,
       isDefinedStr.decl,
@@ -58,9 +62,9 @@ object AsmPrelude:
       isDefinedDateTime.decl,
       Now.decl(typeNames),
       Today.decl(typeNames),
-      RoundDec.decl(typeNames),
-      RoundF64.decl(typeNames),
-      RoundF32.decl(typeNames),
+      roundDec.decl,
+      roundF64.decl,
+      roundF32.decl,
       TruncateDec.decl(typeNames),
       TruncateF64.decl(typeNames),
       TruncateF32.decl(typeNames),

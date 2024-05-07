@@ -9,14 +9,11 @@ import com.github.gchudnov.bscript.lang.util.LineOps.split
 import com.github.gchudnov.bscript.translator.into.scala3.Scala3State
 import com.github.gchudnov.bscript.translator.into.scalax.scala3j.Scala3JState
 
-private[into] object RoundF64 extends RoundF64Dec("double")
-private[into] object RoundDec extends RoundF64Dec("dec")
-
-private abstract class RoundF64Dec(typeName: String):
+final class RoundT(typeNames: TypeNames, typeName: String):
 
   private val fnName = s"round_${typeName}"
 
-  def decl(typeNames: TypeNames): MethodDecl =
+  def decl: MethodDecl =
     MethodDecl(
       DeclType(Var(SymbolRef("value"))),
       fnName,
