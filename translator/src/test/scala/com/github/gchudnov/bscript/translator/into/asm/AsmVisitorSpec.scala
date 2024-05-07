@@ -963,7 +963,8 @@ final class AsmVisitorSpec extends TestSpec:
             "D",
             List(
               FieldDecl(TypeRef(typeNames.i32Type), "x"),
-              FieldDecl(TypeRef(typeNames.f64Type), "y")
+              FieldDecl(TypeRef(typeNames.f64Type), "y"),
+              FieldDecl(TypeRef(typeNames.decType), "z")
             )
           ))
 
