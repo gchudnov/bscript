@@ -57,7 +57,7 @@ private[into] object SetDateTime:
                             |} else if (${argUnit} === "${unitSeconds}") {
                             |  ${argValue}.setUTCSeconds(${argOffset});
                             |}
-                            |return ${argUnit};
+                            |return ${argValue};
                             |""".stripMargin
                        )
                      )
